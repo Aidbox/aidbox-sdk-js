@@ -1,0 +1,40 @@
+version: '3.7'
+services:
+  aidbox-db:
+    image: "${PGIMAGE}"
+    pull_policy: always
+    ports:
+      - "${PGHOSTPORT}:5432"
+    volumes:
+      - "../pgdata:/data"
+    environment:
+      POSTGRES_USER:     "${PGUSER}"
+      POSTGRES_PASSWORD: "${PGPASSWORD}"
+      POSTGRES_DB:       "${PGDATABASE}"
+
+  aidbox:
+    image: "${AIDBOX_IMAGE}"
+    pull_policy: always
+    depends_on: ["aidbox-db"]
+    links:
+      - "aidbox-db:database"
+    ports:
+      - "${AIDBOX_PORT}:${AIDBOX_PORT}"
+    volumes:
+      - "../zen-project/:${BOX_PROJECT_GIT_TARGET__PATH}"
+    env_file:
+      - .env
+    environment:
+      PGPORT: 5432
+      PGHOST: aidbox-db
+
+  sqs:
+    image: softwaremill/elasticmq
+    ports:
+      - "9324:9324"
+      - "9325:9325"
+    healthcheck:
+      test: ["CMD", "wget", "-O", "/dev/null", "http://127.0.0.1:9324?Action=ListQueues"]
+      interval: 15s
+      timeout: 5s
+      retries: 60

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "incremental": true,
+    "target": "es2021",
+    "strict": true,
+    "skipLibCheck": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "lib": ["ES2021"],
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "types": ["node"]
+  }
+}
