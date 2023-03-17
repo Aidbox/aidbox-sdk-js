@@ -1,178 +1,193 @@
-## Aidbox authorization
+# Aidbox JavaScript SDK
 
-Register your application with the auth provider in Aidbox to obtain a client ID and secret.
 
-Please follow the aidbox documentation
+## Installation
+### Prerequisites for Zen CLI
+Before proceeding with the installation process, it's important to ensure that your system meets the necessary prerequisites. Failure to install the prerequisites may result in errors or unexpected behavior during the installation process.
 
-### Basic
+Please check the documentation or installation guide for the software or package you are trying to install to determine the specific prerequisites:
 
-```javascript
-import { Client } from 'aidbox-sdk-js'
+Unix-like system with `bash`, `tar` and `java` installed
 
-const aidbox = new Client({
-  url: 'www.aidbox-url.com',
-  auth: { type: 'basic', username: 'name', password: 'password' }
-});
+### Step 1: Install Zen CLI
+
+To generate SDK by your `zen-project` config you have to install [zen-cli](https://www.npmjs.com/package/@aidbox/zen-cli).
+This command will install the latest version of the zen-cli on your system.
+The -g flag tells npm to install the package globally, making it available to all projects on your system.
+
+```
+npm install -g @aidbox/zen-cli
 ```
 
-### Client Credentials
-```javascript
-import { Client } from 'aidbox-sdk-js'
+### Step 2: Install Zen dependencies
+In the case you do not have `zen-project` configured - follow [the documentation](https://github.com/zen-lang/zen).
 
-const aidbox = new Client({
-  url: 'www.aidbox-url.com',
-  auth: { type: 'client-credentials', clientId: 'client', secret: 'secret' }
-});
+After configuration of zen-package you have to install dependencies (e.g hl7-fhir-r4-core) by typing the following into a terminal window
+
+```
+zen-cli pull-deps
 ```
 
-### Resource Owner
-```javascript
-import { Client } from 'aidbox-sdk-js'
+This command will download FHIR Definitions All the value sets, profiles, etc. defined as part of the FHIR specification, and the included implementation guides depends on added packages.
 
-const aidbox = new Client({
-  url: 'www.aidbox-url.com',
-  auth: { type: 'resource-owner', clientId: 'client' }
-});
+### Step 3: Generate SDK package
+In terminal move to your `zen-project` folder and generate SDK by run the following
 
-const signIn = (username: string, password: string) => {
-  return aidbox.recourseOwnerAuth(username, password)
+```
+zen-cli get-sdk
+```
+
+After running the zen-cli get-sdk command, you should be able to find the aidbox-javascript-sdk.tgz npm package in the root directory of your project. This archive is generated based on your zen-project and includes all types of resources.
+
+### Step 4: Add SDK package to package.json
+Then, when you get your SDK move this archive into your project and add SDK as dependency in `package.json`
+
+```
+"dependencies": {
+  ...
+  "aidbox-sdk": "file:<PATH_TO_GENERATED_ARCHIVE_SDK>"
 }
 ```
 
-## REST & FHIR API
+Install dependencies
 
-#### Get resource
-```typescript
-(ResourceType, SearchParams) => Array<Resource>
-
-const patient = await aidbox.api.getResource('Patient', searchParams);
+```
+npm install
 ```
 
-#### Patch resource
-```typescript
-(ResourceType, SearchParams, Resource ) => Resource
+**Important**: Set of available features and typescript types are unique and depend on `zen-project` configuration,
+selected FHIR version, custom schemas and operations,
+it's important to include package as part of your Git repository.
 
-const updatedPatient = await aidbox.api.patchResource('Patient', searchParams, { ...resource });
+
+## How to use
+**Important:** Before we start we have to make sure that aidbox client [is configured](https://docs.aidbox.app/tutorials/security-and-access-control/basic-auth-tutorial#basic-auth)
+and your [access policies](https://docs.aidbox.app/security-and-access-control-1/security/access-control) provide granular access to resources you're trying to reach.
+
+```javascript
+import { Client } from "aidbox-sdk"
+
+export const aidbox = new Client("<HOST_URL>", {
+    username: "<CLIENT_NAME>",
+    password: "<CLIENT_SECRET>"
+})
 ```
 
-#### Delete resource
-```typescript
-(ResourceType, SearchParams) => Resource
+This code creates a new instance of the SDK from the aidbox-sdk package, and sets it up to connect to an Aidbox server running on `<HOST_URL>`.
+You would need to replace `<CLIENT_NAME>` and `<CLIENT_SECRET>` with the actual client ID and client secret that you configured earlier.
 
-const deletedPatient = await aidbox.api.deleteResource('Patient', searchParams);
-```
+By using aidbox-sdk in your project, you can easily interact with an Aidbox server and perform actions like reading and writing resources, searching for resources, and more.
 
-#### SearchParams
-```typescript
-type SearchParams = {
-    id?: string
-    [Resource.fieldName]: string | Record<{
-        [searchParameterName | or | and | gt | lte | exact | ... ]: string | string[]
-    }>
+Then you can use aidboxClient in wherever you want
+
+```javascript
+import { aidbox } from "../aidbox-client"
+
+async function getPatients() {
+    return aidbox.getResources("Patient")
 }
-
-const patient = await aidbox.api.getResource('Patient', { id: 'patient-id', name: { $or: ['Vlad','Rost'] } })
 ```
 
-Search params as a query-builder (second variant, reference):
 
-```typescript
-const patient = await aidbox.api.getResource('Patient', 'patient-id')
-  .and('name', 'Vlad', 'Anton')
-  .exact('birthDate', '2020-01-01');
-```
+## API
 
-#### History read
-```typescript
-(ResourceType, string) => Array<ResourceVersiose>
 
-const allPatientVersions = await aidbox.api.getResourceHistory('Patient', 'patient-id');
-```
+### getResources
+getResources method accepts the name of the resource and is the basis for the subsequent complication of the request
 
-#### Version read
-```typescript
-(resourceType, id: string, version: number) => Resource
+![getResources example](get-resources.gif)
 
-const oldPatient = await aidbox.api.getResourceVersion('Patient', 'patient-id', 0);
-```
 
-#### Validate
-```typescript
-type ValidationModes = { mode: 'create' | 'update' | 'delete' | 'patch' | 'merge-patch' | 'json-patch' }
-(ResourceType, Resource, ValidationModes) => VlidationResult
+##### where
+Method where add additional parameters for searching
 
-const result1 = await aidbox.api.validateResource('Patient', resource);
-const result2 = await aidbox.api.validateResource('Patient', resource, { mode: 'create' })
-const result3 = await aidbox.api.validateResource('Patient', resource, { mode: 'delete' })
-```
+For example, you want to find all patients with name John, so
 
-#### Match
-```typescript
-(ResourceType, Resource, threshold: 0-1) => Resource[]
+    where("name", "John")
 
-const similarResources = await aidbox.api.matchResource('Patient', resource, 0)
-```
+Or, you want to find all patients with name John or Steve
 
-#### Everything
+    where("name", ["John", "Steve"])
 
-```typescript
-(patientId: string) => Resource
+Also, method where support prefixes for numbers and date, just pass it as third parameter
 
-const resources = await aidbox.api.everything('patient-id')
-```
+    where("birthDate", "2014-06-30", "gt")
 
-#### Changes API
 
-```typescript
-type Params = {
-  id?: string;
-  version?: number | { 'lower-version': number, 'upper-version': number };
-  fhir?: boolean;
-  'omit-resources'?: boolean;
-  _count?: number;
-  _page?: number;
-  _total?: 'none' | 'estimate' | 'accurate';
-}
+![where example](where.gif)
 
-const changes = await aidbox.changes(params)
-```
+#### Sort
+Method sort add additional parameters for sorting
 
-#### Batch Upsert
-```typescript
-(resources: Array<Resource>) => Array<Resource>;
+For example, you want to display the oldest patients
 
-const resources = await aidbox.batch.upsert(resources)
-```
+    sort("birthDate", "acs")
 
-#### Batch/Transaction
+And also, you want to sort this data by patients name
 
-Batch set
-```typescript
-type Body = Array<{
-  resource: Array<Resource>
-  request: { method: HTTPMethods, url: string }
-}>
+    sort("birthDate", "acs").sort("name", "acs")
 
-(body: Body) => Resources
 
-const resources = await aidbox.batch.set(body)
-```
+![sort](sort.gif)
 
-Batch update
-```typescript
-type Body = Array<{
-  resource: Array<Resource>
-  request: { method: HTTPMethods, url: string }
-}>
+#### Count
+Method count used for make limit the number of resource returned by request
 
-(body: Body) => Resources
+    count(10)
 
-let resources = await aidbox.batch.update(body)
-```
 
-Get History
-```typescript
-(ResourceName, string) => HistoryOfResource
+#### Summary
 
-let history = await aidboxClient.batch.history('Patient', 'patient-id')
-```
+To request only a portion of the resources from a server, you can use the summary function. This function allows you to specify the type of summary you want to receive, such as **true, false, text, data, or count**.
+
+By default, when you make a request to a server, it will return all resource. However, if you only need a specific part of the resources, you can use the summary function to request a condensed summary of the data.
+
+The summary function accepts several types of summaries, each of which provides a different level of detail about the data. For example:
+
+If you set the summary parameter to true, the server will return a limited subset of elements from the resource. This subset SHOULD consist solely of all supported elements that are marked as "summary" in the base definition of the resource
+
+If you set the summary parameter to false, the server will return all parts of the resource.
+
+If you set the summary parameter to text, the server will return only the text, id, meta, and top-level mandatory elements.
+
+If you set the summary parameter to data, the server will return resources without the text element.
+
+If you set the summary parameter to count, the server will return just return a count of the matching resources, without returning the actual matches.
+
+
+    summary("data")
+
+
+
+#### Elements
+If you need to retrieve specific elements of a resource from a server, you can use the elements function. This function allows you to specify which parts of the resource you are interested in, and can help to reduce the amount of data returned by the server.
+
+By using the elements function, you can customize your requests to retrieve only the data that you need, rather than requesting the entire dataset. This can be particularly useful when dealing with large datasets or when you only need a small subset of the available data.
+
+To use the elements function, simply pass in the elements you want to retrieve as arguments. For example, if you only need the name and address fields from a resource, you can make a request using the following syntax:
+
+    elements(["name", "address"])
+
+This request will return only the name and address fields for each resource, rather than the entire dataset. By reducing the amount of data returned, you can help to streamline your requests and improve the performance of your application.
+
+### getResource
+The getResource function is a tool for retrieving a single resource by its ID.
+
+To use the getResource function, you must pass in the resource type and ID as arguments. For example, if you want to retrieve a patient resource with the ID some-id, you can make a request using the following syntax:
+
+    getResource("Patient", "id")
+
+
+### patchResource
+
+The patchResource function is used to update a specific resource identified by its id with a partial set of data provided in the third parameter. This function allows for partial updates of a resource without having to send the entire resource object.
+
+The first parameter specifies the name of the resource to be updated. The second parameter identifies the specific resource to be updated.
+
+![patch resource](patch-resource.gif)
+
+
+### deleteResource
+The deleteResource function is used to delete a specific resource identified by its id.
+
+    deleteResource("Patient", "c58f29eb-f28d-67c1-0400-9af3aba3d58c")

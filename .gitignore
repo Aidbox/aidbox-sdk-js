@@ -1,4 +1,5 @@
 .env
+.idea
 pgdata
 zen-packages
 node_modules
