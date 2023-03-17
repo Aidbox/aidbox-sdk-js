@@ -61,7 +61,7 @@ it's important to include package as part of your Git repository.
 
 
 ## How to use
-**Important:** Before we start we have to make sure that aidbox client [is configured](https://docs.aidbox.app/tutorials/security-and-access-control/basic-auth-tutorial#basic-auth)
+**Important:** Before we start we have to make sure that aidbox [client](https://docs.aidbox.app/tutorials/security-and-access-control/basic-auth-tutorial#basic-auth) is configured
 and your [access policies](https://docs.aidbox.app/security-and-access-control-1/security/access-control) provide granular access to resources you're trying to reach.
 
 ```javascript
