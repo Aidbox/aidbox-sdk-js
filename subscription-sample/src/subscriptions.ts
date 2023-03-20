@@ -25,6 +25,6 @@ export const createSubscriptions = async () => {
   ];
 
   await aidboxClient.bundleRequest(
-    subscriptions.map(aidboxClient.bundleEntryPut as any)
+    subscriptions.map(aidboxClient.bundleEntryPut)
   );
 };
