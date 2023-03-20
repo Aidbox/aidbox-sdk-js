@@ -1,4 +1,5 @@
 import { IncomingMessage, ServerResponse } from "node:http";
+import client from "prom-client";
 import { sqsClient } from "./sqs";
 
 const handleCreatePatient = async (data: string) => {
@@ -46,6 +47,12 @@ const handleUpdateAppointment = async (data: string) => {
   });
 };
 
+const register = new client.Registry();
+register.setDefaultLabels({
+  app: "subscription-sample-app",
+});
+client.collectDefaultMetrics({ register });
+
 export const handleEndpoints = async (
   req: IncomingMessage,
   res: ServerResponse
@@ -59,6 +66,12 @@ export const handleEndpoints = async (
     case "/":
       res.writeHead(200);
       res.end("Hello!");
+      break;
+
+    case "/metrics":
+      const metrics = await register.metrics();
+      res.setHeader("Content-Type", register.contentType);
+      res.end(metrics);
       break;
 
     case "/patient-created":
