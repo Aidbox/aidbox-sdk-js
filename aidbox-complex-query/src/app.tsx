@@ -132,7 +132,11 @@ export function App () {
   }, [getData, initializeQuery, initialized])
 
   if (!initialized) {
-    return <Loading>Loading...</Loading>
+    return (
+      <div style={{ textAlign: 'center' }}>
+        <Loading>Loading...</Loading>
+      </div>
+    )
   }
 
   return (
