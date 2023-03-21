@@ -29,6 +29,12 @@ services:
       PGPORT: 5432
       PGHOST: aidbox-db
       BOX_METRICS_PORT: 9999
+      BOX_INSTANCE_NAME: adibox
+      BOX_METRICS_GRAFANA_URL: host.docker.internal:9000
+      BOX_METRICS_GRAFANA_USER: admin
+      BOX_METRICS_GRAFANA_PASSWORD: admin
+      AIDBOX_ES_URL: http://elasticsearch:9200
+
   
   prometeus: 
     image: prom/prometheus
@@ -36,6 +42,38 @@ services:
       - 9090:9090
     volumes:
      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+
+  grafana:
+    image: grafana/grafana:7.5.7
+    ports:
+      - 9000:3000
+    restart: unless-stopped
+    volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - grafana-data:/var/lib/grafana
+
+  elasticsearch:
+    container_name: es-container
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.0.1
+    networks:
+      - es-net
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+    ports:
+      - 9200:9200
+
+  kibana:
+    container_name: kb-container
+    image: docker.elastic.co/kibana/kibana:8.0.1
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es-container:9200
+    networks:
+      - es-net
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
 
   sqs:
     image: softwaremill/elasticmq
@@ -47,3 +85,11 @@ services:
       interval: 15s
       timeout: 5s
       retries: 60
+
+volumes:
+  grafana-data:
+
+networks:
+  es-net:
+    driver: bridge
+  
