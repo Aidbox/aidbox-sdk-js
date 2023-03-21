@@ -98,14 +98,12 @@ export function App () {
   }, [])
 
   let setData = useCallback((rawData: ExecuteQueryResponseWrapper<Response>) => {
-    let mappedData = rawData.data.map((resource) => {
-      return {
-        id: resource.practitioner.id ?? '',
-        name: resource.practitioner?.name?.[0].family + ' ' + (resource.practitioner?.name?.[0]?.given?.[0] ?? ''),
-        appointments_for_three_month: resource.appointments_for_three_month,
-        next_week_appointments: resource.next_week_appointments
-      }
-    })
+    let mappedData = rawData.data.map((resource) => ({
+      id: resource.practitioner.id ?? '',
+      name: resource.practitioner?.name?.[0].family + ' ' + (resource.practitioner?.name?.[0]?.given?.[0] ?? ''),
+      appointments_for_three_month: resource.appointments_for_three_month,
+      next_week_appointments: resource.next_week_appointments
+    }))
     setTotal(rawData.total)
     setRows(mappedData)
     setLoading(false)
