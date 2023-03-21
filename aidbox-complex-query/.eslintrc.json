@@ -18,8 +18,7 @@
     "@typescript-eslint",
     "react",
     "react-hooks",
-    "jsx-a11y",
-    "prefer-let"
+    "jsx-a11y"
   ],
   "rules": {
     "indent": "off",
@@ -49,7 +48,6 @@
       }
     ],
     "prefer-const": "off",
-    "prefer-let/prefer-let": "error",
     "jsx-quotes": [
       "error",
       "prefer-single"

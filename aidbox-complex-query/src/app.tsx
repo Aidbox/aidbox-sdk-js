@@ -77,13 +77,13 @@ const queryOptions = {
 }
 
 export function App () {
-  let [rows, setRows] = useState<Item[]>()
-  let [loading, setLoading] = useState<boolean>(true)
-  let [total, setTotal] = useState<number>()
-  let [page, setPage] = useState<number>(1)
-  let [initialized, setInitialized] = useState(false)
+  const [rows, setRows] = useState<Item[]>()
+  const [loading, setLoading] = useState<boolean>(true)
+  const [total, setTotal] = useState<number>()
+  const [page, setPage] = useState<number>(1)
+  const [initialized, setInitialized] = useState(false)
 
-  let initializeQuery = useCallback(() => {
+  const initializeQuery = useCallback(() => {
     return Promise.all([
 
       // Creating index on field "start"
@@ -97,8 +97,8 @@ export function App () {
     ])
   }, [])
 
-  let setData = useCallback((rawData: ExecuteQueryResponseWrapper<Response>) => {
-    let mappedData = rawData.data.map((resource) => ({
+  const setData = useCallback((rawData: ExecuteQueryResponseWrapper<Response>) => {
+    const mappedData = rawData.data.map((resource) => ({
       id: resource.practitioner.id ?? '',
       name: resource.practitioner?.name?.[0].family + ' ' + (resource.practitioner?.name?.[0]?.given?.[0] ?? ''),
       appointments_for_three_month: resource.appointments_for_three_month,
@@ -109,9 +109,9 @@ export function App () {
     setLoading(false)
   }, [])
 
-  let getData = useCallback(async () => {
+  const getData = useCallback(async () => {
     setLoading(true)
-    let response = await aidboxClient.executeQuery<Response>('dashboard-query', { offset: 10 * (page - 1) })
+    const response = await aidboxClient.executeQuery<Response>('dashboard-query', { offset: 10 * (page - 1) })
     setData(response.data)
   }, [page, setData])
 
