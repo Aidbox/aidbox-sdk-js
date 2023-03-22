@@ -55,8 +55,8 @@ services:
   elasticsearch:
     container_name: es-container
     image: docker.elastic.co/elasticsearch/elasticsearch:8.0.1
-    networks:
-      - es-net
+    volumes:
+      - es:/usr/share/elasticsearch/data
     environment:
       - xpack.security.enabled=false
       - "discovery.type=single-node"
@@ -68,8 +68,8 @@ services:
     image: docker.elastic.co/kibana/kibana:8.0.1
     environment:
       - ELASTICSEARCH_HOSTS=http://es-container:9200
-    networks:
-      - es-net
+    volumes:
+      - kibanadata:/usr/share/kibana/data
     depends_on:
       - elasticsearch
     ports:
@@ -88,8 +88,9 @@ services:
 
 volumes:
   grafana-data:
-
-networks:
-  es-net:
-    driver: bridge
+    driver: local
+  es:
+    driver: local
+  kibanadata:
+    driver: local
   
