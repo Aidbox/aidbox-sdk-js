@@ -1,39 +1,92 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import client from "prom-client";
+import { aidboxClient } from "./aidbox-client";
 import { sqsClient } from "./sqs";
 
 const handleCreatePatient = async (data: string) => {
   const patient = JSON.parse(data).resource;
+  const event = "create-patient";
   await sqsClient.sendMessage({
     DelaySeconds: 0,
-    QueueUrl: `${process.env.SQS_URL}/queue/create-patient-sqs`,
+    QueueUrl: `${process.env.SQS_URL}/queue/patient-sqs`,
     MessageBody: patient.id,
     MessageAttributes: {
       Event: {
         DataType: "String",
-        StringValue: "create-patient",
+        StringValue: event,
       },
     },
   });
+  aidboxClient.sendLog({
+    type: "sqs",
+    message: { event, id: patient.id },
+  });
 };
 
-const handleCreateAppointment = async (data: string) => {
-  const appointment = JSON.parse(data).resource;
+const handleCreateObservation = async (data: string) => {
+  const observation = JSON.parse(data).resource;
+  const event = "create-observation";
   await sqsClient.sendMessage({
     DelaySeconds: 0,
-    QueueUrl: `${process.env.SQS_URL}/queue/appointment-sqs`,
-    MessageBody: appointment.id,
+    QueueUrl: `${process.env.SQS_URL}/queue/observation-sqs`,
+    MessageBody: observation.id,
     MessageAttributes: {
       Event: {
         DataType: "String",
-        StringValue: "create-appointment",
+        StringValue: event,
       },
     },
+  });
+  aidboxClient.sendLog({
+    type: "sqs",
+    message: { event, id: observation.id },
+  });
+};
+
+const handleCreateEncounter = async (data: string) => {
+  const encounter = JSON.parse(data).resource;
+  const event = "create-encounter";
+  await sqsClient.sendMessage({
+    DelaySeconds: 0,
+    QueueUrl: `${process.env.SQS_URL}/queue/encounter-sqs`,
+    MessageBody: encounter.id,
+    MessageAttributes: {
+      Event: {
+        DataType: "String",
+        StringValue: event,
+      },
+    },
+  });
+  aidboxClient.sendLog({
+    type: "sqs",
+    message: { event, id: encounter.id },
+  });
+};
+
+const handleCreateDiagnosticReport = async (data: string) => {
+  const diagnosticReport = JSON.parse(data).resource;
+  const event = "create-diagnosticreport";
+  await sqsClient.sendMessage({
+    DelaySeconds: 0,
+    QueueUrl: `${process.env.SQS_URL}/queue/diagnosticreport-sqs`,
+    MessageBody: diagnosticReport.id,
+    MessageAttributes: {
+      Event: {
+        DataType: "String",
+        StringValue: event,
+      },
+    },
+  });
+
+  aidboxClient.sendLog({
+    type: "sqs",
+    message: { event, id: diagnosticReport.id },
   });
 };
 
 const handleUpdateAppointment = async (data: string) => {
   const appointment = JSON.parse(data).resource;
+  const event = "update-appointment";
   await sqsClient.sendMessage({
     DelaySeconds: 0,
     QueueUrl: `${process.env.SQS_URL}/queue/appointment-sqs`,
@@ -41,9 +94,14 @@ const handleUpdateAppointment = async (data: string) => {
     MessageAttributes: {
       Event: {
         DataType: "String",
-        StringValue: "update-appointment",
+        StringValue: event,
       },
     },
+  });
+
+  aidboxClient.sendLog({
+    type: "sqs",
+    message: { event, id: appointment.id },
   });
 };
 
@@ -82,9 +140,25 @@ export const handleEndpoints = async (
       });
       break;
 
-    case "/appointment-created":
+    case "/observation-created":
       req.on("end", async () => {
-        await handleCreateAppointment(data);
+        await handleCreateObservation(data);
+        res.writeHead(200);
+        res.end();
+      });
+      break;
+
+    case "/encounter-created":
+      req.on("end", async () => {
+        await handleCreateEncounter(data);
+        res.writeHead(200);
+        res.end();
+      });
+      break;
+
+    case "/diagnosticreport-created":
+      req.on("end", async () => {
+        await handleCreateDiagnosticReport(data);
         res.writeHead(200);
         res.end();
       });

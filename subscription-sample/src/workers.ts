@@ -16,21 +16,64 @@ const patientCreateWorker = async (patientId: string) => {
   }
 };
 
-const appointmentCreateWorker = async (appointmentId: string) => {
+const observationCreateWorker = async (observationId: string) => {
   try {
-    const appointment = await aidboxClient.getResource(
-      "Appointment",
-      appointmentId
+    const observation = await aidboxClient.getResource(
+      "Observation",
+      observationId
     );
 
-    if (!(appointment instanceof Error) && appointment.id) {
+    if (!(observation instanceof Error) && observation.id) {
       await aidboxClient.createResource("Task", {
         resourceType: "Task",
         status: "received",
         intent: "order",
         for: {
-          resourceType: "Appointment",
-          id: appointment.id,
+          resourceType: "Observation",
+          id: observation.id,
+        },
+      });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const encounterCreateWorker = async (encounterId: string) => {
+  try {
+    const encounter = await aidboxClient.getResource("Encounter", encounterId);
+
+    if (!(encounter instanceof Error) && encounter.id) {
+      await aidboxClient.createResource("Task", {
+        resourceType: "Task",
+        status: "received",
+        intent: "order",
+        for: {
+          resourceType: "Encounter",
+          id: encounter.id,
+        },
+      });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const diagnosticReportCreateWorker = async (diagnosticReportId: string) => {
+  try {
+    const diagnosticReport = await aidboxClient.getResource(
+      "DiagnosticReport",
+      diagnosticReportId
+    );
+
+    if (!(diagnosticReport instanceof Error) && diagnosticReport.id) {
+      await aidboxClient.createResource("Task", {
+        resourceType: "Task",
+        status: "received",
+        intent: "order",
+        for: {
+          resourceType: "DiagnosticReport",
+          id: diagnosticReport.id,
         },
       });
     }
@@ -64,6 +107,8 @@ const appointmentUpdateWorker = async (appointmentId: string) => {
 
 export const workers = {
   "create-patient": patientCreateWorker,
-  "create-appointment": appointmentCreateWorker,
+  "create-observation": observationCreateWorker,
+  "create-encounter": encounterCreateWorker,
+  "create-diagnosticreport": diagnosticReportCreateWorker,
   "update-appointment": appointmentUpdateWorker,
 };

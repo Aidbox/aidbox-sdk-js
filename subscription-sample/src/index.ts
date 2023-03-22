@@ -8,7 +8,13 @@ import { handleEndpoints } from "./endpoints";
 dotenv.config();
 const port = 8000;
 
-export const queuesName = ["create-patient-sqs", "appointment-sqs"];
+export const queuesName = [
+  "patient-sqs",
+  "appointment-sqs",
+  "observation-sqs",
+  "encounter-sqs",
+  "diagnosticreport-sqs",
+];
 
 const startApp = async () => {
   await createDefaultQueues(queuesName);
@@ -18,7 +24,6 @@ const startApp = async () => {
   const server = http.createServer(async (req, res) => {
     try {
       res.setHeader("Content-Type", "application/json");
-
       await handleEndpoints(req, res);
     } catch (error: unknown) {
       console.dir(error, { depth: 9 });

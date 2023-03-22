@@ -11,10 +11,24 @@ export const createSubscriptions = async () => {
       channel: { endpoint: `${process.env.NODE_APP_URL}/patient-created` },
     }),
     aidboxClient.subscriptionEntry({
-      id: "appointment-created",
+      id: "observation-created",
       status: "active",
-      trigger: { Appointment: { event: ["create"] } },
-      channel: { endpoint: `${process.env.NODE_APP_URL}/appointment-created` },
+      trigger: { Observation: { event: ["create"] } },
+      channel: { endpoint: `${process.env.NODE_APP_URL}/observation-created` },
+    }),
+    aidboxClient.subscriptionEntry({
+      id: "encounter-created",
+      status: "active",
+      trigger: { Encounter: { event: ["create"] } },
+      channel: { endpoint: `${process.env.NODE_APP_URL}/encounter-created` },
+    }),
+    aidboxClient.subscriptionEntry({
+      id: "diagnosticreport-created",
+      status: "active",
+      trigger: { DiagnosticReport: { event: ["create"] } },
+      channel: {
+        endpoint: `${process.env.NODE_APP_URL}/diagnosticreport-created`,
+      },
     }),
     aidboxClient.subscriptionEntry({
       id: "appointment-updated",
