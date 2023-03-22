@@ -95,7 +95,7 @@ async function getPatients() {
 ### getResources
 getResources method accepts the name of the resource and is the basis for the subsequent complication of the request
 
-![getResources example](get-resources.gif)
+![getResources example](./assets/get-resources.gif)
 
 
 ##### where
@@ -114,7 +114,7 @@ Also, method where support prefixes for numbers and date, just pass it as third 
     where("birthDate", "2014-06-30", "gt")
 
 
-![where example](where.gif)
+![where example](./assets/where.gif)
 
 #### Sort
 Method sort add additional parameters for sorting
@@ -128,7 +128,7 @@ And also, you want to sort this data by patients name
     sort("birthDate", "acs").sort("name", "acs")
 
 
-![sort](sort.gif)
+![sort](./assets/sort.gif)
 
 #### Count
 Method count used for make limit the number of resource returned by request
@@ -184,7 +184,7 @@ The patchResource function is used to update a specific resource identified by i
 
 The first parameter specifies the name of the resource to be updated. The second parameter identifies the specific resource to be updated.
 
-![patch resource](patch-resource.gif)
+![patch resource](./assets/patch-resource.gif)
 
 
 ### deleteResource

@@ -32,7 +32,7 @@ Then move output from synthea to this folder
 
 As a result, you should get a similar folder structure
 
-![result](./images/result.webp)
+![result](../assets/result.webp)
 
 
 ### Run script
