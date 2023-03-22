@@ -30,9 +30,9 @@ Create a folder "data" at the same level as index.ts
 
 Then move output from synthea to this folder
 
-As a result, you should get a similar structure
+As a result, you should get a similar folder structure
 
-![result](./images/result.png)
+![result](./images/result.webp)
 
 
 ### Run script
