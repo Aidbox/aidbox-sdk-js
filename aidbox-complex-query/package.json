@@ -1,6 +1,5 @@
 {
-  "name": "sample",
-  "private": true,
+  "name": "aidbox-complex-query",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
