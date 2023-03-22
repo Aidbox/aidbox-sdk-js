@@ -32,7 +32,7 @@ const resourceTypeToRemove = [
 
 ]
 
-let pull: number[] = []
+let filePull: string[] = []
 
 const directoryPath =
   path.join(__dirname, '/data')
@@ -46,7 +46,7 @@ const removeKey = (obj: any) => {
   }
 }
 
-async function generate (file: string, i: number) {
+async function upload (file: string, i: number) {
   console.log(`File #${i} started uploading`)
   try {
     const filePath = path.join(directoryPath, file)
@@ -62,17 +62,17 @@ async function generate (file: string, i: number) {
 
     const res = await aidboxClient.bundleRequest(filtredEntry)
     console.log(`\x1b[42mFile #${i} uploaded successfully\x1B[0m`)
-    pull.pop()
     return res
   } catch (error: any) {
     console.error(`\x1b[43mFile #${i} uploaded unsuccessfully\x1B[0m`)
-    pull.pop()
+  } finally {
+    filePull.pop()
   }
 }
 
 function reRun (i: number) {
   setTimeout(() => {
-    if (pull.length > 5) {
+    if (filePull.length > 5) {
       reRun(i)
       return
     }
@@ -84,12 +84,12 @@ const main = async (last_index = 0) => {
   const files = await fs.readdir(directoryPath)
 
   for (let i = last_index; i < files.length; i++) {
-    if (pull.length > 5) {
+    if (filePull.length > 5) {
       reRun(i)
       break
     }
-    pull.push(i)
-    generate(files[i], i)
+    filePull.push(files[i])
+    upload(files[i], i)
   }
 }
 
