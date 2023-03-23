@@ -39,7 +39,7 @@ queries by providing quick access to specific data in a table.
 
 In this project we get appointments count by field "start". Also, we filter appointments by practitioner id
 
- ```postgresql
+ ```sql
  SELECT practitioner.resource AS practitioner,
     (SELECT percentile_disc(0.5) WITHIN GROUP
         (ORDER BY (SELECT count(appointment)
