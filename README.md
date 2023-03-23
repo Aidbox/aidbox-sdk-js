@@ -142,19 +142,16 @@ Method count used for make limit the number of resource returned by request
 
 To request only a portion of the resources from a server, you can use the summary function. This function allows you to specify the type of summary you want to receive, such as **true, false, text, data, or count**.
 
-By default, when you make a request to a server, it will return all resource. However, if you only need a specific part of the resources, you can use the summary function to request a condensed summary of the data.
+By default, when you make a request to a server, it will return all resource.
 
 The summary function accepts several types of summaries, each of which provides a different level of detail about the data. For example:
 
-If you set the summary parameter to true, the server will return a limited subset of elements from the resource. This subset SHOULD consist solely of all supported elements that are marked as "summary" in the base definition of the resource
+  * true - limited subset of elements from the resource
+  * false - all parts of the resource
+  * text - only the text, id, meta, and top-level mandatory elements
+  * data - resources without the text element
+  * count - count of the matching resources, without returning the actual matches
 
-If you set the summary parameter to false, the server will return all parts of the resource.
-
-If you set the summary parameter to text, the server will return only the text, id, meta, and top-level mandatory elements.
-
-If you set the summary parameter to data, the server will return resources without the text element.
-
-If you set the summary parameter to count, the server will return just return a count of the matching resources, without returning the actual matches.
 
     summary("data")
 
@@ -212,7 +209,7 @@ Aidbox has the ability to extend its logs. There is an [endpoint](https://docs.a
 ```javascript
 await client.sendLog({
   type: "ui",
-  message: { event: "YOUR_EVENT", id: "id" ... },
+  message: { event: "YOUR_EVENT", id: "id", ... },
   v: "APP_VERSION",
   fx: "fetchUsers"
 })
