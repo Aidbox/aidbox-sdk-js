@@ -29,29 +29,19 @@ services:
       PGPORT: 5432
       PGHOST: aidbox-db
       BOX_METRICS_PORT: 9999
-      # BOX_INSTANCE_NAME: adibox
-      # BOX_METRICS_GRAFANA_URL: host.docker.internal:9000
-      # BOX_METRICS_GRAFANA_USER: admin
-      # BOX_METRICS_GRAFANA_PASSWORD: admin
       AIDBOX_ES_URL: http://elasticsearch:9200
 
-  
-  prometeus: 
-    image: prom/prometheus
+  sqs:
+    image: softwaremill/elasticmq
     ports:
-      - 9090:9090
-    volumes:
-     - "./prometheus.yml:/etc/prometheus/prometheus.yml"
-
-  # grafana:
-  #   image: grafana/grafana:7.5.7
-  #   ports:
-  #     - 9000:3000
-  #   restart: unless-stopped
-  #   volumes:
-  #     - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-  #     - grafana-data:/var/lib/grafana
-
+      - "9324:9324"
+      - "9325:9325"
+    healthcheck:
+      test: ["CMD", "wget", "-O", "/dev/null", "http://127.0.0.1:9324?Action=ListQueues"]
+      interval: 15s
+      timeout: 5s
+      retries: 60
+  
   elasticsearch:
     container_name: es-container
     image: docker.elastic.co/elasticsearch/elasticsearch:8.0.1
@@ -75,20 +65,7 @@ services:
     ports:
       - 5601:5601
 
-  sqs:
-    image: softwaremill/elasticmq
-    ports:
-      - "9324:9324"
-      - "9325:9325"
-    healthcheck:
-      test: ["CMD", "wget", "-O", "/dev/null", "http://127.0.0.1:9324?Action=ListQueues"]
-      interval: 15s
-      timeout: 5s
-      retries: 60
-
 volumes:
-  # grafana-data:
-  #   driver: local
   es:
     driver: local
   kibanadata:
