@@ -134,7 +134,9 @@ export const handleEndpoints = async (
 
     case "/patient-created":
       req.on("end", async () => {
-        await handleCreatePatient(data);
+        if (JSON.parse(data).type === "notification") {
+          await handleCreatePatient(data);
+        }
         res.writeHead(200);
         res.end();
       });
@@ -142,7 +144,9 @@ export const handleEndpoints = async (
 
     case "/observation-created":
       req.on("end", async () => {
-        await handleCreateObservation(data);
+        if (JSON.parse(data).type === "notification") {
+          await handleCreateObservation(data);
+        }
         res.writeHead(200);
         res.end();
       });
@@ -150,7 +154,9 @@ export const handleEndpoints = async (
 
     case "/encounter-created":
       req.on("end", async () => {
-        await handleCreateEncounter(data);
+        if (JSON.parse(data).type === "notification") {
+          await handleCreateEncounter(data);
+        }
         res.writeHead(200);
         res.end();
       });
@@ -158,7 +164,9 @@ export const handleEndpoints = async (
 
     case "/diagnosticreport-created":
       req.on("end", async () => {
-        await handleCreateDiagnosticReport(data);
+        if (JSON.parse(data).type === "notification") {
+          await handleCreateDiagnosticReport(data);
+        }
         res.writeHead(200);
         res.end();
       });
@@ -166,7 +174,9 @@ export const handleEndpoints = async (
 
     case "/appointment-updated":
       req.on("end", async () => {
-        await handleUpdateAppointment(data);
+        if (JSON.parse(data).type === "notification") {
+          await handleUpdateAppointment(data);
+        }
         res.writeHead(200);
         res.end();
       });

@@ -23,7 +23,7 @@ const observationCreateWorker = async (observationId: string) => {
       observationId
     );
 
-    if (!(observation instanceof Error) && observation.id) {
+    if (observation.id) {
       await aidboxClient.createResource("Task", {
         resourceType: "Task",
         status: "received",
@@ -43,7 +43,7 @@ const encounterCreateWorker = async (encounterId: string) => {
   try {
     const encounter = await aidboxClient.getResource("Encounter", encounterId);
 
-    if (!(encounter instanceof Error) && encounter.id) {
+    if (encounter.id) {
       await aidboxClient.createResource("Task", {
         resourceType: "Task",
         status: "received",
@@ -66,7 +66,7 @@ const diagnosticReportCreateWorker = async (diagnosticReportId: string) => {
       diagnosticReportId
     );
 
-    if (!(diagnosticReport instanceof Error) && diagnosticReport.id) {
+    if (diagnosticReport.id) {
       await aidboxClient.createResource("Task", {
         resourceType: "Task",
         status: "received",
@@ -89,7 +89,7 @@ const appointmentUpdateWorker = async (appointmentId: string) => {
       appointmentId
     );
 
-    if (!(appointment instanceof Error) && appointment.id) {
+    if (appointment.id) {
       await aidboxClient.createResource("Task", {
         resourceType: "Task",
         status: "received",

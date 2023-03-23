@@ -19,7 +19,6 @@ export const queuesName = [
 const startApp = async () => {
   await createDefaultQueues(queuesName);
   await createSqsJobs(queuesName);
-  await createSubscriptions();
 
   const server = http.createServer(async (req, res) => {
     try {
@@ -34,6 +33,8 @@ const startApp = async () => {
   server.listen(port, () => {
     console.log(`Server is running on the port ${port}`);
   });
+
+  await createSubscriptions();
 };
 
 startApp();
