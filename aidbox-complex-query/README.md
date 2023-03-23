@@ -62,13 +62,13 @@ Without indexing we get result 4.775ms
 
 Then, let's write index on field "start"
 
-```postgresql
+```sql
 CREATE INDEX appointment_start ON appointment ((appointment.resource #>> '{ start }'));
 ```
 
 And, for practitioner ID
 
- ```postgresql
+ ```sql
  CREATE INDEX appointment_practitioner_id ON appointment (
    (jsonb_path_query_first(
       appointment.resource,
