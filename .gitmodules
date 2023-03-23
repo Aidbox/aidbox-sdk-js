@@ -1,0 +1,3 @@
+[submodule "personal-health-record"]
+	path = personal-health-record
+	url = https://github.com/HealthSamurai/personal-health-record
