@@ -175,6 +175,16 @@ To use the getResource function, you must pass in the resource type and ID as ar
 
     getResource("Patient", "id")
 
+
+### createResource
+
+The createResource function is used to create a new resource.
+
+The first argument is a resource name, the second one is body of resource
+
+
+![create resource](./assets/create-resource.gif)
+
 ### patchResource
 
 The patchResource function is used to update a specific resource identified by its id with a partial set of data provided in the third parameter. This function allows for partial updates of a resource without having to send the entire resource object.
