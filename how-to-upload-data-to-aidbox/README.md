@@ -1,4 +1,4 @@
-# AIDBOX GENERATE DATA
+# AIDBOX GENERATE DATA SAMPLE
 
 This example shown how to use Aidbox SDK and generate data useing [synthea](https://synthea.mitre.org/)
 
