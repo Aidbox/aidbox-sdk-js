@@ -25,5 +25,5 @@
  config
  {:zen/tags #{zen.cli/config}
   :commands {:get-sdk      {:command get-sdk}
-             :get-ts-types {:command get-types}
+             :get-types {:command get-types}
              :zen          {:config zen.cli/zen-config}}}}

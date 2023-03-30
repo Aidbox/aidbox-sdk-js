@@ -442,7 +442,7 @@
 
   (System/exit 0))
 
-(defn get-ts-types [path api-type]
+(defn get-types [path api-type]
   (generate-types path api-type "../aidbox-types.d.ts")
   (println "Done"))
 
