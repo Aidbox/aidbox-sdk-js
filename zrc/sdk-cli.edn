@@ -1,0 +1,29 @@
+{ns sdk-cli
+ import #{zen.cli}
+
+ get-sdk
+ {:zen/tags #{zen.cli/command}
+  :zen/desc "sdk generation"
+  :args-style :positional
+  :args {:type zen/vector
+         :minItems 0
+         :maxItems 1
+         :nth {0 {:type zen/symbol
+                  :zen/desc "API Type"}}}}
+
+ get-types
+ {:zen/tags #{zen.cli/command}
+  :zen/desc "typescript types generation"
+  :args-style :positional
+  :args {:type zen/vector
+         :minItems 0
+         :maxItems 1
+         :nth {0 {:type zen/symbol
+                  :zen/desc "API Type"}}}}
+
+
+ config
+ {:zen/tags #{zen.cli/config}
+  :commands {:get-sdk      {:command get-sdk}
+             :get-ts-types {:command get-types}
+             :zen          {:config zen.cli/zen-config}}}}

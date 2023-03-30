@@ -5,4 +5,12 @@ zen-packages
 node_modules
 zen.jar
 synthea-with-dependencies.jar
+.nrepl-port
+target
 .DS_Store
+load-data.ts
+clear-data.ts
+.calva/
+.clj-kondo/
+.cpcache/
+.lsp/
