@@ -12,11 +12,8 @@
 
 (defn uber [_]
   (clean nil)
-  (b/copy-dir {:src-dirs ["src" "zrc"]
+  (b/copy-dir {:src-dirs ["src" "zrc" "resources"]
                :target-dir class-dir})
-  (b/copy-file {:src "src/sdk/build/lib/index.js" :target (str class-dir "/index.js")})
-  (b/copy-file {:src "src/sdk/build/lib/index.d.ts" :target (str class-dir "/index.d.ts")})
-  (b/copy-file {:src "src/sdk/build/package.json" :target (str class-dir "/package.json")})
   (b/compile-clj {:basis basis
                   :src-dirs ["src"]
                   :class-dir class-dir})

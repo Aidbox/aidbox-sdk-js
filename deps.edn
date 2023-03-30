@@ -1,4 +1,4 @@
-{:paths ["src" "zrc"]
+{:paths ["src" "zrc" "resources"]
 
  :lib "aidbox-sdk-js"
  :version "0.0.1-SNAPSHOT"
