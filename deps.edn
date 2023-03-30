@@ -1,6 +1,6 @@
-{:paths ["src"]
+{:paths ["src" "zrc"]
 
- :lib "test-aidbox-cli"
+ :lib "aidbox-sdk-js"
  :version "0.0.1-SNAPSHOT"
 
  :deps {org.clojure/clojure  {:mvn/version "1.11.1"}
