@@ -28,7 +28,7 @@
    :reference-type "export type Reference<T extends ResourceType> = {\nid: string;\nresourceType: T;\ndisplay?: string;\n};\n"
    :reference-type-fhir "export type Reference<T extends ResourceType> = {\nreference: string;\ndisplay?: string;\n};\n"
    :resourcetype-type "}\n\nexport type ResourceType = keyof ResourceTypeMap;\n"
-   :subs-subscription "export interface SubsSubscription extends DomainResource {\nstatus: 'active' | 'off';
+   :subs-subscription "export interface SubsSubscription extends DomainResource<'SubsSubscription'> {\nstatus: 'active' | 'off';
                        trigger: Partial<Record<ResourceType, { event: Array<'all' | 'create' | 'update' | 'delete'>; filter?: unknown }>>;
                        channel: {\ntype: 'rest-hook';\nendpoint: string;\npayload?: { content: string; contentType: string; context: unknown };
                        headers?: Record<string, string>;\ntimeout?: number;\n};\n}"})
@@ -100,9 +100,17 @@
 (defn generate-interface [vtx {confirms :confirms}]
   (let [extended-resource (first (set-to-string vtx confirms))
         extand (cond
-                 (not extended-resource) ""
-                 (= (first confirms) 'zenbox/Resource) " extends Resource "
-                 (not= extended-resource "zen.fhir") (format " extends %s " extended-resource)
+                 (= (::interface-name vtx) "DomainResource")
+                 ""
+                 (not extended-resource)
+                 ""
+                 (= (first confirms) 'zenbox/Resource)
+                 (format " extends Resource<'%s'>" (::interface-name vtx))
+                 (not= extended-resource "zen.fhir")
+                 (if (= extended-resource "DomainResource")
+                   (format " extends %s<'%s'>" extended-resource (::interface-name vtx))
+                   (format " extends %s " extended-resource))
+
                  :else " ")]
     (str "export interface " (::interface-name vtx) extand)))
 
@@ -234,6 +242,9 @@
          (= (last (:schema new-vtx)) :values)
          (update new-vtx ::ts conj (get-desc data) (generate-values new-vtx))
          (and (= (last (:path new-vtx)) :keys) (= (::interface-name vtx) "Resource"))
+         (update new-vtx ::ts conj "<T extends string = ResourceType> { \n resourceType: T;")
+         (and (= (last (:path new-vtx)) :keys) (= (::interface-name vtx) "DomainResource"))
+         (update new-vtx ::ts conj "<T extends string = 'DomainResource'> extends Resource<T> {\n")
          (update new-vtx ::ts conj "{ \n resourceType: ResourceType;")
          (= (last (:path new-vtx)) :keys) (update new-vtx ::ts conj "{ ")
          (= (last (:schema new-vtx)) :every) (update new-vtx ::ts conj "Array<")
