@@ -74,11 +74,11 @@ import { Client } from "aidbox-sdk";
 export const aidbox = new Client("<HOST_URL>", {
   username: "<CLIENT_NAME>",
   password: "<CLIENT_SECRET>",
-});
+}, "<API_TYPE>");
 ```
 
 This code creates a new instance of the SDK from the aidbox-sdk package, and sets it up to connect to an Aidbox server running on `<HOST_URL>`.
-You would need to replace `<CLIENT_NAME>` and `<CLIENT_SECRET>` with the actual client ID and client secret that you configured earlier.
+You would need to replace `<CLIENT_NAME>` and `<CLIENT_SECRET>` with the actual client ID and client secret that you configured earlier, also SDK support two types of API (Aidbox, FHIR [see difference](https://docs.aidbox.app/modules-1/fhir-resources/aidbox-and-fhir-formats)) just provide one of them as third parameter.
 
 By using aidbox-sdk in your project, you can easily interact with an Aidbox server and perform actions like reading and writing resources, searching for resources, and more.
 
@@ -230,11 +230,13 @@ await client.sendLog({
 SDK has helpers to prepare data for bundle request.
 
 ```javascript
-client.bundleEntryPost(RESOURCE_DATA);
-
-client.bundleEntryPut(RESOURCE_DATA);
-
-client.bundleEntryPatch(RESOURCE_DATA);
+client.transformToBundle([{
+    resourceType: "Patient",
+    name: [{ 
+        given: [""],
+        fimily: ""
+    }]
+}], "POST")
 ```
 
 Bundle requests could be a [transaction or batch](https://docs.aidbox.app/api-1/fhir-api/bundle#post-endpoint) type. SDK uses the "transaction" type by default but you can change it by providing it in the second parameter.
