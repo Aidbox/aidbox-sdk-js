@@ -2,9 +2,6 @@ import { AxiosBasicCredentials, AxiosInstance, AxiosResponse } from 'axios';
 import { ResourceTypeMap, SearchParams, SubsSubscription } from './aidbox-types';
 type PathResourceBody<T extends keyof ResourceTypeMap> = Partial<Omit<ResourceTypeMap[T], 'id' | 'meta'>>;
 type SetOptional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
-type SetRequired<T, K extends keyof T> = T & {
-    [P in K]-?: T[P];
-};
 export type UnnecessaryKeys = 'contained' | 'extension' | 'modifierExtension' | '_id' | 'meta' | 'implicitRules' | '_implicitRules' | 'language' | '_language';
 type Dir = 'asc' | 'desc';
 export type PrefixWithArray = 'eq' | 'ne';
@@ -79,12 +76,13 @@ export type LogData = {
     v?: string;
     fx?: string;
 };
+export type APITypes = "aidbox" | "fhir";
 export declare class Client {
     client: AxiosInstance;
-    constructor(baseURL: string, credentials: AxiosBasicCredentials);
+    apiType: APITypes;
+    constructor(baseURL: string, credentials: AxiosBasicCredentials, apiType?: APITypes);
     getResources<T extends keyof ResourceTypeMap>(resourceName: T): GetResources<T, ResourceTypeMap>;
     getResource<T extends keyof ResourceTypeMap>(resourceName: T, id: string): Promise<BaseResponseResource<T>>;
-    findResources<T extends keyof ResourceTypeMap>(resourceName: T, params: Record<string, unknown>): Promise<BaseResponseResources<T>>;
     deleteResource<T extends keyof ResourceTypeMap>(resourceName: T, id: string): Promise<BaseResponseResource<T>>;
     createQuery(name: string, body: CreateQueryBody): Promise<any>;
     executeQuery<T>(name: string, params?: Record<string, unknown>): Promise<AxiosResponse<ExecuteQueryResponseWrapper<T>>>;
@@ -92,12 +90,17 @@ export declare class Client {
     createResource<T extends keyof ResourceTypeMap>(resourceName: T, body: SetOptional<ResourceTypeMap[T], 'resourceType'>): Promise<BaseResponseResource<T>>;
     rawSQL(sql: string, params?: unknown[]): Promise<any>;
     createSubscription({ id, status, trigger, channel }: SubscriptionParams): Promise<SubsSubscription>;
-    bundleRequest(entry: Array<BundleRequestEntry>, type?: 'transaction' | 'batch'): Promise<BundleRequestResponse>;
-    bundleEntryPut<T extends keyof ResourceTypeMap>(resource: ResourceTypeMap[T]): BundleRequestEntry<ResourceTypeMap[T]>;
-    bundleEntryPost<T extends keyof ResourceTypeMap>(resource: SetOptional<ResourceTypeMap[T], 'id'>): BundleRequestEntry<SetOptional<ResourceTypeMap[T], 'id'>>;
-    bundleEntryPatch<T extends keyof ResourceTypeMap>(resource: SetRequired<Partial<ResourceTypeMap[T]>, 'id' | 'resourceType'>): BundleRequestEntry<SetRequired<Partial<ResourceTypeMap[T]>, 'id' | 'resourceType'>>;
     subscriptionEntry({ id, status, trigger, channel }: SubscriptionParams): SubsSubscription;
     sendLog(data: LogData): Promise<void>;
+    transformToBundle<RT extends keyof ResourceTypeMap, R extends ResourceTypeMap[RT]>(resources: (R & {
+        resourceType: RT;
+        id: string;
+    })[], method: "PUT" | "PATCH"): BundleRequestEntry<R>[];
+    transformToBundle<RT extends keyof ResourceTypeMap, R extends ResourceTypeMap[RT]>(resources: (R & {
+        resourceType: RT;
+        id?: string;
+    })[], method: "POST"): BundleRequestEntry<R>[];
+    bundleRequest(entry: Array<BundleRequestEntry>, type?: 'transaction' | 'batch'): Promise<BundleRequestResponse>;
 }
 export declare class GetResources<T extends keyof ResourceTypeMap, R extends ResourceTypeMap[T]> implements PromiseLike<BaseResponseResources<T>> {
     private searchParamsObject;
