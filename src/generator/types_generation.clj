@@ -10,8 +10,6 @@
             [clojure.edn :as edn]
             [taoensso.nippy :as nippy]))
 
-
-
 (def premitives-map
   {:integer "number"
    :string "string"
@@ -151,8 +149,6 @@
      (= (first (set-to-string vtx (:confirms schema))) "BackboneElement") ""
      :else (str (first (set-to-string vtx (:confirms schema)))))))
 
-
-
 (defn get-exclusive-keys-values [ztx vtx exclusive-keys ks]
   (str/join "\n" (map (fn [k]
                         (let [value (if (:zen.fhir/value-set (k ks)) (generate-valueset-type ztx vtx (k ks)) (generate-confirms vtx (k ks)))]
@@ -245,7 +241,6 @@
          (update new-vtx ::ts conj "<T extends string = ResourceType> { \n resourceType: T;")
          (and (= (last (:path new-vtx)) :keys) (= (::interface-name vtx) "DomainResource"))
          (update new-vtx ::ts conj "<T extends string = 'DomainResource'> extends Resource<T> {\n")
-         (update new-vtx ::ts conj "{ \n resourceType: ResourceType;")
          (= (last (:path new-vtx)) :keys) (update new-vtx ::ts conj "{ ")
          (= (last (:schema new-vtx)) :every) (update new-vtx ::ts conj "Array<")
          :else new-vtx)))))
@@ -276,13 +271,11 @@
         _ (zen.core/read-ns ztx 'relatient.campaign-match)
         schema (:schemas (zen.core/get-symbol ztx (symbol (str version "/base-schemas"))))
         structures (:schemas (zen.core/get-symbol ztx (symbol (str version "/structures"))))
-        custom-resources ('zenbox/persistent (:tags @ztx))]
+        custom-resources ('aidbox.repository.v1/repository (:tags @ztx))]
 
     (zen.core/read-ns ztx 'hl7-fhir-r4-core.value-set.clinical-findings)
     (println "Building FTR index...")
     (get-ftr-index ztx (str path "/zen-packages/" version "/index.nippy"))
-
-
 
     (println "Custom resource generation...")
     (mapv (fn [resource]
@@ -318,7 +311,6 @@
                                                             {:interpreters [::ts]}))]
               (spit result-file-path (str/join "" (conj (::ts schemas-result) "\n")) :append true))) schema)
 
-
     (mapv (fn [[_k v]]
             (let [n (str/trim (str/replace (namespace v) (str version ".") ""))
                   schema (zen.core/get-symbol ztx (symbol v))
@@ -337,7 +329,6 @@
               (spit result-file-path (str/join "" (conj (::ts structures-result) "\n")) :append true))) structures)
     :ok))
 
-
 (defn read-versions [ztx path]
   (println "Reading zen packages...")
   (with-open [zen-project (io/reader (str path "/zen-package.edn"))]
@@ -345,13 +336,11 @@
             (println "Reading " (first package))
             (zen.core/read-ns ztx (symbol (first package)))) (:deps (edn/read (java.io.PushbackReader. zen-project))))))
 
-
 (defn get-searches [ztx versions]
   (println "Generating search parameters...")
   (reduce (fn [acc version]
             (zen.core/read-ns ztx (symbol version))
             (concat acc (:searches (zen.core/get-symbol ztx (symbol version))))) [] versions))
-
 
 (defn get-schemas [ztx, versions]
   (println "Getting schemas...")
@@ -432,7 +421,6 @@
     (generate-types-for-version path (namespace (first (zen.core/get-tag ztx 'zen.fhir/base-schemas))) result-file-path)
 
     (spit result-file-path (str/join "" search-params-result) :append true)))
-
 
 (defn get-sdk [path api-type]
   (io/make-parents (str path "/package/index.js"))
