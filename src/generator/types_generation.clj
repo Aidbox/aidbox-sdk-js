@@ -3,6 +3,7 @@
             [zen.core]
             [zen.package]
             [zen.utils]
+            [generator.utils :as gut]
             [clojure.java.io :as io]
             [clojure.string :as str]
             [clojure.set :as set]
@@ -37,30 +38,6 @@
    :number "number"
    :boolean "boolean"})
 
-(defn set-to-string [vtx value]
-  (reduce
-   (fn [acc item]
-     (cond
-       (set? item) (set-to-string vtx item)
-       (keyword? item)
-       (conj acc
-             (str/replace (name item) (str (::version vtx) ".") ""))
-       :else
-       (conj acc
-             (str/replace (namespace item) (str (::version vtx) ".") ""))))
-   [] value))
-
-(defn get-desc [{desc :zen/desc}]
-  (when desc
-    (str "/* " desc " */\n")))
-
-(defn get-not-required-filed-sign [vtx]
-  (when-not (contains? (get
-                        (::require vtx)
-                        (if (= (count (pop  (pop (:path vtx)))) 0)
-                          "root"
-                          (str/join "." (pop (pop (:path vtx)))))) (last (:path vtx))) "?"))
-
 (defn exclusive-keys-child? [vtx]
   (and (> (count (::exclusive-keys vtx)) 0) (> (count (:path vtx)) 1)
        (or (contains? (::exclusive-keys vtx) (str/join "." (pop (pop (:path vtx)))))
@@ -75,7 +52,7 @@
        (if (empty? references) "ResourceType"
            (str/join " | " (map (fn [item]
                                   (cond
-                                    (= (name item) "schema") (str "'" (first (set-to-string vtx #{item})) "'")
+                                    (= (name item) "schema") (str "'" (first (gut/set-to-string vtx #{item})) "'")
                                     :else (str "'" (name item) "'"))) references)))
        ">"))
 
@@ -84,8 +61,8 @@
   (if (:confirms data)
     (if
      (get-in data [:zen.fhir/reference :refers])
-      (get-reference-union-type vtx (set-to-string vtx (get-in data [:zen.fhir/reference :refers])))
-      (str/join " | " (set-to-string vtx (:confirms data))))
+      (get-reference-union-type vtx (gut/set-to-string vtx (get-in data [:zen.fhir/reference :refers])))
+      (str/join " | " (gut/set-to-string vtx (:confirms data))))
     (if
      ((keyword (name (:type data))) premitives-map)
       ((keyword (name (:type data))) premitives-map)
@@ -97,7 +74,7 @@
     (str "type " (::interface-name vtx)  " = " (generate-type-value data vtx))))
 
 (defn generate-interface [vtx {confirms :confirms}]
-  (let [extended-resource (first (set-to-string vtx confirms))
+  (let [extended-resource (first (gut/set-to-string vtx confirms))
         extand (cond
                  (= (::interface-name vtx) "DomainResource")
                  ""
@@ -116,7 +93,7 @@
 
 (defn generate-name
   [vtx data]
-  (str (get-desc data)
+  (str (gut/get-desc data)
        (if (::is-type vtx)
          (generate-type vtx data)
          (generate-interface vtx data))))
@@ -136,7 +113,7 @@
     result))
 
 (defn generate-valueset-type [ztx vtx schema]
-  (let [confirms (first (set-to-string vtx (:confirms schema)))
+  (let [confirms (first (gut/set-to-string vtx (:confirms schema)))
         valueset-values (get-valueset-values ztx (get-in schema [:zen.fhir/value-set :symbol]))]
     (cond
       (= confirms "CodeableConcept") "CodeableConcept"
@@ -148,8 +125,8 @@
    (cond
      (contains? (:confirms schema) 'zen.fhir/Reference)
      (get-reference-union-type vtx (:refers (:zen.fhir/reference schema)))
-     (= (first (set-to-string vtx (:confirms schema))) "BackboneElement") ""
-     :else (str (first (set-to-string vtx (:confirms schema)))))))
+     (= (first (gut/set-to-string vtx (:confirms schema))) "BackboneElement") ""
+     :else (str (first (gut/set-to-string vtx (:confirms schema)))))))
 
 (defn get-exclusive-keys-values [ztx vtx exclusive-keys ks]
   (str/join "\n" (map (fn [k]
@@ -196,29 +173,6 @@
        (update vtx ::ts conj s)
        vtx))))
 
-(defn generate-map-keys-in-array [vtx data]
-  {(if (empty? (:path vtx))
-     "root"
-     (str/join "." (:path vtx))) (:keys data)})
-
-(defn generate-exclusive-keys [vtx data]
-  {(str/join "." (:path vtx)) (:exclusive-keys data)})
-
-(defn generate-require [vtx data]
-  {(if (empty? (:path vtx)) "root" (str/join "." (:path vtx))) (:require data)})
-
-(defn generate-enum [data]
-  (str  (str/join " | " (map (fn [item] (str "'" (:value item) "'")) data))))
-
-(defn generate-values [vtx]
-  (str (name (last (:path vtx)))
-       (get-not-required-filed-sign vtx)
-       ":"))
-
-(defn update-require-and-keys-in-array [vtx data]
-  (let [new-vtx (update vtx ::keys-in-array conj (generate-map-keys-in-array vtx data))]
-    (update new-vtx ::require conj (generate-require vtx data))))
-
 (zen.schema/register-schema-pre-process-hook!
  ::ts
  (fn [ztx schema]
@@ -227,18 +181,18 @@
                      (and (not (:keys data)) (empty? (:path vtx)))
                      (assoc vtx ::is-type true)
                      (or (and (:confirms data) (:keys data)) (:require data))
-                     (update-require-and-keys-in-array vtx data)
+                     (gut/update-require-and-keys-in-array vtx data)
                      (:exclusive-keys data)
-                     (update vtx ::exclusive-keys conj (generate-exclusive-keys vtx data))
+                     (update vtx ::exclusive-keys conj (gut/generate-exclusive-keys vtx data))
                      :else vtx)]
 
        (cond
          (= (last (:path new-vtx)) :zen.fhir/type) new-vtx
          (exclusive-keys-child? new-vtx) new-vtx
          (= (last (:schema new-vtx)) :enum)
-         (update new-vtx ::ts conj (generate-enum data))
+         (update new-vtx ::ts conj (gut/generate-enum data))
          (= (last (:schema new-vtx)) :values)
-         (update new-vtx ::ts conj (get-desc data) (generate-values new-vtx))
+         (update new-vtx ::ts conj (gut/get-desc data) (gut/generate-values new-vtx))
          (and (= (last (:path new-vtx)) :keys) (= (::interface-name vtx) "Resource"))
          (update new-vtx ::ts conj "<T extends string = ResourceType> { \n resourceType: T;")
          (and (= (last (:path new-vtx)) :keys) (= (::interface-name vtx) "DomainResource"))
@@ -354,7 +308,6 @@
      (concat acc (keys (:schemas (zen.core/get-symbol ztx (symbol version)))))) [] versions))
 
 (defn get-resources [schema custom-resources-names]
-  (println custom-resources-names "custom-resources-names")
   (mapv (fn [n]
           (format "%s: %s;" n n))
         (distinct (conj (concat schema custom-resources-names) "SubsSubscription"))))
@@ -419,7 +372,7 @@
         search-params-end-interface "\n}"
         search-params-content (get-search-params ztx searches)
         search-params-result (conj (into [search-params-start-interface]  search-params-content) search-params-end-interface)]
-    (println key-value-resources "key-value-resources")
+
     (spit result-file-path (str/join ""  resource-map-result) :append true)
 
     (println "Type generation...")
