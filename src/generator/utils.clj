@@ -9,23 +9,22 @@
        (set? item) (set-to-string vtx item)
        (keyword? item)
        (conj acc
-             (str/replace (name item) (str (::version vtx) ".") ""))
+             (str/replace (name item) (str (:version vtx) ".") ""))
        :else
        (conj acc
-             (str/replace (namespace item) (str (::version vtx) ".") ""))))
+             (str/replace (namespace item) (str (:version vtx) ".") ""))))
    [] value))
 
 (defn get-desc [{desc :zen/desc}]
   (when desc
     (str "/* " desc " */\n")))
 
-;;TODO: fix case with required fileds.
-(defn get-not-required-filed-sign [vtx]
+(defn get-not-required-filed-sign [{require :require path :path}]
   (when-not (contains? (get
-                        (::require vtx)
-                        (if (= (count (pop  (pop (:path vtx)))) 0)
+                        require
+                        (if (= (count (pop  (pop path))) 0)
                           "root"
-                          (str/join "." (pop (pop (:path vtx)))))) (last (:path vtx))) "?"))
+                          (str/join "." (pop (pop path))))) (last path)) "?"))
 
 (defn generate-map-keys-in-array [vtx data]
   {(if (empty? (:path vtx))
@@ -47,5 +46,5 @@
        ":"))
 
 (defn update-require-and-keys-in-array [vtx data]
-  (let [new-vtx (update vtx ::keys-in-array conj (generate-map-keys-in-array vtx data))]
-    (update new-vtx ::require conj (generate-require vtx data))))
+  (let [new-vtx (update vtx :keys-in-array conj (generate-map-keys-in-array vtx data))]
+    (update new-vtx :require conj (generate-require vtx data))))

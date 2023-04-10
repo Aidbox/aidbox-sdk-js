@@ -14,10 +14,13 @@
 
 (t/deftest get-not-required-filed-sign-test
   (t/is (= "?"
-           (gut/get-not-required-filed-sign {::require '({root nil}) :path [:keys :value]})))
+           (gut/get-not-required-filed-sign {:require {"root" nil} :path [:keys :value]})))
 
   (t/is (= "?"
-           (gut/get-not-required-filed-sign {::require '({:keys.:repeat nil} {root nil}) :path [:keys :repeat]}))))
+           (gut/get-not-required-filed-sign {:require {":keys.:repeat" nil "root" nil} :path [:keys :repeat]})))
+
+  (t/is (= nil
+           (gut/get-not-required-filed-sign {:path [:keys :status] :require {"root" #{:status}}}))))
 
 (t/deftest ggenerate-exclusive-keys-test
   (t/is (= {":keys.:value" #{#{:Range :CodeableConcept :Quantity}}}
