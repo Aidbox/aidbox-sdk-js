@@ -156,12 +156,15 @@
  [:keys ::ts]
  (fn [_ ztx ks]
    (fn [vtx data opts]
+    ;;  (println "COMPILE")
+    ;;  (pp/pprint (:ts vtx))
+    ;;  (pp/pprint data)
      (if-let [s (or (when (:zen.fhir/type data) (generate-name vtx data))
                     (when (:exclusive-keys data) (get-exclusive-keys-type ztx vtx data))
                     (when (exclusive-keys-child? vtx) "")
                     (when (keys-in-array-child? vtx) "")
                     (when (:enum data) "")
-                    (when (= (:validation-type data) :open) "any")
+                    (when (and (= (:validation-type data) :open) (not (:keys data))) "any")
                     (when (:confirms data)
                       (if (:zen.fhir/value-set data) (generate-valueset-type ztx vtx data) (generate-confirms vtx data)))
                     (when-let [tp (and

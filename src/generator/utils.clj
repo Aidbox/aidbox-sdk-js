@@ -41,8 +41,12 @@
 (defn generate-enum [data]
   (str  (str/join " | " (map (fn [item] (str "'" (:value item) "'")) data))))
 
+(defn get-key [{path :path}]
+  (let [k (name (last path))]
+    (if (str/includes? k "-") (str "'" k "'") k)))
+
 (defn generate-values [vtx]
-  (str (name (last (:path vtx)))
+  (str (get-key vtx)
        (get-not-required-filed-sign vtx)
        ":"))
 
