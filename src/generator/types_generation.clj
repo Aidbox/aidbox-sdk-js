@@ -73,14 +73,22 @@
              (not ((keyword (:interface-name vtx)) non-parsable-premitives)))
     (str "type " (:interface-name vtx)  " = " (generate-type-value data vtx))))
 
+(defn get-confirms-type [vtx confirms]
+  (cond
+    (= (:interface-name vtx) "Resource") nil
+    (= (first (gut/set-to-string vtx confirms)) "DomainResource")
+    "DomainResource"
+    (= (first confirms) 'zen.fhir/Resource) "Resource"
+    :else (first (gut/set-to-string vtx confirms))))
+
 (defn generate-interface [vtx {confirms :confirms}]
-  (let [extended-resource (first (gut/set-to-string vtx confirms))
+  (let [extended-resource (get-confirms-type vtx confirms)
         extand (cond
                  (= (:interface-name vtx) "DomainResource")
                  ""
                  (not extended-resource)
                  ""
-                 (or (= (first confirms) 'zenbox/Resource) (:is-custom vtx))
+                 (or (= (first confirms) 'zenbox/Resource) (= extended-resource "Resource"))
                  (format " extends Resource<'%s'>" (:interface-name vtx))
                  (not= extended-resource "zen.fhir")
                  (if (= extended-resource "DomainResource")
@@ -169,7 +177,7 @@
                                    (:type data))]
                       ((keyword (name tp)) premitives-map))
                     (when (and (= (last (:path vtx)) :every) (= (last (:schema vtx)) 'zen/string))
-                      "string; "))]
+                      "string "))]
        (update vtx :ts conj s)
        vtx))))
 
@@ -233,32 +241,14 @@
         _ (read-versions ztx path)
         schema (:schemas (zen.core/get-symbol ztx (symbol (str version "/base-schemas"))))
         structures (:schemas (zen.core/get-symbol ztx (symbol (str version "/structures"))))
-        custom-resources ('aidbox.repository.v1/repository (:tags @ztx))]
+        path-to-ftr-index (str path "/zen-packages/" version "/index.nippy")]
 
     (zen.core/read-ns ztx 'hl7-fhir-r4-core.value-set.clinical-findings)
     (println "Building FTR index...")
-    (get-ftr-index ztx (str path "/zen-packages/" version "/index.nippy"))
 
-    (println "Custom resource generation...")
-    (mapv (fn [resource]
-            (let [[version n]  (str/split (namespace resource) #"\.")
-                  schemas-result
-                  (zen.schema/apply-schema ztx
-                                           {:ts []
-                                            :require {}
-                                            :interface-name n
-                                            :is-type false
-                                            :version version
-                                            :keys-in-array {}
-                                            :exclusive-keys {}
-                                            :is-custom true}
-                                           (zen.core/get-symbol ztx 'zen/schema)
-                                           (zen.core/get-symbol ztx (symbol resource))
-                                           {:interpreters [::ts]})]
-              (println version n "version n")
-              (spit result-file-path (str/join "" (conj (:ts schemas-result) "\n")) :append true))) custom-resources)
+    (when (.exists (io/file path-to-ftr-index)) (get-ftr-index ztx path-to-ftr-index))
 
-    (println "Resource generation...")
+    (println (str version " resource generation..."))
     (mapv (fn [[k _v]]
             (zen.core/read-ns ztx (symbol (str version "." k)))
             (zen.core/get-symbol ztx (symbol (str version "." k "/schema")))
@@ -307,10 +297,10 @@
      (zen.core/read-ns ztx (symbol version))
      (concat acc (keys (:schemas (zen.core/get-symbol ztx (symbol version)))))) [] versions))
 
-(defn get-resources [schema custom-resources-names]
+(defn get-resources [schema]
   (mapv (fn [n]
           (format "%s: %s;" n n))
-        (distinct (conj (concat schema custom-resources-names) "SubsSubscription"))))
+        (distinct (conj schema "SubsSubscription"))))
 
 (defn search-params-generator [ztx, searches]
   (reduce
@@ -364,19 +354,18 @@
         onekey-type (:onekey-type prepared-interfaces)
         require-at-least-one-type (:require-at-least-one-type prepared-interfaces)
         subs-subscription (:subs-subscription prepared-interfaces)
-        custom-resources ('aidbox.repository.v1/repository (:tags @ztx))
-        custom-resources-names (map (fn [resource] (second (str/split (namespace resource) #"\."))) custom-resources)
-        key-value-resources (get-resources schema custom-resources-names)
+        key-value-resources (get-resources schema)
         resource-map-result (conj (into [reference-type onekey-type require-at-least-one-type resource-type-map-interface] key-value-resources) resourcetype-type subs-subscription)
         search-params-start-interface "export interface SearchParams extends Record<ResourceType, unknown> {\n"
         search-params-end-interface "\n}"
         search-params-content (get-search-params ztx searches)
         search-params-result (conj (into [search-params-start-interface]  search-params-content) search-params-end-interface)]
-
+    (println "schema" schema)
     (spit result-file-path (str/join ""  resource-map-result) :append true)
 
     (println "Type generation...")
-    (generate-types-for-version path (namespace (first (zen.core/get-tag ztx 'zen.fhir/base-schemas))) result-file-path)
+    (mapv (fn [tag]
+            (generate-types-for-version path (namespace tag) result-file-path)) (zen.core/get-tag ztx 'zen.fhir/base-schemas))
 
     (spit result-file-path (str/join "" search-params-result) :append true)))
 
@@ -414,18 +403,14 @@
        :type zen/boolean}
 
       User
-      {:zen/tags #{aidbox.repository.v1/repository zen/schema zen.fhir/base-schema zenbox/persistant},
+      {:zen/tags #{aidbox.repository.v1/repository zen/schema zen.fhir/base-schema},
        :confirms #{zen.fhir/Resource},
        :extra-parameter-sources :all,
        :zen.fhir/version "0.5.11",
-       :zen.fhir/type "Appointment",
-       :require #{:status},
-       :type zen/map
-       :keys {:status {:confirms #{hl7-fhir-r4-core.code/schema},
-                       :fhir/flags #{:SU :?!},
-                       :zen.fhir/value-set {:symbol hl7-fhir-r4-core.value-set.appointmentstatus/value-set,
-                                            :strength :required},
-                       :zen/desc "proposed | pending | booked | arrived | fulfilled | cancelled | noshow | entered-in-error | checked-in | waitlist"}}}})
+       :zen.fhir/type "Task",
+       :keys {:to {:type zen/vector,
+                   :every {:type zen/string}}},
+       :type zen/map}})
 
   (zen.core/load-ns ztx my-structs-ns)
 
@@ -437,8 +422,7 @@
                        :is-type false
                        :interface-name "User"
                        :version "custom"
-                       :keys-in-array {}
-                       :is-custom true}
+                       :keys-in-array {}}
                       (zen.core/get-symbol ztx 'zen/schema)
                       (zen.core/get-symbol ztx 'my-sturcts/User)
                       {:interpreters [::ts]}))

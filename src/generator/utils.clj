@@ -10,9 +10,10 @@
        (keyword? item)
        (conj acc
              (str/replace (name item) (str (:version vtx) ".") ""))
+       (= item 'zen.fhir/Resource) (conj acc (namespace item))
        :else
        (conj acc
-             (str/replace (namespace item) (str (:version vtx) ".") ""))))
+             (second (str/split (namespace item) #"\.")))))
    [] value))
 
 (defn get-desc [{desc :zen/desc}]
