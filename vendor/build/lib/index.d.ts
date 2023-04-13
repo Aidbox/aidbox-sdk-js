@@ -76,7 +76,7 @@ export type LogData = {
     v?: string;
     fx?: string;
 };
-export type APITypes = "aidbox" | "fhir";
+export type APITypes = 'aidbox' | 'fhir';
 export declare class Client {
     client: AxiosInstance;
     apiType: APITypes;
@@ -95,11 +95,11 @@ export declare class Client {
     transformToBundle<RT extends keyof ResourceTypeMap, R extends ResourceTypeMap[RT]>(resources: (R & {
         resourceType: RT;
         id: string;
-    })[], method: "PUT" | "PATCH"): BundleRequestEntry<R>[];
+    })[], method: 'PUT' | 'PATCH'): BundleRequestEntry<R>[];
     transformToBundle<RT extends keyof ResourceTypeMap, R extends ResourceTypeMap[RT]>(resources: (R & {
         resourceType: RT;
         id?: string;
-    })[], method: "POST"): BundleRequestEntry<R>[];
+    })[], method: 'POST'): BundleRequestEntry<R>[];
     bundleRequest(entry: Array<BundleRequestEntry>, type?: 'transaction' | 'batch'): Promise<BundleRequestResponse>;
 }
 export declare class GetResources<T extends keyof ResourceTypeMap, R extends ResourceTypeMap[T]> implements PromiseLike<BaseResponseResources<T>> {

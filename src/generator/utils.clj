@@ -53,3 +53,27 @@
 (defn update-require-and-keys-in-array [vtx data]
   (let [new-vtx (update vtx :keys-in-array conj (generate-map-keys-in-array vtx data))]
     (update new-vtx :require conj (generate-require vtx data))))
+
+(defn exclusive-keys-child? [vtx]
+  (and (> (count (:exclusive-keys vtx)) 0) (> (count (:path vtx)) 1)
+       (or (contains? (:exclusive-keys vtx) (str/join "." (pop (pop (:path vtx)))))
+           (contains? (:exclusive-keys vtx) (str/join "." (pop (:path vtx)))))))
+
+(defn keys-in-array-child? [vtx]
+  (and (> (count (:keys-in-array vtx)) 0) (> (count (:path vtx)) 1)
+       (contains? (:keys-in-array vtx) (str/join "." (:path vtx)))))
+
+(defn find-dunlicates [seq]
+  (for [[id freq] (frequencies seq)
+        :when (> freq 1)]
+    id))
+
+(defn prettify-name [n]
+  (->> (str/split n #"-")
+       (map #(str/capitalize %))
+       (str/join "")))
+
+(defn get-keyvalue-resources [schema]
+  (mapv (fn [n]
+          (format "%s: %s;" n n))
+        (distinct schema)))

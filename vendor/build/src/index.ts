@@ -104,26 +104,26 @@ export type LogData = {
   fx?: string;
 };
 
-export type APITypes = "aidbox" | "fhir"
+export type APITypes = 'aidbox' | 'fhir';
 
 function buildURL(type: APITypes, url: string) {
-  return type === 'fhir' ? ('fhir/' + url) : url
+  return type === 'fhir' ? 'fhir/' + url : url;
 }
 
 export class Client {
   client: AxiosInstance;
-  apiType: APITypes
+  apiType: APITypes;
 
-  constructor(baseURL: string, credentials: AxiosBasicCredentials, apiType: APITypes='aidbox') {
+  constructor(baseURL: string, credentials: AxiosBasicCredentials, apiType: APITypes = 'aidbox') {
     this.client = axios.create({ baseURL, auth: credentials });
-    this.apiType = apiType
+    this.apiType = apiType;
   }
   getResources<T extends keyof ResourceTypeMap>(resourceName: T) {
     return new GetResources(this.client, resourceName);
   }
 
   async getResource<T extends keyof ResourceTypeMap>(resourceName: T, id: string): Promise<BaseResponseResource<T>> {
-    const response = await this.client.get<BaseResponseResource<T>>(buildURL(this.apiType,resourceName + '/' + id));
+    const response = await this.client.get<BaseResponseResource<T>>(buildURL(this.apiType, resourceName + '/' + id));
     return response.data;
   }
 
@@ -164,7 +164,9 @@ export class Client {
     id: string,
     body: PathResourceBody<T>,
   ): Promise<BaseResponseResource<T>> {
-    const response = await this.client.patch<BaseResponseResource<T>>(buildURL(this.apiType, resourceName + '/' + id), { ...body });
+    const response = await this.client.patch<BaseResponseResource<T>>(buildURL(this.apiType, resourceName + '/' + id), {
+      ...body,
+    });
     return response.data;
   }
 
@@ -206,36 +208,30 @@ export class Client {
     await this.client.post('/$loggy', data);
   }
 
-  transformToBundle<
-      RT extends keyof ResourceTypeMap,
-      R extends ResourceTypeMap[RT],
-  >(
-      resources: (R & {resourceType: RT, id: string})[],
-      method: "PUT" | "PATCH"
-  ): BundleRequestEntry<R>[]
-  transformToBundle<
-      RT extends keyof ResourceTypeMap,
-      R extends ResourceTypeMap[RT]
-  >(
-      resources: (R & {resourceType: RT, id?: string})[],
-      method: "POST"
-  ): BundleRequestEntry<R>[]
-  transformToBundle<
-      RT extends keyof ResourceTypeMap,
-      R extends ResourceTypeMap[RT]
-  >(
-      resources: (R & {resourceType: RT, id?: string})[],
-      method: "POST" | "PUT" | "PATCH"
+  transformToBundle<RT extends keyof ResourceTypeMap, R extends ResourceTypeMap[RT]>(
+    resources: (R & { resourceType: RT; id: string })[],
+    method: 'PUT' | 'PATCH',
+  ): BundleRequestEntry<R>[];
+  transformToBundle<RT extends keyof ResourceTypeMap, R extends ResourceTypeMap[RT]>(
+    resources: (R & { resourceType: RT; id?: string })[],
+    method: 'POST',
+  ): BundleRequestEntry<R>[];
+  transformToBundle<RT extends keyof ResourceTypeMap, R extends ResourceTypeMap[RT]>(
+    resources: (R & { resourceType: RT; id?: string })[],
+    method: 'POST' | 'PUT' | 'PATCH',
   ): BundleRequestEntry<R>[] {
     return resources.map((resource) => ({
-      request: { method: method, url: method === 'POST' ? `/${resource.resourceType}` : `/${resource.resourceType}/${resource.id}` },
-      resource
-    }))
+      request: {
+        method: method,
+        url: method === 'POST' ? `/${resource.resourceType}` : `/${resource.resourceType}/${resource.id}`,
+      },
+      resource,
+    }));
   }
 
   async bundleRequest(
-      entry: Array<BundleRequestEntry>,
-      type: 'transaction' | 'batch' = 'transaction',
+    entry: Array<BundleRequestEntry>,
+    type: 'transaction' | 'batch' = 'transaction',
   ): Promise<BundleRequestResponse> {
     const response = await this.client.post(`/`, {
       resourceType: 'Bundle',

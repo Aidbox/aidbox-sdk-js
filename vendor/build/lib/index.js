@@ -59,7 +59,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetResources = exports.Client = void 0;
 var axios_1 = require("axios");
 function buildURL(type, url) {
-    return type === 'fhir' ? ('fhir/' + url) : url;
+    return type === 'fhir' ? 'fhir/' + url : url;
 }
 var Client = /** @class */ (function () {
     function Client(baseURL, credentials, apiType) {
@@ -218,8 +218,11 @@ var Client = /** @class */ (function () {
     };
     Client.prototype.transformToBundle = function (resources, method) {
         return resources.map(function (resource) { return ({
-            request: { method: method, url: method === 'POST' ? "/".concat(resource.resourceType) : "/".concat(resource.resourceType, "/").concat(resource.id) },
-            resource: resource
+            request: {
+                method: method,
+                url: method === 'POST' ? "/".concat(resource.resourceType) : "/".concat(resource.resourceType, "/").concat(resource.id),
+            },
+            resource: resource,
         }); });
     };
     Client.prototype.bundleRequest = function (entry, type) {
