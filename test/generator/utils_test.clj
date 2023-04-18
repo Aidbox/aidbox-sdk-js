@@ -38,3 +38,13 @@
            (gut/generate-enum  [{:value 24}])))
   (t/is (= ""
            (gut/generate-enum  []))))
+
+(t/deftest get-structure-name-test
+  (t/is (= "ProductShelfLife"
+           (gut/get-structure-name  'hl7-fhir-r4-core.ProductShelfLife/schema)))
+  (t/is (= "ext-namingsystem-title"
+           (gut/get-structure-name  'hl7-terminology-r4.ext-namingsystem-title/schema))))
+
+(t/deftest prettify-name-test
+  (t/is (= "ExtNamingsystemTitle"
+           (gut/prettify-name "ext-namingsystem-title"))))
