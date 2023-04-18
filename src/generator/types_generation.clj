@@ -240,7 +240,7 @@
 (defn generate-types-for-version [ztx zen-path version result-folder-path fhir-version duplicates]
   (let [schema (:schemas (zen.core/get-symbol ztx (symbol (str version "/base-schemas"))))
         resource-names  (keys schema)
-        key-value-resources (gut/get-keyvalue-resources resource-names)
+        key-value-resources (gut/get-keyvalue-resources (distinct (into resource-names duplicates)))
         structures (:schemas (zen.core/get-symbol ztx (symbol (str version "/structures"))))
         path-to-ftr-index (str zen-path "/zen-packages/" version "/index.nippy")
         result-file-path (str result-folder-path "/" version ".d.ts")
@@ -280,7 +280,7 @@
                     (str/join "" (conj (:ts schemas-result) closing-modify-type "\n")) :append true))) schema)
 
     (mapv (fn [[_k v]]
-            (let [n (str/trim (str/replace (namespace v) (str version ".") ""))
+            (let [n (gut/get-structure-name v)
                   schema (zen.core/get-symbol ztx (symbol v))
                   structures-result (when (and (or (:type schema) (:confirms schema) (:keys schema)) (not (re-find #"-" n)) (not= n "Reference"))
                                       (zen.schema/apply-schema ztx
@@ -342,6 +342,19 @@
                (str/join "" (mapv (fn [[k1 v1]] (str "'" (name k1) "'" ": " v1 ";")) v)) "\n};\n"))
         (search-params-generator ztx searches)))
 
+(defn filter-structures [ztx structures]
+  (filter (fn [[_k v]]
+            (zen.core/read-ns ztx (symbol (namespace v)))
+            (let [n (gut/get-structure-name v)
+                  schema (zen.core/get-symbol ztx (symbol v))]
+              (and (or (:type schema) (:confirms schema) (:keys schema))
+                   (not (re-find #"-" n)) (not= n "boolean") (not= n "string") (not= n "Reference")))) structures))
+
+(defn get-structure-names [ztx structures]
+  (flatten (mapv (fn [n]
+                   (let [schema (:schemas (zen.core/get-symbol ztx (symbol n)))]
+                     (mapv (fn [[_k v]] (gut/get-structure-name v)) schema))) structures)))
+
 (defn generate-imports-for-index-file [versions fhir-version]
   (mapv (fn [version]
           (let [resource-map-name (get-resource-map-name version)
@@ -363,8 +376,11 @@
         (reduce (fn [acc version]
                   (let [resource-names
                         (keys (:schemas (zen.core/get-symbol ztx (symbol (str version "/base-schemas")))))
+                        structures (:schemas (zen.core/get-symbol ztx (symbol (str version "/structures"))))
+                        filtered-structures (filter-structures ztx structures)
+                        structures-names (map (fn [[_k v]] (gut/get-structure-name v)) filtered-structures)
                         filtred-resource-names (if (= version "custom") resource-names
-                                                   (filter (fn [n] (not (some #(= n %) duplicates))) resource-names))]
+                                                   (filter (fn [n] (not (some #(= n %) duplicates))) (into resource-names structures-names)))]
                     (assoc acc version filtred-resource-names)))
                 {}  versions)]
 
@@ -394,10 +410,12 @@
   (let [ztx  (zen.core/new-context {:package-paths [zen-path]})
         _ (read-versions ztx zen-path)
         schemas (zen.core/get-tag ztx 'zen.fhir/base-schemas)
+        structures (zen.core/get-tag ztx 'zen.fhir/structures)
         versions (map #(namespace %) schemas)
         fhir-version (some #(re-matches #"^hl7-fhir-r.+-core$" %) versions)
         resource-names (flatten (map #(keys (:schemas (zen.core/get-symbol ztx (symbol %)))) schemas))
-        duplicates (gut/find-dunlicates resource-names)
+        structure-names (get-structure-names ztx structures)
+        duplicates (gut/find-dunlicates (into resource-names structure-names))
         types-exports (generate-types-exports ztx duplicates versions fhir-version)
         searches (get-searches ztx (zen.core/get-tag ztx 'zen.fhir/searches))
         search-params-start-interface "export interface SearchParams extends Record<ResourceType, unknown> {\n"

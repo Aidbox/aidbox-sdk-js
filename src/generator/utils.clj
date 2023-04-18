@@ -77,3 +77,7 @@
   (mapv (fn [n]
           (format "%s: %s;" n n))
         (distinct schema)))
+
+(defn get-structure-name [value]
+  (str/trim (second (str/split (namespace value) #"\."))))
+
