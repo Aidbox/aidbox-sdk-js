@@ -63,21 +63,31 @@
   (and (> (count (:keys-in-array vtx)) 0) (> (count (:path vtx)) 1)
        (contains? (:keys-in-array vtx) (str/join "." (:path vtx)))))
 
-(defn find-dunlicates [seq]
-  (for [[id freq] (frequencies seq)
-        :when (> freq 1)]
-    id))
+(defn find-duplicates [seq]
+  (let [duplicates (for [[id freq] (frequencies seq)
+                         :when (> freq 1)]
+                     id)]
+    (reduce (fn [acc item] (assoc acc item item)) {} duplicates)))
 
 (defn prettify-name [n]
-  (->> (str/split n #"-")
-       (map #(str/capitalize %))
-       (str/join "")))
+  (if (str/includes? n "-")
+    (->> (str/split n #"-")
+         (map-indexed (fn [index item]
+                        (if (and (= index 0) (re-matches #"\d+" (first (str/split item #""))))
+                          "" (str/capitalize item))))
+         (str/join "")) n))
 
-(defn get-keyvalue-resources [schema]
+(defn find-profiles-dublicate [seq]
+  (reduce (fn [acc profile-name]
+            (let [k (some (fn [item]
+                            (when (and (re-matches (re-pattern (str "^[n,zN,Z]{2}" profile-name "$")) item) (not= profile-name item)) item)) seq)]
+              (if k (assoc acc k profile-name) acc)))
+          {} seq))
+
+(defn get-keyvalue-resources [resource-names]
   (mapv (fn [n]
           (format "%s: %s;" n n))
-        (distinct schema)))
+        (distinct resource-names)))
 
 (defn get-structure-name [value]
   (str/trim (second (str/split (namespace value) #"\."))))
-

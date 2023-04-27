@@ -7,7 +7,7 @@
   :args-style :positional
   :args {:type zen/vector
          :minItems 0
-         :maxItems 1
+         :maxItems 2
          :nth {0 {:type zen/symbol
                   :zen/desc "API Type"}}}}
 
@@ -17,13 +17,12 @@
   :args-style :positional
   :args {:type zen/vector
          :minItems 0
-         :maxItems 1
+         :maxItems 2
          :nth {0 {:type zen/symbol
                   :zen/desc "API Type"}}}}
-
 
  config
  {:zen/tags #{zen.cli/config}
   :commands {:get-sdk      {:command get-sdk}
-             :get-types {:command get-types}
+             :get-types    {:command get-types}
              :zen          {:config zen.cli/zen-config}}}}

@@ -48,3 +48,7 @@
 (t/deftest prettify-name-test
   (t/is (= "ExtNamingsystemTitle"
            (gut/prettify-name "ext-namingsystem-title"))))
+
+(t/deftest find-profiles-dublicate-test
+  (t/is (= {"NzAddress" "Address"}
+           (gut/find-profiles-dublicate  ["Address" "NzAddress" "Appointment" "Appointment" "Patient"]))))
