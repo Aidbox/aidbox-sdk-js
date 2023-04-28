@@ -28,6 +28,19 @@
    :reference-type "export type Reference<T extends ResourceType> = {\nid: string;\nresourceType: T;\ndisplay?: string;\n};\n"
    :reference-type-fhir "export type Reference<T extends ResourceType> = {\nreference: string;\ndisplay?: string;\n};\n"
    :resourcetype-type "export type ResourceType = keyof ResourceTypeMap;\n"
+   :extension-type "export interface Extension extends Element {\nurl: uri;value?: RequireAtLeastOne<OneKey<{\nunsignedInt?: unsignedInt;
+      Signature?: Signature;markdown?: markdown;date?: date;Dosage?: Dosage;ContactDetail?: ContactDetail;RelatedArtifact?: RelatedArtifact;instant?: instant;UsageContext?: UsageContext;time?: time;DataRequirement?: DataRequirement;base64Binary?: base64Binary;Meta?: Meta;Distance?: Distance;SampledData?: SampledData;TriggerDefinition?: TriggerDefinition;Identifier?: Identifier;string?: string;Address?: Address;Expression?: Expression;dateTime?: dateTime;Range?: Range;integer?: integer;Ratio?: Ratio;oid?: oid;ContactPoint?: ContactPoint;Money?: Money;decimal?: decimal;id?: id;
+      Attachment?: Attachment;Contributor?: Contributor;Period?: Period;canonical?: canonical;url?: url;code?: code;HumanName?: HumanName;positiveInt?: positiveInt;ParameterDefinition?: ParameterDefinition;Coding?: Coding;
+      Timing?: Timing;Duration?: Duration;uri?: uri;CodeableConcept?: CodeableConcept; uuid?: uuid;Count?: Count;Quantity?: Quantity;boolean?: boolean;Annotation?: Annotation;Age?: Age;Reference?: Reference<ResourceType>;}>>;\n}"
+   :extension-type-fhir "export interface Extension extends Element {\nurl: string;_url?: Element;
+     valueBase64Binary?: string;_valueBase64Binary?: Element;valueBoolean?: boolean;_valueBoolean?: Element;valueCanonical?: string;_valueCanonical?: Element;
+     valueCode?: string;_valueCode?: Element;valueDate?: string;_valueDate?: Element;valueDateTime?: string;_valueDateTime?: Element;valueDecimal?: number;valueId?: string;_valueId?: Element;valueInstant?: string;_valueInstant?: Element;valueInteger?: number;valueMarkdown?: string;_valueMarkdown?: Element;
+     valueOid?: string;_valueOid?: Element;valuePositiveInt?: number;valueString?: string;_valueString?: Element;valueTime?: string;_valueTime?: Element;valueUnsignedInt?: number;valueUri?: string;_valueUri?: Element;valueUrl?: string;
+     _valueUrl?: Element;valueUuid?: string;_valueUuid?: Element;valueAddress?: Address;valueAge?: Age;valueAnnotation?: Annotation;valueAttachment?: Attachment;valueCodeableConcept?: CodeableConcept;valueCoding?: Coding;valueContactPoint?: ContactPoint;
+     valueCount?: Count;valueDistance?: Distance;valueDuration?: Duration;valueHumanName?: HumanName;valueIdentifier?: Identifier;valueMoney?: Money;valuePeriod?: Period;valueQuantity?: Quantity;valueRange?: Range;valueRatio?: Ratio;
+     valueSignature?: Signature;valueTiming?: Timing;valueContactDetail?: ContactDetail;valueContributor?: Contributor;valueDataRequirement?: DataRequirement;valueExpression?: Expression;valueParameterDefinition?: ParameterDefinition;
+     valueRelatedArtifact?: RelatedArtifact;valueTriggerDefinition?: TriggerDefinition;valueUsageContext?: UsageContext;valueDosage?: Dosage;valueMeta?: Meta;\n
+    }"
    :modify-type "export type Modify<T, R> = Omit<T, keyof R> & R;"
    :subs-subscription "export interface SubsSubscription extends DomainResource<'SubsSubscription'> {\nstatus: 'active' | 'off';
                        trigger: Partial<Record<ResourceType, { event: Array<'all' | 'create' | 'update' | 'delete'>; filter?: unknown }>>;
@@ -160,6 +173,7 @@
  (fn [_ ztx ks]
    (fn [vtx data opts]
      (if-let [s (or (when (some #(= :slicing %) (:path vtx)) "")
+                    (when (or (:fhir/extensionUri data) (:fhir/extensionUri (:every data))) "")
                     (when (or (:zen.fhir/profileUri data) (:zen.fhir/type data)) (generate-name vtx data))
                     (when (:exclusive-keys data) (get-exclusive-keys-type ztx vtx data))
                     (when (gut/exclusive-keys-child? vtx) "")
@@ -203,6 +217,7 @@
          (some #(= :slicing %) (:path vtx)) new-vtx
          (= (last (:path new-vtx)) :zen.fhir/type) new-vtx
          (gut/exclusive-keys-child? new-vtx) new-vtx
+         (or (:fhir/extensionUri data) (:fhir/extensionUri (:every data))) new-vtx
          (= (last (:schema new-vtx)) :enum)
          (update new-vtx :ts conj (gut/generate-enum data))
          (= (last (:schema new-vtx)) :values)
@@ -222,6 +237,7 @@
      (cond
        (some #(= :slicing %) (:path vtx)) vtx
        (gut/exclusive-keys-child? vtx) vtx
+       (or (:fhir/extensionUri data) (:fhir/extensionUri (:every data))) vtx
        (= (last (:path vtx)) :keys) (update vtx :ts conj " }")
        (= (last (:schema vtx)) :every) (update vtx :ts conj ">")
        (= (last (:schema vtx)) :values) (update vtx :ts conj ";")))))
@@ -243,17 +259,16 @@
 
     (swap! ztx assoc :zen.fhir/ftr-index ftr-index)))
 
-(def non-generated-structures ["Reference" "ExampleSectionLibrary" "CqfRelativedatetime" "ElementdefinitionDe" "ExampleComposition" "translation" "RelativeDate"])
+(def non-generated-structures ["Reference" "Extension" "ExampleSectionLibrary" "CqfRelativedatetime" "ElementdefinitionDe" "ExampleComposition" "translation" "RelativeDate"])
 
-(defn generate-types-for-version [ztx zen-path version result-folder-path fhir-version duplicates]
+(defn generate-types-for-version [ztx zen-path version result-folder-path fhir-version duplicates api-type]
+  (println "api-type" api-type (type api-type))
   (let [schema (:schemas (zen.core/get-symbol ztx (symbol (str version "/base-schemas"))))
         resource-names  (keys schema)
         key-value-resources (gut/get-keyvalue-resources (distinct (into resource-names
                                                                         (if (= version fhir-version) (vals duplicates) (keys duplicates)))))
-        ;; key-value-resources (gut/get-keyvalue-resources (into (reduce (fn [acc item] (assoc acc item item)) {} resource-names) duplicates))
         structures (:schemas (zen.core/get-symbol ztx (symbol (str version "/structures"))))
         profiles (:schemas (zen.core/get-symbol ztx (symbol (str version "/profiles"))))
-        extensions (:schemas (zen.core/get-symbol ztx (symbol (str version "/extensions"))))
         path-to-ftr-index (str zen-path "/zen-packages/" version "/index.nippy")
         result-file-path (str result-folder-path "/" version ".d.ts")
         import-for-custom (format "import { %s, Resource, CodeableConcept, date, dateTime, Period, decimal } from \"./%s.ts\";"
@@ -263,7 +278,9 @@
         resourcetype-type (get-resourcetype-type resource-map-name)
         resource-type-map-interface (str "export interface " resource-map-name " {\n")
         resource-type-map (str/join "\n" (conj (into [resource-type-map-interface] key-value-resources) "}"))
-        defaults [(when (not= version fhir-version) import-for-custom) import resourcetype-type resource-type-map]]
+        extension-interface (if (= api-type "fhir") (:extension-type-fhir prepared-interfaces) (:extension-type prepared-interfaces))
+        defaults [(when (not= version fhir-version) import-for-custom)
+                  import resourcetype-type resource-type-map (when (= version fhir-version) extension-interface)]]
     (println "Building FTR index...")
 
     (when (.exists (io/file path-to-ftr-index)) (get-ftr-index ztx path-to-ftr-index))
@@ -335,25 +352,6 @@
                                                             {:interpreters [::ts]}))]
               (spit result-file-path
                     (str/join "" (conj (:ts schemas-result) closing-modify-type "\n")) :append true))) profiles)
-
-    (mapv (fn [[_k v]]
-            (let [n (gut/get-structure-name v)
-                  petrified-name (gut/prettify-name n)
-                  structures-result (when (not (some #(= petrified-name %) non-generated-structures))
-                                      (zen.schema/apply-schema ztx
-                                                               {:ts []
-                                                                :require {}
-                                                                :exclusive-keys {}
-                                                                :duplicates duplicates
-                                                                :interface-name petrified-name
-                                                                :fhir-version fhir-version
-                                                                :version version
-                                                                :keys-in-array {}}
-                                                               (zen.core/get-symbol ztx 'zen/schema)
-                                                               (zen.core/get-symbol ztx (symbol v))
-                                                               {:interpreters [::ts]}))]
-
-              (spit result-file-path (str/join "" (conj (:ts structures-result) "\n")) :append true))) extensions)
 
     :ok))
 
@@ -494,7 +492,7 @@
     (generate-index-file api-type result-folder-path versions-with-profile fhir-version types-exports)
     (println "Type generation...")
     (mapv (fn [version]
-            (generate-types-for-version ztx zen-path version result-folder-path fhir-version duplicates))
+            (generate-types-for-version ztx zen-path version result-folder-path fhir-version duplicates api-type))
           versions-with-profile)
 
     (println "Search params generation...")
@@ -527,7 +525,7 @@
   (println "Done"))
 
 (comment
-  (get-types "/Users/ross/Desktop/HS/aidbox-sdk-js/zen-project" "aidbox"))
+  (get-types "/Users/ross/Desktop/HS/aidbox-sdk-js/zen-project" {:api-type "aidbox" :profiles "true"}))
 
 (comment
   (def ztx (zen.core/new-context {}))
