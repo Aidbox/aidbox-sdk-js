@@ -7,11 +7,20 @@
             [clojure.string :as str]
             [generator.types-generation :as types-gen]))
 
+(defn get-value [arg v]
+  (cond
+    (and (= arg "profiles") (= v "true")) true
+    (and (= arg "profiles") (= v "false")) false
+    (= arg "profiles") false
+    (and (= arg "api-type") (= v "aidbox")) "aidbox"
+    (= arg "api-type") "fhir"
+    :else nil))
+
 (defn parse-args [args]
   (let [result (reduce (fn [acc arg]
                          (let [[k v] (str/split (str arg) #"=")]
-                           (assoc acc (keyword k) v))) {} args)]
-    (if (contains? result :api-type) result (assoc result :api-type "aidbox"))))
+                           (assoc acc (keyword k) (get-value k v)))) {} args)]
+    (if (contains? result :api-type) result (assoc result :api-type "fhir"))))
 
 (defn get-sdk [args]
   (types-gen/get-sdk (zen.cli/get-pwd) (parse-args args)))

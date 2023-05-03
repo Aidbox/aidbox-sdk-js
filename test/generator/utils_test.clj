@@ -52,3 +52,21 @@
 (t/deftest find-profiles-dublicate-test
   (t/is (= {"NzAddress" "Address"}
            (gut/find-profiles-dublicate  ["Address" "NzAddress" "Appointment" "Appointment" "Patient"]))))
+
+(t/deftest get-resource-map-name-test
+  (t/is (= "SomethingResourceTypeMap"
+           (gut/get-resource-map-name  "something")))
+  (t/is (= "Hl7FhirR4CoreResourceTypeMap"
+           (gut/get-resource-map-name  "hl7-fhir-r4-core"))))
+
+(t/deftest get-index-resource-type-map-test
+  (t/is (= "export interface ResourceTypeMap \n             extends Modify<Hl7FhirR4CoreResourceTypeMap, {}> { SubsSubscription: SubsSubscription }"
+           (gut/get-index-resource-type-map  ["hl7-fhir-r4-core"] "hl7-fhir-r4-core" nil)))
+
+  (t/is (= "export interface ResourceTypeMap \n             extends Modify<Hl7FhirR4CoreResourceTypeMap, FhirOrgNzIgBaseResourceTypeMap> { SubsSubscription: SubsSubscription }"
+           (gut/get-index-resource-type-map
+            ["hl7-fhir-r4-core" "fhir-org-nz-ig-base"] "hl7-fhir-r4-core" "fhir-org-nz-ig-base")))
+
+  (t/is (= "export interface ResourceTypeMap \n             extends SomethingResourceTypeMap, Modify<Hl7FhirR4CoreResourceTypeMap, FhirOrgNzIgBaseResourceTypeMap> { SubsSubscription: SubsSubscription }"
+           (gut/get-index-resource-type-map
+            ["hl7-fhir-r4-core" "fhir-org-nz-ig-base" "something"] "hl7-fhir-r4-core" "fhir-org-nz-ig-base"))))

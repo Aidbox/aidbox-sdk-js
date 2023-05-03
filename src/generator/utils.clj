@@ -69,6 +69,11 @@
                      id)]
     (reduce (fn [acc item] (assoc acc item item)) {} duplicates)))
 
+(defn capitalize-first [s]
+  (if (empty? s)
+    ""
+    (str (str/upper-case (subs s 0 1)) (subs s 1))))
+
 (defn prettify-name [n]
   (if (str/includes? n "-")
     (->> (str/split n #"-")
@@ -76,6 +81,18 @@
                         (if (and (= index 0) (re-matches #"\d+" (first (str/split item #""))))
                           "" (str/capitalize item))))
          (str/join "")) n))
+
+(defn get-resource-map-name [version] (str (prettify-name version) "ResourceTypeMap"))
+
+(defn get-index-resource-type-map [versions fhir-version profiles-version]
+  (let [filtred-versions (filter #(and (not= fhir-version %) (not= profiles-version %)) versions)
+        fhir-version-resource-map (get-resource-map-name fhir-version)
+        fhir-version-profiles-version (if profiles-version (get-resource-map-name profiles-version) "{}")
+        resource-map-names (if (= (count filtred-versions) 0) ""
+                               (str (str/join ", " (map #(get-resource-map-name %) filtred-versions)) ", "))]
+    (format "export interface ResourceTypeMap 
+             extends %sModify<%s, %s> { SubsSubscription: SubsSubscription }"
+            resource-map-names fhir-version-resource-map fhir-version-profiles-version)))
 
 (defn find-profiles-dublicate [seq]
   (reduce (fn [acc profile-name]

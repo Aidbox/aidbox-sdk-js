@@ -25,8 +25,10 @@
                           ({ [P in K]: T[K] } & { [P in Exclude<keyof T, K>]?: never }) extends infer O ? { [P in keyof O]: O[P] } : never\n
                        }[keyof T];\n"
    :require-at-least-one-type "export type RequireAtLeastOne<T> = { [K in keyof T]-?: Required<Pick<T, K>> & Partial<Pick<T, Exclude<keyof T, K>>>; }[keyof T];\n"
-   :reference-type "export type Reference<T extends ResourceType> = {\nid: string;\nresourceType: T;\ndisplay?: string;\n};\n"
-   :reference-type-fhir "export type Reference<T extends ResourceType> = {\nreference: string;\ndisplay?: string;\n};\n"
+   :reference-type "export interface Reference<T extends ResourceType> {id: string; _id?: string; display?: string | undefined;_display?: Element | undefined;identifier?: Identifier | undefined;
+    resourceType: T;type?: string | undefined;_type?: Element | undefined;}"
+   :reference-type-fhir "export interface Reference<T extends ResourceType> {id?: string; _id?: string; display?: string | undefined;_display?: Element | undefined;
+    identifier?: Identifier | undefined;reference?: string | undefined;_reference?: Element | undefined;type?: string | undefined;_type?: Element | undefined;}"
    :resourcetype-type "export type ResourceType = keyof ResourceTypeMap;\n"
    :extension-type "export interface Extension extends Element {\nurl: uri;value?: RequireAtLeastOne<OneKey<{\nunsignedInt?: unsignedInt;
       Signature?: Signature;markdown?: markdown;date?: date;Dosage?: Dosage;ContactDetail?: ContactDetail;RelatedArtifact?: RelatedArtifact;instant?: instant;UsageContext?: UsageContext;time?: time;DataRequirement?: DataRequirement;base64Binary?: base64Binary;Meta?: Meta;Distance?: Distance;SampledData?: SampledData;TriggerDefinition?: TriggerDefinition;Identifier?: Identifier;string?: string;Address?: Address;Expression?: Expression;dateTime?: dateTime;Range?: Range;integer?: integer;Ratio?: Ratio;oid?: oid;ContactPoint?: ContactPoint;Money?: Money;decimal?: decimal;id?: id;
@@ -48,8 +50,6 @@
                        headers?: Record<string, string>;\ntimeout?: number;\n};\n}"})
 
 (defn get-resourcetype-type [map-name] (str "type ResourceType = keyof " map-name ";\n"))
-
-(defn get-resource-map-name [version] (str (gut/prettify-name version) "ResourceTypeMap"))
 
 (def non-parsable-premitives
   {:string "string"
@@ -97,7 +97,7 @@
                  (and (contains? (:duplicates vtx) interface-name)
                       (not= (:version vtx) (:fhir-version vtx))
                       (not= (:version vtx) "custom"))
-                 (format " extends Modify<%s['%s']," (get-resource-map-name (:fhir-version vtx)) (get-in (:duplicates vtx) [interface-name]))
+                 (format " extends Modify<%s['%s']," (gut/get-resource-map-name (:fhir-version vtx)) (get-in (:duplicates vtx) [interface-name]))
                  (= interface-name "DomainResource")
                  ""
                  (not extended-resource)
@@ -259,30 +259,38 @@
 
     (swap! ztx assoc :zen.fhir/ftr-index ftr-index)))
 
-(def non-generated-structures ["Reference" "Extension" "ExampleSectionLibrary" "CqfRelativedatetime" "ElementdefinitionDe" "ExampleComposition" "translation" "RelativeDate"])
+(def non-generated-structures ["Reference" "Extension" "Definition" "FiveWs" "ExampleSectionLibrary" "CqfRelativedatetime" "ElementdefinitionDe" "ExampleComposition" "translation" "RelativeDate"])
 
-(defn generate-types-for-version [ztx zen-path version result-folder-path fhir-version duplicates api-type]
-  (println "api-type" api-type (type api-type))
+(defn get-resource-names [schema structures profiles version fhir-version profile-version duplicates]
+  (let [resources-to-filter (if (and (not= version fhir-version) (not= version profile-version))
+                              (into non-generated-structures (keys duplicates)) non-generated-structures)]
+    (filter (fn [item]
+              (not (some #(= item %) resources-to-filter)))
+            (into (if (= version profile-version) (keys profiles) (keys schema)) (map (fn [[_k v]]
+                                                                                        (let [n (gut/get-structure-name v)]
+                                                                                          (gut/prettify-name n)))
+                                                                                      structures)))))
+
+(defn generate-types-for-version [ztx zen-path version result-folder-path fhir-version profile-version duplicates api-type]
   (let [schema (:schemas (zen.core/get-symbol ztx (symbol (str version "/base-schemas"))))
-        resource-names  (keys schema)
-        key-value-resources (gut/get-keyvalue-resources (distinct (into resource-names
-                                                                        (if (= version fhir-version) (vals duplicates) (keys duplicates)))))
         structures (:schemas (zen.core/get-symbol ztx (symbol (str version "/structures"))))
         profiles (:schemas (zen.core/get-symbol ztx (symbol (str version "/profiles"))))
+        resource-names  (get-resource-names schema structures profiles version fhir-version profile-version duplicates)
+        key-value-resources (gut/get-keyvalue-resources resource-names)
         path-to-ftr-index (str zen-path "/zen-packages/" version "/index.nippy")
         result-file-path (str result-folder-path "/" version ".d.ts")
         import-for-custom (format "import { %s, Resource, CodeableConcept, date, dateTime, Period, decimal } from \"./%s.ts\";"
-                                  (get-resource-map-name fhir-version) fhir-version)
+                                  (gut/get-resource-map-name fhir-version) fhir-version)
         import "import { Reference, RequireAtLeastOne, OneKey, Modify } from \"./aidbox-types.ts\";\n"
-        resource-map-name (get-resource-map-name version)
+        resource-map-name (gut/get-resource-map-name version)
         resourcetype-type (get-resourcetype-type resource-map-name)
         resource-type-map-interface (str "export interface " resource-map-name " {\n")
         resource-type-map (str/join "\n" (conj (into [resource-type-map-interface] key-value-resources) "}"))
         extension-interface (if (= api-type "fhir") (:extension-type-fhir prepared-interfaces) (:extension-type prepared-interfaces))
         defaults [(when (not= version fhir-version) import-for-custom)
                   import resourcetype-type resource-type-map (when (= version fhir-version) extension-interface)]]
-    (println "Building FTR index...")
 
+    (println "Building FTR index...")
     (when (.exists (io/file path-to-ftr-index)) (get-ftr-index ztx path-to-ftr-index))
 
     (spit result-file-path (str/join "" defaults))
@@ -415,33 +423,24 @@
 
 (defn generate-imports-for-index-file [versions fhir-version]
   (mapv (fn [version]
-          (let [resource-map-name (get-resource-map-name version)
-                domain-resource-import (if (= version fhir-version) ", DomainResource" "")]
+          (let [resource-map-name (gut/get-resource-map-name version)
+                default-imports (if (= version fhir-version) ", DomainResource, Identifier, Element" "")]
             (format "import { %s%s } from \"./%s.ts\";\n"
-                    resource-map-name domain-resource-import version)))
+                    resource-map-name default-imports version)))
         versions))
 
-(defn get-index-resource-type-map [versions, fhir-version]
-  (let [filtred-versions (filter #(not= fhir-version %) versions)
-        fhir-version-resource-map (get-resource-map-name fhir-version)
-        resource-map-names (if (= (count filtred-versions) 0) "{}"
-                               (str/join ", " (map #(get-resource-map-name %) filtred-versions)))]
-    (format "export interface ResourceTypeMap 
-             extends Modify<%s, %s> { SubsSubscription: SubsSubscription }" fhir-version-resource-map resource-map-names)))
-
-(defn generate-types-exports [ztx duplicates versions fhir-version]
+(defn generate-types-exports [ztx duplicates versions fhir-version profile-version]
   (let [resources-per-version
         (reduce (fn [acc version]
                   (let [resource-names
                         (keys (:schemas (zen.core/get-symbol ztx (symbol (str version "/base-schemas")))))
                         structures (:schemas (zen.core/get-symbol ztx (symbol (str version "/structures"))))
-                        profile-names (when (not= version fhir-version)
-                                        (keys (:schemas (zen.core/get-symbol ztx (symbol (str version "/profiles"))))))
+                        profile-names (if profile-version (keys (:schemas (zen.core/get-symbol ztx (symbol (str profile-version "/profiles"))))) [])
                         filtered-structures (filter-structures ztx structures)
                         structures-names (map (fn [[_k v]] (gut/get-structure-name v)) filtered-structures)
                         all-resource-names (into (into resource-names structures-names) profile-names)
-                        filtred-resource-names (if (not= version fhir-version) all-resource-names
-                                                   (filter (fn [n] (not (some #(= n %) (keys duplicates)))) all-resource-names))]
+                        filtred-resource-names (if (= version profile-version) all-resource-names
+                                                   (filter (fn [n] (not (some #(= n %) (if (= version fhir-version) profile-names (keys duplicates))))) all-resource-names))]
 
                     (assoc acc version filtred-resource-names)))
                 {}  versions)]
@@ -451,7 +450,7 @@
               (format "export { %s %s } from \"./%s.ts\";" search-params (str/join ", " names) version)))
           resources-per-version)))
 
-(defn generate-index-file [api-type result-folder-path versions fhir-version types-exports]
+(defn generate-index-file [api-type result-folder-path versions fhir-version profiles-version types-exports]
   (let [resourcetype-type (:resourcetype-type prepared-interfaces)
         reference-type (if (= api-type "fhir")
                          (:reference-type-fhir prepared-interfaces)
@@ -461,7 +460,7 @@
         subs-subscription (:subs-subscription prepared-interfaces)
         modify-type (:modify-type prepared-interfaces)
         imports (into (generate-imports-for-index-file versions fhir-version) types-exports)
-        resource-type-map (get-index-resource-type-map versions fhir-version)
+        resource-type-map (gut/get-index-resource-type-map versions fhir-version profiles-version)
         defaults (into imports
                        [onekey-type require-at-least-one-type resource-type-map resourcetype-type reference-type modify-type subs-subscription])
         result-file-path (str result-folder-path "/aidbox-types.d.ts")]
@@ -482,17 +481,17 @@
         structure-names (get-structure-names ztx structures)
         names (into (into resource-names structure-names) profile-names)
         duplicates (into (gut/find-duplicates names) (gut/find-profiles-dublicate names))
-        types-exports (generate-types-exports ztx duplicates versions-with-profile fhir-version)
+        types-exports (generate-types-exports ztx duplicates versions-with-profile fhir-version profile-version)
         searches (get-searches ztx (zen.core/get-tag ztx 'zen.fhir/searches))
         search-params-start-interface "export interface SearchParams extends Record<ResourceType, unknown> {\n"
         search-params-end-interface "\n}"
         search-params-content (get-search-params ztx searches)
         search-params-result (conj (into [search-params-start-interface]  search-params-content) search-params-end-interface)]
 
-    (generate-index-file api-type result-folder-path versions-with-profile fhir-version types-exports)
+    (generate-index-file api-type result-folder-path versions-with-profile fhir-version profile-version types-exports)
     (println "Type generation...")
     (mapv (fn [version]
-            (generate-types-for-version ztx zen-path version result-folder-path fhir-version duplicates api-type))
+            (generate-types-for-version ztx zen-path version result-folder-path fhir-version profile-version duplicates api-type))
           versions-with-profile)
 
     (println "Search params generation...")
@@ -525,7 +524,7 @@
   (println "Done"))
 
 (comment
-  (get-types "/Users/ross/Desktop/HS/aidbox-sdk-js/zen-project" {:api-type "aidbox" :profiles "true"}))
+  (get-types "/Users/ross/Desktop/HS/aidbox-sdk-js/zen-project" {:api-type "fhir" :profiles 'true}))
 
 (comment
   (def ztx (zen.core/new-context {}))
@@ -546,15 +545,11 @@
        :confirms #{hl7-fhir-r4-core.Patient/schema
                    zen.fhir/Resource},
        :type zen/map,
-       :keys {:identifier {:type zen/vector,
-                           :slicing {:slices {"NHI" {:schema {:type zen/vector,
-                                                              :every {:type zen/map,
-                                                                      :keys {:use {:zen.fhir/value-set {:symbol fhir-org-nz-ig-base.value-set.nhi-use/value-set,
-                                                                                                        :strength :required}},
-                                                                             :system {:const {:value "https://standards.digital.health.nz/ns/nhi-id"}}},
-                                                                      :require #{:system}}},
-                                                     :filter {:engine :match,
-                                                              :match {:system "https://standards.digital.health.nz/ns/nhi-id"}}}}}}}}})
+       :keys {:pho {:confirms #{fhir-org-nz-ig-base.pho/schema},
+                    :fhir/extensionUri "http://hl7.org.nz/fhir/StructureDefinition/pho"},
+              :ethnicity {:type zen/vector,
+                          :every {:confirms #{fhir-org-nz-ig-base.nz-ethnicity/schema},
+                                  :fhir/extensionUri "http://hl7.org.nz/fhir/StructureDefinition/nz-ethnicity"}}}}})
 
   (zen.core/load-ns ztx my-structs-ns)
 
