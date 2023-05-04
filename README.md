@@ -86,6 +86,8 @@ You can get only type system based on zen-project without SDK.
 zen-cli get-types [options]
 ```
 
+All types are available for import from `aidbox-types.d.ts` file.
+
 **Important**: Set of available features and typescript types are unique and depend on `zen-project` configuration,
 selected FHIR version, custom schemas and operations,
 it's important to include package as part of your Git repository.
@@ -173,14 +175,13 @@ By default, when you make a request to a server, it will return all resource.
 
 The summary function accepts several types of summaries, each of which provides a different level of detail about the data. For example:
 
-  * true - limited subset of elements from the resource
-  * false - all parts of the resource
-  * text - only the text, id, meta, and top-level mandatory elements
-  * data - resources without the text element
-  * count - count of the matching resources, without returning the actual matches
+- true - limited subset of elements from the resource
+- false - all parts of the resource
+- text - only the text, id, meta, and top-level mandatory elements
+- data - resources without the text element
+- count - count of the matching resources, without returning the actual matches
 
-
-    summary("data")
+  summary("data")
 
 #### Elements
 
@@ -202,13 +203,11 @@ To use the getResource function, you must pass in the resource type and ID as ar
 
     getResource("Patient", "id")
 
-
 ### createResource
 
 The createResource function is used to create a new resource.
 
 The first argument is a resource name, the second one is body of resource
-
 
 ![create resource](./assets/create-resource.gif)
 
@@ -257,13 +256,20 @@ await client.sendLog({
 SDK has helpers to prepare data for bundle request.
 
 ```javascript
-client.transformToBundle([{
-    resourceType: "Patient",
-    name: [{ 
-        given: [""],
-        fimily: ""
-    }]
-}], "POST")
+client.transformToBundle(
+  [
+    {
+      resourceType: "Patient",
+      name: [
+        {
+          given: [""],
+          fimily: "",
+        },
+      ],
+    },
+  ],
+  "POST"
+);
 ```
 
 Bundle requests could be a [transaction or batch](https://docs.aidbox.app/api-1/fhir-api/bundle#post-endpoint) type. SDK uses the "transaction" type by default but you can change it by providing it in the second parameter.
