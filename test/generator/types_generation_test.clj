@@ -368,8 +368,8 @@
                        :exclusive-keys {}
                        :is-type false
                        :interface-name "PlanDefinition"
-                       :version "custom"
-                       :duplicates ["PlanDefinition"]
+                       :version "something"
+                       :duplicates {"PlanDefinition" "PlanDefinition"}
                        :fhir-version "hl7-fhir-r4-core"
                        :keys-in-array {}}
                       (zen.core/get-symbol ztx 'zen/schema)

@@ -54,7 +54,7 @@
            (gut/find-profiles-dublicate  ["Address" "NzAddress" "Appointment" "Appointment" "Patient"]))))
 
 (t/deftest get-resource-map-name-test
-  (t/is (= "SomethingResourceTypeMap"
+  (t/is (= "somethingResourceTypeMap"
            (gut/get-resource-map-name  "something")))
   (t/is (= "Hl7FhirR4CoreResourceTypeMap"
            (gut/get-resource-map-name  "hl7-fhir-r4-core"))))
@@ -67,6 +67,6 @@
            (gut/get-index-resource-type-map
             ["hl7-fhir-r4-core" "fhir-org-nz-ig-base"] "hl7-fhir-r4-core" "fhir-org-nz-ig-base")))
 
-  (t/is (= "export interface ResourceTypeMap \n             extends SomethingResourceTypeMap, Modify<Hl7FhirR4CoreResourceTypeMap, FhirOrgNzIgBaseResourceTypeMap> { SubsSubscription: SubsSubscription }"
+  (t/is (= "export interface ResourceTypeMap \n             extends somethingResourceTypeMap, Modify<Hl7FhirR4CoreResourceTypeMap, FhirOrgNzIgBaseResourceTypeMap> { SubsSubscription: SubsSubscription }"
            (gut/get-index-resource-type-map
             ["hl7-fhir-r4-core" "fhir-org-nz-ig-base" "something"] "hl7-fhir-r4-core" "fhir-org-nz-ig-base"))))

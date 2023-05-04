@@ -3,11 +3,11 @@
             [generator.cli :as gc]))
 
 (t/deftest get-args-test
-  (t/is (= {:api-type "fhir", :profiles "true"}
+  (t/is (= {:api-type "fhir", :profiles true}
            (gc/parse-args ["api-type=fhir" "profiles=true"])))
 
-  (t/is (= {:profiles "true", :api-type "aidbox"}
+  (t/is (= {:profiles true, :api-type "fhir"}
            (gc/parse-args ["profiles=true"])))
 
-  (t/is (= {:api-type "aidbox"}
+  (t/is (= {:api-type "fhir"}
            (gc/parse-args []))))
