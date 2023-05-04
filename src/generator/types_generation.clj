@@ -95,8 +95,7 @@
         interface-name (:interface-name vtx)
         extand (cond
                  (and (contains? (:duplicates vtx) interface-name)
-                      (not= (:version vtx) (:fhir-version vtx))
-                      (not= (:version vtx) "custom"))
+                      (not= (:version vtx) (:fhir-version vtx)))
                  (format " extends Modify<%s['%s']," (gut/get-resource-map-name (:fhir-version vtx)) (get-in (:duplicates vtx) [interface-name]))
                  (= interface-name "DomainResource")
                  ""
@@ -168,36 +167,50 @@
 
     (format "RequireAtLeastOne<%sOneKey<{ %s }>>" non-exclusive-keys-type exclusive-keys-type)))
 
+(defn get-extention [path ts extension-path]
+  (let [extension-value "extension?: Array<Extension>;"
+        path-without-last-el (str/join "." (drop-last path))
+        path-without-twolast-el (str/join "." (drop-last 2 path))]
+    (if (some #(or (= path-without-last-el  %) (= path-without-twolast-el  %)) extension-path) "" extension-value)))
+
+(defn update-extention-path [vtx]
+  (let [path-without-last-el (str/join "." (drop-last (:path vtx)))]
+    (if (some #(= path-without-last-el %) (:extension-path vtx))
+      vtx
+      (update vtx :extension-path conj path-without-last-el))))
+
 (zen.schema/register-compile-key-interpreter!
  [:keys ::ts]
  (fn [_ ztx ks]
    (fn [vtx data opts]
-     (if-let [s (or (when (some #(= :slicing %) (:path vtx)) "")
-                    (when (or (:fhir/extensionUri data) (:fhir/extensionUri (:every data))) "")
-                    (when (or (:zen.fhir/profileUri data) (:zen.fhir/type data)) (generate-name vtx data))
-                    (when (:exclusive-keys data) (get-exclusive-keys-type ztx vtx data))
-                    (when (gut/exclusive-keys-child? vtx) "")
-                    (when (gut/keys-in-array-child? vtx) "")
-                    (when (:enum data) "")
-                    (when (and (= (:validation-type data) :open) (not (:keys data))) "any")
-                    (when (:zen.fhir/value-set data) (generate-valueset-type ztx vtx data))
-                    (when (:confirms data) (generate-confirms vtx data))
-                    (when-let [tp (and
-                                   (= (:type vtx) 'zen/symbol)
-                                   (not (= (last (:path vtx)) :every))
-                                   (not (:enum data))
-                                   (or (= (:type data) 'zen/string)
-                                       (= (:type data) 'zen/number)
-                                       (= (:type data) 'zen/boolean)
-                                       (= (:type data) 'zen/datetime)
-                                       (= (:type data) 'zen/integer)
-                                       (= (:type data) 'zen/any))
-                                   (:type data))]
-                      ((keyword (name tp)) premitives-map))
-                    (when (and (= (last (:path vtx)) :every) (= (last (:schema vtx)) 'zen/string))
-                      "string "))]
-       (update vtx :ts conj s)
-       vtx))))
+     (let [new-vtx (if (or (:fhir/extensionUri data) (:fhir/extensionUri (:every data))) (update-extention-path vtx) vtx)]
+       (if-let [s (or (when (some #(= :slicing %) (:path vtx)) "")
+                      (when (or (:fhir/extensionUri data) (:fhir/extensionUri (:every data)))
+                        (get-extention (:path vtx) (:ts vtx) (:extension-path vtx)))
+                      (when (or (:zen.fhir/profileUri data) (:zen.fhir/type data)) (generate-name vtx data))
+                      (when (:exclusive-keys data) (get-exclusive-keys-type ztx vtx data))
+                      (when (gut/exclusive-keys-child? vtx) "")
+                      (when (gut/keys-in-array-child? vtx) "")
+                      (when (:enum data) "")
+                      (when (and (= (:validation-type data) :open) (not (:keys data))) "any")
+                      (when (:zen.fhir/value-set data) (generate-valueset-type ztx vtx data))
+                      (when (:confirms data) (generate-confirms vtx data))
+                      (when-let [tp (and
+                                     (= (:type vtx) 'zen/symbol)
+                                     (not (= (last (:path vtx)) :every))
+                                     (not (:enum data))
+                                     (or (= (:type data) 'zen/string)
+                                         (= (:type data) 'zen/number)
+                                         (= (:type data) 'zen/boolean)
+                                         (= (:type data) 'zen/datetime)
+                                         (= (:type data) 'zen/integer)
+                                         (= (:type data) 'zen/any))
+                                     (:type data))]
+                        ((keyword (name tp)) premitives-map))
+                      (when (and (= (last (:path vtx)) :every) (= (last (:schema vtx)) 'zen/string))
+                        "string "))]
+         (update new-vtx :ts conj s)
+         new-vtx)))))
 
 (zen.schema/register-schema-pre-process-hook!
  ::ts
@@ -279,7 +292,7 @@
         key-value-resources (gut/get-keyvalue-resources resource-names)
         path-to-ftr-index (str zen-path "/zen-packages/" version "/index.nippy")
         result-file-path (str result-folder-path "/" version ".d.ts")
-        import-for-custom (format "import { %s, Resource, CodeableConcept, date, dateTime, Period, decimal } from \"./%s.ts\";"
+        import-for-custom (format "import { %s, Resource, CodeableConcept, Extension, date, dateTime, Period, decimal } from \"./%s.ts\";"
                                   (gut/get-resource-map-name fhir-version) fhir-version)
         import "import { Reference, RequireAtLeastOne, OneKey, Modify } from \"./aidbox-types.ts\";\n"
         resource-map-name (gut/get-resource-map-name version)
@@ -538,18 +551,26 @@
 
       User
       {:zen/tags #{zen.fhir/profile-schema zen/schema},
-       :zen/desc "The base New Zealand Patient profile",
-       :zen.fhir/type "Patient",
-       :zen.fhir/profileUri "http://hl7.org.nz/fhir/StructureDefinition/NzPatient",
-       :zen.fhir/version "0.6.22-2",
-       :confirms #{hl7-fhir-r4-core.Patient/schema
+       :zen/desc "Practitioner resource for use in NZ",
+       :zen.fhir/type "Practitioner",
+       :zen.fhir/profileUri "http://hl7.org.nz/fhir/StructureDefinition/NzPractitioner",
+       :zen.fhir/version "0.6.23-1",
+       :confirms #{hl7-fhir-r4-core.Practitioner/schema
                    zen.fhir/Resource},
        :type zen/map,
-       :keys {:pho {:confirms #{fhir-org-nz-ig-base.pho/schema},
-                    :fhir/extensionUri "http://hl7.org.nz/fhir/StructureDefinition/pho"},
-              :ethnicity {:type zen/vector,
+       :keys {:ethnicity {:type zen/vector,
                           :every {:confirms #{fhir-org-nz-ig-base.nz-ethnicity/schema},
-                                  :fhir/extensionUri "http://hl7.org.nz/fhir/StructureDefinition/nz-ethnicity"}}}}})
+                                  :fhir/extensionUri "http://hl7.org.nz/fhir/StructureDefinition/nz-ethnicity"}},
+              :iwi {:type zen/vector,
+                    :every {:confirms #{fhir-org-nz-ig-base.nz-iwi/schema},
+                            :fhir/extensionUri "http://hl7.org.nz/fhir/StructureDefinition/nz-iwi"}},
+              :qualification {:type zen/vector,
+                              :every {:type zen/map,
+                                      :keys {:registration-status-code {:confirms #{fhir-org-nz-ig-base.registration-status-code/schema},
+                                                                        :fhir/extensionUri "http://hl7.org.nz/fhir/StructureDefinition/registration-status-code"},
+                                             :scope-of-practice {:type zen/vector,
+                                                                 :every {:confirms #{fhir-org-nz-ig-base.scope-of-practice/schema},
+                                                                         :fhir/extensionUri "http://hl7.org.nz/fhir/StructureDefinition/scope-of-practice"}}}}}}}})
 
   (zen.core/load-ns ztx my-structs-ns)
 
@@ -558,11 +579,12 @@
                       {:ts []
                        :require {}
                        :exclusive-keys {}
-                       :interface-name "Patient"
-                       :version "fhir-org-nz-ig-base"
-                       :duplicates {"Patient" "Patient"}
+                       :interface-name "Location"
+                       :version "location"
+                       :duplicates {"Location" "Location"}
                        :fhir-version "hl7-fhir-r4-core"
-                       :keys-in-array {}}
+                       :keys-in-array {}
+                       :extension-path []}
                       (zen.core/get-symbol ztx 'zen/schema)
                       (zen.core/get-symbol ztx 'my-sturcts/User)
                       {:interpreters [::ts]}))

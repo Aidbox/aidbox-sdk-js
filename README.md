@@ -27,7 +27,7 @@ In the case you do not have `zen-project` configured - follow [the documentation
 After configuration of zen-package you have to install dependencies (e.g hl7-fhir-r4-core) by typing the following into a terminal window
 
 ```
-zen-cli pull-deps
+zen-cli zen pull-deps
 ```
 
 This command will download FHIR Definitions All the value sets, profiles, etc. defined as part of the FHIR specification, and the included implementation guides depends on added packages.
@@ -37,7 +37,26 @@ This command will download FHIR Definitions All the value sets, profiles, etc. d
 In terminal move to your `zen-project` folder and generate SDK by run the following
 
 ```
-zen-cli get-sdk
+zen-cli get-sdk [options]
+```
+
+**Options:**
+
+```
+    [api-type: fhir | aidbox]
+    [profiles: false | true] - generating types for profiles such as US Core etc.
+```
+
+**Example:**
+
+```
+zen-cli get-sdk api-type=aidbox profiles=true
+```
+
+**By default,** it runs with fhir api-type and without generating profiles:
+
+```
+zen-cli get-sdk api-type=fhir profiles=false
 ```
 
 After running the zen-cli get-sdk command, you should be able to find the aidbox-javascript-sdk.tgz npm package in the root directory of your project. This archive is generated based on your zen-project and includes all types of resources.
@@ -59,6 +78,14 @@ Install dependencies
 npm install
 ```
 
+### Types without SDK
+
+You can get only type system based on zen-project without SDK.
+
+```
+zen-cli get-types [options]
+```
+
 **Important**: Set of available features and typescript types are unique and depend on `zen-project` configuration,
 selected FHIR version, custom schemas and operations,
 it's important to include package as part of your Git repository.
@@ -74,7 +101,7 @@ import { Client } from "aidbox-sdk";
 export const aidbox = new Client("<HOST_URL>", {
   username: "<CLIENT_NAME>",
   password: "<CLIENT_SECRET>",
-}, "<API_TYPE>");
+});
 ```
 
 This code creates a new instance of the SDK from the aidbox-sdk package, and sets it up to connect to an Aidbox server running on `<HOST_URL>`.
