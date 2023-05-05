@@ -287,7 +287,7 @@
 (defn generate-types-for-version [ztx zen-path version result-folder-path fhir-version profile-version duplicates api-type]
   (let [schema (:schemas (zen.core/get-symbol ztx (symbol (str version "/base-schemas"))))
         structures (:schemas (zen.core/get-symbol ztx (symbol (str version "/structures"))))
-        profiles (:schemas (zen.core/get-symbol ztx (symbol (str version "/profiles"))))
+        profiles (when (not= fhir-version version) (:schemas (zen.core/get-symbol ztx (symbol (str version "/profiles")))))
         resource-names  (get-resource-names schema structures profiles version fhir-version profile-version duplicates)
         key-value-resources (gut/get-keyvalue-resources resource-names)
         path-to-ftr-index (str zen-path "/zen-packages/" version "/index.nippy")
@@ -311,51 +311,6 @@
     (println (str version " resource generation..."))
     (mapv (fn [[k _v]]
             (zen.core/read-ns ztx (symbol (str version "." k)))
-            (zen.core/get-symbol ztx (symbol (str version "." k "/schema")))
-            (let [closing-modify-type (when (and (not= version fhir-version)
-                                                 (some #(re-matches (re-pattern (str "^[a-zA-Z]{0,2}" % "$")) k) (keys duplicates))) "> {}")
-                  schemas-result (when (not (re-find #"-" k))
-                                   (zen.schema/apply-schema ztx
-                                                            {:ts []
-                                                             :require {}
-                                                             :interface-name k
-                                                             :is-type false
-                                                             :version version
-                                                             :duplicates duplicates
-                                                             :fhir-version fhir-version
-                                                             :keys-in-array {}
-                                                             :exclusive-keys {}}
-                                                            (zen.core/get-symbol ztx 'zen/schema)
-                                                            (zen.core/get-symbol ztx (symbol (str version "." k "/schema")))
-                                                            {:interpreters [::ts]}))]
-              (spit result-file-path
-                    (str/join "" (conj (:ts schemas-result) closing-modify-type "\n")) :append true))) schema)
-
-    (mapv (fn [[_k v]]
-            (let [n (gut/get-structure-name v)
-                  petrified-name (gut/prettify-name n)
-                  _ (zen.core/read-ns ztx (symbol (str version "." n)))
-                  closing-modify-type (when (and (not= version fhir-version)
-                                                 (some #(re-matches (re-pattern (str "^[a-zA-Z]{0,2}" % "$")) petrified-name) (keys duplicates))) "> {}")
-                  schema (zen.core/get-symbol ztx (symbol v))
-                  structures-result (when (and (or (:type schema) (:confirms schema) (:keys schema)) (not (some #(= petrified-name %) non-generated-structures)))
-                                      (zen.schema/apply-schema ztx
-                                                               {:ts []
-                                                                :require {}
-                                                                :exclusive-keys {}
-                                                                :interface-name petrified-name
-                                                                :version version
-                                                                :duplicates duplicates
-                                                                :fhir-version fhir-version
-                                                                :keys-in-array {}}
-                                                               (zen.core/get-symbol ztx 'zen/schema)
-                                                               (zen.core/get-symbol ztx (symbol v))
-                                                               {:interpreters [::ts]}))]
-              (spit result-file-path (str/join "" (conj (:ts structures-result)  closing-modify-type "\n")) :append true))) structures)
-
-    (mapv (fn [[k _v]]
-            (zen.core/read-ns ztx (symbol (str version "." "Nz" k)))
-            (zen.core/get-symbol ztx (symbol (str version "." "Nz" k "/schema")))
             (let [closing-modify-type (when (and (not= version fhir-version) (some #(= k %) (keys duplicates))) "> {}")
                   schemas-result (when (not (re-find #"-" k))
                                    (zen.schema/apply-schema ztx
@@ -367,9 +322,54 @@
                                                              :duplicates duplicates
                                                              :fhir-version fhir-version
                                                              :keys-in-array {}
-                                                             :exclusive-keys {}}
+                                                             :exclusive-keys {}
+                                                             :extension-path []}
                                                             (zen.core/get-symbol ztx 'zen/schema)
-                                                            (zen.core/get-symbol ztx (symbol (str version "." "Nz" k "/schema")))
+                                                            (zen.core/get-symbol ztx (symbol (str version "." k "/schema")))
+                                                            {:interpreters [::ts]}))]
+              (spit result-file-path
+                    (str/join "" (conj (:ts schemas-result) closing-modify-type "\n")) :append true))) schema)
+
+    (mapv (fn [[_k v]]
+            (let [n (gut/get-structure-name v)
+                  petrified-name (gut/prettify-name n)
+                  _ (zen.core/read-ns ztx (symbol (str version "." n)))
+                  closing-modify-type (when (and (not= version fhir-version) (some #(= petrified-name %) (keys duplicates))) "> {}")
+                  schema (zen.core/get-symbol ztx (symbol v))
+                  structures-result (when (and (or (:type schema) (:confirms schema) (:keys schema)) (not (some #(= petrified-name %) non-generated-structures)))
+                                      (zen.schema/apply-schema ztx
+                                                               {:ts []
+                                                                :require {}
+                                                                :exclusive-keys {}
+                                                                :interface-name petrified-name
+                                                                :version version
+                                                                :duplicates duplicates
+                                                                :fhir-version fhir-version
+                                                                :keys-in-array {}
+                                                                :extension-path []}
+                                                               (zen.core/get-symbol ztx 'zen/schema)
+                                                               (zen.core/get-symbol ztx (symbol v))
+                                                               {:interpreters [::ts]}))]
+              (spit result-file-path (str/join "" (conj (:ts structures-result)  closing-modify-type "\n")) :append true))) structures)
+
+    (mapv (fn [[k v]]
+            (let [schema-name (last (vals v))
+                  _ (zen.core/read-ns ztx (symbol (namespace schema-name)))
+                  closing-modify-type (when (and (not= version fhir-version) (some #(= k %) (keys duplicates))) "> {}")
+                  schemas-result (when (not (re-find #"-" k))
+                                   (zen.schema/apply-schema ztx
+                                                            {:ts []
+                                                             :require {}
+                                                             :interface-name k
+                                                             :is-type false
+                                                             :version version
+                                                             :duplicates duplicates
+                                                             :fhir-version fhir-version
+                                                             :keys-in-array {}
+                                                             :exclusive-keys {}
+                                                             :extension-path []}
+                                                            (zen.core/get-symbol ztx 'zen/schema)
+                                                            (zen.core/get-symbol ztx (symbol schema-name))
                                                             {:interpreters [::ts]}))]
               (spit result-file-path
                     (str/join "" (conj (:ts schemas-result) closing-modify-type "\n")) :append true))) profiles)

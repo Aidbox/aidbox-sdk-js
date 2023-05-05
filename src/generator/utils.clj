@@ -97,7 +97,7 @@
 (defn find-profiles-dublicate [seq]
   (reduce (fn [acc profile-name]
             (let [k (some (fn [item]
-                            (when (and (re-matches (re-pattern (str "^[n,zN,Z]{2}" profile-name "$")) item) (not= profile-name item)) item)) seq)]
+                            (when (and (re-matches (re-pattern (str "^(Nz|us-core-PAOX-|plannet-|sdc-|eorders-|hrex-|Hpi|HPI|Nhi|au-core-|Nzeps|usdf-|mcode-|au-|C4BB-|codexrt-radiotherapy-)" profile-name "$")) item) (not= profile-name item)) item)) seq)]
               (if k (assoc acc k profile-name) acc)))
           {} seq))
 
