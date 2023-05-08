@@ -294,7 +294,7 @@
         result-file-path (str result-folder-path "/" version ".d.ts")
         import-for-custom (format "import { %s, Resource, CodeableConcept, Extension, date, dateTime, Period, decimal } from \"./%s.ts\";"
                                   (gut/get-resource-map-name fhir-version) fhir-version)
-        import "import { Reference, RequireAtLeastOne, OneKey, Modify } from \"./aidbox-types.ts\";\n"
+        import "import { Reference, RequireAtLeastOne, OneKey, Modify, ResourceType as MainResourceType } from \"./aidbox-types.ts\";\n"
         resource-map-name (gut/get-resource-map-name version)
         resourcetype-type (get-resourcetype-type resource-map-name)
         resource-type-map-interface (str "export interface " resource-map-name " {\n")
@@ -496,7 +496,7 @@
         duplicates (into (gut/find-duplicates names) (gut/find-profiles-dublicate names))
         types-exports (generate-types-exports ztx duplicates versions-with-profile fhir-version profile-version)
         searches (get-searches ztx (zen.core/get-tag ztx 'zen.fhir/searches))
-        search-params-start-interface "export interface SearchParams extends Record<ResourceType, unknown> {\n"
+        search-params-start-interface "export interface SearchParams extends Record<MainResourceType, unknown> {\n"
         search-params-end-interface "\n}"
         search-params-content (get-search-params ztx searches)
         search-params-result (conj (into [search-params-start-interface]  search-params-content) search-params-end-interface)]
