@@ -7,18 +7,9 @@ type Dir = 'asc' | 'desc';
 export type PrefixWithArray = 'eq' | 'ne';
 export type Prefix = 'eq' | 'ne' | 'gt' | 'lt' | 'ge' | 'le' | 'sa' | 'eb' | 'ap';
 export type ExecuteQueryResponseWrapper<T> = {
-    data: ExecuteQueryResponseItem<T>[];
+    data: T;
     query: string[];
     total: number;
-};
-export type ExecuteQueryResponseItem<T> = {
-    id: string;
-    txid: number;
-    cts: string;
-    ts: string;
-    resource_type: string;
-    status: string;
-    resource: T;
 };
 export type CreateQueryParams = {
     isRequired: boolean;
@@ -57,7 +48,9 @@ type ElementsParams<T extends keyof ResourceTypeMap, R extends ResourceTypeMap[T
 type ChangeFields<T, R> = Omit<T, keyof R> & R;
 type SubscriptionParams = Omit<ChangeFields<SubsSubscription, {
     channel: Omit<SubsSubscription['channel'], 'type'>;
-}>, 'resourceType'>;
+}>, 'resourceType'> & {
+    id: string;
+};
 type BundleRequestEntry<T = ResourceTypeMap[keyof ResourceTypeMap]> = {
     request: {
         method: string;
@@ -90,7 +83,10 @@ export declare class Client {
     createResource<T extends keyof ResourceTypeMap>(resourceName: T, body: SetOptional<ResourceTypeMap[T], 'resourceType'>): Promise<BaseResponseResource<T>>;
     rawSQL(sql: string, params?: unknown[]): Promise<any>;
     createSubscription({ id, status, trigger, channel }: SubscriptionParams): Promise<SubsSubscription>;
-    subscriptionEntry({ id, status, trigger, channel }: SubscriptionParams): SubsSubscription;
+    subscriptionEntry({ id, status, trigger, channel }: SubscriptionParams): SubsSubscription & {
+        id: string;
+        resourceType: 'SubsSubscription';
+    };
     sendLog(data: LogData): Promise<void>;
     transformToBundle<RT extends keyof ResourceTypeMap, R extends ResourceTypeMap[RT]>(resources: (R & {
         resourceType: RT;

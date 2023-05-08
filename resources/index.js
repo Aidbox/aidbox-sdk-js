@@ -58,9 +58,14 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetResources = exports.Client = void 0;
 var axios_1 = require("axios");
+function buildURL(type, url) {
+    return type === 'fhir' ? 'fhir/' + url : url;
+}
 var Client = /** @class */ (function () {
-    function Client(baseURL, credentials) {
+    function Client(baseURL, credentials, apiType) {
+        if (apiType === void 0) { apiType = 'aidbox'; }
         this.client = axios_1.default.create({ baseURL: baseURL, auth: credentials });
+        this.apiType = apiType;
     }
     Client.prototype.getResources = function (resourceName) {
         return new GetResources(this.client, resourceName);
@@ -70,20 +75,7 @@ var Client = /** @class */ (function () {
             var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.client.get(resourceName + '/' + id)];
-                    case 1:
-                        response = _a.sent();
-                        return [2 /*return*/, response.data];
-                }
-            });
-        });
-    };
-    Client.prototype.findResources = function (resourceName, params) {
-        return __awaiter(this, void 0, void 0, function () {
-            var response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.client.post(resourceName, { params: params })];
+                    case 0: return [4 /*yield*/, this.client.get(buildURL(this.apiType, resourceName + '/' + id))];
                     case 1:
                         response = _a.sent();
                         return [2 /*return*/, response.data];
@@ -96,7 +88,7 @@ var Client = /** @class */ (function () {
             var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.client.delete(resourceName + '/' + id)];
+                    case 0: return [4 /*yield*/, this.client.delete(buildURL(this.apiType, resourceName + '/' + id))];
                     case 1:
                         response = _a.sent();
                         return [2 /*return*/, response.data];
@@ -147,7 +139,7 @@ var Client = /** @class */ (function () {
             var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.client.patch(resourceName + '/' + id, __assign({}, body))];
+                    case 0: return [4 /*yield*/, this.client.patch(buildURL(this.apiType, resourceName + '/' + id), __assign({}, body))];
                     case 1:
                         response = _a.sent();
                         return [2 /*return*/, response.data];
@@ -160,7 +152,7 @@ var Client = /** @class */ (function () {
             var response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.client.post(resourceName, __assign({}, body))];
+                    case 0: return [4 /*yield*/, this.client.post(buildURL(this.apiType, resourceName), __assign({}, body))];
                     case 1:
                         response = _a.sent();
                         return [2 /*return*/, response.data];
@@ -202,42 +194,6 @@ var Client = /** @class */ (function () {
             });
         });
     };
-    Client.prototype.bundleRequest = function (entry, type) {
-        if (type === void 0) { type = 'transaction'; }
-        return __awaiter(this, void 0, void 0, function () {
-            var response;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.client.post("/", {
-                            resourceType: 'Bundle',
-                            type: type,
-                            entry: entry,
-                        })];
-                    case 1:
-                        response = _a.sent();
-                        return [2 /*return*/, response.data];
-                }
-            });
-        });
-    };
-    Client.prototype.bundleEntryPut = function (resource) {
-        return {
-            request: { method: 'PUT', url: "/".concat(resource.resourceType, "/").concat(resource.id) },
-            resource: resource,
-        };
-    };
-    Client.prototype.bundleEntryPost = function (resource) {
-        return {
-            request: { method: 'POST', url: "/".concat(resource.resourceType) },
-            resource: resource,
-        };
-    };
-    Client.prototype.bundleEntryPatch = function (resource) {
-        return {
-            request: { method: 'PATCH', url: "/".concat(resource.resourceType, "/").concat(resource.id) },
-            resource: resource,
-        };
-    };
     Client.prototype.subscriptionEntry = function (_a) {
         var id = _a.id, status = _a.status, trigger = _a.trigger, channel = _a.channel;
         return {
@@ -256,6 +212,33 @@ var Client = /** @class */ (function () {
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Client.prototype.transformToBundle = function (resources, method) {
+        return resources.map(function (resource) { return ({
+            request: {
+                method: method,
+                url: method === 'POST' ? "/".concat(resource.resourceType) : "/".concat(resource.resourceType, "/").concat(resource.id),
+            },
+            resource: resource,
+        }); });
+    };
+    Client.prototype.bundleRequest = function (entry, type) {
+        if (type === void 0) { type = 'transaction'; }
+        return __awaiter(this, void 0, void 0, function () {
+            var response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.client.post("/", {
+                            resourceType: 'Bundle',
+                            type: type,
+                            entry: entry,
+                        })];
+                    case 1:
+                        response = _a.sent();
+                        return [2 /*return*/, response.data];
                 }
             });
         });

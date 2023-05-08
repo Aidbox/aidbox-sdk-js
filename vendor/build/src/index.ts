@@ -23,20 +23,11 @@ export type PrefixWithArray = 'eq' | 'ne';
 export type Prefix = 'eq' | 'ne' | 'gt' | 'lt' | 'ge' | 'le' | 'sa' | 'eb' | 'ap';
 
 export type ExecuteQueryResponseWrapper<T> = {
-  data: ExecuteQueryResponseItem<T>[];
+  data: T;
   query: string[];
   total: number;
 };
 
-export type ExecuteQueryResponseItem<T> = {
-  id: string;
-  txid: number;
-  cts: string;
-  ts: string;
-  resource_type: string;
-  status: string;
-  resource: T;
-};
 
 export type CreateQueryParams = {
   isRequired: boolean;
@@ -84,7 +75,9 @@ type SubscriptionParams = Omit<
     }
   >,
   'resourceType'
->;
+> & {id: string};
+
+
 
 type BundleRequestEntry<T = ResourceTypeMap[keyof ResourceTypeMap]> = {
   request: { method: string; url: string };
@@ -194,7 +187,8 @@ export class Client {
     return response.data;
   }
 
-  subscriptionEntry({ id, status, trigger, channel }: SubscriptionParams): SubsSubscription {
+
+  subscriptionEntry({ id, status, trigger, channel }: SubscriptionParams): SubsSubscription & {id: string, resourceType: 'SubsSubscription'} {
     return {
       resourceType: 'SubsSubscription',
       id,
