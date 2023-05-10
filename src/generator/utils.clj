@@ -1,5 +1,6 @@
 (ns generator.utils
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.pprint :as pp]))
 
 ;; TODO: refactor function: implicit name and does not work with any version
 (defn set-to-string [vtx value]
@@ -44,11 +45,6 @@
 (defn get-key [{path :path}]
   (let [k (name (last path))]
     (if (str/includes? k "-") (str "'" k "'") k)))
-
-(defn generate-values [vtx]
-  (str (get-key vtx)
-       (get-not-required-filed-sign vtx)
-       ":"))
 
 (defn update-require-and-keys-in-array [vtx data]
   (let [new-vtx (update vtx :keys-in-array conj (generate-map-keys-in-array vtx data))]
@@ -108,3 +104,6 @@
 
 (defn get-structure-name [value]
   (str/trim (second (str/split (namespace value) #"\."))))
+
+(defn contains-keyword? [v seq]
+  (some #(= v %) seq))

@@ -1,1 +1,4 @@
-{:deps {hl7-fhir-r4-core "https://github.com/zen-fhir/hl7-fhir-r4-core.git"}}
+{:deps {fhir-org-nz-ig-base "https://github.com/zen-fhir/fhir-org-nz-ig-base.git"
+        hl7-fhir-us-core "https://github.com/zen-fhir/hl7-fhir-us-core.git"}}
+
+;; {:deps {hl7-fhir-us-core "https://github.com/zen-fhir/hl7-fhir-us-core.git"}}

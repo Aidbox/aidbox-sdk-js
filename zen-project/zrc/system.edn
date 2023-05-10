@@ -1,4 +1,4 @@
 {:ns system
- :import #{aidbox hl7-fhir-r4-core custom}
+ :import #{aidbox hl7-fhir-r4-core hl7-fhir-us-core #_fhir-org-nz-ig-base custom}
  box
  {:zen/tags #{aidbox/system}}}

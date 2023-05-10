@@ -70,3 +70,10 @@
   (t/is (= "export interface ResourceTypeMap \n             extends somethingResourceTypeMap, Modify<Hl7FhirR4CoreResourceTypeMap, FhirOrgNzIgBaseResourceTypeMap> { SubsSubscription: SubsSubscription }"
            (gut/get-index-resource-type-map
             ["hl7-fhir-r4-core" "fhir-org-nz-ig-base" "something"] "hl7-fhir-r4-core" "fhir-org-nz-ig-base"))))
+
+(t/deftest contains-keyword?-test
+  (t/is (= true
+           (gut/contains-keyword? :a [:a :b :c])))
+
+  (t/is (= nil
+           (gut/contains-keyword? :a [:g :b :c]))))

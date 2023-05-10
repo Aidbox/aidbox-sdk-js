@@ -49,12 +49,124 @@
                        channel: {\ntype: 'rest-hook';\nendpoint: string;\npayload?: { content: string; contentType: string; context: unknown };
                        headers?: Record<string, string>;\ntimeout?: number;\n};\n}"})
 
-(defn get-resourcetype-type [map-name] (str "type ResourceType = keyof " map-name ";\n"))
-
 (def non-parsable-premitives
   {:string "string"
    :number "number"
    :boolean "boolean"})
+
+(def schema-state (atom {}))
+
+;; (def schema-state (atom {"Organization"
+;;                          {:_active 'Element,
+;;                           :address ['Address],
+;;                           :name 'string,
+;;                           :type [{:type 'value-set, :value ['CodeableConcept]}],
+;;                           :alias ['string],
+;;                           :active boolean,
+;;                           :_name 'Element,
+;;                           :identifier ['Identifier],
+;;                           :telecom ['ContactPoint],
+;;                           :partOf {:type 'reference, :value ['Organization]},
+;;                           :_alias ['Element],
+;;                           :endpoint [{:type 'reference, :value ['Endpoint]}],
+;;                           :contact
+;;                           [{:purpose {:type 'value-set, :value ['CodeableConcept]},
+;;                             :name 'HumanName,
+;;                             :telecom ['ContactPoint],
+;;                             :address 'Address}]},
+;;                          "Address"
+;;                          {:_line ['Element],
+;;                           :use
+;;                           {:type 'value-set,
+;;                            :value "'billing' | 'home' | 'old' | 'temp' | 'work'"},
+;;                           :city 'string,
+;;                           :_type 'Element,
+;;                           :type {:type 'value-set, :value "'both' | 'physical' | 'postal'"},
+;;                           :_city 'Element,
+;;                           :state 'string,
+;;                           :_district 'Element,
+;;                           :_state 'Element,
+;;                           :line ['string],
+;;                           :postalCode 'string,
+;;                           :_country 'Element,
+;;                           :_postalCode 'Element,
+;;                           :_text 'Element,
+;;                           :period 'Period,
+;;                           :country 'string,
+;;                           :_use 'Element,
+;;                           :district 'string,
+;;                           :text 'string}}))
+
+(defn get-resourcetype-type [map-name] (str "type ResourceType = keyof " map-name ";\n"))
+
+(defn get-valueset-values [ztx value-set]
+  (let [{uri :uri} (zen.core/get-symbol ztx value-set)
+        ftr-index (get-in @ztx [:zen.fhir/ftr-index "init"])
+        result (->>  (get-in ftr-index [:valuesets uri])
+                     (filter #(not= "http://snomed.info/sct" %))
+                     (map (fn [item]
+                            (->> (get-in ftr-index [:codesystems item])
+                                 (filter (fn [[_ value]] (contains? (:valueset value) uri)))
+                                 keys)))
+                     flatten
+                     (remove nil?)
+                     seq)]
+    result))
+
+(defn generate-valueset-type [ztx vtx schema]
+  (let [confirms (first (gut/set-to-string vtx (:confirms schema)))
+        valueset-values (get-valueset-values ztx (get-in schema [:zen.fhir/value-set :symbol]))]
+    (cond
+      (= confirms "CodeableConcept") "CodeableConcept"
+      (or (> (count valueset-values) 20) (= (count valueset-values) 0)) "string"
+      :else (str/join " | " (map #(format "'%s'" %) valueset-values)))))
+(contains? #{'zen.fhir/Reference} 'zen.fhir/Reference)
+
+(defn get-value-for-schema-state [ztx vtx data]
+  (let [type (:type data)
+        ref (:refers (:zen.fhir/reference data))
+        value-set (:zen.fhir/value-set data)
+        required? (not (gut/get-not-required-filed-sign vtx))]
+
+    (cond (= type 'zen/map) {:required required?
+                             :value {}}
+
+          (= type 'zen/vector) {:required required?
+                                :value (conj [] (get-value-for-schema-state ztx vtx (:every data)))}
+
+          value-set {:type 'value-set
+                     :required required?
+                     :value (generate-valueset-type ztx vtx data)}
+
+          ref {:type 'reference
+               :required required?
+               :value (mapv #(str %) (gut/set-to-string {} ref))}
+
+          (:confirms data) {:required required?
+                            :value (symbol (first (gut/set-to-string {} (:confirms data))))}
+          :else nil)))
+
+(defn modify-path [path]
+  (reduce (fn [acc item]
+            (cond (= item :keys) acc
+                  (= item :every) (conj acc :value 0 :value)
+                  :else (conj acc item))) [] path))
+
+(defn generate-values [ztx vtx data]
+  (let [interface-name (:interface-name vtx)
+        complete-path (into [interface-name] (modify-path (:path vtx)))
+        path-till-cur-key (pop complete-path)
+        cur-key (last complete-path)
+        cur-element (get-in @schema-state path-till-cur-key)
+        path (if (vector? cur-element) (conj path-till-cur-key 0 cur-key) complete-path)
+        value (get-value-for-schema-state ztx vtx data)]
+    (println "cur-element" cur-element)
+    (println "path" path)
+    (println "value" value)
+    (when (= (:version vtx) (:fhir-version vtx)) (swap! schema-state assoc-in path value))
+    (str (gut/get-key vtx)
+         (gut/get-not-required-filed-sign vtx)
+         ":")))
 
 (defn get-reference-union-type [vtx references]
   (str "Reference<"
@@ -109,7 +221,7 @@
                    (format " extends %s " extended-resource))
 
                  :else " ")]
-
+    (when (= (:version vtx) (:fhir-version vtx)) (swap! schema-state assoc-in [interface-name] {}))
     (str "export interface " interface-name extand)))
 
 (defn generate-name
@@ -118,29 +230,6 @@
        (if (:is-type vtx)
          (generate-type vtx data)
          (generate-interface vtx data))))
-
-(defn get-valueset-values [ztx value-set]
-  (let [{uri :uri} (zen.core/get-symbol ztx value-set)
-        ftr-index (get-in @ztx [:zen.fhir/ftr-index "init"])
-        result (->>  (get-in ftr-index [:valuesets uri])
-                     (filter #(not= "http://snomed.info/sct" %))
-                     (map (fn [item]
-                            (->> (get-in ftr-index [:codesystems item])
-                                 (filter (fn [[_ value]] (contains? (:valueset value) uri)))
-                                 keys)))
-                     flatten
-                     (remove nil?)
-                     seq)]
-    result))
-
-(defn generate-valueset-type [ztx vtx schema]
-  (let [confirms (first (gut/set-to-string vtx (:confirms schema)))
-        valueset-values (get-valueset-values ztx (get-in schema [:zen.fhir/value-set :symbol]))]
-    (cond
-      (= confirms "CodeableConcept") "CodeableConcept"
-      (or (> (count valueset-values) 20) (= (count valueset-values) 0)) "string"
-      :else (str/join " | " (map #(format "'%s'" %) valueset-values)))))
-(contains? #{'zen.fhir/Reference} 'zen.fhir/Reference)
 
 (defn generate-confirms [vtx schema]
   (let [result  (str
@@ -212,11 +301,72 @@
          (update new-vtx :ts conj s)
          new-vtx)))))
 
+(defn generate-types-from-schema-state [schema keys-to-filter]
+  (str/join "" (reduce (fn [acc [k v]]
+                         (let [processed-value
+                               (cond
+                                 (symbol? v) v
+
+                                 (and (vector? v) (symbol? (first v)))
+                                 (format "Array<%s>" (first v))
+
+                                 (and (vector? v) (map? (first v)) (= (:type (first v)) 'value-set))
+                                 (format "Array<%s>" (:value (first v)))
+
+                                 (and (vector? v) (map? (first v)) (= (:type (first v)) 'reference))
+                                 (format "Array<%s>" (format "Reference<%s>" (str/join " | " (:value (first v)))))
+
+                                 (and (map? v) (= (:type v) 'value-set)) (:value v)
+
+                                 (and (map? v) (= (:type v) 'reference))
+                                 (format "Reference<%s>" (str/join " | " (:value (first v))))
+
+                                 (map? v) (generate-types-from-schema-state v []))]
+
+                           (if (gut/contains-keyword? k keys-to-filter) acc
+                               (conj acc (str (name k) ": " processed-value "; ")))))
+                       [] schema)))
+
+(generate-types-from-schema-state (get-in @schema-state ["Address"]) [:state])
+
+(defn check-fhir-flags-type [data]
+  (and (:fhir/flags data) (not (:type data)) (not (:confirms data)) (not (:zen.fhir/value-set data))))
+
+(defn check-fhir-flag [schema]
+  (let [data (if (:every schema) (:every schema) schema)]
+    (and (or (:fhir/flags data) (:fhir/flags schema))
+         (= (count (filter #(not (check-fhir-flags-type ((keyword %) (:keys data)))) (keys (:keys data)))) 0))))
+
+(defn get-core-data [path]
+  (let [core-data (get-in @schema-state path)]
+    (if (map? core-data) core-data
+        (get-in @schema-state [(str (first core-data))]))))
+
+(defn get-core-values? [{path :path interface-name :interface-name} data]
+  (let [filtred-path (filter #(not (or (= % :keys) (= % :every))) path)
+        path-to-core-data (into [interface-name] filtred-path)
+        filtred-data (filter (fn [[_k v]]
+                               (not (if (:every v) (check-fhir-flags-type (:every v))
+                                        (check-fhir-flags-type v)))) data)
+        profile-data-keys (mapv #(first %) filtred-data)
+        core-data (get-core-data path-to-core-data)]
+    ;; (println "core-data" core-data)
+    ;; (println "filtred-data" filtred-data)
+    ;; (println "profile-data-keys" profile-data-keys)
+    (if (= (count profile-data-keys) (count (keys core-data))) ["{ "]
+        (conj ["{ "] (generate-types-from-schema-state core-data profile-data-keys)))))
+
+(defn get-keys-value [vtx data]
+  (if (or (= (:version vtx) (:fhir-version vtx)) (= (count (:path vtx)) 1)) ["{ "]
+      (get-core-values? vtx data)))
+
 (zen.schema/register-schema-pre-process-hook!
  ::ts
  (fn [ztx schema]
    (fn [vtx data opts]
      (let [new-vtx (cond
+                     (and (not= (:version vtx) (:fhir-version vtx)) (:every data) (check-fhir-flag data))
+                     (update vtx :ignore-path conj (str/join "." (:path vtx)))
                      (and (not (:keys data)) (empty? (:path vtx)))
                      (assoc vtx :is-type true)
                      (or (and (:confirms data) (:keys data)) (:require data))
@@ -224,8 +374,18 @@
                      (:exclusive-keys data)
                      (update vtx :exclusive-keys conj (gut/generate-exclusive-keys vtx data))
                      :else vtx)]
-
+      ;;  (println "path-ignore" (:ignore-path new-vtx))
+      ;;  (println "path" (:path new-vtx))
+      ;;  (println "data")
+      ;;  (pp/pprint data)
+      ;;  (println "schema")
+      ;;  (pp/pprint (:schema new-vtx))
+      ;;  (pp/pprint (:ts new-vtx))
+      ;;  (println "require" (:require new-vtx))
        (cond
+         (some #(str/starts-with? (str/join "." (:path new-vtx)) %) (:ignore-path new-vtx))
+         (update new-vtx :ts conj "")
+        ;;  (check-fhir-flags-type data) (update new-vtx :ts conj "")
          (= (last (:path vtx)) :slicing) (update new-vtx :ts conj "unknown")
          (some #(= :slicing %) (:path vtx)) new-vtx
          (= (last (:path new-vtx)) :zen.fhir/type) new-vtx
@@ -234,12 +394,12 @@
          (= (last (:schema new-vtx)) :enum)
          (update new-vtx :ts conj (gut/generate-enum data))
          (= (last (:schema new-vtx)) :values)
-         (update new-vtx :ts conj (gut/get-desc data) (gut/generate-values new-vtx))
+         (update new-vtx :ts conj (gut/get-desc data) (generate-values ztx new-vtx data))
          (and (= (last (:path new-vtx)) :keys) (= (:interface-name vtx) "Resource"))
          (update new-vtx :ts conj "<T extends string = ResourceType> { \n resourceType: T;")
          (and (= (last (:path new-vtx)) :keys) (= (:interface-name vtx) "DomainResource"))
          (update new-vtx :ts conj "<T extends string = 'DomainResource'> extends Resource<T> {\n")
-         (= (last (:path new-vtx)) :keys) (update new-vtx :ts conj "{ ")
+         (= (last (:path new-vtx)) :keys) (update new-vtx :ts into (get-keys-value vtx data))
          (= (last (:schema new-vtx)) :every) (update new-vtx :ts conj "Array<")
          :else new-vtx)))))
 
@@ -248,6 +408,9 @@
  (fn [ztx schema]
    (fn [vtx data opts]
      (cond
+       (some #(str/starts-with? (str/join "." (:path vtx)) %) (:ignore-path vtx))
+       (update vtx :ts conj "")
+       (check-fhir-flags-type data) (update vtx :ts conj "")
        (some #(= :slicing %) (:path vtx)) vtx
        (gut/exclusive-keys-child? vtx) vtx
        (or (:fhir/extensionUri data) (:fhir/extensionUri (:every data))) vtx
@@ -509,7 +672,8 @@
 
     (println "Search params generation...")
 
-    (spit (str result-folder-path "/" fhir-version ".d.ts") (str/join "" search-params-result) :append true)))
+    (spit (str result-folder-path "/" fhir-version ".d.ts") (str/join "" search-params-result) :append true)
+    #_(pp/pprint @schema-state)))
 
 (defn get-sdk [zen-path args]
   (io/make-parents (str zen-path "/package/index.js"))
@@ -555,22 +719,72 @@
        :zen.fhir/type "Practitioner",
        :zen.fhir/profileUri "http://hl7.org.nz/fhir/StructureDefinition/NzPractitioner",
        :zen.fhir/version "0.6.23-1",
+       :require #{:description :reasonCode},
        :confirms #{hl7-fhir-r4-core.Practitioner/schema
                    zen.fhir/Resource},
        :type zen/map,
-       :keys {:ethnicity {:type zen/vector,
-                          :every {:confirms #{fhir-org-nz-ig-base.nz-ethnicity/schema},
-                                  :fhir/extensionUri "http://hl7.org.nz/fhir/StructureDefinition/nz-ethnicity"}},
-              :iwi {:type zen/vector,
-                    :every {:confirms #{fhir-org-nz-ig-base.nz-iwi/schema},
-                            :fhir/extensionUri "http://hl7.org.nz/fhir/StructureDefinition/nz-iwi"}},
-              :qualification {:type zen/vector,
-                              :every {:type zen/map,
-                                      :keys {:registration-status-code {:confirms #{fhir-org-nz-ig-base.registration-status-code/schema},
-                                                                        :fhir/extensionUri "http://hl7.org.nz/fhir/StructureDefinition/registration-status-code"},
-                                             :scope-of-practice {:type zen/vector,
-                                                                 :every {:confirms #{fhir-org-nz-ig-base.scope-of-practice/schema},
-                                                                         :fhir/extensionUri "http://hl7.org.nz/fhir/StructureDefinition/scope-of-practice"}}}}}}}})
+       :keys {;; :_created {:confirms #{hl7-fhir-r4-core.Element/schema}},
+              ;; :description {:confirms #{hl7-fhir-r4-core.string/schema},
+              ;;               :zen/desc "Shown on a subject line in a meeting request, or appointment list"},
+              ;; :serviceCategory {:type zen/vector,
+              ;;                   :every {:confirms #{hl7-fhir-r4-core.CodeableConcept/schema},
+              ;;                           :fhir/flags #{:SU},
+              ;;                           :zen.fhir/value-set {:symbol hl7-fhir-r4-core.value-set.service-category/value-set,
+              ;;                                                :strength :example},
+              ;;                           :zen/desc "A broad categorization of the service that is to be performed during this appointment"}},
+              ;; :slot {:type zen/vector,
+              ;;        :every {:confirms #{hl7-fhir-r4-core.Reference/schema
+              ;;                            zen.fhir/Reference},
+              ;;                :zen.fhir/reference {:refers #{hl7-fhir-r4-core.Slot/schema}},
+              ;;                :zen/desc "The slots that this appointment is filling"}}
+              ;; :start {:confirms #{hl7-fhir-r4-core.instant/schema},
+              ;;         :fhir/flags #{:SU},
+              ;;         :zen/desc "When appointment is to take place"},
+              ;; :reasonCode {:type zen/vector,
+              ;;              :every {:confirms #{hl7-fhir-r4-core.CodeableConcept/schema},
+              ;;                      :fhir/flags #{:SU},
+              ;;                      :zen.fhir/value-set {:symbol hl7-fhir-r4-core.value-set.encounter-reason/value-set,
+              ;;                                           :strength :preferred},
+              ;;                      :zen/desc "Coded reason this appointment is scheduled"}},
+              ;; :created {:confirms #{hl7-fhir-r4-core.dateTime/schema},
+              ;;           :zen/desc "The date that this appointment was initially created"},
+              :participant {:type zen/vector,
+                            :every {:confirms #{hl7-fhir-r4-core.BackboneElement/schema},
+                                    :type zen/map,
+                                    :keys {:type {:type zen/vector,
+                                                  :every {:confirms #{hl7-fhir-r4-core.CodeableConcept/schema},
+                                                          :fhir/flags #{:SU},
+                                                          :zen.fhir/value-set {:symbol hl7-fhir-r4-core.value-set.encounter-participant-type/value-set,
+                                                                               :strength :extensible},
+                                                          :zen/desc "Role of participant in the appointment"}},
+                                           :actor {:confirms #{hl7-fhir-r4-core.Reference/schema
+                                                               zen.fhir/Reference},
+                                                   :fhir/flags #{:SU},
+                                                   :zen.fhir/reference {:refers #{hl7-fhir-r4-core.Patient/schema
+                                                                                  hl7-fhir-r4-core.PractitionerRole/schema
+                                                                                  hl7-fhir-r4-core.HealthcareService/schema
+                                                                                  hl7-fhir-r4-core.Device/schema
+                                                                                  hl7-fhir-r4-core.Location/schema
+                                                                                  hl7-fhir-r4-core.Practitioner/schema
+                                                                                  hl7-fhir-r4-core.RelatedPerson/schema}},
+                                                   :zen/desc "Person, Location/HealthcareService or Device"},
+                                           :required {:confirms #{hl7-fhir-r4-core.code/schema},
+                                                      :fhir/flags #{:SU},
+                                                      :zen.fhir/value-set {:symbol hl7-fhir-r4-core.value-set.participantrequired/value-set,
+                                                                           :strength :required},
+                                                      :zen/desc "required | optional | information-only"},
+                                           :_required {:confirms #{hl7-fhir-r4-core.Element/schema}},
+                                           :status {:confirms #{hl7-fhir-r4-core.code/schema},
+                                                    :fhir/flags #{:SU},
+                                                    :zen.fhir/value-set {:symbol hl7-fhir-r4-core.value-set.participationstatus/value-set,
+                                                                         :strength :required},
+                                                    :zen/desc "accepted | declined | tentative | needs-action"},
+                                           :_status {:confirms #{hl7-fhir-r4-core.Element/schema}},
+                                           :period {:confirms #{hl7-fhir-r4-core.Period/schema},
+                                                    :zen/desc "Participation period of the actor"}},
+                                    :require #{:status},
+                                    :zen/desc "Participants involved in appointment"},
+                            :minItems 1}}}})
 
   (zen.core/load-ns ztx my-structs-ns)
 
@@ -579,15 +793,17 @@
                       {:ts []
                        :require {}
                        :exclusive-keys {}
-                       :interface-name "Location"
-                       :version "location"
-                       :duplicates {"Location" "Location"}
+                       :interface-name "Appointment"
+                       :version "hl7-fhir-r4-core"
+                       :duplicates {"Organization" "Organization"}
                        :fhir-version "hl7-fhir-r4-core"
                        :keys-in-array {}
-                       :extension-path []}
+                       :extension-path []
+                       :ignore-path []}
                       (zen.core/get-symbol ztx 'zen/schema)
                       (zen.core/get-symbol ztx 'my-sturcts/User)
                       {:interpreters [::ts]}))
 
+  (pp/pprint @schema-state)
   (println (:ts r))
   (str/join "" (::ts r)))
