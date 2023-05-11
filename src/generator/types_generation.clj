@@ -120,7 +120,6 @@
       (= confirms "CodeableConcept") "CodeableConcept"
       (or (> (count valueset-values) 20) (= (count valueset-values) 0)) "string"
       :else (str/join " | " (map #(format "'%s'" %) valueset-values)))))
-(contains? #{'zen.fhir/Reference} 'zen.fhir/Reference)
 
 (defn get-value-for-schema-state [ztx vtx data]
   (let [type (:type data)
@@ -160,20 +159,26 @@
         cur-element (get-in @schema-state path-till-cur-key)
         path (if (vector? cur-element) (conj path-till-cur-key 0 cur-key) complete-path)
         value (get-value-for-schema-state ztx vtx data)]
-    (println "cur-element" cur-element)
-    (println "path" path)
-    (println "value" value)
+
     (when (= (:version vtx) (:fhir-version vtx)) (swap! schema-state assoc-in path value))
-    (str (gut/get-key vtx)
-         (gut/get-not-required-filed-sign vtx)
-         ":")))
+    (if (and (:exclusive-keys data) (not (gut/check-need-generate-exclusive-keys data)))
+      "" (str (gut/get-key vtx)
+              (gut/get-not-required-filed-sign vtx)
+              ":"))))
+
+(defn prettify-reference-name [n]
+  (let [removed-us-core (str/replace n #"us-core-" "")]
+    (cond (= removed-us-core "relatedperson") "RelatedPerson"
+          (= removed-us-core "practitionerrole") "PractitionerRole"
+          :else (gut/capitalize-first removed-us-core))))
 
 (defn get-reference-union-type [vtx references]
   (str "Reference<"
        (if (empty? references) "ResourceType"
            (str/join " | " (map (fn [item]
                                   (cond
-                                    (= (name item) "schema") (str "'" (first (gut/set-to-string vtx #{item})) "'")
+                                    (= (name item) "schema")
+                                    (str "'" (prettify-reference-name (first (gut/set-to-string vtx #{item}))) "'")
                                     :else (str "'" (name item) "'"))) references)))
        ">"))
 
@@ -238,6 +243,7 @@
                    (get-reference-union-type vtx (:refers (:zen.fhir/reference schema)))
                    (= (first (gut/set-to-string vtx (:confirms schema))) "BackboneElement") ""
                    :else (str (first (gut/set-to-string vtx (:confirms schema))))))]
+
     (gut/prettify-name result)))
 
 (defn get-exclusive-keys-values [ztx vtx exclusive-keys ks]
@@ -254,7 +260,8 @@
                                             (get-exclusive-keys-values ztx vtx non-exclusive-keys ks)))
         exclusive-keys-type (get-exclusive-keys-values ztx vtx exclusive-keys ks)]
 
-    (format "RequireAtLeastOne<%sOneKey<{ %s }>>" non-exclusive-keys-type exclusive-keys-type)))
+    (if (gut/check-need-generate-exclusive-keys schema)
+      (format "RequireAtLeastOne<%sOneKey<{ %s }>>" non-exclusive-keys-type exclusive-keys-type) "")))
 
 (defn get-extention [path ts extension-path]
   (let [extension-value "extension?: Array<Extension>;"
@@ -301,33 +308,43 @@
          (update new-vtx :ts conj s)
          new-vtx)))))
 
-(defn generate-types-from-schema-state [schema keys-to-filter]
+(defn adjust-path [path k]
+  (if (= (count path) 1) (conj path k) (conj (pop path) k)))
+
+(defn generate-types-from-schema-state [schema keys-to-filter vtx]
   (str/join "" (reduce (fn [acc [k v]]
-                         (let [processed-value
+                         (let [not-required-sign (if (or (:required v)
+                                                         (not (gut/get-not-required-filed-sign {:require (:require vtx)
+                                                                                                :path (adjust-path (:path vtx) k)})))
+                                                   "" "?")
+                               value (:value v)
+                               processed-value
                                (cond
-                                 (symbol? v) v
+                                 (symbol? value) value
 
-                                 (and (vector? v) (symbol? (first v)))
-                                 (format "Array<%s>" (first v))
+                                 (and (vector? value) (symbol? (:value (first value))))
+                                 (format "Array<%s>" (:value (first value)))
 
-                                 (and (vector? v) (map? (first v)) (= (:type (first v)) 'value-set))
-                                 (format "Array<%s>" (:value (first v)))
+                                 (and (vector? value) (= (:type (first value)) 'value-set))
+                                 (format "Array<%s>" (:value (first value)))
 
-                                 (and (vector? v) (map? (first v)) (= (:type (first v)) 'reference))
-                                 (format "Array<%s>" (format "Reference<%s>" (str/join " | " (:value (first v)))))
+                                 (and (vector? value) (= (:type (first value)) 'reference))
+                                 (format "Array<%s>" (format "Reference<%s>"
+                                                             (str/join " | " (map #(str "'" % "'")  (:value (first value))))))
 
-                                 (and (map? v) (= (:type v) 'value-set)) (:value v)
+                                 (= (:type v) 'value-set) value
 
-                                 (and (map? v) (= (:type v) 'reference))
-                                 (format "Reference<%s>" (str/join " | " (:value (first v))))
+                                 (= (:type v) 'reference) (format "Reference<%s>" (str/join " | " (map #(str "'" % "'")  value)))
 
-                                 (map? v) (generate-types-from-schema-state v []))]
+                                 (map? value) (generate-types-from-schema-state value [] vtx)
+
+                                 (and (vector? value) (map? (:value (first value))))
+                                 (str "Array<{" (generate-types-from-schema-state (:value (first value)) []
+                                                                                  (update vtx :path conj k :every :keys)) "}>"))]
 
                            (if (gut/contains-keyword? k keys-to-filter) acc
-                               (conj acc (str (name k) ": " processed-value "; ")))))
+                               (conj acc (str (name k) not-required-sign ": " processed-value "; ")))))
                        [] schema)))
-
-(generate-types-from-schema-state (get-in @schema-state ["Address"]) [:state])
 
 (defn check-fhir-flags-type [data]
   (and (:fhir/flags data) (not (:type data)) (not (:confirms data)) (not (:zen.fhir/value-set data))))
@@ -339,26 +356,28 @@
 
 (defn get-core-data [path]
   (let [core-data (get-in @schema-state path)]
-    (if (map? core-data) core-data
-        (get-in @schema-state [(str (first core-data))]))))
+    (cond
+      (= (count path) 1) core-data
+      (map? (:value core-data)) (:value core-data)
+      :else (get-in @schema-state [(str (:value (first (:value core-data))))]))))
 
-(defn get-core-values? [{path :path interface-name :interface-name} data]
-  (let [filtred-path (filter #(not (or (= % :keys) (= % :every))) path)
-        path-to-core-data (into [interface-name] filtred-path)
+(defn get-core-values? [vtx data]
+  (let [filtred-path (filter #(not (or (= % :keys) (= % :every))) (:path vtx))
+        path-to-core-data (into [(:interface-name vtx)] filtred-path)
         filtred-data (filter (fn [[_k v]]
                                (not (if (:every v) (check-fhir-flags-type (:every v))
                                         (check-fhir-flags-type v)))) data)
         profile-data-keys (mapv #(first %) filtred-data)
         core-data (get-core-data path-to-core-data)]
-    ;; (println "core-data" core-data)
-    ;; (println "filtred-data" filtred-data)
-    ;; (println "profile-data-keys" profile-data-keys)
+
     (if (= (count profile-data-keys) (count (keys core-data))) ["{ "]
-        (conj ["{ "] (generate-types-from-schema-state core-data profile-data-keys)))))
+        (conj ["{ "] (generate-types-from-schema-state core-data profile-data-keys vtx)))))
 
 (defn get-keys-value [vtx data]
-  (if (or (= (:version vtx) (:fhir-version vtx)) (= (count (:path vtx)) 1)) ["{ "]
-      (get-core-values? vtx data)))
+  (if (or (= (:version vtx) (:fhir-version vtx))
+          (and (= (count (:path vtx)) 1) (= (count (get (:require vtx) "root")) 0)))
+    ["{ "]
+    (get-core-values? vtx data)))
 
 (zen.schema/register-schema-pre-process-hook!
  ::ts
@@ -374,18 +393,11 @@
                      (:exclusive-keys data)
                      (update vtx :exclusive-keys conj (gut/generate-exclusive-keys vtx data))
                      :else vtx)]
-      ;;  (println "path-ignore" (:ignore-path new-vtx))
-      ;;  (println "path" (:path new-vtx))
-      ;;  (println "data")
-      ;;  (pp/pprint data)
-      ;;  (println "schema")
-      ;;  (pp/pprint (:schema new-vtx))
-      ;;  (pp/pprint (:ts new-vtx))
-      ;;  (println "require" (:require new-vtx))
+
        (cond
          (some #(str/starts-with? (str/join "." (:path new-vtx)) %) (:ignore-path new-vtx))
          (update new-vtx :ts conj "")
-        ;;  (check-fhir-flags-type data) (update new-vtx :ts conj "")
+         (check-fhir-flags-type data) (update new-vtx :ts conj "")
          (= (last (:path vtx)) :slicing) (update new-vtx :ts conj "unknown")
          (some #(= :slicing %) (:path vtx)) new-vtx
          (= (last (:path new-vtx)) :zen.fhir/type) new-vtx
@@ -408,6 +420,8 @@
  (fn [ztx schema]
    (fn [vtx data opts]
      (cond
+       (and (:exclusive-keys data) (not (gut/check-need-generate-exclusive-keys data)))
+       (update vtx :ts conj "")
        (some #(str/starts-with? (str/join "." (:path vtx)) %) (:ignore-path vtx))
        (update vtx :ts conj "")
        (check-fhir-flags-type data) (update vtx :ts conj "")

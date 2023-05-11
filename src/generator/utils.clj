@@ -107,3 +107,6 @@
 
 (defn contains-keyword? [v seq]
   (some #(= v %) seq))
+
+(defn check-need-generate-exclusive-keys [schema]
+  (and (:exclusive-keys schema) (= (:type schema) 'zen/map) (:fhir/flags schema) (:keys schema)))
