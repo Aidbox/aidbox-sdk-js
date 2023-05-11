@@ -20,6 +20,12 @@
    :datetime "dateTime"
    :any "any"})
 
+(defn hyphenated-name-to-camel-case-name [^String method-name]
+  (clojure.string/replace method-name #"-(\w)"
+                          #(clojure.string/upper-case
+                            (do
+                              (second %1)))))
+
 (def prepared-interfaces
   {:onekey-type "export type OneKey<T extends Record<string, unknown>> = { [K in keyof T]-?:\n
                           ({ [P in K]: T[K] } & { [P in Exclude<keyof T, K>]?: never }) extends infer O ? { [P in keyof O]: O[P] } : never\n
@@ -480,10 +486,34 @@
 
     (spit result-file-path (str/join "" defaults) :append true)))
 
+
+(defn generate-task-defenition-type [ztx task-defenition]
+  (let [schema (zen.core/get-symbol ztx task-defenition)]
+    (:ts (zen.schema/apply-schema ztx
+                                  {:ts []
+                                   :require {}
+                                   :is-type false
+                                   :keys-in-array {}
+                                   :exclusive-keys {}
+                                   :extension-path []}
+                                  (zen.core/get-symbol ztx 'zen/schema)
+                                  schema
+                                  {:interpreters [::ts]}))))
+
+(defn genereate-task-defenition-types [ztx task-defenitions]
+  (let [types (mapv (fn [item]
+                      (str "type " (hyphenated-name-to-camel-case-name (name item)) " = " (str/join "" (generate-task-defenition-type ztx item)))) task-defenitions)
+        map (str "type TaskDefenitionsMap = {\n"
+                 (str/join "\n" (mapv (fn [item] (str "'" (name item) "'" ": " (hyphenated-name-to-camel-case-name (name item)))) task-defenitions))
+                 "\n}")]
+    {:types types :map map}))
+
 (defn generate-types [zen-path {api-type :api-type profiles :profiles} result-folder-path]
   (let [ztx  (zen.core/new-context {:package-paths [zen-path]})
         _ (read-versions ztx zen-path)
         schemas (zen.core/get-tag ztx 'zen.fhir/base-schemas)
+        task-defenitions (zen.core/get-tag ztx 'awf.task/definition)
+        generated-task-defenition-types (genereate-task-defenition-types ztx task-defenitions)
         structures (zen.core/get-tag ztx 'zen.fhir/structures)
         versions (map #(namespace %) schemas)
         fhir-version (some #(re-matches #"^hl7-fhir-r.+-core$" %) versions)
@@ -507,9 +537,12 @@
             (generate-types-for-version ztx zen-path version result-folder-path fhir-version profile-version duplicates api-type))
           versions-with-profile)
 
-    (println "Search params generation...")
+    (println "Search params types generation...")
+    (spit (str result-folder-path "/" fhir-version ".d.ts") (str/join "" search-params-result) :append true)
 
-    (spit (str result-folder-path "/" fhir-version ".d.ts") (str/join "" search-params-result) :append true)))
+    (println "Task defenitions types generation...")
+    (spit (str result-folder-path "/" fhir-version ".d.ts") (str "\n\n" (:map generated-task-defenition-types)) :append true)
+    (spit (str result-folder-path "/" fhir-version ".d.ts") (str "\n\n" (str/join "\n" (:types generated-task-defenition-types))) :append true)))
 
 (defn get-sdk [zen-path args]
   (io/make-parents (str zen-path "/package/index.js"))
