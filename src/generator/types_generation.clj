@@ -170,6 +170,7 @@
   (let [removed-us-core (str/replace n #"us-core-" "")]
     (cond (= removed-us-core "relatedperson") "RelatedPerson"
           (= removed-us-core "practitionerrole") "PractitionerRole"
+          (= removed-us-core "careteam") "CareTeam"
           :else (gut/capitalize-first removed-us-core))))
 
 (defn get-reference-union-type [vtx references]
@@ -211,9 +212,9 @@
   (let [extended-resource (get-confirms-type vtx confirms)
         interface-name (:interface-name vtx)
         extand (cond
-                 (and (contains? (:duplicates vtx) interface-name)
+                 (and (contains? (:duplicates vtx) extended-resource)
                       (not= (:version vtx) (:fhir-version vtx)))
-                 (format " extends Modify<%s['%s']," (gut/get-resource-map-name (:fhir-version vtx)) (get-in (:duplicates vtx) [interface-name]))
+                 (format " extends Modify<%s['%s']," (gut/get-resource-map-name (:fhir-version vtx)) (get-in (:duplicates vtx) [extended-resource]))
                  (= interface-name "DomainResource")
                  ""
                  (not extended-resource)
@@ -226,6 +227,7 @@
                    (format " extends %s " extended-resource))
 
                  :else " ")]
+
     (when (= (:version vtx) (:fhir-version vtx)) (swap! schema-state assoc-in [interface-name] {}))
     (str "export interface " interface-name extand)))
 
@@ -356,13 +358,15 @@
 
 (defn get-core-data [path]
   (let [core-data (get-in @schema-state path)]
+    (println "core-data2" core-data)
     (cond
       (= (count path) 1) core-data
       (map? (:value core-data)) (:value core-data)
-      :else (get-in @schema-state [(str (:value (first (:value core-data))))]))))
+      (= (:value core-data) 'Element) [(:value core-data)]
+      :else (get-in @schema-state [(str (:value core-data))]))))
 
 (defn get-core-values? [vtx data]
-  (let [filtred-path (filter #(not (or (= % :keys) (= % :every))) (:path vtx))
+  (let [filtred-path (gut/modify-path (:path vtx))
         path-to-core-data (into [(:interface-name vtx)] filtred-path)
         filtred-data (filter (fn [[_k v]]
                                (not (if (:every v) (check-fhir-flags-type (:every v))
@@ -370,10 +374,19 @@
         profile-data-keys (mapv #(first %) filtred-data)
         core-data (get-core-data path-to-core-data)]
 
-    (if (= (count profile-data-keys) (count (keys core-data))) ["{ "]
-        (conj ["{ "] (generate-types-from-schema-state core-data profile-data-keys vtx)))))
+    (println "path" (:path vtx))
+    (println "filtred-path" filtred-path)
+    (pp/pprint core-data)
+    (cond (symbol? core-data) core-data
+          (= (count profile-data-keys) (count (keys core-data))) ["{ "]
+          :else (conj ["{ "] (generate-types-from-schema-state core-data profile-data-keys vtx)))))
 
 (defn get-keys-value [vtx data]
+  (println "ts")
+  (pp/pprint (:ts vtx))
+  (println "path" (:path vtx))
+  (println "data")
+  (pp/pprint data)
   (if (or (= (:version vtx) (:fhir-version vtx))
           (and (= (count (:path vtx)) 1) (= (count (get (:require vtx) "root")) 0)))
     ["{ "]
@@ -393,12 +406,12 @@
                      (:exclusive-keys data)
                      (update vtx :exclusive-keys conj (gut/generate-exclusive-keys vtx data))
                      :else vtx)]
-
        (cond
          (some #(str/starts-with? (str/join "." (:path new-vtx)) %) (:ignore-path new-vtx))
          (update new-vtx :ts conj "")
          (check-fhir-flags-type data) (update new-vtx :ts conj "")
-         (= (last (:path vtx)) :slicing) (update new-vtx :ts conj "unknown")
+         (or (= (last (:path vtx)) :slicing) (:slicing (:tag data)))
+         (update new-vtx :ts conj "unknown")
          (some #(= :slicing %) (:path vtx)) new-vtx
          (= (last (:path new-vtx)) :zen.fhir/type) new-vtx
          (gut/exclusive-keys-child? new-vtx) new-vtx
@@ -425,7 +438,7 @@
        (some #(str/starts-with? (str/join "." (:path vtx)) %) (:ignore-path vtx))
        (update vtx :ts conj "")
        (check-fhir-flags-type data) (update vtx :ts conj "")
-       (some #(= :slicing %) (:path vtx)) vtx
+       (or (some #(= :slicing %) (:path vtx)) (:slicing (:tag data))) vtx
        (gut/exclusive-keys-child? vtx) vtx
        (or (:fhir/extensionUri data) (:fhir/extensionUri (:every data))) vtx
        (= (last (:path vtx)) :keys) (update vtx :ts conj " }")
@@ -530,26 +543,27 @@
               (spit result-file-path (str/join "" (conj (:ts structures-result)  closing-modify-type "\n")) :append true))) structures)
 
     (mapv (fn [[k v]]
-            (let [schema-name (last (vals v))
-                  _ (zen.core/read-ns ztx (symbol (namespace schema-name)))
-                  closing-modify-type (when (and (not= version fhir-version) (some #(= k %) (keys duplicates))) "> {}")
-                  schemas-result (when (not (re-find #"-" k))
-                                   (zen.schema/apply-schema ztx
-                                                            {:ts []
-                                                             :require {}
-                                                             :interface-name k
-                                                             :is-type false
-                                                             :version version
-                                                             :duplicates duplicates
-                                                             :fhir-version fhir-version
-                                                             :keys-in-array {}
-                                                             :exclusive-keys {}
-                                                             :extension-path []}
-                                                            (zen.core/get-symbol ztx 'zen/schema)
-                                                            (zen.core/get-symbol ztx (symbol schema-name))
-                                                            {:interpreters [::ts]}))]
-              (spit result-file-path
-                    (str/join "" (conj (:ts schemas-result) closing-modify-type "\n")) :append true))) profiles)
+            (mapv (fn [[_ schema-name]]
+                    (let [_ (zen.core/read-ns ztx (symbol (namespace schema-name)))
+                          interface-name (gut/prettify-profile-name (namespace schema-name) k version)
+                          closing-modify-type (when (and (not= version fhir-version) (some #(= k %) (keys duplicates))) "> {}")
+                          schemas-result (when (not (re-find #"-" k))
+                                           (zen.schema/apply-schema ztx
+                                                                    {:ts []
+                                                                     :require {}
+                                                                     :interface-name interface-name
+                                                                     :is-type false
+                                                                     :version version
+                                                                     :duplicates duplicates
+                                                                     :fhir-version fhir-version
+                                                                     :keys-in-array {}
+                                                                     :exclusive-keys {}
+                                                                     :extension-path []}
+                                                                    (zen.core/get-symbol ztx 'zen/schema)
+                                                                    (zen.core/get-symbol ztx (symbol schema-name))
+                                                                    {:interpreters [::ts]}))]
+                      (spit result-file-path
+                            (str/join "" (conj (:ts schemas-result) closing-modify-type "\n")) :append true))) v)) profiles)
 
     :ok))
 
@@ -662,7 +676,7 @@
         _ (read-versions ztx zen-path)
         schemas (zen.core/get-tag ztx 'zen.fhir/base-schemas)
         structures (zen.core/get-tag ztx 'zen.fhir/structures)
-        versions (map #(namespace %) schemas)
+        versions (mapv #(namespace %) schemas)
         fhir-version (some #(re-matches #"^hl7-fhir-r.+-core$" %) versions)
         profile-version (when (boolean profiles) (namespace (first (filter #(not= (namespace %) fhir-version) (zen.core/get-tag ztx 'zen.fhir/profiles)))))
         versions-with-profile (if (boolean profiles) (conj versions profile-version) versions)

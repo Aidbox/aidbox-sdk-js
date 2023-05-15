@@ -110,3 +110,25 @@
 
 (defn check-need-generate-exclusive-keys [schema]
   (and (:exclusive-keys schema) (= (:type schema) 'zen/map) (:fhir/flags schema) (:keys schema)))
+
+(def version-prefixes-map
+  {:hl7-fhir-us-core "us-core-"})
+
+(defn prettify-profile-name [ns core-name version]
+  (let [prefix ((keyword version) version-prefixes-map)
+        n (second (str/split ns #"\."))
+        prefix-length (if (str/includes? n (str/lower-case core-name))
+                        (count (str prefix core-name)) (count prefix))
+        subs-index (if (str/includes? n (str/lower-case core-name)) 1 0)]
+    (if (= prefix-length (count n)) core-name
+        (str core-name (capitalize-first (prettify-name (subs n (+ prefix-length subs-index))))))))
+
+(defn modify-path [path]
+  (reduce (fn [acc [idx val]]
+            (cond (and (= idx 0) (= val :keys)) acc
+                  (= idx (- (count path) 1)) acc
+                  (= val :every) (conj acc :value 0)
+                  (= val :keys) (conj acc :value)
+                  :else (conj acc val))) [] (map-indexed vector path)))
+
+(def path [:keys :content :every :keys :attachment :keys])
