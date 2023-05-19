@@ -7,21 +7,15 @@ import { Layout } from '../layout'
 import { Workspace } from './components'
 
 export function Dashboard () {
-  const [patient, setPatient] = useState<Patient>()
+  const [patient, setPatient] = useState<Patient>({ id: 'fd22f7f8-70a6-4d45-b818-8be4eb2ed0ea' })
 
   const searchParams = new URLSearchParams(document.location.search)
-  const patient_id = searchParams.get('id')
+  const patient_id = searchParams.get('id') || 'fd22f7f8-70a6-4d45-b818-8be4eb2ed0ea'
 
   useEffect(() => {
     if (!patient_id) {
       return
     }
-
-    client.getResource('Patient', patient_id).then((response) => {
-      if ((response instanceof Error)) return
-
-      setPatient(response)
-    })
 
     client.getResource('Patient', patient_id).then((response) => {
       if ((response instanceof Error)) return

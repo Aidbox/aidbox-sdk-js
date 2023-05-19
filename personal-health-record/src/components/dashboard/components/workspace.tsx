@@ -20,14 +20,14 @@ export function Workspace ({ patient }: Props) {
 
       <div style={{ flexDirection: 'column', gap: '1rem', display: 'flex' }}>
         <div style={{ display: 'grid', gridColumnGap: '3rem', gridRowGap: '2rem', gridTemplateColumns: 'repeat(3, 1fr)', padding: '0 3rem' }}>
-          <ConditionsCard />
-          <AppointmentsCard />
-          <ObservationsCard />
-          <AllergiesIntoleranceCard />
-          <ImmunizationsCard />
+          <ConditionsCard id={patient.id} />
+          <AppointmentsCard id={patient.id} />
+          <ObservationsCard id={patient.id} />
+          <AllergiesIntoleranceCard id={patient.id} />
+          <ImmunizationsCard id={patient.id} />
         </div>
         <div style={{ padding: '0 3rem' }}>
-          <ClinicalVitals />
+          <ClinicalVitals id={patient.id} />
         </div>
       </div>
     </>

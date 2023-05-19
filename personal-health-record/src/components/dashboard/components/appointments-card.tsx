@@ -12,19 +12,17 @@ import { transformName } from '../../../utils/transform-name'
 
 import styles from './workspace.module.css'
 
-export function AppointmentsCard () {
+export function AppointmentsCard ({ id: patient_id }: { id: string }) {
   const [nextAppointment, setNextAppointment] = useState<Appointment>()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [total, setTotal] = useState<number>(0)
   const [loading, setLoading] = useState(true)
-  const searchParams = new URLSearchParams(document.location.search)
-  const patient_id = searchParams.get('id')
 
   const getNextAppointment = useCallback(async () => {
     const response = await client.getResources('Appointment')
       .where('patient', `Patient/${patient_id}`)
       .where('date', new Date().toISOString(), 'gt')
-      .sort([{ key: 'date', dir: 'acs' }])
+      .sort('date', 'asc')
 
     if (response.entry.length > 0) {
       setNextAppointment(response?.entry[0].resource ?? {})
@@ -65,7 +63,7 @@ export function AppointmentsCard () {
     onClick: () => ({})
   }
 
-  let bottomAction = getButtonAction({ appointments, nextAppointment, nextAppointmentAction, appointmentsAction })
+  const bottomAction = getButtonAction({ appointments, nextAppointment, nextAppointmentAction, appointmentsAction })
 
   const title = nextAppointment ? 'Next Appointment' : 'Appointments' + (total > 0 ? `(${total})` : '')
 
@@ -139,7 +137,7 @@ function NextAppointment ({ appointment }: NextAppointmentProps) {
   }
 
   useEffect(() => {
-    const practitioner = appointment.participant?.find((p) => p.actor?.resourceType === 'Practitioner')
+    const practitioner = appointment.participant?.find((p: any) => p.actor?.resourceType === 'Practitioner')
     const id = practitioner?.actor?.id
     if (id) {
       getPractitionerRole(id)

@@ -10,12 +10,10 @@ import { kebabToFriendlyString } from '../../../utils/kebab-to-friendly-string'
 
 import styles from './workspace.module.css'
 
-export function ImmunizationsCard () {
+export function ImmunizationsCard ({ id: patient_id }: { id: string }) {
   const [immunizations, setImmunizations] = useState<Immunization[]>([])
   const [total, setTotal] = useState<number>(0)
   const [loading, setLoading] = useState(true)
-  const searchParams = new URLSearchParams(document.location.search)
-  const patient_id = searchParams.get('id')
 
   useEffect(() => {
     client.getResources('Immunization')

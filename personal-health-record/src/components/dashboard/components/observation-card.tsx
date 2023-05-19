@@ -8,11 +8,9 @@ import { formatDate } from '../../../utils/format-date'
 
 import styles from './workspace.module.css'
 
-export function ObservationsCard (): JSX.Element {
-  const searchParams = new URLSearchParams(document.location.search)
+export function ObservationsCard ({ id: patient_id }: { id: string }): JSX.Element {
   const [total, setTotal] = useState<number>(0)
   const [loading, setLoading] = useState(true)
-  const patient_id = searchParams.get('id')
   const [observations, setObservations] = useState<Observation[]>()
 
   const codes = useMemo(() => [
@@ -73,7 +71,7 @@ export function ObservationsCard (): JSX.Element {
               <p className={styles.cardSmallText}>{formatDate(observation.meta?.lastUpdated ?? '')}</p>
             </div>
             <p style={{ textTransform: 'capitalize', fontSize: '0.8rem', fontWeight: '600', display: 'flex', justifyContent: 'flex-end' }}>
-              {observation.value && Object.entries(observation.value).map(([, element], key) => (
+              {observation.value && Object.entries(observation.value).map(([, element]: [any, any], key) => (
                 <span key={key}>{element.value}{element.code}</span>
               ))}
             </p>

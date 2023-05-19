@@ -10,12 +10,10 @@ import { kebabToFriendlyString } from '../../../utils/kebab-to-friendly-string'
 
 import styles from './workspace.module.css'
 
-export function AllergiesIntoleranceCard () {
+export function AllergiesIntoleranceCard ({ id: patient_id }: { id: string }) {
   const [allergies, setAllergies] = useState<AllergyIntolerance[]>([])
   const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState<number>(0)
-  const searchParams = new URLSearchParams(document.location.search)
-  const patient_id = searchParams.get('id')
 
   useEffect(() => {
     client.getResources('AllergyIntolerance')

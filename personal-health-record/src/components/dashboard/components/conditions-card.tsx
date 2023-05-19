@@ -8,12 +8,10 @@ import { formatDate } from '../../../utils/format-date'
 
 import styles from './workspace.module.css'
 
-export function ConditionsCard (): JSX.Element {
+export function ConditionsCard ({ id: patient_id }: { id: string }): JSX.Element {
   const [conditions, setConditions] = useState<Condition[]>([])
   const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState<number>(0)
-  const searchParams = new URLSearchParams(document.location.search)
-  const patient_id = searchParams.get('id')
 
   useEffect(() => {
     client.getResources('Condition')
@@ -21,8 +19,6 @@ export function ConditionsCard (): JSX.Element {
       .count(3)
       .then((response) => {
         setConditions(response.entry.map((condition) => condition.resource))
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         setTotal(response.total)
         setLoading(false)
       })

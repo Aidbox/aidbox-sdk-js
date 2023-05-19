@@ -28,7 +28,8 @@ engine: allow
 ```
 
 ## Add client credentials to .env
-Put `<client-name>` and `<client-secret>` to `.env` file.
+Put `<client-name>`, `<client-secret>` and aidbox URL to `.env` file.
+Example in `.env.tpl`
 
 ## Install dependencies and run
 ```

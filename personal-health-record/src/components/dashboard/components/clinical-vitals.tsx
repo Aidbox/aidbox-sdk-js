@@ -41,9 +41,7 @@ ChartJS.register(
   Legend
 )
 
-export function ClinicalVitals (): JSX.Element {
-  const searchParams = new URLSearchParams(document.location.search)
-  const patient_id = searchParams.get('id')
+export function ClinicalVitals ({ id: patient_id }: { id: string }): JSX.Element {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false)
   const [selectedOption, setSelectedOption] = useState<option>('Body weight')
   const [observations, setObservations] = useState<Observation[]>()
