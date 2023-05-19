@@ -1,2 +1,2 @@
-CLIENT=client-name
-SECRET=secret
+VITE_APP_CLIENT=client-name
+VITE_APP_SECRET=secret
