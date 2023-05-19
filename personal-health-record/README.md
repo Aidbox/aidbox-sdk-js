@@ -10,8 +10,7 @@ accept: text/yaml
 
 id: <client-name>
 secret: <client-secret>
-grant_types:
-  - basic
+grant_types: ["basic"]
 ```
 
 For client that we created we need to provide access control record that allows
@@ -21,9 +20,7 @@ POST /AccessPolicy
 content-type: text/yaml
 accept: text/yaml
 
-link:
-  - id: <client-name>
-    resourceType: Client
+link: [{ id: <client-name>, resourceType: Client }]
 engine: allow
 ```
 
