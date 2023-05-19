@@ -112,4 +112,121 @@ export declare class GetResources<T extends keyof ResourceTypeMap, R extends Res
     sort(key: SortKey<T>, dir: Dir): this;
     then<TResult1 = BaseResponseResources<T>, TResult2 = never>(onfulfilled?: ((value: BaseResponseResources<T>) => PromiseLike<TResult1> | TResult1) | undefined | null, onrejected?: ((reason: any) => PromiseLike<TResult2> | TResult2) | undefined | null): PromiseLike<TResult1 | TResult2>;
 }
+type EventType = 'awf.workflow.event/workflow-init';
+type TaskStatus = 'requested' | 'in-progress';
+type RequesterType = 'AidboxWorkflow';
+interface Task {
+    definition: string;
+    params: {
+        event: EventType;
+        'task-id'?: string;
+    };
+    'workflow-definition': string;
+    resourceType: 'AidboxTask';
+    requester: {
+        id: string;
+        resourceType: RequesterType;
+    };
+    status: TaskStatus;
+    execId: string;
+    id: string;
+}
+interface TasksBatch {
+    result: {
+        resources: Array<Task>;
+    };
+}
+interface WorkerOptions {
+    batchSize?: number;
+    pollInterval?: number;
+    type: 'decision' | 'task';
+}
+interface WorkerYellowInput {
+    a: string;
+    b: string;
+    c: string;
+}
+interface WorkerGreenInput {
+    a: string;
+    b: string;
+    c: string;
+}
+interface WorkerYellowOutput {
+    result: string;
+}
+interface WorkerGreenOutput {
+    result: {};
+}
+interface ActionResult {
+    action: string;
+    'task-request'?: {
+        definition: string;
+        params: string;
+    };
+}
+interface Actions {
+    scheduleTask: (name: string, params: any) => ActionResult;
+    scheduleWorkflow: (name: string, params: any) => ActionResult;
+    completeWorkflow: () => ActionResult;
+}
+export interface TaskMap {
+    WorkerYellow: {
+        input: WorkerYellowInput;
+        output: WorkerYellowOutput;
+    };
+    WorkerGreen: {
+        input: WorkerGreenInput;
+        output: WorkerGreenOutput;
+    };
+    'workflow/workflow-definition': {
+        input: Task;
+        output: {};
+    };
+    'workflow/transform': {
+        input: {
+            nth: number;
+            'report-every': number;
+            'step-sleep': number;
+        };
+        output: {
+            prime: number;
+        };
+    };
+}
+export declare class Engine {
+    private readonly client;
+    private readonly workers;
+    constructor({ url, username, password }: {
+        url: string;
+        username: string;
+        password: string;
+    });
+    registerWorker(name: string, handler: (input: Task) => any, options?: WorkerOptions): void;
+    registerWorkflow(name: string, handler: (input: Task, actions?: Actions) => any, options?: WorkerOptions): void;
+    poll(name: string, callback: (input: Task, actions?: Actions) => any, options: WorkerOptions): Promise<void>;
+    createHandler(handler: (input: Task, actions?: Actions) => any): (task: Task) => Promise<void>;
+    pollTask(name: string, options: WorkerOptions): Promise<Task[]>;
+    startTask(id: string, executionId: string): Promise<AxiosResponse<TasksBatch, any>>;
+    completeTask(id: string, executionId: string, payload: unknown): Promise<AxiosResponse<TasksBatch, any>>;
+    failTask(id: string, executionId: string, payload: unknown): Promise<AxiosResponse<TasksBatch, any>>;
+    executeWorkflow(name: string, params?: unknown): Promise<AxiosResponse<TasksBatch, any>>;
+    executeTask(name: string, params?: unknown): Promise<AxiosResponse<TasksBatch, any>>;
+    completeWorkflow(): {
+        action: string;
+    };
+    scheduleWorkflow(definition: string, params: any): {
+        action: string;
+        'task-request': {
+            definition: string;
+            params: any;
+        };
+    };
+    scheduleTask(definition: string, params: any): {
+        action: string;
+        'task-request': {
+            definition: string;
+            params: any;
+        };
+    };
+}
 export {};

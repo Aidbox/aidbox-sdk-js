@@ -348,3 +348,191 @@ export class GetResources<T extends keyof ResourceTypeMap, R extends ResourceTyp
       });
   }
 }
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+type EventType = 'awf.workflow.event/workflow-init';
+type TaskStatus = 'requested' | 'in-progress';
+type RequesterType = 'AidboxWorkflow';
+
+interface Task {
+  definition: string;
+  params: { event: EventType; 'task-id'?: string };
+  'workflow-definition': string;
+  resourceType: 'AidboxTask';
+  requester: { id: string; resourceType: RequesterType };
+  status: TaskStatus;
+  execId: string;
+  id: string;
+}
+
+interface TasksBatch {
+  result: { resources: Array<Task> };
+}
+
+interface WorkerOptions {
+  batchSize?: number;
+  pollInterval?: number;
+  type: 'decision' | 'task';
+}
+
+interface WorkerYellowInput {
+  a: string;
+  b: string;
+  c: string;
+}
+
+interface WorkerGreenInput {
+  a: string;
+  b: string;
+  c: string;
+}
+
+interface WorkerYellowOutput {
+  result: string;
+}
+
+interface WorkerGreenOutput {
+  result: {};
+}
+
+interface ActionResult {
+  action: string;
+  'task-request'?: { definition: string; params: string };
+}
+
+interface Actions {
+  scheduleTask: (name: string, params: any) => ActionResult;
+  scheduleWorkflow: (name: string, params: any) => ActionResult;
+  completeWorkflow: () => ActionResult;
+}
+
+export interface TaskMap {
+  WorkerYellow: { input: WorkerYellowInput; output: WorkerYellowOutput };
+  WorkerGreen: { input: WorkerGreenInput; output: WorkerGreenOutput };
+  'workflow/workflow-definition': { input: Task; output: {} };
+  'workflow/transform': {
+    input: { nth: number; 'report-every': number; 'step-sleep': number };
+    output: { prime: number };
+  };
+}
+
+export class Engine {
+  private readonly client;
+  private readonly workers: Array<{}>;
+
+  constructor({ url, username, password }: { url: string; username: string; password: string }) {
+    this.client = axios.create({ baseURL: url, auth: { username, password } });
+    this.workers = [];
+  }
+
+  registerWorker(name: string, handler: (input: Task) => any, options: WorkerOptions = { type: 'task' }) {
+    this.workers.push(this.poll(name, handler, { ...options, type: 'task' }));
+  }
+
+  registerWorkflow(
+      name: string,
+      handler: (input: Task, actions?: Actions) => any,
+      options: WorkerOptions = { type: 'decision' },
+  ) {
+    this.workers.push(this.poll(name, handler, { ...options, type: 'decision' }));
+  }
+
+  async poll(name: string, callback: (input: Task, actions?: Actions) => any, options: WorkerOptions) {
+    const handler = this.createHandler(callback);
+
+    while (true) {
+      await sleep(options.pollInterval || 1000);
+      const tasks = await this.pollTask(name, options);
+
+      if (!tasks.length) continue;
+
+      await Promise.allSettled(tasks.map(async (task) => handler(task)));
+    }
+  }
+
+  createHandler(handler: (input: Task, actions?: Actions) => any) {
+    return async (task: Task) => {
+      await this.startTask(task.id, task.execId);
+
+      try {
+        const actions: Actions = {
+          scheduleTask: this.scheduleTask,
+          scheduleWorkflow: this.scheduleWorkflow,
+          completeWorkflow: this.completeWorkflow,
+        };
+
+        const result = await handler(task, actions);
+
+        this.completeTask(task.id, task.execId, result);
+      } catch (error: any) {
+        console.dir(error.response.data, { depth: 10 });
+        this.failTask(task.id, task.execId, error);
+      }
+    };
+  }
+
+  async pollTask(name: string, options: WorkerOptions) {
+    const { data: tasksBatch } = await this.client.post<TasksBatch>('/rpc', {
+      method: 'awf.task/poll',
+      params: {
+        [options.type === 'decision' ? 'workflowDefinitions' : 'taskDefinitions']: [name],
+        maxBatchSize: options.batchSize,
+      },
+    });
+
+    return tasksBatch.result.resources;
+  }
+
+  startTask(id: string, executionId: string) {
+    return this.client.post<TasksBatch>('/rpc', {
+      method: 'awf.task/start',
+      params: { id: id, execId: executionId },
+    });
+  }
+
+  completeTask(id: string, executionId: string, payload: unknown) {
+    return this.client.post<TasksBatch>('/rpc', {
+      method: 'awf.task/success',
+      params: { id: id, execId: executionId, result: payload },
+    });
+  }
+
+  failTask(id: string, executionId: string, payload: unknown) {
+    return this.client.post<TasksBatch>('/rpc', {
+      method: 'awf.task/fail',
+      params: { id: id, execId: executionId, result: payload },
+    });
+  }
+
+  executeWorkflow(name: string, params: unknown = {}) {
+    return this.client.post<TasksBatch>('/rpc', {
+      method: 'awf.workflow/create-and-execute',
+      params: { definition: name, params },
+    });
+  }
+
+  executeTask(name: string, params: unknown = {}) {
+    return this.client.post<TasksBatch>('/rpc', {
+      method: 'awf.task/create-and-execute',
+      params: { definition: name, params },
+    });
+  }
+
+  completeWorkflow() {
+    return { action: 'awf.workflow.action/complete-workflow' };
+  }
+
+  scheduleWorkflow(definition: string, params: any) {
+    return {
+      action: 'awf.workflow.action/schedule-workflow',
+      'task-request': { definition, params },
+    };
+  }
+
+  scheduleTask(definition: string, params: any) {
+    return {
+      action: 'awf.workflow.action/schedule-task',
+      'task-request': { definition, params },
+    };
+  }
+}

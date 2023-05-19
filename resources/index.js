@@ -56,7 +56,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetResources = exports.Client = void 0;
+exports.Engine = exports.GetResources = exports.Client = void 0;
 var axios_1 = require("axios");
 function buildURL(type, url) {
     return type === 'fhir' ? 'fhir/' + url : url;
@@ -315,3 +315,150 @@ var GetResources = /** @class */ (function () {
     return GetResources;
 }());
 exports.GetResources = GetResources;
+var sleep = function (ms) { return new Promise(function (resolve) { return setTimeout(resolve, ms); }); };
+var Engine = /** @class */ (function () {
+    function Engine(_a) {
+        var url = _a.url, username = _a.username, password = _a.password;
+        this.client = axios_1.default.create({ baseURL: url, auth: { username: username, password: password } });
+        this.workers = [];
+    }
+    Engine.prototype.registerWorker = function (name, handler, options) {
+        if (options === void 0) { options = { type: 'task' }; }
+        this.workers.push(this.poll(name, handler, __assign(__assign({}, options), { type: 'task' })));
+    };
+    Engine.prototype.registerWorkflow = function (name, handler, options) {
+        if (options === void 0) { options = { type: 'decision' }; }
+        this.workers.push(this.poll(name, handler, __assign(__assign({}, options), { type: 'decision' })));
+    };
+    Engine.prototype.poll = function (name, callback, options) {
+        return __awaiter(this, void 0, void 0, function () {
+            var handler, tasks;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        handler = this.createHandler(callback);
+                        _a.label = 1;
+                    case 1:
+                        if (!true) return [3 /*break*/, 5];
+                        return [4 /*yield*/, sleep(options.pollInterval || 1000)];
+                    case 2:
+                        _a.sent();
+                        return [4 /*yield*/, this.pollTask(name, options)];
+                    case 3:
+                        tasks = _a.sent();
+                        if (!tasks.length)
+                            return [3 /*break*/, 1];
+                        return [4 /*yield*/, Promise.allSettled(tasks.map(function (task) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+                                return [2 /*return*/, handler(task)];
+                            }); }); }))];
+                    case 4:
+                        _a.sent();
+                        return [3 /*break*/, 1];
+                    case 5: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Engine.prototype.createHandler = function (handler) {
+        var _this = this;
+        return function (task) { return __awaiter(_this, void 0, void 0, function () {
+            var actions, result, error_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.startTask(task.id, task.execId)];
+                    case 1:
+                        _a.sent();
+                        _a.label = 2;
+                    case 2:
+                        _a.trys.push([2, 4, , 5]);
+                        actions = {
+                            scheduleTask: this.scheduleTask,
+                            scheduleWorkflow: this.scheduleWorkflow,
+                            completeWorkflow: this.completeWorkflow,
+                        };
+                        return [4 /*yield*/, handler(task, actions)];
+                    case 3:
+                        result = _a.sent();
+                        this.completeTask(task.id, task.execId, result);
+                        return [3 /*break*/, 5];
+                    case 4:
+                        error_1 = _a.sent();
+                        console.dir(error_1.response.data, { depth: 10 });
+                        this.failTask(task.id, task.execId, error_1);
+                        return [3 /*break*/, 5];
+                    case 5: return [2 /*return*/];
+                }
+            });
+        }); };
+    };
+    Engine.prototype.pollTask = function (name, options) {
+        return __awaiter(this, void 0, void 0, function () {
+            var tasksBatch;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0: return [4 /*yield*/, this.client.post('/rpc', {
+                            method: 'awf.task/poll',
+                            params: (_a = {},
+                                _a[options.type === 'decision' ? 'workflowDefinitions' : 'taskDefinitions'] = [name],
+                                _a.maxBatchSize = options.batchSize,
+                                _a),
+                        })];
+                    case 1:
+                        tasksBatch = (_b.sent()).data;
+                        return [2 /*return*/, tasksBatch.result.resources];
+                }
+            });
+        });
+    };
+    Engine.prototype.startTask = function (id, executionId) {
+        return this.client.post('/rpc', {
+            method: 'awf.task/start',
+            params: { id: id, execId: executionId },
+        });
+    };
+    Engine.prototype.completeTask = function (id, executionId, payload) {
+        return this.client.post('/rpc', {
+            method: 'awf.task/success',
+            params: { id: id, execId: executionId, result: payload },
+        });
+    };
+    Engine.prototype.failTask = function (id, executionId, payload) {
+        return this.client.post('/rpc', {
+            method: 'awf.task/fail',
+            params: { id: id, execId: executionId, result: payload },
+        });
+    };
+    Engine.prototype.executeWorkflow = function (name, params) {
+        if (params === void 0) { params = {}; }
+        return this.client.post('/rpc', {
+            method: 'awf.workflow/create-and-execute',
+            params: { definition: name, params: params },
+        });
+    };
+    Engine.prototype.executeTask = function (name, params) {
+        if (params === void 0) { params = {}; }
+        return this.client.post('/rpc', {
+            method: 'awf.task/create-and-execute',
+            params: { definition: name, params: params },
+        });
+    };
+    Engine.prototype.completeWorkflow = function () {
+        return { action: 'awf.workflow.action/complete-workflow' };
+    };
+    Engine.prototype.scheduleWorkflow = function (definition, params) {
+        return {
+            action: 'awf.workflow.action/schedule-workflow',
+            'task-request': { definition: definition, params: params },
+        };
+    };
+    Engine.prototype.scheduleTask = function (definition, params) {
+        return {
+            action: 'awf.workflow.action/schedule-task',
+            'task-request': { definition: definition, params: params },
+        };
+    };
+    return Engine;
+}());
+exports.Engine = Engine;

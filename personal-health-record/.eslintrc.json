@@ -1,0 +1,62 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "settings": {
+    "react": { "version": "detect" }
+    },
+    "extends": [
+        "standard",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended"
+    ],
+    "plugins": [
+        "@typescript-eslint",
+        "react",
+        "react-hooks"
+    ],
+    "rules": {
+    "indent": "off",
+        "@typescript-eslint/indent": ["warn", 2],
+        "react/prop-types": 0,
+        "import/order": [
+            "warn",
+            {
+                "groups": [
+                    "type",
+                    "builtin",
+                    "external",
+                    "internal",
+                    "parent",
+                    "sibling",
+                    "index",
+                    "object"
+                ],
+                "newlines-between": "always",
+                "alphabetize": {
+                    "order": "asc",
+                    "caseInsensitive": true
+                }
+            }
+        ],
+        "prefer-const": 2,    
+        "jsx-quotes": ["error", "prefer-single"],
+        "quote-props": ["error", "consistent-as-needed"],
+        "camelcase": "off",
+        "react/self-closing-comp": "error",
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-boolean-value": ["error", "never"],
+        "react/jsx-closing-bracket-location": ["error", "tag-aligned"],
+        "react/jsx-closing-tag-location": "error",
+        "react/jsx-first-prop-new-line": ["error", "multiline"],
+        "react/jsx-indent": ["warn", 2, { "checkAttributes": true, "indentLogicalExpressions": true }],
+        "react/jsx-indent-props": ["warn", 2],
+        "react/jsx-key": "error",
+        "react/jsx-tag-spacing": "error",
+        "react/jsx-max-props-per-line": ["error", { "maximum": 1, "when": "always"}],
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": "off"
+    }
+}
