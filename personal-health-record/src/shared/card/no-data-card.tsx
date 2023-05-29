@@ -1,10 +1,10 @@
-import NoDateIcon from '../../assets/no-date.svg'
-import styles from '../../components/dashboard/components/workspace.module.css'
+import NoDataIcon from '../../assets/no-date.svg'
+import styles from '../../components/workspace.module.css'
 
-export function NoDateCard () {
+export function NoDataCard () {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-      <NoDateIcon />
+      <NoDataIcon />
       <p className={styles.cardSmallText}>There are no entries</p>
     </div>
   )

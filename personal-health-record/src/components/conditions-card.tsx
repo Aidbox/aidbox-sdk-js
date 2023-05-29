@@ -1,14 +1,14 @@
 import { Condition } from 'aidbox-sdk/aidbox-types'
 import { useEffect, useState } from 'react'
 
-import { CardWrapper } from '../../../shared/card'
-import { Divider } from '../../../shared/divider/divider'
-import { client } from '../../../utils/aidbox-client'
-import { formatDate } from '../../../utils/format-date'
+import { CardWrapper } from '../shared/card'
+import { Divider } from '../shared/divider/divider'
+import { formatDate } from '../utils'
+import { client } from '../utils/aidbox-client'
 
 import styles from './workspace.module.css'
 
-export function ConditionsCard ({ id: patient_id }: { id: string }): JSX.Element {
+export function ConditionsCard ({ id: patient_id }: { id: string }) {
   const [conditions, setConditions] = useState<Condition[]>([])
   const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState<number>(0)
@@ -23,10 +23,6 @@ export function ConditionsCard ({ id: patient_id }: { id: string }): JSX.Element
         setLoading(false)
       })
   }, [patient_id])
-
-  if (loading) {
-    return <div>Loading</div>
-  }
 
   const action = {
     label: 'Show more',
@@ -44,9 +40,8 @@ export function ConditionsCard ({ id: patient_id }: { id: string }): JSX.Element
       bottomActions={bottomActions}
     >
       {conditions.map((condition, index) => (
-        <>
+        <div key={condition.id}>
           <div
-            key={condition.id}
             style={{ display: 'grid', gridTemplateColumns: '5fr 1fr', alignItems: 'center' }}
           >
             <p style={{ fontSize: '1rem', fontWeight: '500', maxWidth: '90%', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{condition.code?.text}</p>
@@ -56,7 +51,7 @@ export function ConditionsCard ({ id: patient_id }: { id: string }): JSX.Element
           </div>
 
           {index !== conditions.length - 1 && <Divider verticalMargin={'0.5rem'} />}
-        </>
+        </div>
       ))}
     </CardWrapper>
   )

@@ -1,6 +1,6 @@
 import { Patient } from 'aidbox-sdk/aidbox-types'
 
-import styles from './layout.module.css'
+import styles from './patient-info.module.css'
 
 interface Props {
   patient: Patient

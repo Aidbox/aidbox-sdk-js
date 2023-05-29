@@ -1,28 +1,35 @@
 import cx from 'classnames'
-import { ReactNode } from 'react'
+import { JSX } from 'react'
 
 import styles from './card.module.css'
 import { LoadingCard } from './loading-card'
-import { NoDateCard } from './no-date-card'
+import { NoDataCard } from './no-data-card'
 
 interface BottomAction {
-  label: string
-  onClick: () => void
+  label: string;
+  onClick: () => void;
 }
 
 interface Props {
-  title: string
-  empty?: boolean
-  children: ReactNode | ReactNode[]
-  bottomActions?: BottomAction | BottomAction[]
-  alignCenter?: boolean
-  loading?: boolean
+  title: string;
+  empty?: boolean;
+  children: JSX.Element;
+  bottomActions?: BottomAction | BottomAction[];
+  alignCenter?: boolean;
+  loading?: boolean;
 }
 
-export function CardWrapper ({ title, children, bottomActions, alignCenter, empty, loading }: Props) {
+export function CardWrapper ({
+  title,
+  children,
+  bottomActions,
+  alignCenter,
+  empty,
+  loading
+}: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h4>{title}</h4>
+      <h4 style={{ marginBottom: '.5rem' }}>{title}</h4>
 
       <div
         className={cx(styles.cardWrapper, {
@@ -42,47 +49,43 @@ export function CardWrapper ({ title, children, bottomActions, alignCenter, empt
 }
 
 interface ContentProps {
-  loading?: boolean
-  empty?: boolean
-  component: ReactNode | ReactNode[]
-
+  loading?: boolean;
+  empty?: boolean;
+  component: JSX.Element;
 }
-export function Content ({
-  loading, empty, component
-}:ContentProps) {
+
+export function Content ({ loading, empty, component }: ContentProps) {
   if (loading) {
-    return (
-      <LoadingCard />
-    )
+    return <LoadingCard />
   }
 
   if (empty) {
-    return (
-      <NoDateCard />
-    )
+    return <NoDataCard />
   }
 
-  return component as JSX.Element
+  return component
 }
 
 interface BottomActionsProps {
-  bottomActions?: BottomAction | BottomAction[]
+  bottomActions?: BottomAction | BottomAction[];
 }
-export function BottomActions ({ bottomActions }: BottomActionsProps) {
-  const isArray = Array.isArray(bottomActions)
 
+export function BottomActions ({ bottomActions }: BottomActionsProps) {
   return (
     <div
       className={cx(styles.bottomActionsContainer, {
-        [styles.grid2]: isArray
+        [styles.grid2]: Array.isArray(bottomActions)
       })}
     >
       {Array.isArray(bottomActions)
-        ? bottomActions.slice(0, 2).map((action, index) => (
-          <button key={index}>{action.label}</button>
-        ))
-        : <button>{bottomActions?.label}</button>
-      }
+        ? (
+          bottomActions
+            .slice(0, 2)
+            .map((action, index) => <button key={index}>{action.label}</button>)
+        )
+        : (
+          <button>{bottomActions?.label}</button>
+        )}
     </div>
   )
 }

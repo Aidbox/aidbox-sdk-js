@@ -40,7 +40,6 @@
                 }
             }
         ],
-        "prefer-const": 2,    
         "jsx-quotes": ["error", "prefer-single"],
         "quote-props": ["error", "consistent-as-needed"],
         "camelcase": "off",

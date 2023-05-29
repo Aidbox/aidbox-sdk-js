@@ -1,14 +1,13 @@
 import { Appointment, Practitioner, PractitionerRole } from 'aidbox-sdk/aidbox-types'
-import { format } from 'date-fns'
+import dayjs from 'dayjs'
 import { useCallback, useEffect, useState } from 'react'
 
-import ClockIcon from '../../../assets/clock.svg'
-import UserIcon from '../../../assets/user.svg'
-import { CardWrapper } from '../../../shared/card'
-import { Divider } from '../../../shared/divider/divider'
-import { client } from '../../../utils/aidbox-client'
-import { formatDate } from '../../../utils/format-date'
-import { transformName } from '../../../utils/transform-name'
+import ClockIcon from '../assets/clock.svg'
+import UserIcon from '../assets/user.svg'
+import { CardWrapper } from '../shared/card'
+import { Divider } from '../shared/divider/divider'
+import { formatDate, transformName } from '../utils'
+import { client } from '../utils/aidbox-client'
 
 import styles from './workspace.module.css'
 
@@ -148,10 +147,9 @@ function NextAppointment ({ appointment }: NextAppointmentProps) {
         })
     }
   }, [appointment.participant])
-
-  const startDate = format(new Date(appointment.start ?? ''), 'dd MMMM')
-  const startTime = appointment.start && format(new Date(appointment.start), 'hh:mm a')
-  const endTime = appointment.end && format(new Date(appointment.end), 'hh:mm a')
+  const startDate = dayjs(new Date(appointment.start ?? '')).format('dd MMMM')
+  const startTime = appointment.start && dayjs(new Date(appointment.start)).format('hh:mm a')
+  const endTime = appointment.end && dayjs(new Date(appointment.end)).format('hh:mm a')
 
   const time = startTime
     ? startTime + (endTime ? ' - ' + endTime : '')

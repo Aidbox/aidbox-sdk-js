@@ -2,11 +2,10 @@ import { Immunization } from 'aidbox-sdk/aidbox-types'
 import cx from 'classnames'
 import { useEffect, useState } from 'react'
 
-import { CardWrapper } from '../../../shared/card'
-import { Divider } from '../../../shared/divider/divider'
-import { client } from '../../../utils/aidbox-client'
-import { formatDate } from '../../../utils/format-date'
-import { kebabToFriendlyString } from '../../../utils/kebab-to-friendly-string'
+import { CardWrapper } from '../shared/card'
+import { Divider } from '../shared/divider/divider'
+import { formatDate, kebabToFriendlyString } from '../utils'
+import { client } from '../utils/aidbox-client'
 
 import styles from './workspace.module.css'
 
@@ -21,8 +20,6 @@ export function ImmunizationsCard ({ id: patient_id }: { id: string }) {
       .count(3)
       .then((response) => {
         setImmunizations(response.entry.map((allergy) => allergy.resource))
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         setTotal(response.total)
         setLoading(false)
       })
@@ -44,9 +41,8 @@ export function ImmunizationsCard ({ id: patient_id }: { id: string }) {
       bottomActions={bottomActions}
     >
       {immunizations.map((immunization, index) => (
-        <>
+        <div key={immunization.id}>
           <div
-            key={immunization.id}
             style={{ display: 'grid', gridTemplateColumns: '5fr 1fr', alignItems: 'center' }}
           >
             <p
@@ -75,7 +71,7 @@ export function ImmunizationsCard ({ id: patient_id }: { id: string }) {
           </div>
 
           {index !== immunizations.length - 1 && <Divider verticalMargin={'0.5rem'} />}
-        </>
+        </div>
       ))}
     </CardWrapper>
   )

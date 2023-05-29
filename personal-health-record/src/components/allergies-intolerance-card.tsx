@@ -2,11 +2,10 @@ import { AllergyIntolerance } from 'aidbox-sdk/aidbox-types'
 import cx from 'classnames'
 import { useEffect, useState } from 'react'
 
-import { CardWrapper } from '../../../shared/card'
-import { Divider } from '../../../shared/divider/divider'
-import { client } from '../../../utils/aidbox-client'
-import { formatDate } from '../../../utils/format-date'
-import { kebabToFriendlyString } from '../../../utils/kebab-to-friendly-string'
+import { CardWrapper } from '../shared/card'
+import { Divider } from '../shared/divider/divider'
+import { formatDate, kebabToFriendlyString } from '../utils'
+import { client } from '../utils/aidbox-client'
 
 import styles from './workspace.module.css'
 

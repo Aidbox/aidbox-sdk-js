@@ -13,9 +13,9 @@ import cx from 'classnames'
 import { useEffect, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 
-import { CardWrapper } from '../../../shared/card'
-import { client } from '../../../utils/aidbox-client'
-import { formatDate } from '../../../utils/format-date'
+import { CardWrapper } from '../shared/card'
+import { formatDate } from '../utils'
+import { client } from '../utils/aidbox-client'
 
 import styles from './workspace.module.css'
 
