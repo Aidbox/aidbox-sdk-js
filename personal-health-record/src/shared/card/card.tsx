@@ -13,7 +13,7 @@ interface BottomAction {
 interface Props {
   title: string;
   empty?: boolean;
-  children: JSX.Element;
+  children?: JSX.Element | JSX.Element[];
   bottomActions?: BottomAction | BottomAction[];
   alignCenter?: boolean;
   loading?: boolean;
@@ -51,7 +51,7 @@ export function CardWrapper ({
 interface ContentProps {
   loading?: boolean;
   empty?: boolean;
-  component: JSX.Element;
+  component?: JSX.Element | JSX.Element[];
 }
 
 export function Content ({ loading, empty, component }: ContentProps) {
@@ -59,11 +59,11 @@ export function Content ({ loading, empty, component }: ContentProps) {
     return <LoadingCard />
   }
 
-  if (empty) {
+  if (empty || !component) {
     return <NoDataCard />
   }
 
-  return component
+  return Array.isArray(component) ? <>{component}</> : component
 }
 
 interface BottomActionsProps {

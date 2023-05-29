@@ -14,7 +14,7 @@ export function Contacts ({ patient }: Props) {
       </p>
 
       <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
-        {patient.telecom?.map((telecom, index) => (
+        {patient.telecom?.map((telecom: any, index: number) => (
           <div
             key={index}
           >

@@ -45,9 +45,8 @@ export function AllergiesIntoleranceCard ({ id: patient_id }: { id: string }) {
       empty={total === 0}
     >
       {allergies.map((allergy, index) => (
-        <>
+        <div key={allergy.id}>
           <div
-            key={allergy.id}
             style={{ display: 'grid', gridTemplateColumns: '5fr 1fr', alignItems: 'center' }}
           >
             <p
@@ -85,7 +84,7 @@ export function AllergiesIntoleranceCard ({ id: patient_id }: { id: string }) {
           </div>
 
           {index !== allergies.length - 1 && <Divider verticalMargin={'0.5rem'} />}
-        </>
+        </div>
       ))}
     </CardWrapper>
   )
