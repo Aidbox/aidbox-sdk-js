@@ -3,94 +3,63 @@ import * as path from 'path'
 
 import { aidboxClient } from './aidbox-client'
 
-const keysToRemove = [
-  'extension',
-  'multipleBirthBoolean',
-  'onsetDateTime',
-  'effectiveDateTime',
-  'abatementDateTime',
-  'claim',
-  'immunization',
-  'explanationOfBenefit',
-  'valueQuantity',
-  'multipleBirthInteger',
-  'valueCodeableConcept',
-  'performedPeriod',
-  'occurrenceDateTime',
-  'itemCodeableConcept',
-  'valueString',
-  'deceasedDateTime'
-]
-
-const resourceTypeToRemove = [
-  'Claim',
-  'MedicationRequest',
-  'ExplanationOfBenefit',
-  'Immunization',
-  'Provenance',
-  'MedicationAdministration'
-
-]
-
-let filePull: string[] = []
+let queueSize = 0
+let loadedFile = 0
+let totalProcessed = 0
+let totalFiles = 0
+const notLoadedFiles: Array<{file: string, error: any}> = []
 
 const directoryPath =
-  path.join(__dirname, '/data')
+  path.join(__dirname, '/data/fhir')
 
-const removeKey = (obj: any) => {
-  for (const objKey in obj) {
-    if (keysToRemove.includes(objKey)) delete obj[objKey]
-    else if (typeof obj[objKey] === 'object') {
-      removeKey(obj[objKey])
-    }
-  }
-}
-
-async function upload (file: string, i: number) {
-  console.log(`File #${i} started uploading`)
+async function upload (file: string) {
   try {
-    const filePath = path.join(directoryPath, file)
-    const content = await fs.readFile(filePath, { encoding: 'utf8' })
+    const content = await fs.readFile(file, { encoding: 'utf8' })
     const entry = JSON.parse(content).entry
 
-    removeKey(entry)
-
-    const filtredEntry = entry.filter(
-      (resource: any) =>
-        !resourceTypeToRemove.includes(resource.resource?.resourceType)
-    )
-
-    const res = await aidboxClient.bundleRequest(filtredEntry)
-    console.log(`\x1b[42mFile #${i} uploaded successfully\x1B[0m`)
-    return res
+    await aidboxClient.bundleRequest(entry, 'transaction')
+    loadedFile += 1
+    queueSize -= 1
+    process.stdout.clearLine(0)
+    process.stdout.write(`File #${totalProcessed} of #${totalFiles} processed\n`)
   } catch (error: any) {
-    console.error(`\x1b[43mFile #${i} uploaded unsuccessfully\x1B[0m`)
+    queueSize -= 1
+    notLoadedFiles.push({ file, error: error.response.data })
+    process.stdout.clearLine(0)
+    process.stdout.write(`File #${totalProcessed} of #${totalFiles} processed\n`)
   } finally {
-    filePull.pop()
+    totalProcessed += 1
   }
 }
 
-function reRun (i: number) {
-  setTimeout(() => {
-    if (filePull.length > 5) {
-      reRun(i)
-      return
+const main = async (sourcePath: string = directoryPath) => {
+  const files = await fs.readdir(sourcePath)
+  let count = files.length
+  totalFiles = files.length
+  let currenFileNumber = 0
+  while (count > 0) {
+    if (queueSize <= 5) {
+      upload(path.join(directoryPath, files[currenFileNumber]))
+      queueSize += 1
+      currenFileNumber += 1
+      count -= 1
+    } else {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
     }
-    main(i)
-  }, 50)
-}
-
-const main = async (last_index = 0) => {
-  const files = await fs.readdir(directoryPath)
-
-  for (let i = last_index; i < files.length; i++) {
-    if (filePull.length > 5) {
-      reRun(i)
-      break
-    }
-    filePull.push(files[i])
-    upload(files[i], i)
   }
+
+  console.log('Success:', loadedFile)
+  console.log('Fail:', notLoadedFiles.length)
+  console.log(`${notLoadedFiles.length} has no been loaded. Please check error.json file`)
+  await fs.writeFile('./error.json', JSON.stringify(notLoadedFiles))
 }
+process.on('SIGINT', async function () {
+  process.stdout.clearLine(0)
+  process.stdout.write('\n')
+  console.log('Success:', loadedFile)
+  console.log('Fail:', notLoadedFiles.length)
+  await fs.writeFile('./error.json', JSON.stringify(notLoadedFiles))
+  process.exit(1)
+})
 
 main()

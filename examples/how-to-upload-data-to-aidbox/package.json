@@ -9,10 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "aidbox-sdk": "file:../aidbox-javascript-sdk-v1.0.0.tgz",
+    "aidbox-sdk": "file:../../aidbox-javascript-sdk-v1.0.0.tgz",
     "dotenv": "^16.0.3"
   },
   "devDependencies": {
-    "@types/node": "^18.15.3"
+    "@types/node": "^18.15.3",
+    "ts-node": "^10.9.1"
   }
 }

@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.292.0",
-    "aidbox-sdk": "file:../aidbox-javascript-sdk-v1.0.0.tgz",
+    "aidbox-sdk": "file:../../aidbox-javascript-sdk-v1.0.0.tgz",
     "dotenv": "^16.0.3",
     "node-cron": "^3.0.2",
     "prom-client": "^14.2.0",
