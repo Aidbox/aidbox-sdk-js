@@ -4,7 +4,7 @@
 
 This example shows the flow of working with aidbox subscriptions in the node js application.
 
-![aidbox-subscription-to-queue](../assets/subscription-queue.png)
+![aidbox-subscription-to-queue](../../assets/subscription-queue.png)
 
 ## How to run the application
 #### Step 1: Environment variables
@@ -72,8 +72,8 @@ We register subscriptions for the Patient, Observation, Encounter and Diagnostic
 
 We've been uploading ~100 resources per second and all of them triggered subscriptions and aidbox has been sending notifications to our endpoints for all created resources instantly.
 
-![creating resources on the aidbox side](../assets/aidboxside_subscription.png)
+![creating resources on the aidbox side](../../assets/aidboxside_subscription.png)
 
 We've been pushing all notifications to the queue from the Node application side.
 
-![creating resources on the nodejs side](../assets/nodeside_subscription.png)
+![creating resources on the nodejs side](../../assets/nodeside_subscription.png)

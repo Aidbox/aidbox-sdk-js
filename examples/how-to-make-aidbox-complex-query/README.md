@@ -4,7 +4,7 @@ This example shown how to use Aidbox SDK and store complex query
 
 
 
-### [Get Aidbox SDK](../README.md)
+### [Get Aidbox SDK](../../README.md)
 
 ### Aidbox license
 1. Create a new file in the root and name it ".env"
@@ -58,7 +58,7 @@ In this project we get appointments count by field "start". Also, we filter appo
 
 Without indexing we get result 4.775ms
 
-![before indexing (4.7ms)](../assets/before-index.webp)
+![before indexing (4.7ms)](../../assets/before-index.webp)
 
 Then, let's write index on field "start"
 
@@ -79,7 +79,7 @@ And, for practitioner ID
 
 after indexing we get our data for 0.983ms
 
-![after indexing (0.983ms)](../assets/after-index.webp)
+![after indexing (0.983ms)](../../assets/after-index.webp)
 
 
 

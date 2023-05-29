@@ -4,7 +4,7 @@ This example shown how to use Aidbox SDK and generate data useing [synthea](http
 
 
 
-### [Get Aidbox SDK](../README.md)
+### [Get Aidbox SDK](../../README.md)
 
 ### Aidbox license
 1. Create a new file in the root and name it ".env"
@@ -26,13 +26,13 @@ Make sure that your SDK archive have the same name as in the package.json
 
 ### Get synthea data
 
-Create a folder "data" at the same level as index.ts
+Create a folder "data" at the same level as index.tsx
 
 Then move output from synthea to this folder
 
 As a result, you should get a similar folder structure
 
-![result](../assets/result.webp)
+![result](../../assets/result.webp)
 
 
 ### Run script
