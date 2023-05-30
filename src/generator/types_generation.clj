@@ -298,9 +298,9 @@
         key-value-resources (gut/get-keyvalue-resources resource-names)
         path-to-ftr-index (str zen-path "/zen-packages/" version "/index.nippy")
         result-file-path (str result-folder-path "/" version ".d.ts")
-        import-for-custom (format "import { %s, Resource, CodeableConcept, Extension, date, dateTime, Period, decimal } from \"./%s.ts\";"
+        import-for-custom (format "import { %s, Resource, CodeableConcept, Extension, date, dateTime, Period, decimal } from \"./%s\";"
                                   (gut/get-resource-map-name fhir-version) fhir-version)
-        import "import { Reference, RequireAtLeastOne, OneKey, Modify, ResourceType as MainResourceType } from \"./aidbox-types.ts\";\n"
+        import "import { Reference, RequireAtLeastOne, OneKey, Modify, ResourceType as MainResourceType } from \"./aidbox-types\";\n"
         resource-map-name (gut/get-resource-map-name version)
         resourcetype-type (get-resourcetype-type resource-map-name)
         resource-type-map-interface (str "export interface " resource-map-name " {\n")
@@ -444,7 +444,7 @@
   (mapv (fn [version]
           (let [resource-map-name (gut/get-resource-map-name version)
                 default-imports (if (= version fhir-version) ", DomainResource, Identifier, Element" "")]
-            (format "import { %s%s } from \"./%s.ts\";\n"
+            (format "import { %s%s } from \"./%s\";\n"
                     resource-map-name default-imports version)))
         versions))
 
@@ -465,8 +465,8 @@
                 {}  versions)]
 
     (mapv (fn [[version names]]
-            (let [search-params (if (= version fhir-version) "SearchParams, " "")]
-              (format "export { %s %s } from \"./%s.ts\";" search-params (str/join ", " names) version)))
+            (let [search-params (if (= version fhir-version) "TaskDefinitionsMap, WorkflowDefinitionsMap, SearchParams, " "")]
+              (format "export { %s %s } from \"./%s\";" search-params (str/join ", " names) version)))
           resources-per-version)))
 
 (defn generate-index-file [api-type result-folder-path versions fhir-version profiles-version types-exports]
@@ -503,7 +503,15 @@
 (defn genereate-task-defenition-types [ztx task-defenitions]
   (let [types (mapv (fn [item]
                       (str "type " (hyphenated-name-to-camel-case-name (name item)) " = " (str/join "" (generate-task-defenition-type ztx item)))) task-defenitions)
-        map (str "type TaskDefenitionsMap = {\n"
+        map (str "export type TaskDefinitionsMap = {\n"
+                 (str/join "\n" (mapv (fn [item] (str "'" (name item) "'" ": " (hyphenated-name-to-camel-case-name (name item)))) task-defenitions))
+                 "\n}")]
+    {:types types :map map}))
+
+(defn genereate-workflow-defenition-types [ztx task-defenitions]
+  (let [types (mapv (fn [item]
+                      (str "type " (hyphenated-name-to-camel-case-name (name item)) " = " (str/join "" (generate-task-defenition-type ztx item)))) task-defenitions)
+        map (str "export type WorkflowDefinitionsMap = {\n"
                  (str/join "\n" (mapv (fn [item] (str "'" (name item) "'" ": " (hyphenated-name-to-camel-case-name (name item)))) task-defenitions))
                  "\n}")]
     {:types types :map map}))
@@ -513,7 +521,9 @@
         _ (read-versions ztx zen-path)
         schemas (zen.core/get-tag ztx 'zen.fhir/base-schemas)
         task-defenitions (zen.core/get-tag ztx 'awf.task/definition)
+        workflow-definitions (zen.core/get-tag ztx 'awf.workflow/definition)
         generated-task-defenition-types (genereate-task-defenition-types ztx task-defenitions)
+        generated-workflow-definition-types (genereate-workflow-defenition-types ztx workflow-definitions)
         structures (zen.core/get-tag ztx 'zen.fhir/structures)
         versions (map #(namespace %) schemas)
         fhir-version (some #(re-matches #"^hl7-fhir-r.+-core$" %) versions)
@@ -542,7 +552,9 @@
 
     (println "Task defenitions types generation...")
     (spit (str result-folder-path "/" fhir-version ".d.ts") (str "\n\n" (:map generated-task-defenition-types)) :append true)
-    (spit (str result-folder-path "/" fhir-version ".d.ts") (str "\n\n" (str/join "\n" (:types generated-task-defenition-types))) :append true)))
+    (spit (str result-folder-path "/" fhir-version ".d.ts") (str "\n\n" (str/join "\n" (:types generated-task-defenition-types))) :append true)
+    (spit (str result-folder-path "/" fhir-version ".d.ts") (str "\n\n" (:map generated-workflow-definition-types)) :append true)
+    (spit (str result-folder-path "/" fhir-version ".d.ts") (str "\n\n" (str/join "\n" (:types generated-workflow-definition-types))) :append true)))
 
 (defn get-sdk [zen-path args]
   (io/make-parents (str zen-path "/package/index.js"))

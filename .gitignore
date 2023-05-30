@@ -14,3 +14,4 @@ clear-data.ts
 .clj-kondo/
 .cpcache/
 .lsp/
+resources
