@@ -38,7 +38,7 @@ export const createSubscriptions = async () => {
     }),
   ];
 
-  await aidboxClient.bundleRequest(
-    subscriptions.map(aidboxClient.bundleEntryPut)
-  );
+  // await aidboxClient.bundleRequest(
+  //   subscriptions.map(aidboxClient.bundleEntryPut)
+  // );
 };

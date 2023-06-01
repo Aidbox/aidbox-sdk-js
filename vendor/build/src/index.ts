@@ -1,4 +1,3 @@
-// @ts-ignore
 import axios, { AxiosBasicCredentials, AxiosInstance, AxiosResponse } from 'axios';
 import { TaskDefinitionsMap, WorkflowDefinitionsMap, ResourceTypeMap, SearchParams, SubsSubscription } from './aidbox-types';
 

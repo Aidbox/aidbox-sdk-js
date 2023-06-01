@@ -1,14 +1,13 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "es2015",
+    "module": "CommonJS",
     "declaration": true,
     "outDir": "./lib",
     "strict": true,
     "checkJs": false,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "preserveValueImports": true,
     "lib": ["es2020", "dom"]
   },
   "include": ["src"],

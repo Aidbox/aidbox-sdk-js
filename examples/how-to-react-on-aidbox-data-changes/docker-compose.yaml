@@ -21,7 +21,7 @@ services:
     ports:
       - "${AIDBOX_PORT}:${AIDBOX_PORT}"
     volumes:
-      - "../zen-project/:${BOX_PROJECT_GIT_TARGET__PATH}"
+      - "../../zen-project/:${BOX_PROJECT_GIT_TARGET__PATH}"
     env_file:
       - .env
     environment:

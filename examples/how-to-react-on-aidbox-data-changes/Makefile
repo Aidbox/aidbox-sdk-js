@@ -2,4 +2,4 @@ up:
 	docker compose up
 
 backend:
-	nodemon
+	npm run start

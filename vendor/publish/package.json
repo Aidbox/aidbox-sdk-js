@@ -4,7 +4,7 @@
   "bin": "index.js",
   "license": "ISC",
   "name": "@aidbox/zen-cli",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "dependencies": {
     "npm-java-runner": "1.0.2"
   }

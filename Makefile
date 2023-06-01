@@ -3,10 +3,12 @@
 
 sdk-build:
 	cd vendor/build && npm install && npm run build && \
+	mkdir -p ../../resources && \
 	cp lib/index.d.ts ../../resources/index.d.ts && \
 	cp lib/index.js ../../resources/index.js && \
 	cp package.json ../../resources/package.json && \
-	rm -rf lib && cd ../.. && clj -T:build-pm uber
+	cd ../.. && clj -T:build-pm uber && \
+	rm -rf ./resources vendor/build/lib
 
 sdk-publish:
 	cd vendor/publish && npm install && cp ../../target/zen.jar zen.jar && npm publish --access=public
