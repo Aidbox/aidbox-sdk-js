@@ -1,4 +1,4 @@
-import axios, { AxiosBasicCredentials, AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosBasicCredentials, AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { TaskDefinitionsMap, WorkflowDefinitionsMap, ResourceTypeMap, SearchParams, SubsSubscription } from './aidbox-types';
 
 type PathResourceBody<T extends keyof ResourceTypeMap> = Partial<Omit<ResourceTypeMap[T], 'id' | 'meta'>>;
@@ -385,7 +385,7 @@ interface TasksBatch {
 
 interface WorkflowActions<K extends keyof WorkflowDefinitionsMap> {
   complete: (params: WorkflowDefinitionsMap[K]["result"]) => { action: "awf.workflow.action/complete-workflow", result: WorkflowDefinitionsMap[K]["result"] };
-  execute: <T extends keyof TaskDefinitionsMap>(params: { definition: T; params: TaskDefinitionsMap[T]["params"] }) => { action: "awf.workflow.action/schedule-task", "task-request": { definition: [T], params: TaskDefinitionsMap[T]["params"] }  };
+  execute: <T extends keyof TaskDefinitionsMap>(params: { definition: T; params: TaskDefinitionsMap[T]["params"] }) => { action: "awf.workflow.action/schedule-task", "task-request": { definition: T, params: TaskDefinitionsMap[T]["params"] }  };
   fail: (params: any) => { action: "awf.workflow.action/fail", error: any };
 }
 
@@ -407,7 +407,7 @@ export class Engine {
   }
 
   task = {
-    execute: this.executeTask,
+    execute: this.executeTask.bind(this),
     implement: <K extends keyof TaskDefinitionsMap> (name: K, handler: TaskHandler<K>, options: WorkerOptions = {}): void => {
       const worker = this.runDaemon(() => this.poll({ taskDefinitions: [name] }, options), this.createHandler<TaskInput>(handler), options)
       this.workers.push(worker);
@@ -415,7 +415,7 @@ export class Engine {
   };
 
   workflow = {
-    execute: this.executeWorkflow,
+    execute: this.executeWorkflow.bind(this),
     implement: <W extends keyof WorkflowDefinitionsMap>(name: W, handler: WorkflowHandler<W>, options: WorkerOptions = {}): void => {
       const worker = this.runDaemon(() => this.poll({ workflowDefinitions: [name] }, options), this.createHandler<DecisionInput>(this.wrapHandler<W>(handler)), options)
       this.workers.push(worker);
@@ -433,21 +433,21 @@ export class Engine {
   wrapHandler<W extends keyof WorkflowDefinitionsMap>(handler: WorkflowHandler<W>) {
     return (params: Meta<DecisionInput>) => handler(params, {
       complete: (result: WorkflowDefinitionsMap[W]["result"]) => ({ action: "awf.workflow.action/complete-workflow", result }),
-      execute: <T extends keyof TaskDefinitionsMap>(params: { definition: T; params: TaskDefinitionsMap[T]["params"] }) => ({ action: "awf.workflow.action/schedule-task", "task-request": { definition: [params.definition], params: params.params } }),
+      execute: <T extends keyof TaskDefinitionsMap>(params: { definition: T; params: TaskDefinitionsMap[T]["params"] }) => ({ action: "awf.workflow.action/schedule-task", "task-request": { definition: params.definition, params: params.params } }),
       fail: (error: any) => ({ action: "awf.workflow.action/fail", error }),
     })
   }
 
-  createHandler<T extends TaskInput | DecisionInput>(handler: (task: Meta<T>) => any) {
+  createHandler<T extends TaskInput | DecisionInput>(handler: (task: Meta<T>) => void) {
     return async (task: Meta<T>) => {
       await this.startTask(task.id, task.execId);
 
       try {
         const result = await handler(task);
-        this.completeTask(task.id, task.execId, result);
-      } catch (error: any) {
-        console.dir(error.response.data, { depth: 10 });
-        this.failTask(task.id, task.execId, error);
+        await this.completeTask(task.id, task.execId, result);
+      } catch (error) {
+        console.error((error as AxiosError)?.response?.data)
+        await this.failTask(task.id, task.execId, error);
       }
     };
   }
@@ -462,10 +462,14 @@ export class Engine {
   }
 
   startTask(id: string, executionId: string) {
-    return this.client.post<TasksBatch>("/rpc", {
-      method: "awf.task/start",
-      params: { id: id, execId: executionId },
-    });
+    try {
+      return this.client.post<TasksBatch>("/rpc", {
+        method: "awf.task/start",
+        params: { id: id, execId: executionId },
+      });
+    } catch(error) {
+      console.error((error as AxiosError)?.response?.data)
+    }
   }
 
   completeTask(id: string, executionId: string, payload: unknown) {
@@ -476,23 +480,35 @@ export class Engine {
   }
 
   failTask(id: string, executionId: string, payload: unknown) {
-    return this.client.post<TasksBatch>("/rpc", {
-      method: "awf.task/fail",
-      params: { id: id, execId: executionId, result: payload },
-    });
+    try {
+      return this.client.post<TasksBatch>("/rpc", {
+        method: "awf.task/fail",
+        params: { id: id, execId: executionId, result: payload },
+      });
+    } catch(error) {
+      console.error((error as AxiosError)?.response?.data)
+    }
   }
 
   executeWorkflow<K extends keyof WorkflowDefinitionsMap>(name: K, params: WorkflowDefinitionsMap[K]["params"]): Promise<AxiosResponse<TasksBatch>> {
-    return this.client.post<TasksBatch>("/rpc", {
-      method: "awf.workflow/create-and-execute",
-      params: { definition: name, params },
-    });
+    try {
+      return this.client.post<TasksBatch>("/rpc", {
+        method: "awf.workflow/create-and-execute",
+        params: { definition: name, params },
+      })
+    } catch(error) {
+      throw((error as AxiosError)?.response)
+    }
   }
 
   executeTask<K extends keyof TaskDefinitionsMap>(definition: K, params: TaskDefinitionsMap[K]["params"]): Promise<AxiosResponse<TasksBatch>> {
-    return this.client.post<TasksBatch>("/rpc", {
-      method: "awf.task/create-and-execute",
-      params: { definition, params },
-    });
+    try {
+      return this.client.post<TasksBatch>("/rpc", {
+        method: "awf.task/create-and-execute",
+        params: { definition, params },
+      })
+    } catch(error) {
+      throw((error as AxiosError)?.response)
+    }
   }
 }

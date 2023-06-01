@@ -504,7 +504,7 @@
   (let [types (mapv (fn [item]
                       (str "type " (hyphenated-name-to-camel-case-name (name item)) " = " (str/join "" (generate-task-defenition-type ztx item)))) task-defenitions)
         map (str "export type TaskDefinitionsMap = {\n"
-                 (str/join "\n" (mapv (fn [item] (str "'" (name item) "'" ": " (hyphenated-name-to-camel-case-name (name item)))) task-defenitions))
+                 (str/join "\n" (mapv (fn [item] (str "'" (str item) "'" ": " (hyphenated-name-to-camel-case-name (name item)))) task-defenitions))
                  "\n}")]
     {:types types :map map}))
 
@@ -512,7 +512,7 @@
   (let [types (mapv (fn [item]
                       (str "type " (hyphenated-name-to-camel-case-name (name item)) " = " (str/join "" (generate-task-defenition-type ztx item)))) task-defenitions)
         map (str "export type WorkflowDefinitionsMap = {\n"
-                 (str/join "\n" (mapv (fn [item] (str "'" (name item) "'" ": " (hyphenated-name-to-camel-case-name (name item)))) task-defenitions))
+                 (str/join "\n" (mapv (fn [item] (str "'" (str item) "'" ": " (hyphenated-name-to-camel-case-name (name item)))) task-defenitions))
                  "\n}")]
     {:types types :map map}))
 
@@ -582,7 +582,7 @@
   (println "Done"))
 
 (comment
-  (get-types "/Users/ross/Desktop/HS/aidbox-sdk-js/zen-project" {:api-type "fhir" :profiles 'true}))
+  (get-types "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/zen-project" {:api-type "fhir" :profiles 'true}))
 
 (comment
   (def ztx (zen.core/new-context {}))
