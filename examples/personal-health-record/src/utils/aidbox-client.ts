@@ -27,9 +27,9 @@ const data = [
   },
 ];
 
-export const client = new Client(import.meta.env.VITE_APP_AIDBOX_URL, {
-  username: import.meta.env.VITE_APP_CLIENT,
-  password: import.meta.env.VITE_APP_SECRET,
+export const client = new Client(import.meta.env.AIDBOX_BASE_URL, {
+  username: import.meta.env.AIDBOX_CLIENT_ID,
+  password: import.meta.env.AIDBOX_CLIENT_SECRET,
 });
 
 Promise.all(
