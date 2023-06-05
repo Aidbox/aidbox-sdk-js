@@ -11,6 +11,7 @@ import { App as Phr } from '../personal-health-record/src/app.tsx'
 
 import App from './App.tsx'
 import './index.css'
+import { Layout } from './Layout.tsx'
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Layout>
+      <RouterProvider router={router} />
+    </Layout>
   </React.StrictMode>
 )

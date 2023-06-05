@@ -15,20 +15,20 @@ function View ({ patient }: {
 }) {
   return <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
     <div className={styles.patientGeneralInfo}>
-      <p className={styles.sectionTitle}>{transformName(patient.name)}</p>
+      <p className={styles.sectionTitle}>{transformName(patient?.name)}</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', marginTop: '0.5rem' }}>
-        {patient.birthDate &&
+        {patient?.birthDate &&
           <p className={styles.birthDate}>{formatDate(patient.birthDate)}</p>}
-        {patient.gender && <p className={styles.gender}>{patient.gender}</p>}
+        {patient?.gender && <p className={styles.gender}>{patient.gender}</p>}
       </div>
 
-      {patient.address && <p className={styles.address}>{transformAddress(patient.address)}</p>}
+      {patient?.address && <p className={styles.address}>{transformAddress(patient.address)}</p>}
     </div>
     <Divider />
     <Contacts patient={patient} />
     <Divider />
-    <Identifiers identifiers={patient.identifier} />
-         </div>
+    <Identifiers identifiers={patient?.identifier} />
+  </div>
 }
 
 interface PatientInfoProps {
