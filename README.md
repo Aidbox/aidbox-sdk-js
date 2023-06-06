@@ -302,7 +302,6 @@ input and output arguments for entity like this one:
  SendMessage
  {:zen/tags #{awf.task/definition zen/schema}
   :type zen/map
-  :require #{:params :result}
   :keys {:params {:type zen/map
                   :require #{:phone :message}
                   :keys {:phone {:type zen/string}
@@ -364,7 +363,6 @@ const client = new Engine({
  {:zen/tags #{awf.workflow/definition zen/schema}
   :type zen/map
   :pool decision-pool
-  :require #{:params :result}
   :keys {:params {:type zen/map
                   :require #{:clientId}
                   :keys {:clientId {:type zen/string}}}
