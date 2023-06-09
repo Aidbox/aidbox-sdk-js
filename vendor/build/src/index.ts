@@ -1,4 +1,5 @@
-import axios, { AxiosBasicCredentials, AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosBasicCredentials, AxiosError, AxiosInstance, AxiosResponse } from 'axios'
+
 import {
   TaskDefinitionsMap,
   TaskDefinitionsNameMap,
@@ -6,8 +7,8 @@ import {
   WorkflowDefinitionsNameMap,
   ResourceTypeMap,
   SearchParams,
-  SubsSubscription,
-} from './aidbox-types';
+  SubsSubscription
+} from './types'
 
 type PathResourceBody<T extends keyof ResourceTypeMap> = Partial<Omit<ResourceTypeMap[T], 'id' | 'meta'>>;
 
@@ -102,161 +103,155 @@ export type LogData = {
   fx?: string;
 };
 
-export type APITypes = 'aidbox' | 'fhir';
-
-function buildURL(type: APITypes, url: string) {
-  return type === 'fhir' ? 'fhir/' + url : url;
+function buildURL(url: string) {
+  return '/fhir/' + url
 }
 
 export class Client {
-  client: AxiosInstance;
-  apiType: APITypes;
+  client: AxiosInstance
 
-  constructor(baseURL: string, credentials: AxiosBasicCredentials, apiType: APITypes = 'aidbox') {
-    this.client = axios.create({ baseURL, auth: credentials });
-    this.apiType = apiType;
+  constructor(baseURL: string, credentials: AxiosBasicCredentials) {
+    this.client = axios.create({ baseURL: baseURL.endsWith("/") ? baseURL.slice(0, baseURL.length - 1) : baseURL, auth: credentials })
   }
+
   getResources<T extends keyof ResourceTypeMap>(resourceName: T) {
-    return new GetResources(this.client, resourceName);
+    return new GetResources(this.client, resourceName)
   }
 
   async getResource<T extends keyof ResourceTypeMap>(resourceName: T, id: string): Promise<BaseResponseResource<T>> {
-    const response = await this.client.get<BaseResponseResource<T>>(buildURL(this.apiType, resourceName + '/' + id));
-    return response.data;
+    const response = await this.client.get<BaseResponseResource<T>>(buildURL(resourceName + '/' + id))
+    return response.data
   }
 
   async deleteResource<T extends keyof ResourceTypeMap>(resourceName: T, id: string): Promise<BaseResponseResource<T>> {
-    const response = await this.client.delete<BaseResponseResource<T>>(buildURL(this.apiType, resourceName + '/' + id));
-    return response.data;
+    const response = await this.client.delete<BaseResponseResource<T>>(buildURL(resourceName + '/' + id))
+    return response.data
   }
 
   async createQuery(name: string, body: CreateQueryBody) {
-    const response = await this.client.put(`/AidboxQuery/${name}`, body);
-    return response.data;
+    const response = await this.client.put(`/AidboxQuery/${name}`, body)
+    return response.data
   }
 
   async executeQuery<T>(
     name: string,
-    params?: Record<string, unknown>,
+    params?: Record<string, unknown>
   ): Promise<AxiosResponse<ExecuteQueryResponseWrapper<T>>> {
-    try {
-      const queryParams = new URLSearchParams();
-      if (params) {
-        Object.keys(params).map((key) => {
-          const value = params[key];
-          if (value) {
-            queryParams.set(key, value.toString());
-          }
-        });
+    const queryParams = new URLSearchParams()
+    if (params) {
+      for (const key of Object.keys(params)) {
+        const value = params[key]
+        if (value) {
+          queryParams.set(key, value.toString())
+        }
       }
-      return this.client.get<ExecuteQueryResponseWrapper<T>>(`$query/${name}`, {
-        params: queryParams,
-      });
-    } catch (e) {
-      throw e;
     }
+    return this.client.get<ExecuteQueryResponseWrapper<T>>(`$query/${name}`, {
+      params: queryParams
+    })
   }
 
   async patchResource<T extends keyof ResourceTypeMap>(
     resourceName: T,
     id: string,
-    body: PathResourceBody<T>,
+    body: PathResourceBody<T>
   ): Promise<BaseResponseResource<T>> {
-    const response = await this.client.patch<BaseResponseResource<T>>(buildURL(this.apiType, resourceName + '/' + id), {
-      ...body,
-    });
-    return response.data;
+    const response = await this.client.patch<BaseResponseResource<T>>(buildURL(resourceName + '/' + id), {
+      ...body
+    })
+    return response.data
   }
 
   async createResource<T extends keyof ResourceTypeMap>(
     resourceName: T,
-    // @ts-ignore
-    body: SetOptional<ResourceTypeMap[T], 'resourceType'>,
+    //@ts-ignore
+    body: SetOptional<ResourceTypeMap[T], 'resourceType'>
   ): Promise<BaseResponseResource<T>> {
-    const response = await this.client.post<BaseResponseResource<T>>(buildURL(this.apiType, resourceName), { ...body });
-    return response.data;
+    const response = await this.client.post<BaseResponseResource<T>>(buildURL(resourceName), { ...body })
+    return response.data
   }
 
   async rawSQL(sql: string, params?: unknown[]) {
-    const body = [sql, ...(params?.map((value) => value?.toString()) ?? [])];
+    const body = [sql, ...(params?.map((value) => value?.toString()) ?? [])]
 
-    const response = await this.client.post('/$sql', body);
-    return response.data;
+    const response = await this.client.post('/$sql', body)
+    return response.data
   }
 
   async createSubscription({ id, status, trigger, channel }: SubscriptionParams): Promise<SubsSubscription> {
     const response = await this.client.put<SubsSubscription>(`SubsSubscription/${id}`, {
       status,
       trigger,
-      channel: { ...channel, type: 'rest-hook' },
-    });
-    return response.data;
+      channel: { ...channel, type: 'rest-hook' }
+    })
+    return response.data
   }
 
   subscriptionEntry({
     id,
     status,
     trigger,
-    channel,
+    channel
   }: SubscriptionParams): SubsSubscription & { id: string; resourceType: 'SubsSubscription' } {
     return {
       resourceType: 'SubsSubscription',
       id,
       status,
       trigger,
-      channel: { ...channel, type: 'rest-hook' },
-    };
+      channel: { ...channel, type: 'rest-hook' }
+    }
   }
 
   async sendLog(data: LogData): Promise<void> {
-    await this.client.post('/$loggy', data);
+    await this.client.post('/$loggy', data)
   }
 
   transformToBundle<RT extends keyof ResourceTypeMap, R extends ResourceTypeMap[RT]>(
     resources: (R & { resourceType: RT; id: string })[],
     method: 'PUT' | 'PATCH',
   ): BundleRequestEntry<R>[];
+
   transformToBundle<RT extends keyof ResourceTypeMap, R extends ResourceTypeMap[RT]>(
     resources: (R & { resourceType: RT; id?: string })[],
     method: 'POST',
   ): BundleRequestEntry<R>[];
+
   transformToBundle<RT extends keyof ResourceTypeMap, R extends ResourceTypeMap[RT]>(
     resources: (R & { resourceType: RT; id?: string })[],
-    method: 'POST' | 'PUT' | 'PATCH',
+    method: 'POST' | 'PUT' | 'PATCH'
   ): BundleRequestEntry<R>[] {
     return resources.map((resource) => ({
       request: {
-        method: method,
-        url: method === 'POST' ? `/${resource.resourceType}` : `/${resource.resourceType}/${resource.id}`,
+        method,
+        url: method === 'POST' ? `/${resource.resourceType}` : `/${resource.resourceType}/${resource.id}`
       },
-      resource,
-    }));
+      resource
+    }))
   }
 
   async bundleRequest(
     entry: Array<BundleRequestEntry>,
-    type: 'transaction' | 'batch' = 'transaction',
+    type: 'transaction' | 'batch' = 'transaction'
   ): Promise<BundleRequestResponse> {
-    const response = await this.client.post(`/`, {
+    const response = await this.client.post('/', {
       resourceType: 'Bundle',
       type,
-      entry,
-    });
-    return response.data;
+      entry
+    })
+    return response.data
   }
 }
 
 export class GetResources<T extends keyof ResourceTypeMap, R extends ResourceTypeMap[T]>
-  implements PromiseLike<BaseResponseResources<T>>
-{
-  private searchParamsObject: URLSearchParams;
-  resourceName: T;
-  client: AxiosInstance;
+  implements PromiseLike<BaseResponseResources<T>> {
+  private searchParamsObject: URLSearchParams
+  resourceName: T
+  client: AxiosInstance
 
   constructor(client: AxiosInstance, resourceName: T) {
-    this.client = client;
-    this.searchParamsObject = new URLSearchParams();
-    this.resourceName = resourceName;
+    this.client = client
+    this.searchParamsObject = new URLSearchParams()
+    this.resourceName = resourceName
   }
 
   where<K extends keyof SearchParams[T], SP extends SearchParams[T][K], PR extends PrefixWithArray>(
@@ -264,102 +259,106 @@ export class GetResources<T extends keyof ResourceTypeMap, R extends ResourceTyp
     value: SP | SP[],
     prefix?: PR,
   ): this;
+
   where<K extends keyof SearchParams[T], SP extends SearchParams[T][K], PR extends Exclude<Prefix, PrefixWithArray>>(
     key: K | string,
     value: SP,
     prefix?: PR,
   ): this;
+
   where<K extends keyof SearchParams[T], SP extends SearchParams[T][K], PR extends SP extends number ? Prefix : never>(
     key: K | string,
     value: SP | SP[],
-    prefix?: Prefix | never,
+    prefix?: Prefix | never
   ): this {
-    if (!Array.isArray(value)) {
-      const queryValue = `${prefix ?? ''}${value}`;
+    if (Array.isArray(value)) {
+      const val = value as SP[]
+      if (prefix) {
+        if (prefix === 'eq') {
+          this.searchParamsObject.append(key.toString(), val.join(','))
+          return this
+        }
 
-      this.searchParamsObject.append(key.toString(), queryValue);
-      return this;
-    }
+        val.map((item) => {
+          this.searchParamsObject.append(key.toString(), `${prefix}${item}`)
+        })
 
-    if (prefix) {
-      if (prefix === 'eq') {
-        this.searchParamsObject.append(key.toString(), value.join(','));
-        return this;
+        return this
       }
 
-      value.map((item) => {
-        this.searchParamsObject.append(key.toString(), `${prefix}${item}`);
-      });
+      const queryValues = val.join(',')
+      this.searchParamsObject.append(key.toString(), queryValues)
 
-      return this;
+      return this
+
     }
+    const queryValue = `${prefix ?? ''}${value}`
 
-    const queryValues = value.join(',');
-    this.searchParamsObject.append(key.toString(), queryValues);
+    this.searchParamsObject.append(key.toString(), queryValue)
+    return this
 
-    return this;
   }
 
   contained(contained: boolean | 'both', containedType?: 'container' | 'contained') {
-    this.searchParamsObject.set('_contained', contained.toString());
+    this.searchParamsObject.set('_contained', contained.toString())
 
     if (containedType) {
-      this.searchParamsObject.set('_containedType', containedType);
+      this.searchParamsObject.set('_containedType', containedType)
     }
 
-    return this;
+    return this
   }
 
   count(value: number) {
-    this.searchParamsObject.set('_count', value.toString());
+    this.searchParamsObject.set('_count', value.toString())
 
-    return this;
+    return this
   }
 
   elements(args: ElementsParams<T, R>) {
-    const queryValue = args.join(',');
+    const queryValue = args.join(',')
 
-    this.searchParamsObject.set('_elements', queryValue);
+    this.searchParamsObject.set('_elements', queryValue)
 
-    return this;
+    return this
   }
 
   summary(type: boolean | 'text' | 'data' | 'count') {
-    this.searchParamsObject.set('_summary', type.toString());
+    this.searchParamsObject.set('_summary', type.toString())
 
-    return this;
+    return this
   }
 
   sort(key: SortKey<T>, dir: Dir) {
-    const existedSortParams = this.searchParamsObject.get('_sort');
+    const existedSortParams = this.searchParamsObject.get('_sort')
 
     if (existedSortParams) {
-      const newSortParams = `${existedSortParams},${dir === 'asc' ? '-' : ''}${key.toString()}`;
+      const newSortParams = `${existedSortParams},${dir === 'asc' ? '-' : ''}${key.toString()}`
 
-      this.searchParamsObject.set('_sort', newSortParams);
-      return this;
+      this.searchParamsObject.set('_sort', newSortParams)
+      return this
     }
 
-    this.searchParamsObject.set('_sort', dir === 'asc' ? `-${key.toString()}` : key.toString());
+    this.searchParamsObject.set('_sort', dir === 'asc' ? `-${key.toString()}` : key.toString())
 
-    return this;
+    return this
   }
 
   then<TResult1 = BaseResponseResources<T>, TResult2 = never>(
     onfulfilled?: ((value: BaseResponseResources<T>) => PromiseLike<TResult1> | TResult1) | undefined | null,
-    onrejected?: ((reason: any) => PromiseLike<TResult2> | TResult2) | undefined | null,
+    onrejected?: ((reason: any) => PromiseLike<TResult2> | TResult2) | undefined | null
   ): PromiseLike<TResult1 | TResult2> {
     return this.client
-      .get<BaseResponseResources<T>>(this.resourceName, {
-        params: this.searchParamsObject,
+      .get<BaseResponseResources<T>>(buildURL(this.resourceName), {
+        params: this.searchParamsObject
       })
       .then((response: any) => {
-        return onfulfilled ? onfulfilled(response.data) : (response.data as TResult1);
-      });
+        return onfulfilled ? onfulfilled(response.data) : (response.data as TResult1)
+      })
   }
 }
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 type EventType = 'awf.workflow.event/workflow-init' | 'awf.workflow.event/task-completed';
 type TaskStatus = 'requested' | 'in-progress';
@@ -414,12 +413,12 @@ type WorkflowHandler<K extends keyof WorkflowDefinitionsMap> = (
 ) => void;
 
 export class Engine {
-  private readonly client;
-  private readonly workers: Array<{}>;
+  private readonly client
+  private readonly workers: Array<object>
 
-  constructor({ url, username, password }: { url: string; username: string; password: string }) {
-    this.client = axios.create({ baseURL: url, auth: { username, password } });
-    this.workers = [];
+  constructor(baseURL: string, credentials: AxiosBasicCredentials) {
+    this.client = axios.create({ baseURL: baseURL.endsWith("/") ? baseURL.slice(0, baseURL.length - 1) : baseURL, auth: credentials })
+    this.workers = []
   }
 
   task = {
@@ -427,42 +426,42 @@ export class Engine {
     implement: <K extends keyof TaskDefinitionsMap>(
       name: K,
       handler: TaskHandler<K>,
-      options: WorkerOptions = {},
+      options: WorkerOptions = {}
     ): void => {
       const worker = this.runDaemon(
         () => this.poll({ taskDefinitions: [TaskDefinitionsNameMap[name]] }, options),
         this.createHandler<TaskInput>(handler),
-        options,
-      );
-      this.workers.push(worker);
-    },
-  };
+        options
+      )
+      this.workers.push(worker)
+    }
+  }
 
   workflow = {
     execute: this.executeWorkflow.bind(this),
     implement: <W extends keyof WorkflowDefinitionsMap>(
       name: W,
       handler: WorkflowHandler<W>,
-      options: WorkerOptions = {},
+      options: WorkerOptions = {}
     ): void => {
       const worker = this.runDaemon(
         () => this.poll({ workflowDefinitions: [WorkflowDefinitionsNameMap[name]] }, options),
         this.createHandler<DecisionInput>(this.wrapHandler<W>(handler)),
-        options,
-      );
-      this.workers.push(worker);
-    },
-  };
+        options
+      )
+      this.workers.push(worker)
+    }
+  }
 
   async runDaemon(
     poll: () => Promise<Array<Meta<TaskInput | DecisionInput>>>,
     handler: (input: any) => any,
-    options: WorkerOptions,
+    options: WorkerOptions
   ) {
     while (true) {
-      const tasks = await poll();
-      await Promise.allSettled(tasks.map(async (task) => handler(task)));
-      await sleep(options.pollInterval || 1000);
+      const tasks = await poll()
+      await Promise.allSettled(tasks.map(async (task) => handler(task)))
+      await sleep(options.pollInterval || 1000)
     }
   }
 
@@ -471,96 +470,96 @@ export class Engine {
       handler(params, {
         complete: (result: WorkflowDefinitionsMap[W]['result']) => ({
           action: 'awf.workflow.action/complete-workflow',
-          result,
+          result
         }),
         execute: <T extends keyof TaskDefinitionsMap>(params: {
           definition: T;
           params: TaskDefinitionsMap[T]['params'];
         }) => ({
-          action: 'awf.workflow.action/schedule-task',
-          'task-request': { definition: TaskDefinitionsNameMap[params.definition], params: params.params },
+          'action': 'awf.workflow.action/schedule-task',
+          'task-request': { definition: TaskDefinitionsNameMap[params.definition], params: params.params }
         }),
-        fail: (error: any) => ({ action: 'awf.workflow.action/fail', error }),
-      });
+        fail: (error: any) => ({ action: 'awf.workflow.action/fail', error })
+      })
   }
 
   createHandler<T extends TaskInput | DecisionInput>(handler: (task: Meta<T>) => void) {
     return async (task: Meta<T>) => {
-      await this.startTask(task.id, task.execId);
+      await this.startTask(task.id, task.execId)
 
       try {
-        const result = await handler(task);
-        await this.completeTask(task.id, task.execId, result);
+        const result = await handler(task)
+        await this.completeTask(task.id, task.execId, result)
       } catch (error) {
-        console.error((error as AxiosError)?.response?.data);
-        await this.failTask(task.id, task.execId, error);
+        console.error((error as AxiosError)?.response?.data)
+        await this.failTask(task.id, task.execId, error)
       }
-    };
+    }
   }
 
   async poll(params: { workflowDefinitions?: [string]; taskDefinitions?: [string] }, options: WorkerOptions) {
     const { data: tasksBatch } = await this.client.post<TasksBatch>('/rpc', {
       method: 'awf.task/poll',
-      params: { ...params, maxBatchSize: options.batchSize },
-    });
+      params: { ...params, maxBatchSize: options.batchSize }
+    })
 
-    return tasksBatch.result.resources;
+    return tasksBatch.result.resources
   }
 
   startTask(id: string, executionId: string) {
     try {
       return this.client.post<TasksBatch>('/rpc', {
         method: 'awf.task/start',
-        params: { id: id, execId: executionId },
-      });
+        params: { id, execId: executionId }
+      })
     } catch (error) {
-      console.error((error as AxiosError)?.response?.data);
+      console.error((error as AxiosError)?.response?.data)
     }
   }
 
   completeTask(id: string, executionId: string, payload: unknown) {
     return this.client.post<TasksBatch>('/rpc', {
       method: 'awf.task/success',
-      params: { id: id, execId: executionId, result: payload },
-    });
+      params: { id, execId: executionId, result: payload }
+    })
   }
 
   failTask(id: string, executionId: string, payload: unknown) {
     try {
       return this.client.post<TasksBatch>('/rpc', {
         method: 'awf.task/fail',
-        params: { id: id, execId: executionId, result: payload },
-      });
+        params: { id, execId: executionId, result: payload }
+      })
     } catch (error) {
-      console.error((error as AxiosError)?.response?.data);
+      console.error((error as AxiosError)?.response?.data)
     }
   }
 
   executeWorkflow<K extends keyof WorkflowDefinitionsMap>(
     name: K,
-    params: WorkflowDefinitionsMap[K]['params'],
+    params: WorkflowDefinitionsMap[K]['params']
   ): Promise<AxiosResponse<TasksBatch>> {
     try {
       return this.client.post<TasksBatch>('/rpc', {
         method: 'awf.workflow/create-and-execute',
-        params: { definition: WorkflowDefinitionsNameMap[name], params },
-      });
+        params: { definition: WorkflowDefinitionsNameMap[name], params }
+      })
     } catch (error) {
-      throw (error as AxiosError)?.response;
+      throw (error as AxiosError)?.response
     }
   }
 
   executeTask<K extends keyof TaskDefinitionsMap>(
     definition: K,
-    params: TaskDefinitionsMap[K]['params'],
+    params: TaskDefinitionsMap[K]['params']
   ): Promise<AxiosResponse<TasksBatch>> {
     try {
       return this.client.post<TasksBatch>('/rpc', {
         method: 'awf.task/create-and-execute',
-        params: { definition: TaskDefinitionsNameMap[definition], params },
-      });
+        params: { definition: TaskDefinitionsNameMap[definition], params }
+      })
     } catch (error) {
-      throw (error as AxiosError)?.response;
+      throw (error as AxiosError)?.response
     }
   }
 }

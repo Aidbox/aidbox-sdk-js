@@ -3,26 +3,11 @@
 
  get-sdk
  {:zen/tags #{zen.cli/command}
-  :zen/desc "sdk generation"
-  :args-style :positional
-  :args {:type zen/vector
-         :minItems 0
-         :maxItems 2
-         :nth {0 {:type zen/symbol
-                  :zen/desc "API Type"}}}}
+  :zen/desc "SDK generation"
+  :args-style :positional}
 
- get-types
- {:zen/tags #{zen.cli/command}
-  :zen/desc "typescript types generation"
-  :args-style :positional
-  :args {:type zen/vector
-         :minItems 0
-         :maxItems 2
-         :nth {0 {:type zen/symbol
-                  :zen/desc "API Type"}}}}
 
  config
  {:zen/tags #{zen.cli/config}
-  :commands {:get-sdk      {:command get-sdk}
-             :get-types    {:command get-types}
+  :commands {:sdk          {:command get-sdk}
              :zen          {:config zen.cli/zen-config}}}}

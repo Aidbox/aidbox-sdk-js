@@ -12,6 +12,7 @@ load-data.ts
 clear-data.ts
 .calva/
 .clj-kondo/
+!.clj-kondo/config.edn
 .cpcache/
 .lsp/
 resources

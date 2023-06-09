@@ -1,4 +1,4 @@
-import { Immunization } from 'aidbox-sdk/aidbox-types'
+import { Immunization } from 'aidbox-sdk/types'
 import cx from 'classnames'
 import { useEffect, useState } from 'react'
 
@@ -15,7 +15,8 @@ export function ImmunizationsCard ({ id: patient_id }: { id: string }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    client.getResources('Immunization')
+    client
+      .getResources('Immunization')
       .where('patient', `Patient/${patient_id}`)
       .count(3)
       .then((response) => {
@@ -43,7 +44,11 @@ export function ImmunizationsCard ({ id: patient_id }: { id: string }) {
       {immunizations.map((immunization, index) => (
         <div key={immunization.id}>
           <div
-            style={{ display: 'grid', gridTemplateColumns: '5fr 1fr', alignItems: 'center' }}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '5fr 1fr',
+              alignItems: 'center'
+            }}
           >
             <p
               title={immunization.vaccineCode?.text}
@@ -67,10 +72,14 @@ export function ImmunizationsCard ({ id: patient_id }: { id: string }) {
               {kebabToFriendlyString(immunization.status)}
             </p>
 
-            <p className={styles.cardSmallText}>{formatDate(immunization.meta?.lastUpdated ?? '')}</p>
+            <p className={styles.cardSmallText}>
+              {formatDate(immunization.meta?.lastUpdated ?? '')}
+            </p>
           </div>
 
-          {index !== immunizations.length - 1 && <Divider verticalMargin={'0.5rem'} />}
+          {index !== immunizations.length - 1 && (
+            <Divider verticalMargin={'0.5rem'} />
+          )}
         </div>
       ))}
     </CardWrapper>

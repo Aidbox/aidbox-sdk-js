@@ -1,4 +1,30 @@
 {:ns system
- :import #{aidbox hl7-fhir-r4-core custom}
+ :import #{aidbox hl7-fhir-r4-core custom awf.workflow awf.task}
+
+
+ SendMessage
+ {:zen/tags #{awf.task/definition zen/schema}
+  :type zen/map
+  :keys {:params {:type zen/map
+                  :require #{:phone :message}
+                  :keys {:phone {:type zen/string}
+                         :message {:type zen/string}}}
+         :result {:type zen/map
+                  :require #{:status}
+                  :keys {:status {:type zen/string}}}}}
+
+ CheckOutWorkflow
+ {:zen/tags #{awf.workflow/definition zen/schema}
+  :type zen/map
+  :pool decision-pool
+  :keys {:params {:type zen/map
+                  :require #{:clientId}
+                  :keys {:clientId {:type zen/string}}}
+         :result {:type zen/map
+                  :keys {:messageId {:type zen/string}}}
+         :error {:type zen/map
+                 :keys {:message {:type zen/string}}}}}
+
+
  box
  {:zen/tags #{aidbox/system}}}

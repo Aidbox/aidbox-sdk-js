@@ -2,8 +2,8 @@
 .PHONY: test build
 
 sdk-build:
+	mkdir -p resources && \
 	cd vendor/build && npm install && npm run build && \
-	mkdir -p ../../resources && \
 	cp lib/index.d.ts ../../resources/index.d.ts && \
 	cp lib/index.js ../../resources/index.js && \
 	cp package.json ../../resources/package.json && \
@@ -24,3 +24,9 @@ test:
 
 test-ci:
 	clojure -A:test:kaocha
+
+outdated:
+	clj -Sdeps '{:deps {com.github.liquidz/antq {:mvn/version "RELEASE"}}}' -M -m antq.core
+
+lint:
+	clj -Sdeps '{:deps {clj-kondo/clj-kondo {:mvn/version "RELEASE"}}}' -m clj-kondo.main --lint src --fail-level error --parallel

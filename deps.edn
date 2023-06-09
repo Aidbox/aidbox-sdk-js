@@ -4,19 +4,18 @@
  :version "0.0.1-SNAPSHOT"
 
  :deps {org.clojure/clojure  {:mvn/version "1.11.1"}
-        borkdude/edamame     {:mvn/version "1.0.16"}
-        hawk/hawk            {:mvn/version "0.2.11"}
-        healthsamurai/matcho {:mvn/version "0.3.10"}
+        borkdude/edamame      {:mvn/version "1.0.16"}
+        #_#_hawk/hawk            {:mvn/version "0.2.11"}
         com.taoensso/nippy   {:mvn/version "3.2.0"}
         zen-lang/zen         {:git/url "https://github.com/zen-lang/zen"
-                              :sha     "22de0131a4364aa3d6a00ea3e7c7376629ee9b98"}}
+                              :sha     "2eb6b463f33a06315c405b0a92bac6ea2eef3b32"}}
 
  :aliases
  {:nrepl
   {:extra-paths []
    :extra-deps {org.clojure/tools.nrepl       {:mvn/version "0.2.13"}
                 org.clojure/core.rrb-vector   {:mvn/version "0.1.2"}
-                cider/cider-nrepl             {:mvn/version "0.29.0"}
+                cider/cider-nrepl             {:mvn/version "0.30.0"}
                 refactor-nrepl/refactor-nrepl {:mvn/version "3.6.0"}}
 
    :jvm-opts ^:replace ["-XX:-OmitStackTraceInFastThrow"]
@@ -30,9 +29,9 @@
                        "-XX:+UnlockDiagnosticVMOptions"
                        "-XX:+DebugNonSafepoints"]
             :extra-deps {criterium/criterium {:mvn/version "0.4.6"}
-                         com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.0.3"}}}
+                         com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.0.4"}}}
   :kaocha
-  {:extra-deps {lambdaisland/kaocha  {:mvn/version "1.72.1136"}}
+  {:extra-deps {lambdaisland/kaocha  {:mvn/version "1.84.1335"}}
    :extra-paths ["runner" "test"]
    :jvm-opts    ^:replace ["-XX:-OmitStackTraceInFastThrow"]
    :main-opts   ["-m" "kaocha.runner" "--config-file" "test/test.edn"]}
@@ -42,7 +41,4 @@
    :ns-default build
    :jvm-opts ^:replace ["-XX:-OmitStackTraceInFastThrow"]
    :extra-deps {io.github.clojure/tools.build {:git/url "https://github.com/clojure/tools.build"
-                                               :sha "984a24c0ef0a6af3f304b567adb45af40baefd08"}}}
-  :deploy
-  {:extra-deps {slipset/deps-deploy {:mvn/version "RELEASE"}}
-   :main-opts ["-m" "deps-deploy.deps-deploy" "deploy" "target/zen.jar"]}}}
+                                               :sha "fcb8ecb555d5db341c7fb8310a00c8c86c78aae3"}}}}}

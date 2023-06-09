@@ -16,7 +16,7 @@ To generate SDK by your `zen-project` config you have to install [zen-cli](https
 This command will install the latest version of the zen-cli on your system.
 The -g flag tells npm to install the package globally, making it available to all projects on your system.
 
-```
+```bash
 npm install -g @aidbox/zen-cli
 ```
 
@@ -26,7 +26,7 @@ In the case you do not have `zen-project` configured - follow [the documentation
 
 After configuration of zen-package you have to install dependencies (e.g hl7-fhir-r4-core) by typing the following into a terminal window
 
-```
+```bash
 zen-cli zen pull-deps
 ```
 
@@ -36,27 +36,14 @@ This command will download FHIR Definitions All the value sets, profiles, etc. d
 
 In terminal move to your `zen-project` folder and generate SDK by run the following
 
-```
-zen-cli get-sdk [options]
-```
-
-**Options:**
-
-```
-    [api-type: fhir | aidbox]
-    [profiles: false | true] - generating types for profiles such as US Core etc.
+```bash
+zen-cli sdk
 ```
 
 **Example:**
 
-```
-zen-cli get-sdk api-type=aidbox profiles=true
-```
-
-**By default,** it runs with fhir api-type and without generating profiles:
-
-```
-zen-cli get-sdk api-type=fhir profiles=false
+```bash
+zen-cli sdk 
 ```
 
 After running the zen-cli get-sdk command, you should be able to find the aidbox-javascript-sdk.tgz npm package in the root directory of your project. This archive is generated based on your zen-project and includes all types of resources.
@@ -65,7 +52,7 @@ After running the zen-cli get-sdk command, you should be able to find the aidbox
 
 Then, when you get your SDK move this archive into your project and add SDK as dependency in `package.json`
 
-```
+```json
 "dependencies": {
   ...
   "aidbox-sdk": "file:<PATH_TO_GENERATED_ARCHIVE_SDK>"
@@ -74,23 +61,9 @@ Then, when you get your SDK move this archive into your project and add SDK as d
 
 Install dependencies
 
-```
+```bash
 npm install
 ```
-
-### Types without SDK
-
-You can get only type system based on zen-project without SDK.
-
-```
-zen-cli get-types [options]
-```
-
-All types are available for import from `aidbox-types.d.ts` file.
-
-**Important**: Set of available features and typescript types are unique and depend on `zen-project` configuration,
-selected FHIR version, custom schemas and operations,
-it's important to include package as part of your Git repository.
 
 ## How to use
 
@@ -129,21 +102,27 @@ getResources method accepts the name of the resource and is the basis for the su
 
 ![getResources example](./assets/get-resources.gif)
 
-##### where
+#### where
 
 Method where add additional parameters for searching
 
 For example, you want to find all patients with name John, so
 
-    where("name", "John")
+```typescript
+where("name", "John")
+```
 
 Or, you want to find all patients with name John or Steve
 
-    where("name", ["John", "Steve"])
+```typescript
+where("name", ["John", "Steve"])
+```
 
 Also, method where support prefixes for numbers and date, just pass it as third parameter
 
-    where("birthDate", "2014-06-30", "gt")
+```typescript
+where("birthDate", "2014-06-30", "gt")
+```
 
 ![where example](./assets/where.gif)
 
@@ -153,11 +132,15 @@ Method sort add additional parameters for sorting
 
 For example, you want to display the oldest patients
 
-    sort("birthDate", "acs")
+```typescript
+sort("birthDate", "acs")
+```
 
 And also, you want to sort this data by patients name
 
-    sort("birthDate", "acs").sort("name", "acs")
+```typescript
+sort("birthDate", "acs").sort("name", "acs")
+```
 
 ![sort](./assets/sort.gif)
 
@@ -165,7 +148,9 @@ And also, you want to sort this data by patients name
 
 Method count used for make limit the number of resource returned by request
 
-    count(10)
+```typescript
+count(10)
+```
 
 #### Summary
 
@@ -191,7 +176,9 @@ By using the elements function, you can customize your requests to retrieve only
 
 To use the elements function, simply pass in the elements you want to retrieve as arguments. For example, if you only need the name and address fields from a resource, you can make a request using the following syntax:
 
-    elements(["name", "address"])
+```typescript
+elements(["name", "address"])
+```
 
 This request will return only the name and address fields for each resource, rather than the entire dataset. By reducing the amount of data returned, you can help to streamline your requests and improve the performance of your application.
 
@@ -201,7 +188,9 @@ The getResource function is a tool for retrieving a single resource by its ID.
 
 To use the getResource function, you must pass in the resource type and ID as arguments. For example, if you want to retrieve a patient resource with the ID some-id, you can make a request using the following syntax:
 
-    getResource("Patient", "id")
+```typescript
+getResource("Patient", "id")
+```
 
 ### createResource
 
@@ -223,7 +212,9 @@ The first parameter specifies the name of the resource to be updated. The second
 
 The deleteResource function is used to delete a specific resource identified by its id.
 
-    deleteResource("Patient", "c58f29eb-f28d-67c1-0400-9af3aba3d58c")
+```typescript
+deleteResource("Patient", "c58f29eb-f28d-67c1-0400-9af3aba3d58c")
+```
 
 ### createSubscription
 
@@ -263,7 +254,7 @@ client.transformToBundle(
       name: [
         {
           given: [""],
-          fimily: "",
+          family: "",
         },
       ],
     },
@@ -281,20 +272,21 @@ await client.bundleRequest(data, "batch");
 ```
 
 ## Task API
-Queues are a valuable tool for achieving reliable, asynchronous, scalable, and retry-safe code execution. 
-By using queues, we can ensure that tasks or messages are processed reliably, even in the face of failures or system disruptions. 
+
+Queues are a valuable tool for achieving reliable, asynchronous, scalable, and retry-safe code execution.
+By using queues, we can ensure that tasks or messages are processed reliably, even in the face of failures or system disruptions.
 The asynchronous nature of queues allows tasks to be processed independently, enabling parallelism and reducing wait times.
 
 ```javascript
 import { Engine } from "aidbox-javascript-sdk";
 
-const client = new Engine({
-  url: "http://localhost:8888",
+const client = new Engine("http://localhost:8888",{
   username: "test", password: "secret"
 });
 ```
 
 ### Definition
+
 First of all we have to create task's schema with settings that apply restrictions on
 input and output arguments for entity like this one:
 
@@ -310,12 +302,14 @@ input and output arguments for entity like this one:
                   :require #{:status}
                   :keys {:status {:type zen/string}}}}}
 ```
+
 [More information about task definition](https://docs.aidbox.app/modules-1/workflow-engine/task#1.-specify-task-definition)  
 Notice: we have to regenerate SDK package each time we made changes into configuration project
 
 ### Implementation
+
 Next step is creating business logic that will be considered as a worker,
-the worker will be handling each task, we can 
+the worker will be handling each task, we can
 
 ```javascript
 client.task.implement("SendMessage", async ({ params, status }) => {
@@ -335,28 +329,29 @@ client.task.implement("SendMessage", async ({ params, status }) => {
 ```
 
 ### Execution
+
 The way to execute a single task with unique context
+
 ```javascript
 await client.task.execute("SendMessage", { phone: "+1234567890", message: "Hi!" })
 ```
 
-
 ## Workflow Engine
+
 Aidbox provides Workflow Engine module, so you're able to define your own sequence
-of async tasks on top of Task API. In many business processes, certain tasks depend on the completion of other tasks. 
+of async tasks on top of Task API. In many business processes, certain tasks depend on the completion of other tasks.
 Defining task dependencies through workflow implementation allows the developer
-to control the order in which tasks are executed. 
+to control the order in which tasks are executed.
 
 ```javascript
 import { Engine } from "aidbox-javascript-sdk";
 
-const client = new Engine({
-  url: "http://localhost:8888",
+const client = new Engine("http://localhost:8888",{
   username: "test", password: "secret"
 });
 ```
 
-### Definition
+### Workflow Definition
 
 ```clojure
  CheckOutWorkflow
@@ -371,10 +366,11 @@ const client = new Engine({
          :error {:type zen/map
                  :keys {:message {:type zen/string}}}}}
 ```
+
 [More information about workflow definition](https://docs.aidbox.app/modules-1/workflow-engine/workflow#1.-specify-workflow-definition)  
 Notice: we have to regenerate SDK package each time we made changes into configuration project
 
-### Implementation
+### Workflow Implementation
 
 ```javascript
 await client.workflow.implement("CheckOutWorkflow", async ({ params }, { execute, complete, fail }) => {
@@ -402,7 +398,8 @@ await client.workflow.implement("CheckOutWorkflow", async ({ params }, { execute
   return []
 })
 ```
-### Execution
+
+### Workflow Execution
 
 ```javascript
 await client.workflow.execute("CheckOutWorkflow", { clientId: "" })
