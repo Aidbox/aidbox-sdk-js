@@ -29,10 +29,10 @@ Put `<client-name>`, `<client-secret>` and aidbox URL to `.env` file.
 Example in `.env.tpl`
 
 ## Install dependencies and run
-```
+```bash
 npm install
 ```
 
-```
+```bash
 npm run dev
 ```

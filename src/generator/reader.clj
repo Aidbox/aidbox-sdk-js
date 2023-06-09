@@ -423,5 +423,7 @@
 
 (def schema target-schema)
 (defn reset-schema []
-  (reset! target-schema {}))
+  (reset! target-schema {})
+  (reset! visited {})
+  (reset! resolved-names {}))
 

@@ -1,5 +1,5 @@
-{:ns system
- :import #{aidbox hl7-fhir-r4-core custom awf.workflow awf.task}
+{ns system
+ import #{aidbox trigger hl7-fhir-r4-core custom awf.workflow awf.task}
 
 
  SendMessage

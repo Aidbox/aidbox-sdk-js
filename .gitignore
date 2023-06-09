@@ -15,4 +15,3 @@ clear-data.ts
 !.clj-kondo/config.edn
 .cpcache/
 .lsp/
-resources

@@ -5,7 +5,6 @@
 
  :deps {org.clojure/clojure  {:mvn/version "1.11.1"}
         borkdude/edamame      {:mvn/version "1.0.16"}
-        #_#_hawk/hawk            {:mvn/version "0.2.11"}
         com.taoensso/nippy   {:mvn/version "3.2.0"}
         zen-lang/zen         {:git/url "https://github.com/zen-lang/zen"
                               :sha     "2eb6b463f33a06315c405b0a92bac6ea2eef3b32"}}
@@ -18,7 +17,11 @@
                 cider/cider-nrepl             {:mvn/version "0.30.0"}
                 refactor-nrepl/refactor-nrepl {:mvn/version "3.6.0"}}
 
-   :jvm-opts ^:replace ["-XX:-OmitStackTraceInFastThrow"]
+   :jvm-opts    ^:replace ["-XX:-OmitStackTraceInFastThrow"
+                           "-XX:+UnlockDiagnosticVMOptions"
+                           "-XX:+DebugNonSafepoints"
+                           "-Xmx4g" "-Xms1g"
+                           "-Djdk.attach.allowAttachSelf"]
    :main-opts   ["-m" "nrepl.cmdline"
                  "-b" "0.0.0.0"
                  "--middleware"

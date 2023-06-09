@@ -158,11 +158,11 @@
                      flatten
                      (map vals)
                      flatten)]
-    (println "[types] Generate structures")
+    (println "[types] Generate structures" (count structures))
     (doseq [sym structures]
       (zen.core/read-ns ztx (symbol (namespace sym)))
       (r/read-source-schema ztx (namespace sym)))
-    (println "[types] Generate base schemas")
+    (println "[types] Generate base schemas" (count schemas))
     (doseq [sym schemas]
       (zen.core/read-ns ztx (sym (namespace sym)))
       (r/read-source-schema ztx sym))
@@ -244,13 +244,16 @@
   (let [ztx (zen.core/new-context {:package-paths [path]})]
     (io/make-parents (str path "/package/types/index.ts"))
     (when (gen-types ztx path "package/types")
-      (copy-from-resources (io/resource "index.js") (io/file path  "package" "index.js"))
-      (copy-from-resources (io/resource "index.d.ts") (io/file path  "package" "index.d.ts"))
+      (copy-from-resources (io/resource "index.ts") (io/file path  "package" "index.ts"))
+      (copy-from-resources (io/resource "tsconfig.json") (io/file path  "package" "tsconfig.json"))
       (copy-from-resources (io/resource "package.json") (io/file path  "package" "package.json"))
-      (shell/sh "bash" "-c" (str "npx prettier --write " (.getPath (io/file path  "package"))))
+       (shell/sh "bash" "-c" (str "npx prettier --write " (.getPath (io/file path "package"))))
+       (shell/sh "bash" "-c" (str "cd " (.getPath (io/file path "package")) " && npm i"))
+       (shell/sh "bash" "-c" (str "cd " (.getPath (io/file path "package")) " && npm run build"))
+      (copy-from-resources (io/resource "package.json") (io/file path  "package" "lib" "package.json"))
       (println "[sdk] Archive generation")
-      (shell/sh "bash" "-c" (str  " tar -czvf ../aidbox-javascript-sdk-v1.0.0.tgz -C " (.getPath (io/file path "package")) " ."
-                                  " && rm -rf package"))
+       (shell/sh "bash" "-c" (str " tar -czvf " (.getPath (io/file path)) "/../aidbox-javascript-sdk-v1.0.0.tgz -C " (.getPath (io/file path "package" "lib")) " ."
+                                           " && rm -rf package"))
       (println "[types] Generating done"))))
 
 
