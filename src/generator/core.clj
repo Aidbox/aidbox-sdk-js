@@ -36,10 +36,11 @@
                 system (->> (vals data)
                             (keep :zen/tags)
                             (keep #(when (contains? % 'aidbox/system)
-                                     true)))]
+                                     true)))
+                name-ns (or (get data 'ns) (:ns data))]
             (if (seq system)
               (do
-                (println "[types] Package [" (:ns data) "]" (name (zen.core/read-ns ztx (symbol (:ns data)))))
+                (println "[types] Package [" name-ns "]" (name (zen.core/read-ns ztx (symbol name-ns))))
                 (mapv (fn [package]
                         (println "[types] Package [" package "]" (name (zen.core/read-ns ztx (symbol package)))))
                       (:import data)))
