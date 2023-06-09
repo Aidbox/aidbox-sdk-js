@@ -35,7 +35,8 @@
           (let [data (e/parse-string (slurp file))
                 system (->> (vals data)
                             (keep :zen/tags)
-                            (keep #(contains? % 'aidbox/system)))]
+                            (keep #(when (contains? % 'aidbox/system)
+                                     true)))]
             (if (seq system)
               (do
                 (println "[types] Package [" (:ns data) "]" (name (zen.core/read-ns ztx (symbol (:ns data)))))
