@@ -164,7 +164,7 @@
       (r/read-source-schema ztx (namespace sym)))
     (println "[types] Generate base schemas" (count schemas))
     (doseq [sym schemas]
-      (zen.core/read-ns ztx (sym (namespace sym)))
+      (zen.core/read-ns ztx (symbol (namespace sym)))
       (r/read-source-schema ztx sym))
     (doseq [package (keys @r/schema)]
       (io/make-parents (io/file path package "index.ts"))
@@ -247,13 +247,13 @@
       (copy-from-resources (io/resource "index.ts") (io/file path  "package" "index.ts"))
       (copy-from-resources (io/resource "tsconfig.json") (io/file path  "package" "tsconfig.json"))
       (copy-from-resources (io/resource "package.json") (io/file path  "package" "package.json"))
-       (shell/sh "bash" "-c" (str "npx prettier --write " (.getPath (io/file path "package"))))
-       (shell/sh "bash" "-c" (str "cd " (.getPath (io/file path "package")) " && npm i"))
-       (shell/sh "bash" "-c" (str "cd " (.getPath (io/file path "package")) " && npm run build"))
+      (shell/sh "bash" "-c" (str "npx prettier --write " (.getPath (io/file path "package"))))
+      (shell/sh "bash" "-c" (str "cd " (.getPath (io/file path "package")) " && npm i"))
+      (shell/sh "bash" "-c" (str "cd " (.getPath (io/file path "package")) " && npm run build"))
       (copy-from-resources (io/resource "package.json") (io/file path  "package" "lib" "package.json"))
       (println "[sdk] Archive generation")
-       (shell/sh "bash" "-c" (str " tar -czvf " (.getPath (io/file path)) "/../aidbox-javascript-sdk-v1.0.0.tgz -C " (.getPath (io/file path "package" "lib")) " ."
-                                           " && rm -rf package"))
+      (shell/sh "bash" "-c" (str " tar -czvf " (.getPath (io/file path)) "/../aidbox-javascript-sdk-v1.0.0.tgz -C " (.getPath (io/file path "package" "lib")) " ."
+                                 " && rm -rf  " (.getPath (io/file path)) "/package"))
       (println "[types] Generating done"))))
 
 
@@ -262,4 +262,5 @@
   (System/setProperty "user.dir" "/Users/alexanderstreltsov/work/hs/aidbox-sdk-js/zen-project")
   (-> (zen.cli/get-pwd)
       sdk))
+
 
