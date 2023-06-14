@@ -1,0 +1,56 @@
+{ns system
+ import #{aidbox trigger hl7-fhir-r4-core custom awf.workflow awf.task}
+
+
+ SendMessage
+ {:zen/tags #{awf.task/definition zen/schema}
+  :type zen/map
+  :keys {:params {:type zen/map
+                  :require #{:phone :message}
+                  :keys {:phone {:type zen/string}
+                         :message {:type zen/string}}}
+         :result {:type zen/map
+                  :require #{:status}
+                  :keys {:status {:type zen/string}}}}}
+
+ CheckOutWorkflow
+ {:zen/tags #{awf.workflow/definition zen/schema}
+  :type zen/map
+  :pool decision-pool
+  :keys {:params {:type zen/map
+                  :require #{:clientId}
+                  :keys {:clientId {:type zen/string}}}
+         :result {:type zen/map
+                  :keys {:messageId {:type zen/string}}}
+         :error {:type zen/map
+                 :keys {:message {:type zen/string}}}}}
+
+ admin-user-seed
+ {:zen/tags #{aidbox/service}
+  :engine   aidbox/seed-v2
+  :resources
+  {:User {:admin
+          {:password #env AIDBOX_ADMIN_PASSWORD}}
+
+   :AccessPolicy {:allow-admin-user
+                  {:engine "allow"
+                   :link   [{:resourceType "User" :id "admin"}]}}}}
+ demo-client-seed
+ {:zen/tags #{aidbox/service}
+  :engine   aidbox/seed-v2
+  :resources
+  {:Client {:demo
+            {:name        "Demo client"
+             :secret      #env AIDBOX_CLIENT_SECRET
+             :first_party true
+             :grant_types ["basic"]}}
+
+   :AccessPolicy {:allow-demo-client
+                  {:engine "allow"
+                   :link   [{:resourceType "Client" :id "demo"}]}}}}
+
+
+ box
+ {:zen/tags #{aidbox/system}
+  :services {:admin-user-seed admin-user-seed
+             :demo-client-seed demo-client-seed}}}

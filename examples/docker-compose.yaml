@@ -6,7 +6,7 @@ services:
     ports:
       - "${PGHOSTPORT}:5432"
     volumes:
-      - "../pgdata:/data"
+      - "./pgdata:/data"
     environment:
       POSTGRES_USER:     "${PGUSER}"
       POSTGRES_PASSWORD: "${PGPASSWORD}"
@@ -21,13 +21,13 @@ services:
     ports:
       - "${AIDBOX_PORT}:${AIDBOX_PORT}"
     volumes:
-      - "../zen-project/:${BOX_PROJECT_GIT_TARGET__PATH}"
+      - "./zen-project/:${BOX_PROJECT_GIT_TARGET__PATH}"
     env_file:
       - .env
     environment:
       PGPORT: 5432
       PGHOST: aidbox-db
-      AIDBOX_ES_URL: http://elasticsearch:9200
+      AIDBOX_ES_URL: http://es-container:9200
 
   sqs:
     image: softwaremill/elasticmq

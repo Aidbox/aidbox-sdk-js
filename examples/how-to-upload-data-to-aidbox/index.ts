@@ -1,18 +1,18 @@
 import * as fs from 'fs/promises'
 import * as path from 'path'
 
-import { aidboxClient } from './aidbox-client'
+import { aidboxClient } from '../shared/client'
 
 let queueSize = 0
 let loadedFile = 0
 let totalProcessed = 0
 let totalFiles = 0
-const notLoadedFiles: Array<{file: string, error: any}> = []
+const notLoadedFiles: Array<{ file: string, error: any }> = []
 
 const directoryPath =
   path.join(__dirname, '/data/fhir')
 
-async function upload (file: string) {
+async function upload(file: string) {
   try {
     const content = await fs.readFile(file, { encoding: 'utf8' })
     const entry = JSON.parse(content).entry

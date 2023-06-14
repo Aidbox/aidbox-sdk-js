@@ -1,6 +1,9 @@
 {
-  "watch": ["src/**/*.ts"],
+  "watch": [
+    "src/**/*.ts",
+    "scripts/**/*.ts"
+  ],
   "ext": "ts",
   "legacyWatch": true,
-  "exec": "ts-node ./how-to-react-on-aidbox-data-changes/backend/index.ts"
+  "exec": "ts-node --esm ./how-to-react-on-aidbox-data-changes/backend/index.ts"
 }

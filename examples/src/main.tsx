@@ -1,41 +1,52 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import {
-  createBrowserRouter,
-  RouterProvider
-} from 'react-router-dom'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { App as QuerySample } from '../how-to-make-aidbox-complex-query/src/app.tsx'
-import { App as SubsSample } from '../how-to-react-on-aidbox-data-changes/frontend/app.tsx'
-import { App as Phr } from '../personal-health-record/src/app.tsx'
+import { App as QuerySample } from "../how-to-make-aidbox-complex-query/src/app";
+import { App as SubsSample } from "../how-to-react-on-aidbox-data-changes/frontend/app";
+import { App as Phr } from "../personal-health-record/src/app";
 
-import App from './App.tsx'
-import './index.css'
-import { Layout } from './Layout.tsx'
+import App from "./App";
+import "./index.css";
+import { Layout } from "./Layout";
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <App />
+    path: "/",
+    element: (
+      <Layout>
+        <App />
+      </Layout>
+    ),
   },
   {
-    path: 'phr',
-    element: <Phr />
+    path: "phr",
+    element: (
+      <Layout>
+        <Phr />
+      </Layout>
+    ),
   },
   {
-    path: 'complex-query',
-    element: <QuerySample />
+    path: "complex-query",
+    element: (
+      <Layout>
+        <QuerySample />
+      </Layout>
+    ),
   },
   {
-    path: 'subscriptions',
-    element: <SubsSample />
-  }
-])
+    path: "subscriptions",
+    element: (
+      <Layout>
+        <SubsSample />
+      </Layout>
+    ),
+  },
+]);
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <Layout>
-      <RouterProvider router={router} />
-    </Layout>
+    <RouterProvider router={router} />
   </React.StrictMode>
-)
+);

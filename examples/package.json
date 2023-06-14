@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "app": "vite",
     "backend": "nodemon",
+    "setup": "ts-node --esm scripts/env.ts",
+    "seed": "ts-node --esm scripts/seed.ts",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -19,10 +22,12 @@
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.11.2"
+    "react-router-dom": "^6.11.2",
+    "dotenv": "16.1.4"
   },
   "devDependencies": {
     "@types/node": "^20.2.1",
+    "@types/prompts": "^2.4.4",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
@@ -36,6 +41,8 @@
     "eslint-plugin-react": "^7.32.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "nodemon": "^2.0.21",
+    "prompts": "^2.4.2",
+    "ts-node": "10.9.1",
     "typescript": "^4.9.3",
     "vite": "^4.1.0",
     "vite-plugin-svgr": "^2.4.0"
