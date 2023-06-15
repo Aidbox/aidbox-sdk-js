@@ -2,8 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { App as QuerySample } from "../how-to-make-aidbox-complex-query/src/app";
-import { App as SubsSample } from "../how-to-react-on-aidbox-data-changes/frontend/app";
+import { App as QuerySample } from "../aidbox-querying/src/app";
+import { App as SubsSample } from "../aidbox-subscription/frontend/app";
 import { App as Phr } from "../personal-health-record/src/app";
 
 import App from "./App";

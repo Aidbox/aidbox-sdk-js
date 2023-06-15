@@ -1,0 +1,13 @@
+{:ns     appointment-workflow
+ import #{aidbox awf awf.scheduler awf.task awf.workflow awf.executor}
+
+ SendNotification
+ {:zen/tags #{awf.task/definition zen/schema}
+  :type zen/map
+  :require #{:params}
+  :keys {:params {:type zen/map
+                  :require #{:id}
+                  :keys {:id {:type zen/string}}}
+         :result {:type zen/map
+                  :require #{:status}
+                  :keys {:status {:type zen/string}}}}}}
