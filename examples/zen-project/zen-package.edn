@@ -1,1 +1,2 @@
-{:deps {hl7-fhir-r4-core "https://github.com/zen-fhir/hl7-fhir-r4-core.git"}}
+{:deps {hl7-fhir-r4-core "https://github.com/zen-fhir/hl7-fhir-r4-core.git"
+        sdc "https://github.com/Aidbox/sdc-forms-library.git"}}

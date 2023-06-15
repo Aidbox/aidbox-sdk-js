@@ -4,6 +4,9 @@ import MailgunClient from "mailgun.js"
 import FormData from "form-data"
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
+import dotenv from 'dotenv'
+
+dotenv.config({path: '../.env'})
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
