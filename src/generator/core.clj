@@ -33,7 +33,7 @@
       (let [file (first files)
             other (rest files)]
         (if (and (.isFile file) (str/ends-with? (str  file) ".edn"))
-          (let [env (System/getenv)
+          (let [env {}
                 data (e/parse-string (slurp file)
                                      {:readers {'env         (fn [v] (zen.store/env-string  env v))
                                                 'env-string  (fn [v] (zen.store/env-string  env v))
