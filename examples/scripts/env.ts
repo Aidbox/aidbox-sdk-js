@@ -2,6 +2,7 @@ import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import { readFile, writeFile } from 'fs/promises';
 import prompts from 'prompts';
+import prettier from 'prettier';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -78,12 +79,11 @@ const writeMainEnv = async () => {
 }
 const addConfig = async () => {
     await writeFile(resolve(__dirname, "..", "shared", "config.ts"),
-        `export const config = {
+        prettier.format(`export const config = {
         url: "${indexEnv["AIDBOX_BASE_URL"]}",
         client: "${indexEnv["AIDBOX_CLIENT_ID"]}",
         secret: "${indexEnv["AIDBOX_CLIENT_SECRET"]}"
-    }`)
-
+    }`, { semi: false, parser: "typescript" }))
 }
 
 export const main = async () => {

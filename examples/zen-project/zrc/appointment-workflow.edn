@@ -1,5 +1,5 @@
 {:ns     appointment-workflow
- import #{aidbox awf awf.scheduler awf.task awf.workflow awf.executor}
+ import #{awf.task}
 
  SendNotification
  {:zen/tags #{awf.task/definition zen/schema}

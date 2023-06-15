@@ -53,7 +53,7 @@
                 (println "[types] Package [" name-ns "]" (name (zen.core/read-ns ztx (symbol name-ns))))
                 (mapv (fn [package]
                         (println "[types] Package [" package "]" (name (zen.core/read-ns ztx (symbol package)))))
-                      (:import data)))
+                      (or (:import data) (get data 'import))))
               (recur other)))
           (recur other)))
       (println "[types] Cannot find entry file. Please check that you have file with symbol contained aidbox/system tag"))))

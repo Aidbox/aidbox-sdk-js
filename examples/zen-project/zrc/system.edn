@@ -1,5 +1,5 @@
 {ns system
- import #{aidbox appointment-trigger appointment-workflow hl7-fhir-r4-core custom awf.workflow awf.task}
+ import #{aidbox appointment-trigger appointment-workflow hl7-fhir-r4-core awf.workflow awf.task}
 
  SendMessage
  {:zen/tags #{awf.task/definition zen/schema}
