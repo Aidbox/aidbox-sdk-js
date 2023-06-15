@@ -9,6 +9,7 @@
    [taoensso.nippy :as nippy]
    [zen.core]
    [zen.package]
+   [zen.store]
    [zen.utils]))
 
 
@@ -32,7 +33,16 @@
       (let [file (first files)
             other (rest files)]
         (if (and (.isFile file) (str/ends-with? (str  file) ".edn"))
-          (let [data (e/parse-string (slurp file))
+          (let [env (System/getenv)
+                data (e/parse-string (slurp file)
+                                     {:readers {'env         (fn [v] (zen.store/env-string  env v))
+                                                'env-string  (fn [v] (zen.store/env-string  env v))
+                                                'env-integer (fn [v] (zen.store/env-integer env v))
+                                                'env-symbol  (fn [v] (zen.store/env-symbol  env v))
+                                                'env-number  (fn [v] (zen.store/env-number  env v))
+                                                'env-keyword (fn [v] (zen.store/env-keyword  env v))
+                                                'env-boolean (fn [v] (zen.store/env-boolean env v))
+                                                'zen/quote   zen.store/zen-quote}})
                 system (->> (vals data)
                             (keep :zen/tags)
                             (keep #(when (contains? % 'aidbox/system)
