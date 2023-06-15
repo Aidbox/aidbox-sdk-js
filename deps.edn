@@ -4,10 +4,10 @@
  :version "0.0.1-SNAPSHOT"
 
  :deps {org.clojure/clojure  {:mvn/version "1.11.1"}
-        borkdude/edamame      {:mvn/version "1.0.16"}
+        borkdude/edamame      {:mvn/version "1.3.22"}
         com.taoensso/nippy   {:mvn/version "3.2.0"}
         zen-lang/zen         {:git/url "https://github.com/zen-lang/zen"
-                              :sha     "2eb6b463f33a06315c405b0a92bac6ea2eef3b32"}}
+                              :sha     "5c95fc637a639342d25120c6fa4b087957e5d526"}}
 
  :aliases
  {:nrepl
@@ -34,7 +34,7 @@
             :extra-deps {criterium/criterium {:mvn/version "0.4.6"}
                          com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.0.4"}}}
   :kaocha
-  {:extra-deps {lambdaisland/kaocha  {:mvn/version "1.84.1335"}}
+  {:extra-deps {lambdaisland/kaocha  {:mvn/version "1.85.1342"}}
    :extra-paths ["runner" "test"]
    :jvm-opts    ^:replace ["-XX:-OmitStackTraceInFastThrow"]
    :main-opts   ["-m" "kaocha.runner" "--config-file" "test/test.edn"]}
