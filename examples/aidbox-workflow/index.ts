@@ -1,13 +1,19 @@
-import { aidboxClient as client, engineClient as engine } from '../shared/client'
+import { readFileSync } from 'fs';
+import { aidboxClient as client, engineClient as engine } from '../shared/client.js'
 import MailgunClient from "mailgun.js"
 import FormData from "form-data"
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
 
-const document = require("email.html")
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const document = readFileSync(resolve(__dirname, "email.html")).toString();
 const domain = process.env.MAILGUN_DOMAIN || ""
 const mailgunApiKey = process.env.MAILGUN_API_KEY || ""
 
 const { task } = engine;
-const mailgun = new MailgunClient(FormData).client({ username: 'api', key: mailgunApiKey })
+const mailgun = new MailgunClient.default(FormData).client({ username: 'api', key: mailgunApiKey })
 
 async function generateDepressionForm(patientId?: string, encounterId?: string): Promise<string> {
     try {

@@ -1,5 +1,5 @@
 import { Client, Engine } from 'aidbox-sdk'
-import { config } from "./config";
+import { config } from "./config.js";
 
 
 export const aidboxClient = new Client(`${config.url}`, {

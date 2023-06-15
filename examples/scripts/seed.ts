@@ -1,10 +1,12 @@
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
-import { readFile } from 'fs/promises';
-import { Client } from 'aidbox-sdk';
+import { readFile } from "fs/promises";
+import { aidboxClient } from "../shared/client.js";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
 
 const data = [
     {
@@ -35,7 +37,6 @@ const data = [
 
 const main = async () => {
     const env: Record<string, string> = {};
-    console.log(__dirname)
     await readFile(resolve(__dirname, "..", ".env"))
         .then((b) => {
             b.toString().replace(/(\w+)=(.+)/g, ($0, $1, $2) => { env[$1] = $2; return $0 })
@@ -44,9 +45,6 @@ const main = async () => {
         console.error("Please run `npm run setup` and check that .env file exist in /examples folder")
         return
     }
-    const aidboxClient = new Client(env['AIDBOX_BASE_URL'], {
-        username: env["AIDBOX_CLIENT_ID"], password: env['AIDBOX_CLIENT_SECRET']
-    })
     const ids = data.map((item, index) => ({ resource: item.resourceType, id: 'synthea_' + index }));
     console.log("Clean up resources...");
     const deleteResult = await aidboxClient.rawSQL("truncate encounter; truncate organization; truncate patient; truncate condition; truncate immunization; truncate observation").catch(e => e.response.data);
