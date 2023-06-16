@@ -63,7 +63,7 @@ task.implement("AppointmentWorkflowSendNotification", async ({ params }) => {
 
     const patientName = patient.name?.pop()
     const encounter = await client.createResource("Encounter", {
-        status: "in-progress",
+        status: "completed",
         type: [{ coding: [{ code: "optionsOnly", system: "http://hl7.org/fhir/questionnaire-answer-constraint", display: "options only" }] }],
         priority: { coding: [{ code: "EL", system: "http://terminology.hl7.org/CodeSystem/v3-ActPriority", display: "elective" }] },
         class: { code: "VR", system: "http://terminology.hl7.org/ValueSet/encounter-class", display: "virtual" },
