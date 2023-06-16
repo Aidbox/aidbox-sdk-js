@@ -1,6 +1,6 @@
 # AIDBOX WORKFLOW / TASK API SAMPLE
 
-[The Aidbox workflow engine module](https://docs.aidbox.app/modules-1/workflow-engine) is the way to execute raliable, scalable and safe your complex bussines logic. The asynchronous nature of orchestration engine allows tasks to be processed independently, enabling parallelism that reduces processing time during load.
+[The Aidbox workflow engine module](https://docs.aidbox.app/modules-1/workflow-engine) is the way to execute raliable, scalable and safe your complex business logic. The asynchronous nature of orchestration engine allows tasks to be processed independently, enabling parallelism that reduces processing time during load.
 
 The example shows the flow of using Aidbox as a notification gateway service that [listens incomming appointments](https://docs.aidbox.app/modules-1/workflow-engine/services#subscription-trigger) and [spawns async tasks](https://docs.aidbox.app/modules-1/workflow-engine/task) for each of them. From other side we ( with SDK ) implements worker that is handling these tasks and send email to the patient.
 
