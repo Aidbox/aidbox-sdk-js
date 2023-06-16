@@ -1,4 +1,4 @@
-import { Client } from "aidbox-sdk";
+import { Client } from "@aidbox/sdk-r4";
 
 const data = [
   {

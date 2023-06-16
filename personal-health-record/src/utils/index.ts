@@ -1,4 +1,4 @@
-import { Address, Patient } from 'aidbox-sdk/types'
+import { Address, Patient } from '@aidbox/sdk-r4/types'
 
 export const kebabToFriendlyString = (initialString: string) => initialString.split('-').join(' ')
 

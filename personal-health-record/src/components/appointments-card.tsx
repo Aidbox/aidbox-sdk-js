@@ -1,4 +1,8 @@
-import { Appointment, Practitioner, PractitionerRole } from "aidbox-sdk/types";
+import {
+  Appointment,
+  Practitioner,
+  PractitionerRole,
+} from "@aidbox/sdk-r4/types";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 

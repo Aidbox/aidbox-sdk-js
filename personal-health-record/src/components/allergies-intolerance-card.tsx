@@ -1,4 +1,4 @@
-import { AllergyIntolerance } from "aidbox-sdk/types";
+import { AllergyIntolerance } from "@aidbox/sdk-r4/types";
 import cx from "classnames";
 import { useEffect, useState } from "react";
 

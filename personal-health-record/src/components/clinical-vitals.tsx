@@ -1,4 +1,4 @@
-import { Observation } from "aidbox-sdk/types";
+import { Observation } from "@aidbox/sdk-r4/types";
 import {
   Chart as ChartJS,
   CategoryScale,

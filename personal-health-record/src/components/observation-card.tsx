@@ -1,4 +1,4 @@
-import { Observation, Quantity } from "aidbox-sdk/types";
+import { Observation, Quantity } from "@aidbox/sdk-r4/types";
 import { useEffect, useState } from "react";
 
 import { CardWrapper } from "../shared/card";

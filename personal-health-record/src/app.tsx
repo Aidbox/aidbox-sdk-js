@@ -1,5 +1,5 @@
 import { NextUIProvider } from "@nextui-org/react";
-import { Patient } from "aidbox-sdk/types";
+import { Patient } from "@aidbox/sdk-r4/types";
 import { useEffect, useState } from "react";
 
 import { PatientInfo } from "./components/patient-info";

@@ -1,4 +1,4 @@
-import { Condition } from "aidbox-sdk/types";
+import { Condition } from "@aidbox/sdk-r4/types";
 import { useEffect, useState } from "react";
 
 import { CardWrapper } from "../shared/card";

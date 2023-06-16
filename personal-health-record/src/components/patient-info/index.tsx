@@ -1,5 +1,5 @@
 import { Loading } from "@nextui-org/react";
-import { Patient } from "aidbox-sdk/types";
+import { Patient } from "@aidbox/sdk-r4/types";
 
 import Logo from "../../assets/logo.svg";
 import { Divider } from "../../shared/divider/divider";

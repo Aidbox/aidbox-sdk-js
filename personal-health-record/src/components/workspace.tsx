@@ -1,4 +1,4 @@
-import { Patient } from "aidbox-sdk/types";
+import { Patient } from "@aidbox/sdk-r4/types";
 
 import { AllergiesIntoleranceCard } from "./allergies-intolerance-card";
 import { AppointmentsCard } from "./appointments-card";

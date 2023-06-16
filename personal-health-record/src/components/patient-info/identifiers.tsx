@@ -1,22 +1,22 @@
-import { Patient } from 'aidbox-sdk/types'
+import { Patient } from "@aidbox/sdk-r4/types";
 
-import styles from './patient-info.module.css'
+import styles from "./patient-info.module.css";
 
 interface Props {
-  identifiers: Patient['identifier'];
+  identifiers: Patient["identifier"];
 }
 
-export function Identifiers ({ identifiers }: Props) {
+export function Identifiers({ identifiers }: Props) {
   return (
     <div>
       <p className={styles.sectionTitle}>Identifiers</p>
 
       <div
         style={{
-          marginTop: '0.5rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.9rem'
+          marginTop: "0.5rem",
+          display: "flex",
+          flexDirection: "column",
+          gap: "0.9rem",
         }}
       >
         {identifiers?.map((identifier: any, index: number) => (
@@ -25,14 +25,14 @@ export function Identifiers ({ identifiers }: Props) {
               <div key={index}>
                 <p
                   style={{
-                    fontSize: '0.9rem',
-                    fontWeight: '500',
-                    lineHeight: '1.1rem'
+                    fontSize: "0.9rem",
+                    fontWeight: "500",
+                    lineHeight: "1.1rem",
                   }}
                 >
                   {code.display}
                 </p>
-                <p style={{ fontSize: '0.9rem', lineHeight: '1.2rem' }}>
+                <p style={{ fontSize: "0.9rem", lineHeight: "1.2rem" }}>
                   {identifier.value}
                 </p>
               </div>
@@ -41,5 +41,5 @@ export function Identifiers ({ identifiers }: Props) {
         ))}
       </div>
     </div>
-  )
+  );
 }
