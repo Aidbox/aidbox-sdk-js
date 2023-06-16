@@ -85,5 +85,5 @@ task.implement("AppointmentWorkflowSendNotification", async ({ params }) => {
 
     await sendEmail(contact?.value || "", message)
 
-    return { status: "" }
+    return { status: "ok" }
 })
