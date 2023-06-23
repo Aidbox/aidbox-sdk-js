@@ -10,8 +10,63 @@
    [zen.core]
    [zen.package]
    [zen.store]
-   [zen.utils]))
+   [zen.utils])
+  (:import (org.apache.commons.compress.compressors CompressorStreamFactory)
+           (org.apache.commons.compress.utils IOUtils)
+           (org.apache.commons.compress.archivers.tar TarArchiveOutputStream)
+           (java.io File)))
 
+
+(def archive-extensions {"lzma"          ".tar.lzma"
+                         "gz"            ".tgz"
+                         "bzip2"         ".tar.bz2"
+                         "snappy-framed" ".tar.sz"
+                         "deflate"       ".tar.gz"
+                         "lz4-framed"    ".tar.lz4"
+                         "xz"            ".tar.xz"})
+
+
+(defn- new-archive-name
+  "Return new archive name based on input parameters."
+  ^File [arch-name out-folder compressor]
+  (let [extension        (get archive-extensions compressor)
+        full-name        (io/file out-folder (str arch-name extension))]
+    full-name))
+
+
+(defn- relativise-path
+  "Create relative archive entry name."
+  [base path]
+  (let [f        (io/file base)
+        uri      (.toURI f)
+        relative (.relativize uri (-> path io/file .toURI))]
+    (.getPath relative)))
+
+
+(defn create-archive
+  [^String new-arch-name input-files-vec ^File out-folder ^String compressor]
+  (let [out-fname (new-archive-name new-arch-name out-folder compressor)
+        fo        (io/output-stream out-fname)
+        cfo       (.createCompressorOutputStream (CompressorStreamFactory.) compressor fo)
+        a         (TarArchiveOutputStream. cfo)
+        processed (atom [])]
+    (doseq [input-name input-files-vec]
+      (let [folder? (.isDirectory input-name)]
+        (doseq [f (if folder? (file-seq input-name) [input-name])]
+          (when (empty? (filter #(= (.getPath %) (.getPath f)) @processed))
+            (when (and (.isFile f) (not= out-fname (.getPath ^File f)))
+              (let [entry-name (relativise-path (.getPath input-name) (-> f .getPath))
+                    #_(println entry-name (str input-name))
+                    entry      (.createArchiveEntry a f entry-name)]
+                (.putArchiveEntry a entry)
+                (when (.isFile f)
+                  (IOUtils/copy (io/input-stream f) a))
+                (.closeArchiveEntry a))
+              (swap! processed conj f))))))
+    (.finish a)
+    (.close a)
+    (reset! processed [])
+    out-fname))
 
 (defn deep-merge-with
   "Recursively merges maps. Applies function f when we have duplicate keys."
@@ -28,11 +83,11 @@
 
 (defn find-and-read-entrypoint [ztx zen-path]
   (println "[types] Try to find entrypoint")
-  (loop [files (file-seq (io/file (str  zen-path "/zrc")))]
+  (loop [files (file-seq (io/file zen-path "zrc"))]
     (if (seq files)
       (let [file (first files)
             other (rest files)]
-        (if (and (.isFile file) (str/ends-with? (str  file) ".edn"))
+        (if (and (.isFile file) (str/ends-with? (str file) ".edn"))
           (let [env {}
                 data (e/parse-string (slurp file)
                                      {:readers {'env         (fn [v] (zen.store/env-string  env v))
@@ -250,27 +305,36 @@
   (with-open [in (io/input-stream input)]
     (io/copy in output)))
 
+(defn rm-r
+  "Recursively delete a path tree."
+  [p]
+  (doseq [f (reverse (file-seq (io/file p)))]
+    (.delete f)))
+
+
 (defn sdk [path]
   (let [ztx (zen.core/new-context {:package-paths [path]})]
-    (io/make-parents (str path "/package/types/index.ts"))
+    (io/make-parents (io/file path "package" "types" "index.ts"))
     (when (gen-types ztx path "package/types")
       (copy-from-resources (io/resource "index.ts") (io/file path  "package" "index.ts"))
       (copy-from-resources (io/resource "tsconfig.json") (io/file path  "package" "tsconfig.json"))
       (copy-from-resources (io/resource "package.json") (io/file path  "package" "package.json"))
-      (shell/sh "bash" "-c" (str "npx prettier --write " (.getPath (io/file path "package"))))
-      (shell/sh "bash" "-c" (str "cd " (.getPath (io/file path "package")) " && npm i"))
-      (shell/sh "bash" "-c" (str "cd " (.getPath (io/file path "package")) " && npm run build"))
-      (copy-from-resources (io/resource "package.json") (io/file path  "package" "lib" "package.json"))
+      (println "[sdk] Run prettier for source files")
+      (shell/sh "npx" "prettier" "--write" "."  :dir (io/file path "package"))
+      (shell/sh "npm" "install" :dir (io/file path "package"))
+      (shell/sh "npm" "run" "build" :dir  (io/file path "package"))
+      (copy-from-resources (io/resource "package.json") (io/file path "package" "lib" "package.json"))
       (println "[sdk] Archive generation")
-      (shell/sh "bash" "-c" (str " tar -czvf " (.getPath (io/file path)) "/../aidbox-javascript-sdk-v1.0.0.tgz -C " (.getPath (io/file path "package" "lib")) " ."
-                                 " && rm -rf  " (.getPath (io/file path)) "/package"))
+      (create-archive "aidbox-javascript-sdk-v1.0.0" (file-seq (io/file path "package" "lib")) (io/file path "..") "gz")
+      (println "[sdk] Cleanup folder")
+      (rm-r  (io/file path "package"))
       (println "[types] Generating done"))))
+
 
 
 (comment
   (require ['zen.cli])
-  (System/setProperty "user.dir" "/Users/alexanderstreltsov/work/hs/aidbox-sdk-js/zen-project")
-  (-> (zen.cli/get-pwd)
+  (-> (zen.cli/get-pwd {:pwd  "/Users/alexanderstreltsov/work/hs/aidbox-sdk-js/zen-project"})
       sdk))
 
 

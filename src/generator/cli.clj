@@ -6,7 +6,7 @@
    [zen.core])
   (:gen-class))
 
-(defmethod zen.cli/command 'sdk-cli/get-sdk [_ _ _]
+(defmethod zen.cli/command 'sdk-cli/sdk [_ _ _]
   (-> (zen.cli/get-pwd)
       generator.core/sdk)
   (System/exit 0))

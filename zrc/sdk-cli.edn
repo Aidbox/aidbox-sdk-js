@@ -1,7 +1,7 @@
 {ns sdk-cli
  import #{zen.cli}
 
- get-sdk
+ sdk
  {:zen/tags #{zen.cli/command}
   :zen/desc "SDK generation"
   :args-style :positional}
