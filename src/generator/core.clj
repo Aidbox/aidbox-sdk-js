@@ -56,7 +56,6 @@
           (when (empty? (filter #(= (.getPath %) (.getPath f)) @processed))
             (when (and (.isFile f) (not= out-fname (.getPath ^File f)))
               (let [entry-name (relativise-path (.getPath input-name) (-> f .getPath))
-                    #_(println entry-name (str input-name))
                     entry      (.createArchiveEntry a f entry-name)]
                 (.putArchiveEntry a entry)
                 (when (.isFile f)
@@ -313,16 +312,20 @@
 
 
 (defn sdk [path]
-  (let [ztx (zen.core/new-context {:package-paths [path]})]
+  (let [ztx (zen.core/new-context {:package-paths [path]})
+        win?  (str/includes? (str/lower-case (System/getProperty "os.name")) "windows")]
     (io/make-parents (io/file path "package" "types" "index.ts"))
     (when (gen-types ztx path "package/types")
       (copy-from-resources (io/resource "index.ts") (io/file path  "package" "index.ts"))
       (copy-from-resources (io/resource "tsconfig.json") (io/file path  "package" "tsconfig.json"))
       (copy-from-resources (io/resource "package.json") (io/file path  "package" "package.json"))
       (println "[sdk] Run prettier for source files")
-      (shell/sh "npx" "prettier" "--write" "."  :dir (io/file path "package"))
-      (shell/sh "npm" "install" :dir (io/file path "package"))
-      (shell/sh "npm" "run" "build" :dir  (io/file path "package"))
+      (shell/with-sh-dir  (io/file path "package")
+        (apply shell/sh (if win? ["powershell" "npx" "prettier" "--write ."] ["npx" "prettier" "--write ."])))
+      (shell/with-sh-dir  (io/file path "package")
+        (apply shell/sh (if win? ["powershell" "npm" "install"] ["npm" "install"])))
+      (shell/with-sh-dir  (io/file path "package")
+        (apply shell/sh (if win? ["powershell" "npm" "run" "build"] ["npm" "run" "build"])))
       (copy-from-resources (io/resource "package.json") (io/file path "package" "lib" "package.json"))
       (println "[sdk] Archive generation")
       (create-archive "aidbox-javascript-sdk-v1.0.0" (file-seq (io/file path "package" "lib")) (io/file path "..") "gz")
@@ -333,8 +336,11 @@
 
 
 (comment
+  (def   win?  (str/includes? (str/lower-case (System/getProperty "os.name")) "windows"))
   (require ['zen.cli])
-  (-> (zen.cli/get-pwd {:pwd  "/Users/alexanderstreltsov/work/hs/aidbox-sdk-js/zen-project"})
+
+
+  (-> (zen.cli/get-pwd {:pwd  "C:\\Users\\mc_do\\aidbox-sdk-js\\zen-project"})
       sdk))
 
 

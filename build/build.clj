@@ -1,9 +1,9 @@
 (ns build
   (:require [clojure.tools.build.api :as b]))
 
-(def class-dir "target/classes")
+(def class-dir (.getPath (clojure.java.io/file "target" (java.io.File/separator) "classes")))
 (def basis (b/create-basis {:project "deps.edn"}))
-(def uber-file "target/zen.jar")
+(def uber-file (.getPath (clojure.java.io/file "target" (java.io.File/separator) "zen.jar")))
 
 (defn clean [_]
   (b/delete {:path "target"}))
@@ -19,3 +19,8 @@
            :uber-file uber-file
            :basis basis
            :main 'generator.cli}))
+
+
+(comment
+
+  (uber {}))
