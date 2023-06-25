@@ -239,7 +239,7 @@
         (mapv #(when-not (contains? #{"string" "boolean"} %) (.write r (format "import { %s } from './%s'\n" % %)))
               (keys (get @r/schema package)))
         (.write r "\n\n")
-        (.write r "export type ResourceTypeMap = {\n")
+        (.write r "export type ResourceTypeMap = {\n SubsSubscription: SubsSubscription;\n")
         (mapv #(when-not (contains? #{"string" "boolean"} %) (.write r (format "  %s: %s;\n" % %)))
               (keys (get @r/schema package)))
         (.write r "}\n")

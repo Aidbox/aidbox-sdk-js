@@ -1,3 +1,3 @@
-import { aidboxClient as client } from "../../shared/client"
+import { aidboxClient as client } from '../../shared/client.js'
 
-export const aidboxClient = client; 
+export const aidboxClient = client

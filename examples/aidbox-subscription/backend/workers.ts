@@ -1,6 +1,8 @@
-import { aidboxClient } from './aidbox-client'
+import { aidboxClient } from './aidbox-client.js'
+import { handleSocket } from './socket.js'
 
 const patientCreateWorker = async (patientId: string) => {
+  handleSocket('pull_patient', patientId)
   try {
     await aidboxClient.createResource('Task', {
       resourceType: 'Task',
@@ -11,6 +13,7 @@ const patientCreateWorker = async (patientId: string) => {
         id: patientId
       }
     })
+    handleSocket('create_task', patientId)
   } catch (error) {
     console.error(error)
   }

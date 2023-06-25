@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv'
 
-import { aidboxClient } from './aidbox-client'
+import { aidboxClient } from './aidbox-client.js'
 dotenv.config()
 
 export const createSubscriptions = async () => {

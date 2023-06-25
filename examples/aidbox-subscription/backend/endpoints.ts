@@ -2,11 +2,13 @@ import { IncomingMessage, ServerResponse } from 'node:http'
 
 import client from 'prom-client'
 
-import { aidboxClient } from './aidbox-client'
-import { sqsClient } from './sqs'
+import { aidboxClient } from './aidbox-client.js'
+import { handleSocket } from './socket.js'
+import { sqsClient } from './sqs.js'
 
 const handleCreatePatient = async (data: string) => {
   const patient = JSON.parse(data).resource
+  handleSocket('subs_notification_patient', patient.id)
   const event = 'create-patient'
   await sqsClient.sendMessage({
     DelaySeconds: 0,
@@ -19,6 +21,7 @@ const handleCreatePatient = async (data: string) => {
       }
     }
   })
+  handleSocket('push_patient', patient.id)
   aidboxClient.sendLog({
     type: 'sqs',
     message: { event, id: patient.id }
@@ -116,11 +119,14 @@ client.collectDefaultMetrics({ register })
 export const handleEndpoints = async (
   req: IncomingMessage,
   res: ServerResponse
+  // io: any
 ) => {
   let data = ''
   req.on('data', (chunk) => {
     data += chunk
   })
+  const metrics = await register.metrics()
+  // io.emit('patient_created', ';;;')
 
   switch (req.url) {
     case '/':
@@ -129,7 +135,6 @@ export const handleEndpoints = async (
       break
 
     case '/metrics':
-      const metrics = await register.metrics()
       res.setHeader('Content-Type', register.contentType)
       res.end(metrics)
       break

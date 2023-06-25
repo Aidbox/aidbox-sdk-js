@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv'
 import cron from 'node-cron'
 
-import { sqsClient } from './sqs'
-import { workers } from './workers'
+import { sqsClient } from './sqs.js'
+import { workers } from './workers.js'
 dotenv.config()
 
 export const createSqsJobs = async (queues: Array<string>) => {
