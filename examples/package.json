@@ -18,6 +18,7 @@
     "@aws-sdk/client-sqs": "^3.354.0",
     "@nextui-org/react": "^1.0.0-beta.12",
     "aidbox-sdk": "file:aidbox-javascript-sdk-v1.0.0.tgz",
+    "antd": "^5.6.3",
     "chart.js": "^4.2.1",
     "classnames": "^2.3.2",
     "dayjs": "1.11.7",
@@ -31,7 +32,8 @@
     "react-dom": "^18.2.0",
     "react-iconly": "^2.2.10",
     "react-router-dom": "^6.11.2",
-    "socket.io": "^4.7.0"
+    "socket.io": "^4.7.0",
+    "socket.io-client": "^4.7.0"
   },
   "devDependencies": {
     "@types/node": "^20.2.1",
