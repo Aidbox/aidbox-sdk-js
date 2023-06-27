@@ -82,7 +82,7 @@ export const CreateSample = () => {
     }
   })
 
-  socketIo.on('create_task', function (data) {
+  socketIo.on('create_task_patient', function (data) {
     if (!createdTasks.includes(data)) {
       setCreatedTasks([...createdTasks, data])
     }

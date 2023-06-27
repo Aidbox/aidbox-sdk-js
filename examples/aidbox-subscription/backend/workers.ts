@@ -13,7 +13,7 @@ const patientCreateWorker = async (patientId: string) => {
         id: patientId
       }
     })
-    handleSocket('create_task', patientId)
+    handleSocket('create_task_patient', patientId)
   } catch (error) {
     console.error(error)
   }
@@ -86,6 +86,7 @@ const diagnosticReportCreateWorker = async (diagnosticReportId: string) => {
 }
 
 const appointmentUpdateWorker = async (appointmentId: string) => {
+  handleSocket('pull_appointment')
   try {
     const appointment = await aidboxClient.getResource(
       'Appointment',
@@ -102,6 +103,8 @@ const appointmentUpdateWorker = async (appointmentId: string) => {
           id: appointment.id
         }
       })
+
+      handleSocket('create_task_appointment')
     }
   } catch (error) {
     console.error(error)

@@ -90,6 +90,7 @@ const handleCreateDiagnosticReport = async (data: string) => {
 }
 
 const handleUpdateAppointment = async (data: string) => {
+  handleSocket('subs_notification_appointment')
   const appointment = JSON.parse(data).resource
   const event = 'update-appointment'
   await sqsClient.sendMessage({
@@ -103,7 +104,7 @@ const handleUpdateAppointment = async (data: string) => {
       }
     }
   })
-
+  handleSocket('push_appointment')
   aidboxClient.sendLog({
     type: 'sqs',
     message: { event, id: appointment.id }
@@ -119,7 +120,6 @@ client.collectDefaultMetrics({ register })
 export const handleEndpoints = async (
   req: IncomingMessage,
   res: ServerResponse
-  // io: any
 ) => {
   let data = ''
   req.on('data', (chunk) => {

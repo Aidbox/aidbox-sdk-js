@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Container, Grid, Loading, Text, Tooltip } from '@nextui-org/react'
+import { Badge, Button, Card, Container, Grid, Loading, Text, Link } from '@nextui-org/react'
 import { Appointment } from 'aidbox-sdk/types'
 import { DatePicker, Timeline } from 'antd'
 import dayjs from 'dayjs'
@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react'
 import { TickSquare } from 'react-iconly'
 
 import { aidboxClient } from '../backend/aidbox-client.js'
+
+import { socketIo } from './app.js'
 
 const appointmentData = {
   resourceType: 'Appointment',
@@ -106,6 +108,10 @@ export const UpdateSample = () => {
   const [appointment, setAppointment] = useState<Appointment>(null)
   const [appointmentStartTime, setAppointmentStartTime] = useState(dayjs())
   const [isAppointmentUpdated, setIsAppointmentUpdated] = useState(false)
+  const [subsNotifications, setSubsNotifications] = useState(false)
+  const [pushedAppointment, setPushedAppointment] = useState(false)
+  const [pulledAppointment, setPulledAppointment] = useState(false)
+  const [createdTasks, setCreatedTasks] = useState(false)
 
   useEffect(() => {
     const createAppointment = async () => {
@@ -123,7 +129,21 @@ export const UpdateSample = () => {
     setIsAppointmentUpdated(true)
   }
 
-  console.log(appointmentStartTime, 'appointment')
+  socketIo.on('subs_notification_appointment', function () {
+    setSubsNotifications(true)
+  })
+
+  socketIo.on('push_appointment', function () {
+    setPushedAppointment(true)
+  })
+
+  socketIo.on('pull_appointment', function () {
+    setPulledAppointment(true)
+  })
+
+  socketIo.on('create_task_appointment', function () {
+    setCreatedTasks(true)
+  })
 
   return (
     <>
@@ -142,10 +162,10 @@ export const UpdateSample = () => {
             </Text>
             {appointment
               ? <AppointmentTooltip
-                patientName={appointment.participant[0].actor.display}
-                startDate={appointment.start}
-                description={appointment.description}
-              />
+                  patientName={appointment.participant[0].actor.display}
+                  startDate={appointment.start}
+                  description={appointment.description}
+                />
               : <Loading />}
 
             <Text>
@@ -168,58 +188,88 @@ export const UpdateSample = () => {
             >
               Update start time
             </Button>
-            <Timeline
+            {isAppointmentUpdated && <Timeline
+              style={{ marginTop: 30 }}
               items={[
                 {
-                  color: 'green',
+                  color: isAppointmentUpdated ? 'green' : 'gray',
                   children: 'Appointment updated'
                 },
                 {
-                  color: 'green',
+                  color: subsNotifications ? 'green' : 'gray',
                   children: (
                     <>
                       <p>Subscriptions triggered</p>
-                      <p>Link to code</p>
+                      <Link
+                        block
+                        href='https://github.com/Aidbox/aidbox-sdk-js/blob/d34cc06c9c8764ef00820abcfca9e9cc8fb2536e/examples/aidbox-subscription/backend/endpoints.ts#L177'
+                        target='_blank'
+                      >
+                        Link to code
+                      </Link>
                     </>
                   )
                 },
                 {
-                  color: 'green',
+                  color: pushedAppointment ? 'green' : 'gray',
                   children: (
                     <>
                       <p>Event pushed to the queue</p>
-                      <p>Link to sqs UI</p>
-                      <p>Link to code</p>
+                      <Link
+                        block
+                        href='http://localhost:9325/'
+                        target='_blank'
+                      >
+                        Link to sqs UI
+                      </Link>
+                      <Link
+                        block
+                        href='https://github.com/Aidbox/aidbox-sdk-js/blob/d34cc06c9c8764ef00820abcfca9e9cc8fb2536e/examples/aidbox-subscription/backend/endpoints.ts#L92'
+                        target='_blank'
+                      >
+                        Link to code
+                      </Link>
                     </>
                   )
                 },
                 {
-                  color: 'gray',
+                  color: pulledAppointment ? 'green' : 'gray',
                   children: (
                     <>
                       <p>Events pulled from the queue</p>
-                      <p>Link to sqs UI</p>
-                      <p>Link to code</p>
+                      <Link
+                        block
+                        href='https://github.com/Aidbox/aidbox-sdk-js/blob/d34cc06c9c8764ef00820abcfca9e9cc8fb2536e/examples/aidbox-subscription/backend/periodic-jobs.ts#L12'
+                        target='_blank'
+                      >
+                        Link to code
+                      </Link>
                     </>
                   )
                 },
                 {
-                  color: 'gray',
+                  color: createdTasks ? 'green' : 'gray',
                   children: (
                     <>
                       <p>Task resources created</p>
-                      <p>Link to code</p>
+                      <Link
+                        block
+                        href='https://github.com/Aidbox/aidbox-sdk-js/blob/d34cc06c9c8764ef00820abcfca9e9cc8fb2536e/examples/aidbox-subscription/backend/workers.ts#L85'
+                        target='_blank'
+                      >
+                        Link to code
+                      </Link>
                       <p>Show something form the task</p>
                     </>
                   )
                 },
                 {
-                  color: 'green',
+                  color: createdTasks ? 'green' : 'gray',
                   dot: <TickSquare set='light' />,
                   children: <p>Success</p>
                 }
               ]}
-            />
+                                     />}
           </Container>
         </Card.Body>
       </Card>
