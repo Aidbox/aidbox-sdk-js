@@ -22,7 +22,3 @@
            :basis basis
            :main 'generator.cli}))
 
-
-(comment
-
-  (uber {}))

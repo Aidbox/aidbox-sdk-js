@@ -8,7 +8,7 @@ sdk-publish:
 	cd vendor/publish && npm install && cp ../../target/zen.jar zen.jar && npm publish --access=public
 
 repl:
-	clj -A:test:build-pm -M:nrepl
+	clj -A:test -M:nrepl
 
 test:
 	clj -A:test:kaocha
