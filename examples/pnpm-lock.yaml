@@ -8,8 +8,8 @@ dependencies:
     specifier: ^1.0.0-beta.12
     version: 1.0.0-beta.12(react-dom@18.2.0)(react@18.2.0)
   aidbox-sdk:
-    specifier: file:aidbox-javascript-sdk-v1.0.0.tgz
-    version: file:aidbox-javascript-sdk-v1.0.0.tgz
+    specifier: file:aidbox-javascript-sdk-1.0.0.tgz
+    version: file:aidbox-javascript-sdk-1.0.0.tgz
   antd:
     specifier: ^5.6.3
     version: 5.6.3(react-dom@18.2.0)(react@18.2.0)
@@ -166,7 +166,7 @@ packages:
       rc-util: 5.34.0(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      stylis: 4.2.0
+      stylis: 4.3.0
     dev: false
 
   /@ant-design/icons-svg@4.2.1:
@@ -2316,7 +2316,7 @@ packages:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
     dependencies:
       '@react-types/overlays': 3.6.4(react@18.2.0)
-      '@react-types/shared': 3.18.1(react@18.2.0)
+      '@react-types/shared': 3.15.0(react@18.2.0)
       react: 18.2.0
     dev: false
 
@@ -2325,7 +2325,7 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
     dependencies:
-      '@react-types/shared': 3.18.1(react@18.2.0)
+      '@react-types/shared': 3.15.0(react@18.2.0)
       react: 18.2.0
     dev: false
 
@@ -5744,8 +5744,8 @@ packages:
     resolution: {integrity: sha512-J8bbNyKKXl5qYcR36TIO8W3mVGVHrmmxsd5PAItGkmyzwJvybiw2IVq5nqd0i4LSNSkB/sx9VHllbfFdr9k1JA==}
     dev: false
 
-  /stylis@4.2.0:
-    resolution: {integrity: sha512-Orov6g6BB1sDfYgzWfTHDOxamtX1bE/zo104Dh9e6fqJ3PooipYyfJ0pUmrZO2wAvO8YbEyeFrkV91XTsGMSrw==}
+  /stylis@4.3.0:
+    resolution: {integrity: sha512-E87pIogpwUsUwXw7dNyU4QDjdgVMy52m+XEOPEKUn161cCzWjjhPSQhByfd1CcNvrOLnXQ6OnnZDwnJrz/Z4YQ==}
     dev: false
 
   /supports-color@5.5.0:
@@ -6081,8 +6081,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  file:aidbox-javascript-sdk-v1.0.0.tgz:
-    resolution: {integrity: sha512-C9DygqbVBrk+6IaPwoYtYiw90t/QHRJ/XzNMcsqLyiTUpbW93z9VETXjAX45ELbt1qLESORaIICLUYrZZZ7PtA==, tarball: file:aidbox-javascript-sdk-v1.0.0.tgz}
+  file:aidbox-javascript-sdk-1.0.0.tgz:
+    resolution: {integrity: sha512-gXzZgIa6rNxdQO0tFnweMZ+zUIybJDo+im2nSMG6+es3EPqO79mJtO15PrRUp72LBq2g64JwSjl0fAs2rCGuZQ==, tarball: file:aidbox-javascript-sdk-1.0.0.tgz}
     name: aidbox-javascript-sdk
     version: 1.0.0
     dependencies:

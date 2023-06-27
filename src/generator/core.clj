@@ -10,62 +10,8 @@
    [zen.core]
    [zen.package]
    [zen.store]
-   [zen.utils])
-  (:import (org.apache.commons.compress.compressors CompressorStreamFactory)
-           (org.apache.commons.compress.utils IOUtils)
-           (org.apache.commons.compress.archivers.tar TarArchiveOutputStream)
-           (java.io File)))
+   [zen.utils]))
 
-
-(def archive-extensions {"lzma"          ".tar.lzma"
-                         "gz"            ".tgz"
-                         "bzip2"         ".tar.bz2"
-                         "snappy-framed" ".tar.sz"
-                         "deflate"       ".tar.gz"
-                         "lz4-framed"    ".tar.lz4"
-                         "xz"            ".tar.xz"})
-
-
-(defn- new-archive-name
-  "Return new archive name based on input parameters."
-  ^File [arch-name out-folder compressor]
-  (let [extension        (get archive-extensions compressor)
-        full-name        (io/file out-folder (str arch-name extension))]
-    full-name))
-
-
-(defn- relativise-path
-  "Create relative archive entry name."
-  [base path]
-  (let [f        (io/file base)
-        uri      (.toURI f)
-        relative (.relativize uri (-> path io/file .toURI))]
-    (.getPath relative)))
-
-
-(defn create-archive
-  [^String new-arch-name input-files-vec ^File out-folder ^String compressor]
-  (let [out-fname (new-archive-name new-arch-name out-folder compressor)
-        fo        (io/output-stream out-fname)
-        cfo       (.createCompressorOutputStream (CompressorStreamFactory.) compressor fo)
-        a         (TarArchiveOutputStream. cfo)
-        processed (atom [])]
-    (doseq [input-name input-files-vec]
-      (let [folder? (.isDirectory input-name)]
-        (doseq [f (if folder? (file-seq input-name) [input-name])]
-          (when (empty? (filter #(= (.getPath %) (.getPath f)) @processed))
-            (when (and (.isFile f) (not= out-fname (.getPath ^File f)))
-              (let [entry-name (relativise-path (.getPath input-name) (-> f .getPath))
-                    entry      (.createArchiveEntry a f entry-name)]
-                (.putArchiveEntry a entry)
-                (when (.isFile f)
-                  (IOUtils/copy (io/input-stream f) a))
-                (.closeArchiveEntry a))
-              (swap! processed conj f))))))
-    (.finish a)
-    (.close a)
-    (reset! processed [])
-    out-fname))
 
 (defn deep-merge-with
   "Recursively merges maps. Applies function f when we have duplicate keys."
@@ -292,11 +238,11 @@
 (defn gen-types [ztx zen-path output-folder]
   (when (find-and-read-entrypoint ztx zen-path)
     (read-ftr ztx zen-path)
-    (gen-task-types ztx (str  zen-path \/ output-folder))
-    (gen-workflow-types ztx (str  zen-path \/ output-folder))
-    (gen-package-types ztx (str  zen-path \/ output-folder))
-    (gen-searches ztx (str  zen-path \/ output-folder))
-    (gen-main-file (str  zen-path \/ output-folder))
+    (gen-task-types ztx (io/file zen-path output-folder))
+    (gen-workflow-types ztx (io/file zen-path output-folder))
+    (gen-package-types ztx (io/file zen-path output-folder))
+    (gen-searches ztx (io/file zen-path output-folder))
+    (gen-main-file (io/file zen-path output-folder))
     true))
 
 
@@ -315,7 +261,7 @@
   (let [ztx (zen.core/new-context {:package-paths [path]})
         win?  (str/includes? (str/lower-case (System/getProperty "os.name")) "windows")]
     (io/make-parents (io/file path "package" "types" "index.ts"))
-    (when (gen-types ztx path "package/types")
+    (when (gen-types ztx path (io/file "package" "types"))
       (copy-from-resources (io/resource "index.ts") (io/file path  "package" "index.ts"))
       (copy-from-resources (io/resource "tsconfig.json") (io/file path  "package" "tsconfig.json"))
       (copy-from-resources (io/resource "package.json") (io/file path  "package" "package.json"))
@@ -328,9 +274,12 @@
         (apply shell/sh (if win? ["powershell" "npm" "run" "build"] ["npm" "run" "build"])))
       (copy-from-resources (io/resource "package.json") (io/file path "package" "lib" "package.json"))
       (println "[sdk] Archive generation")
-      (create-archive "aidbox-javascript-sdk-v1.0.0" (file-seq (io/file path "package" "lib")) (io/file path "..") "gz")
+      (shell/with-sh-dir  (io/file path "package" "lib")
+        (apply shell/sh (if win? ["powershell" "npm" "pack"] ["npm" "pack"])))
+      (with-open [in (io/input-stream  (io/file path "package" "lib" "aidbox-javascript-sdk-1.0.0.tgz"))]
+        (io/copy in (io/file path ".." "aidbox-javascript-sdk-1.0.0.tgz")))
       (println "[sdk] Cleanup folder")
-      (rm-r  (io/file path "package"))
+      (rm-r (io/file path "package"))
       (println "[types] Generating done"))))
 
 
@@ -340,7 +289,7 @@
   (require ['zen.cli])
 
 
-  (-> (zen.cli/get-pwd {:pwd  "C:\\Users\\mc_do\\aidbox-sdk-js\\zen-project"})
+  (-> (zen.cli/get-pwd {:pwd  "/Users/alexanderstreltsov/work/hs/aidbox-sdk-js/examples/zen-project"})
       sdk))
 
 

@@ -16,5 +16,12 @@
     "devDependencies": {
         "typescript": "4.9.5",
         "prettier": "^2.8.4"
-    }
+    },
+    "files": [
+        "package.json",
+        "tsconfig.json",
+        "index.js",
+        "index.d.ts",
+        "types"
+    ]
 }
