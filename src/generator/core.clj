@@ -187,8 +187,7 @@
         (when (and (.isDirectory dir) (not= "types" (.getName dir)))
           (when (re-matches #"^hl7-fhir-r.+-core$" (.getName dir))
             (.write r (format "import { ResourceType } from './%s'\n" (.getName dir))))
-          (.write r (format "export * from './%s'\n" (.getName dir))))))
-    (.write r "export interface SubsSubscription {\nid?:string;\nresourceType: 'SubsSubscription';\nstatus: 'active' | 'off';trigger: Partial<Record<ResourceType, { event: Array<'all' | 'create' | 'update' | 'delete'>; filter?: unknown }>>; channel: {\ntype: 'rest-hook';\nendpoint: string;\npayload?: { content: string; contentType: string; context: unknown };headers?: Record<string, string>;\ntimeout?: number;\n};\n}")))
+          (.write r (format "export * from './%s'\n" (.getName dir))))))))
 
 (defn read-ftr [ztx base-path]
   (doseq [dir (.listFiles (io/file base-path "zen-packages"))]
@@ -239,6 +238,7 @@
         (mapv #(when-not (contains? #{"string" "boolean"} %) (.write r (format "import { %s } from './%s'\n" % %)))
               (keys (get @r/schema package)))
         (.write r "\n\n")
+        (.write r "export interface SubsSubscription {\nid?:string;\nresourceType: 'SubsSubscription';\nstatus: 'active' | 'off';trigger: Partial<Record<ResourceType, { event: Array<'all' | 'create' | 'update' | 'delete'>; filter?: unknown }>>; channel: {\ntype: 'rest-hook';\nendpoint: string;\npayload?: { content: string; contentType: string; context: unknown };headers?: Record<string, string>;\ntimeout?: number;\n};\n}")
         (.write r "export type ResourceTypeMap = {\n SubsSubscription: SubsSubscription;\n")
         (mapv #(when-not (contains? #{"string" "boolean"} %) (.write r (format "  %s: %s;\n" % %)))
               (keys (get @r/schema package)))
