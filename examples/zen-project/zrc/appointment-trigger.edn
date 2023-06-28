@@ -4,7 +4,8 @@
 
  on-appointment
  {:zen/tags    #{awf.subscription-trigger/rule}
-  :select-by    [{:get-in [:resourceType] :comparator :eq :value "Appointment"}]
+  :select-by    [{:get-in [:resourceType] :comparator :eq :value "Appointment"}
+                 {:get-in [:status] :comparator :eq :value "booked"}]
   :workflow-request {:definition notification/appointment-created
                      :params {:id (get-in [:id])}}}
 
