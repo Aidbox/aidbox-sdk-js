@@ -26,10 +26,10 @@ export type WorkflowDefinitionsMap = {
 
 export const TaskDefinitionsNameMap: Record<keyof TaskDefinitionsMap, string> = {
   'placeholder-1': 'my-workflows/placeholder-1',
-  'placeholder-2': 'my-workflows/placeholder-2',
-};
+  'placeholder-2': 'my-workflows/placeholder-2'
+}
 
 export const WorkflowDefinitionsNameMap: Record<keyof WorkflowDefinitionsMap, string> = {
   'placeholder-1': 'my-workflows/placeholder-1',
-  'placeholder-2': 'my-workflows/placeholder-2',
-};
+  'placeholder-2': 'my-workflows/placeholder-2'
+}

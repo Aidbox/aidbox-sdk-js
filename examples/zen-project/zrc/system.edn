@@ -1,28 +1,5 @@
-{ns system
- import #{aidbox appointment-trigger appointment-workflow hl7-fhir-r4-core aidbox.forms awf.workflow awf.task}
-
- SendMessage
- {:zen/tags #{awf.task/definition zen/schema}
-  :type zen/map
-  :keys {:params {:type zen/map
-                  :require #{:phone :message}
-                  :keys {:phone {:type zen/string}
-                         :message {:type zen/string}}}
-         :result {:type zen/map
-                  :require #{:status}
-                  :keys {:status {:type zen/string}}}}}
-
- CheckOutWorkflow
- {:zen/tags #{awf.workflow/definition zen/schema}
-  :type zen/map
-  :pool decision-pool
-  :keys {:params {:type zen/map
-                  :require #{:clientId}
-                  :keys {:clientId {:type zen/string}}}
-         :result {:type zen/map
-                  :keys {:messageId {:type zen/string}}}
-         :error {:type zen/map
-                 :keys {:message {:type zen/string}}}}}
+{:ns system
+ import #{aidbox appointment-trigger notification hl7-fhir-r4-core aidbox.forms awf.workflow awf.task}
 
  admin-user-seed
  {:zen/tags #{aidbox/service}

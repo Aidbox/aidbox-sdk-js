@@ -1,12 +1,12 @@
 {:ns     appointment-trigger
- import #{aidbox awf.subscription-trigger}
+ import #{aidbox notification awf.subscription-trigger}
 
 
  on-appointment
  {:zen/tags    #{awf.subscription-trigger/rule}
   :select-by    [{:get-in [:resourceType] :comparator :eq :value "Appointment"}]
-  :task-request {:definition appointment-workflow/SendNotification
-                 :params {:id (get-in [:id])}}}
+  :workflow-request {:definition notification/appointment-created
+                     :params {:id (get-in [:id])}}}
 
  subscription-service
  {:zen/tags #{aidbox/service}

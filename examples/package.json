@@ -37,6 +37,12 @@
     "socket.io-client": "^4.7.0"
   },
   "devDependencies": {
+    "dotenv": "16.1.4",
+    "form-data": "4.0.0",
+    "@aidbox/sdk-r4": "^1.0.3",
+    "luxon": "^3.3.0",
+    "axios": "^1.4.0",
+    "@types/luxon": "^3.3.0",
     "@types/node": "^20.2.1",
     "@types/node-cron": "^3.0.7",
     "@types/prettier": "2.7.3",
@@ -44,7 +50,7 @@
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
-    "@typescript-eslint/parser": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.1",
     "@vitejs/plugin-react": "^3.1.0",
     "eslint": "^8.32.0",
     "eslint-config-standard": "^17.0.0",

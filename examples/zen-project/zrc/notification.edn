@@ -1,0 +1,25 @@
+{:ns     notification
+ import #{awf.task awf.workflow}
+
+ send-email
+ {:zen/tags #{awf.task/definition zen/schema}
+  :type zen/map
+  :require #{:params}
+  :keys {:params {:type zen/map
+                  :require #{:id}
+                  :keys {:id {:type zen/string}}}
+         :result {:type zen/map
+                  :require #{:status}
+                  :keys {:status {:type zen/boolean}}}}}
+
+ appointment-created
+ {:zen/tags #{awf.workflow/definition zen/schema}
+  :type zen/map
+  :require #{:params}
+  :keys {:params {:type zen/map
+                  :require #{:id}
+                  :keys {:id {:type zen/string}}}
+         :result {:type zen/map
+                  :keys {:status {:type zen/boolean}}}
+         :error {:type zen/map
+                 :keys {:message {:type zen/string}}}}}}
