@@ -133,13 +133,13 @@ export const UpdateSample = () => {
 
   socketIo.on('subs_notification_appointment', function (data) {
     if (data === appointment?.id) {
-    setTimeout(() => setSubsNotifications(true), 1400)
+      setTimeout(() => setSubsNotifications(true), 1400)
     }
   })
 
   socketIo.on('push_appointment', function (data) {
     if (data === appointment?.id) {
-    setTimeout(() => setPushedAppointment(true), 2400)
+      setTimeout(() => setPushedAppointment(true), 2400)
     }
   })
 
@@ -151,7 +151,7 @@ export const UpdateSample = () => {
 
   socketIo.on('create_task_appointment', function (data) {
     if (data === appointment?.id) {
-    setTimeout(() => setCreatedTasks(true), 500)
+      setTimeout(() => setCreatedTasks(true), 500)
     }
   })
 

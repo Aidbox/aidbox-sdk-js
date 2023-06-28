@@ -1,6 +1,6 @@
 import { Button, Card, Container, Grid, Link, Progress, Text } from '@nextui-org/react'
 import { Timeline } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Plus, TickSquare } from 'react-iconly'
 
 import { aidboxClient } from '../backend/aidbox-client.js'
@@ -65,31 +65,27 @@ export const CreateSample = () => {
     setPatientsCreated(true)
   }
 
-  socketIo.on('subs_notification_patient', function (data) {
-    if (!subsNotifications.includes(data)) {
-      setSubsNotifications(subsNotifications => [...subsNotifications, data])
-    }
-  })
+  useEffect(() => {
+    socketIo.on('subs_notification_patient', function (data) {
+      setTimeout(() => setSubsNotifications(subsNotifications => [...subsNotifications, data]), 400)
+    })
+    socketIo.on('push_patient', function (data) {
+       setTimeout(() => setPushedPatients(pushedPatients => [...pushedPatients, data]), 400)
+    })
 
-  socketIo.on('push_patient', function (data) {
-    console.log(data)
-    if (!pushedPatients.includes(data)) {
-      setPushedPatients(pushedPatients => [...pushedPatients, data])
-    }
-  })
+    socketIo.on('pull_patient', function (data) {
+      setTimeout(() => setPulledPatients(pulledPatients => [...pulledPatients, data]), 400)
+    })
 
-  socketIo.on('pull_patient', function (data) {
-    if (!pulledPatients.includes(data)) {
-      setPulledPatients(pulledPatients => [...pulledPatients, data])
-    }
-  })
+    socketIo.on('create_task_patient', function (data) {
+      setTimeout(() => setCreatedTasks(createdTasks => [...createdTasks, data]), 400)
+    })
 
-  socketIo.on('create_task_patient', function (data) {
-    if (!createdTasks.includes(data)) {
-      setCreatedTasks(createdTasks => [...createdTasks, data])
+    return () => {
+      socketIo.off()
     }
-  })
-console.log(pushedPatients, 'pushedPatients')
+}, [])
+
   return (
     <>
       <Text h2>Create Patient Subscription</Text>
@@ -102,7 +98,7 @@ console.log(pushedPatients, 'pushedPatients')
             direction='column'
           >
             <Text css={{ 'text-align': 'center', 'margin-top': 0 }}>
-              Create new patients to trigger subscriptions.
+              We can create 10 patients and observe how the subscription feature works.
             </Text>
             {patientsCreated
             ? <>
@@ -208,13 +204,13 @@ console.log(pushedPatients, 'pushedPatients')
                 }
                 ]}
               />}
-            </>
+              </>
             : <Button
                 onPress={createPatients}
                 icon={<Plus set='light' />}
               >
               Create 10 patients
-            </Button>
+              </Button>
           }
           </Container>
         </Card.Body>
