@@ -1,6 +1,6 @@
 import { Container, Grid, NextUIProvider, Text } from '@nextui-org/react'
 
-import { SampleCard } from './components/SampleCard.js'
+import { SampleCard } from './components/SampleCard'
 
 const sampleCardsInfo = [
   {
@@ -54,8 +54,7 @@ export const App = () => {
             <SampleCard
               {...item}
               key={index}
-            />
-          ))}
+            />))}
         </Grid.Container>
       </Container>
     </NextUIProvider>

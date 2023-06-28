@@ -39,7 +39,6 @@ async function generateDepressionForm (patientId?: string, encounterId?: string)
     })
 
     return data.data.result.link
-
   } catch (error: unknown) {
     if (isAxiosError(error)) console.log(error.response?.data)
     throw (error)

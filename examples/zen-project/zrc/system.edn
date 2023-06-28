@@ -25,7 +25,6 @@
                   {:engine "allow"
                    :link   [{:resourceType "Client" :id "demo"}]}}}}
 
-
  box
  {:zen/tags #{aidbox/system}
   :services {:admin-user-seed admin-user-seed
