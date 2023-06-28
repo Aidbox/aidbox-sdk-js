@@ -17,8 +17,8 @@
         "react-hooks"
     ],
     "rules": {
+    "react/no-unescaped-entities": "off",
     "indent": "off",
-        "@typescript-eslint/indent": ["warn", 2],
         "react/prop-types": 0,
         "import/order": [
             "warn",

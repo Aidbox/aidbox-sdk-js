@@ -9,8 +9,7 @@ const patientCreateWorker = async (patientId: string) => {
       status: 'received',
       intent: 'order',
       for: {
-        resourceType: 'Patient',
-        id: patientId
+        reference: `Patient/${patientId}`
       }
     })
     handleSocket('create_task_patient', patientId)
@@ -32,8 +31,7 @@ const observationCreateWorker = async (observationId: string) => {
         status: 'received',
         intent: 'order',
         for: {
-          resourceType: 'Observation',
-          id: observation.id
+          reference: `Observation/${observation.id}`
         }
       })
     }
@@ -52,8 +50,7 @@ const encounterCreateWorker = async (encounterId: string) => {
         status: 'received',
         intent: 'order',
         for: {
-          resourceType: 'Encounter',
-          id: encounter.id
+          reference: `Encounter/${encounter.id}`
         }
       })
     }
@@ -75,8 +72,7 @@ const diagnosticReportCreateWorker = async (diagnosticReportId: string) => {
         status: 'received',
         intent: 'order',
         for: {
-          resourceType: 'DiagnosticReport',
-          id: diagnosticReport.id
+          reference: `DiagnosticReport/${diagnosticReport.id}`
         }
       })
     }
@@ -86,7 +82,7 @@ const diagnosticReportCreateWorker = async (diagnosticReportId: string) => {
 }
 
 const appointmentUpdateWorker = async (appointmentId: string) => {
-  handleSocket('pull_appointment')
+  handleSocket('pull_appointment', appointmentId)
   try {
     const appointment = await aidboxClient.getResource(
       'Appointment',
@@ -99,12 +95,11 @@ const appointmentUpdateWorker = async (appointmentId: string) => {
         status: 'received',
         intent: 'order',
         for: {
-          resourceType: 'Appointment',
-          id: appointment.id
+          reference: `Appointment/${appointment.id}`
         }
       })
 
-      handleSocket('create_task_appointment')
+      handleSocket('create_task_appointment', appointment.id)
     }
   } catch (error) {
     console.error(error)

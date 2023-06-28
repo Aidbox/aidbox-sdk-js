@@ -37,16 +37,16 @@ const prettifyDate = (dateString: string) => {
   const hours = date.getHours().toString().padStart(2, '0')
   const minutes = date.getMinutes().toString().padStart(2, '0')
 
-  return `${day}-${month}-${year} ${hours}:${minutes}`
+  return `${year}-${month}-${day} ${hours}:${minutes}`
 }
 
-interface AppointmentTooltipProps {
+interface AppointmentInfoProps {
   patientName: string;
   startDate: string;
   description: string;
 }
 
-const AppointmentTooltip = ({ patientName, startDate, description }: AppointmentTooltipProps) => {
+const AppointmentInfo = ({ patientName, startDate, description }: AppointmentInfoProps) => {
   return (
     <Grid.Container gap={0.5}>
       <Grid
@@ -105,7 +105,7 @@ const AppointmentTooltip = ({ patientName, startDate, description }: Appointment
 }
 
 export const UpdateSample = () => {
-  const [appointment, setAppointment] = useState<Appointment>(null)
+  const [appointment, setAppointment] = useState<Appointment | null>(null)
   const [appointmentStartTime, setAppointmentStartTime] = useState(dayjs())
   const [isAppointmentUpdated, setIsAppointmentUpdated] = useState(false)
   const [subsNotifications, setSubsNotifications] = useState(false)
@@ -123,26 +123,36 @@ export const UpdateSample = () => {
   }, [])
 
   const updateAppointment = async () => {
-    const data = await aidboxClient.patchResource('Appointment', appointment.id, { start: appointmentStartTime.toISOString() })
-    setAppointment(data)
-    setAppointmentStartTime(dayjs(data.start))
-    setIsAppointmentUpdated(true)
+    if (appointment?.id) {
+      const data = await aidboxClient.patchResource('Appointment', appointment.id, { start: appointmentStartTime.toISOString() })
+      setAppointment(data)
+      setAppointmentStartTime(dayjs(data.start))
+      setTimeout(() => setIsAppointmentUpdated(true), 500)
+    }
   }
 
-  socketIo.on('subs_notification_appointment', function () {
-    setSubsNotifications(true)
+  socketIo.on('subs_notification_appointment', function (data) {
+    if (data === appointment?.id) {
+    setTimeout(() => setSubsNotifications(true), 1400)
+    }
   })
 
-  socketIo.on('push_appointment', function () {
-    setPushedAppointment(true)
+  socketIo.on('push_appointment', function (data) {
+    if (data === appointment?.id) {
+    setTimeout(() => setPushedAppointment(true), 2400)
+    }
   })
 
-  socketIo.on('pull_appointment', function () {
-    setPulledAppointment(true)
+  socketIo.on('pull_appointment', function (data) {
+    if (data === appointment?.id) {
+      setPulledAppointment(true)
+    }
   })
 
-  socketIo.on('create_task_appointment', function () {
-    setCreatedTasks(true)
+  socketIo.on('create_task_appointment', function (data) {
+    if (data === appointment?.id) {
+    setTimeout(() => setCreatedTasks(true), 500)
+    }
   })
 
   return (
@@ -158,20 +168,21 @@ export const UpdateSample = () => {
             <Text
               css={{ 'text-align': 'center', 'margin-top': 0 }}
             >
-              We have an appointment:
+              We have an appointment scheduled with the following details:
             </Text>
             {appointment
-              ? <AppointmentTooltip
-                  patientName={appointment.participant[0].actor.display}
-                  startDate={appointment.start}
-                  description={appointment.description}
+              ? <AppointmentInfo
+                  patientName={appointment?.participant[0]?.actor?.display || ''}
+                  startDate={appointment?.start || ''}
+                  description={appointment?.description || ''}
                 />
               : <Loading />}
 
             <Text>
-              Let's update the start time and see how subscription works.
+              Let's update the start time and observe how the subscription feature works.
             </Text>
             <DatePicker
+              style={{ borderColor: '#0072F5', borderRadius: '15px' }}
               showTime
               defaultValue={appointmentStartTime}
               value={appointmentStartTime}
@@ -205,7 +216,7 @@ export const UpdateSample = () => {
                         href='https://github.com/Aidbox/aidbox-sdk-js/blob/d34cc06c9c8764ef00820abcfca9e9cc8fb2536e/examples/aidbox-subscription/backend/endpoints.ts#L177'
                         target='_blank'
                       >
-                        Link to code
+                        See the code
                       </Link>
                     </>
                   )
@@ -220,14 +231,14 @@ export const UpdateSample = () => {
                         href='http://localhost:9325/'
                         target='_blank'
                       >
-                        Link to sqs UI
+                        Check the queue UI
                       </Link>
                       <Link
                         block
                         href='https://github.com/Aidbox/aidbox-sdk-js/blob/d34cc06c9c8764ef00820abcfca9e9cc8fb2536e/examples/aidbox-subscription/backend/endpoints.ts#L92'
                         target='_blank'
                       >
-                        Link to code
+                        See the code
                       </Link>
                     </>
                   )
@@ -236,13 +247,13 @@ export const UpdateSample = () => {
                   color: pulledAppointment ? 'green' : 'gray',
                   children: (
                     <>
-                      <p>Events pulled from the queue</p>
+                      <p>Event pulled from the queue</p>
                       <Link
                         block
                         href='https://github.com/Aidbox/aidbox-sdk-js/blob/d34cc06c9c8764ef00820abcfca9e9cc8fb2536e/examples/aidbox-subscription/backend/periodic-jobs.ts#L12'
                         target='_blank'
                       >
-                        Link to code
+                        See the code
                       </Link>
                     </>
                   )
@@ -251,22 +262,21 @@ export const UpdateSample = () => {
                   color: createdTasks ? 'green' : 'gray',
                   children: (
                     <>
-                      <p>Task resources created</p>
+                      <p>Task resource created</p>
+                      <p>In the end, we've created a Task resource as a simple example of business logic.</p>
                       <Link
                         block
                         href='https://github.com/Aidbox/aidbox-sdk-js/blob/d34cc06c9c8764ef00820abcfca9e9cc8fb2536e/examples/aidbox-subscription/backend/workers.ts#L85'
                         target='_blank'
                       >
-                        Link to code
+                        See the code
                       </Link>
-                      <p>Show something form the task</p>
                     </>
                   )
                 },
                 {
                   color: createdTasks ? 'green' : 'gray',
-                  dot: <TickSquare set='light' />,
-                  children: <p>Success</p>
+                  dot: <TickSquare set='light' />
                 }
               ]}
                                      />}

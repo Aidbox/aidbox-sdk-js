@@ -9,6 +9,7 @@ import { sqsClient } from './sqs.js'
 const handleCreatePatient = async (data: string) => {
   const patient = JSON.parse(data).resource
   handleSocket('subs_notification_patient', patient.id)
+  console.log(patient.id)
   const event = 'create-patient'
   await sqsClient.sendMessage({
     DelaySeconds: 0,
@@ -90,8 +91,8 @@ const handleCreateDiagnosticReport = async (data: string) => {
 }
 
 const handleUpdateAppointment = async (data: string) => {
-  handleSocket('subs_notification_appointment')
   const appointment = JSON.parse(data).resource
+  handleSocket('subs_notification_appointment', appointment.id)
   const event = 'update-appointment'
   await sqsClient.sendMessage({
     DelaySeconds: 0,
@@ -104,7 +105,7 @@ const handleUpdateAppointment = async (data: string) => {
       }
     }
   })
-  handleSocket('push_appointment')
+  handleSocket('push_appointment', appointment.id)
   aidboxClient.sendLog({
     type: 'sqs',
     message: { event, id: appointment.id }
@@ -126,7 +127,6 @@ export const handleEndpoints = async (
     data += chunk
   })
   const metrics = await register.metrics()
-  // io.emit('patient_created', ';;;')
 
   switch (req.url) {
     case '/':

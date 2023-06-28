@@ -1,6 +1,6 @@
 import { Container, Grid, NextUIProvider, Text } from '@nextui-org/react'
 
-import { SampleCard } from './components/SampleCard'
+import { SampleCard } from './components/SampleCard.js'
 
 const sampleCardsInfo = [
   {
