@@ -85,7 +85,7 @@
       (.write r "\n\n")
       (.write r "type WaitTaskDuration = { duration: { hours: number; minutes: number; seconds: number }, until?: never }\ntype WaitTaskUntil = { duration?: never, until: string }\n")
       (.write r "export type TaskDefinitionsMap = {\n")
-      (.write r "'awf.task/wait': { params: WaitTaskDuration | WaitTaskUntil }\n")
+      (.write r "'awf.task/wait': { params: WaitTaskDuration | WaitTaskUntil,\n result: Record<string,unknown> }\n")
       (.write r (str/join "\n" (:resourceMap result)))
       (.write r (str/join "\n}\n"))
       (.write r "export const TaskDefinitionsNameMap: Record<keyof TaskDefinitionsMap, string> = {\n")
