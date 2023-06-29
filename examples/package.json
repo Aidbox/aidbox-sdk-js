@@ -15,7 +15,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aidbox/sdk-r4": "^1.0.3",
     "@aws-sdk/client-sqs": "^3.354.0",
     "@nextui-org/react": "^1.0.0-beta.12",
     "aidbox-sdk": "file:aidbox-javascript-sdk-1.0.0.tgz",
@@ -39,7 +38,6 @@
   "devDependencies": {
     "dotenv": "16.1.4",
     "form-data": "4.0.0",
-    "@aidbox/sdk-r4": "^1.0.3",
     "luxon": "^3.3.0",
     "axios": "^1.4.0",
     "@types/luxon": "^3.3.0",
