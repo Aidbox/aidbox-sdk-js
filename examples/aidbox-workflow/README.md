@@ -2,13 +2,14 @@
 
 [The Aidbox workflow engine module](https://docs.aidbox.app/modules-1/workflow-engine) is the way to execute raliable, scalable and safe your complex business logic. The asynchronous nature of orchestration engine allows tasks to be processed independently, enabling parallelism that reduces processing time during load.
 
-The example shows the flow of using Aidbox as a notification gateway service that [listens incomming appointments](https://docs.aidbox.app/modules-1/workflow-engine/services#subscription-trigger) and [spawns async tasks](https://docs.aidbox.app/modules-1/workflow-engine/task) for each of them. From other side we ( with SDK ) implements worker that is handling these tasks and send email to the patient.
+The example shows the flow of using Aidbox as a notification gateway service that [listens incoming appointments](https://docs.aidbox.app/modules-1/workflow-engine/services#subscription-trigger) and [executes workflows](https://docs.aidbox.app/modules-1/workflow-engine/workflow) for each of them. 
+From the other side we implement workers with our business logic that handles these workflows.
 
 ## How to run the application
 
 #### Step 1: Setup Aidbox
 
-Go through all steps described in ["examples" directory](https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/README.md). As a result you should have aidbox up and running as a docker container available on `8888` port.
+Go through all steps described in ["examples" directory](https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/README.md). As a result you should have Aidbox is up and running as a docker container available on `8888` port.
 
 #### Step 2: Set Mailgun environment variables
 
@@ -44,6 +45,7 @@ entry:
 - resource:
     id: appointment-1
     status: booked
+    start: '2023-06-25T15:42:43.927Z'
     participant: [{ actor: { reference: "Patient/patient-1" }, status: "accepted" }]
   request:
     method: POST
@@ -53,7 +55,14 @@ We have to create a patient attached to appointment, because information about r
 
 ![create-appointment.png](../../assets/create-appointment.png)
 
-#### Step 2: Check tasks section
-When resources successfully created Aidbox has to execute for us a new task that you can find in Aidbox admin panel, in Task section. The name of the task should be "appointment-workflow/SendNotification" with status `[done]`. It means that our worker successfully sent the email.
-![task-section.png](../../assets/task-section.png)
-P.S.: In the case when the task is in `[ready]` state, it means that our typescript worker is not able to connect to Aidbox and pull the task. Check previous steps.
+#### Step 2: Workflow and predefined tasks
+When resources successfully created, Aidbox has to execute for us a new workflow instance that you can find in Aidbox admin panel, in Workflow section. The name of the instance should be "notification/appointment-created" with status `[in-progress]`.  
+Activity should contain running task `awf.task/wait`, it's default Aidbox task that we use
+in your example without implementation specific business logic, just [run it with until or duration params](https://docs.aidbox.app/modules-1/workflow-engine/task/aidbox-predefined-tasks#awf.task-wait).
+
+![task-section.png](../../assets/workflow-step-1.png)
+
+#### Step 3: Send email to the Patient
+As far as we reached 2 days out before the appointment our `awf.task/wait` should be completed and 
+our workflow moves to the next step - send email.  
+![workflow-step-2.png](../../assets/workflow-step-3.png)

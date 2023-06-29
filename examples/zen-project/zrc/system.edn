@@ -29,4 +29,5 @@
  {:zen/tags #{aidbox/system}
   :services {:admin-user-seed admin-user-seed
              :demo-client-seed demo-client-seed
+             :task-service awf.task/task-service
              :subscription-trigger-service appointment-trigger/subscription-service}}}
