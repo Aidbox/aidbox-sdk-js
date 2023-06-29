@@ -17,7 +17,7 @@ PGDATABASE=aidbox
 
 ## Aidbox image to run
 # Used in docker-compose.yaml
-AIDBOX_IMAGE=healthsamurai/aidboxone:latest
+AIDBOX_IMAGE=healthsamurai/aidboxone:edge
 
 # Aidbox configuraiton project path and entrypoint
 # Used by Aidbox on startup time
