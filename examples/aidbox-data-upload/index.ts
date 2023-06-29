@@ -12,7 +12,7 @@ const notLoadedFiles: Array<{ file: string, error: any }> = []
 const directoryPath =
   path.join(__dirname, '/data/fhir')
 
-async function upload(file: string) {
+async function upload (file: string) {
   try {
     const content = await fs.readFile(file, { encoding: 'utf8' })
     const entry = JSON.parse(content).entry

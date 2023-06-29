@@ -1,24 +1,24 @@
-import { Loading } from "@nextui-org/react";
-import { Patient } from "aidbox-sdk/types";
+import { Loading } from '@nextui-org/react'
+import { Patient } from 'aidbox-sdk/types'
 
-import Logo from "../../assets/logo.svg";
-import { Divider } from "../../shared/divider/divider";
-import { formatDate, transformName, transformAddress } from "../../utils";
+import Logo from '../../assets/logo.svg'
+import { Divider } from '../../shared/divider/divider'
+import { formatDate, transformName, transformAddress } from '../../utils'
 
-import { Contacts } from "./contacts";
-import { Identifiers } from "./identifiers";
-import styles from "./patient-info.module.css";
+import { Contacts } from './contacts'
+import { Identifiers } from './identifiers'
+import styles from './patient-info.module.css'
 
-function View({ patient }: { patient: Patient }) {
+function View ({ patient }: { patient: Patient }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div className={styles.patientGeneralInfo}>
         <p className={styles.sectionTitle}>{transformName(patient.name)}</p>
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            marginTop: "0.5rem",
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            marginTop: '0.5rem'
           }}
         >
           {patient.birthDate && (
@@ -36,7 +36,7 @@ function View({ patient }: { patient: Patient }) {
       <Divider />
       <Identifiers identifiers={patient.identifier} />
     </div>
-  );
+  )
 }
 
 interface PatientInfoProps {
@@ -50,4 +50,4 @@ export const PatientInfo = ({ patient }: PatientInfoProps) => (
     </div>
     {!patient?.id ? <Loading /> : <View patient={patient} />}
   </div>
-);
+)

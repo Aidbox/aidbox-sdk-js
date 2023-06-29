@@ -2,7 +2,7 @@ import { Address, Patient } from 'aidbox-sdk/types'
 
 export const kebabToFriendlyString = (initialString: string) => initialString.split('-').join(' ')
 
-export function transformAddress(address: Address[] | Address) {
+export function transformAddress (address: Address[] | Address) {
   if (Array.isArray(address)) {
     return `${address?.[0].line}, ${address?.[0].city}, ${address?.[0].country}`
   }
@@ -12,7 +12,7 @@ export function transformAddress(address: Address[] | Address) {
 
 export const transformName = (name: Patient['name']) => `${name?.[0].family} ${name?.[0].given?.[0]}`
 
-export function formatDate(date: string) {
+export function formatDate (date: string) {
   if (date.includes('T')) {
     const [year, month, day] = date.split('T')[0].split('-')
     return `${day}/${month}/${year}`

@@ -134,4 +134,6 @@ workflow.implement('notification/appointment-created', async ({ params: { event 
         : complete({})
     ]
   }
+
+  return [complete({})]
 })

@@ -11,7 +11,7 @@
     "subscription": "nodemon",
     "setup": "ts-node --esm scripts/env.ts",
     "seed": "ts-node --esm scripts/seed.ts",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix .",
     "preview": "vite preview"
   },
   "dependencies": {

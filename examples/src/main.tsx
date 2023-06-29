@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import { App as QuerySample } from '../aidbox-querying/src/app'
 import { App as SubsSample } from '../aidbox-subscription/frontend/app'
+import { WorkflowEngine } from '../aidbox-workflow/components/WorkflowEngine'
 import { App as Phr } from '../personal-health-record/src/app'
 
 import App from './App'
@@ -12,7 +13,7 @@ import { Layout } from './Layout'
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '',
     element: (
       <Layout>
         <App />
@@ -42,11 +43,17 @@ const router = createBrowserRouter([
         <SubsSample />
       </Layout>
     )
+  },
+  {
+    path: 'workflow-engine',
+    element: (
+      <Layout>
+        <WorkflowEngine />
+      </Layout>
+    )
   }
 ])
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>
+  <RouterProvider router={router} />
 )

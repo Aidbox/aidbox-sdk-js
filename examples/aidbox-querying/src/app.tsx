@@ -3,7 +3,7 @@ import { ExecuteQueryResponseWrapper } from 'aidbox-sdk'
 import { Practitioner } from 'aidbox-sdk/types'
 import { useCallback, useEffect, useState } from 'react'
 
-import { aidboxClient } from './aidbox-client.js'
+import { aidboxClient } from './aidbox-client'
 
 const columns: { key: keyof Item; label: string }[] = [
   {

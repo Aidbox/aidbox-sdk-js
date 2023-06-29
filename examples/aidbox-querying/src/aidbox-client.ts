@@ -1,6 +1,2 @@
-import { aidboxClient as client } from "../../shared/client"
+import { aidboxClient as client } from '../../shared/client'
 export const aidboxClient = client
-
-
-
-
