@@ -5,14 +5,17 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ES2022",
     "moduleResolution": "Node",
-    "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "skipLibCheck": true,
+    // "resolveJsonModule": true,
+    // "noEmit": true,
+    // "declaration": true,
+    // "emitDeclarationOnly": true,
+    // "noUnusedLocals": false,
+    // "noUnusedParameters": true,
+    // "noFallthroughCasesInSwitch": true
   }
 }

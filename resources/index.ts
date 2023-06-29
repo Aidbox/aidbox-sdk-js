@@ -164,8 +164,8 @@ export class Client {
 
   async createResource<T extends keyof ResourceTypeMap> (
     resourceName: T,
-    // @ts-ignore
-    body: SetOptional<ResourceTypeMap[T], 'resourceType'>
+    // TODO: ResourceTypeMap contains not only resource
+    body: SetOptional<ResourceTypeMap[T] & { resourceType: string }, 'resourceType'>
   ): Promise<BaseResponseResource<T>> {
     const response = await this.client.post<BaseResponseResource<T>>(buildURL(resourceName), { ...body })
     return response.data
@@ -487,7 +487,7 @@ implements PromiseLike<BaseResponseResources<T>> {
 
   then<TResult1 = BaseResponseResources<T>, TResult2 = never> (
     onfulfilled?: ((value: BaseResponseResources<T>) => PromiseLike<TResult1> | TResult1) | undefined | null,
-    onrejected?: ((reason: any) => PromiseLike<TResult2> | TResult2) | undefined | null
+    onrejected?: ((reason: unknown) => PromiseLike<TResult2> | TResult2) | undefined | null
   ): PromiseLike<TResult1 | TResult2> {
     return this.client
       .get<BaseResponseResources<T>>(buildURL(this.resourceName), {
@@ -541,10 +541,10 @@ interface WorkflowActions<K extends keyof WorkflowDefinitionsMap> {
     action: 'awf.workflow.action/schedule-task';
     'task-request': { definition: T; params: TaskDefinitionsMap[T]['params'] };
   };
-  fail: (params: any) => { action: 'awf.workflow.action/fail'; error: any };
+  fail: (params: unknown) => { action: 'awf.workflow.action/fail'; error: unknown };
 }
 
-type TaskHandler<K extends keyof TaskDefinitionsMap> = (
+type TaskHandler<K extends keyof Omit<TaskDefinitionsMap, 'awf.task/wait'>> = (
   params: Meta<TaskDefinitionsMap[K]['params']>,
 ) => Promise<TaskDefinitionsMap[K]['result']> | TaskDefinitionsMap[K]['result'];
 

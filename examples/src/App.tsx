@@ -41,7 +41,7 @@ export const App = () => {
         >
           <Text
             h3
-            display='inline-block'
+            css={{ display: 'inline-block' }}
           ><span style={{ color: '#0072F5' }}>Hello!</span>&nbsp;Here, we have compiled examples that showcase the key features of Aidbox
             and provide guidance on how to utilize them effectively with our SDK.
           </Text>
