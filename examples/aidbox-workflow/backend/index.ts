@@ -21,7 +21,7 @@ export const getTasksList = async (): Promise<Array<Task>> => {
     method: 'awf.task/list',
     params: {}
   })
-
+console.log(response, 'response.dataresponse.data')
   return response.data.result.resources
 }
 

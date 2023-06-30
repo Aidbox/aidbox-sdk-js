@@ -46,7 +46,7 @@ interface AppointmentInfoProps {
   description: string;
 }
 
-const AppointmentInfo = ({ patientName, startDate, description }: AppointmentInfoProps) => {
+export const AppointmentInfo = ({ patientName, startDate, description }: AppointmentInfoProps) => {
   return (
     <Grid.Container gap={0.5}>
       <Grid
@@ -145,13 +145,13 @@ export const UpdateSample = () => {
 
   socketIo.on('pull_appointment', function (data) {
     if (data === appointment?.id) {
-      setPulledAppointment(true)
+      setTimeout(() => setPulledAppointment(true), 500)
     }
   })
 
   socketIo.on('create_task_appointment', function (data) {
     if (data === appointment?.id) {
-      setTimeout(() => setCreatedTasks(true), 500)
+      setTimeout(() => setCreatedTasks(true), 1000)
     }
   })
 

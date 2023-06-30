@@ -10,7 +10,7 @@ import MailgunClient from 'mailgun.js'
 
 import { aidboxClient as client } from '../shared/client.js'
 
-dotenv.config({ path: '../.env' })
+dotenv.config()
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -18,7 +18,6 @@ const __dirname = dirname(__filename)
 const template = readFileSync(resolve(__dirname, 'email.html')).toString()
 const domain = process.env.MAILGUN_DOMAIN || ''
 const mailgunApiKey = process.env.MAILGUN_API_KEY || ''
-
 const { workflow, task } = client
 
 const mailgun = new MailgunClient.default(FormData).client({ username: 'api', key: mailgunApiKey })
