@@ -5972,7 +5972,7 @@ packages:
     dev: true
 
   file:aidbox-javascript-sdk-1.0.0.tgz:
-    resolution: {integrity: sha512-wHZWIiQvqFOZuK1SUxWoLPsjbRXxk7e6F/2dKq8f/DvPkIBnhupYdtqP2b/A+YhWAeF9hngNC+fHccfsGlVl2g==, tarball: file:aidbox-javascript-sdk-1.0.0.tgz}
+    resolution: {integrity: sha512-V5bffD2mSlE9VdQod/pLh2hOH0o1IKPCu+nP5S+Jg6erbaxQdtEE/FL3t8WCbehJb6z9V7n9kfivrucPaqsL5A==, tarball: file:aidbox-javascript-sdk-1.0.0.tgz}
     name: aidbox-javascript-sdk
     version: 1.0.0
     dependencies:

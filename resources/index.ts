@@ -242,6 +242,7 @@ export class Client {
   }
 
   task = {
+    cancel: this.taskCancel.bind(this),
     execute: this.executeTask.bind(this),
     implement: <K extends keyof Omit<TaskDefinitionsMap, 'awf.task/wait'>>(
       name: K,
@@ -273,7 +274,16 @@ export class Client {
     }
   }
 
-  async runDaemon (
+  private async taskCancel (id: string) {
+    const { data: task } = await this.client.post<Task>('/rpc', {
+      method: 'awf.task/cancel',
+      params: { id }
+    })
+
+    return task.result.resource
+  }
+
+  private async runDaemon (
     poll: () => Promise<Array<Meta<TaskInput | DecisionInput>>>,
     handler: (input: any) => any,
     options: WorkerOptions
@@ -285,7 +295,7 @@ export class Client {
     }
   }
 
-  wrapHandler<W extends keyof WorkflowDefinitionsMap> (handler: WorkflowHandler<W>) {
+  private wrapHandler<W extends keyof WorkflowDefinitionsMap> (handler: WorkflowHandler<W>) {
     return (params: Meta<DecisionInput>) =>
       handler(params, {
         complete: (result: WorkflowDefinitionsMap[W]['result']) => ({
@@ -303,7 +313,7 @@ export class Client {
       })
   }
 
-  createHandler<T extends TaskInput | DecisionInput> (handler: (task: Meta<T>) => void) {
+  private createHandler<T extends TaskInput | DecisionInput> (handler: (task: Meta<T>) => void) {
     return async (task: Meta<T>) => {
       await this.startTask(task.id, task.execId)
 
@@ -318,7 +328,7 @@ export class Client {
     }
   }
 
-  async poll (params: { workflowDefinitions?: [string]; taskDefinitions?: [string] }, options: WorkerOptions) {
+  private async poll (params: { workflowDefinitions?: [string]; taskDefinitions?: [string] }, options: WorkerOptions) {
     const { data: tasksBatch } = await this.client.post<TasksBatch>('/rpc', {
       method: 'awf.task/poll',
       params: { ...params, maxBatchSize: options.batchSize }
@@ -327,7 +337,7 @@ export class Client {
     return tasksBatch.result.resources
   }
 
-  startTask (id: string, executionId: string) {
+  private startTask (id: string, executionId: string) {
     try {
       return this.client.post<TasksBatch>('/rpc', {
         method: 'awf.task/start',
@@ -338,14 +348,14 @@ export class Client {
     }
   }
 
-  completeTask (id: string, executionId: string, payload: unknown) {
+  private completeTask (id: string, executionId: string, payload: unknown) {
     return this.client.post<TasksBatch>('/rpc', {
       method: 'awf.task/success',
       params: { id, execId: executionId, result: payload }
     })
   }
 
-  failTask (id: string, executionId: string, payload: unknown) {
+  private failTask (id: string, executionId: string, payload: unknown) {
     try {
       return this.client.post<TasksBatch>('/rpc', {
         method: 'awf.task/fail',
@@ -356,7 +366,7 @@ export class Client {
     }
   }
 
-  executeWorkflow<K extends keyof WorkflowDefinitionsMap> (
+  private executeWorkflow<K extends keyof WorkflowDefinitionsMap> (
     definition: K,
     params: WorkflowDefinitionsMap[K]['params']
   ): Promise<AxiosResponse<TasksBatch>> {
@@ -370,7 +380,7 @@ export class Client {
     }
   }
 
-  executeTask<K extends keyof TaskDefinitionsMap> (
+  private executeTask<K extends keyof TaskDefinitionsMap> (
     definition: K,
     params: TaskDefinitionsMap[K]['params']
   ): Promise<AxiosResponse<TasksBatch>> {
@@ -527,6 +537,10 @@ type DecisionInput = { event: EventType };
 
 interface TasksBatch {
   result: { resources: Array<Meta<TaskInput | DecisionInput>> };
+}
+
+interface Task {
+  result: { resource: Meta<TaskInput> }
 }
 
 interface WorkflowActions<K extends keyof WorkflowDefinitionsMap> {
