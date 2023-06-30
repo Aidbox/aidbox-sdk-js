@@ -8,14 +8,14 @@ This example shows the flow of working with aidbox subscriptions in the node js 
 
 ## How to run the application
 
-#### Step 1: Environment variables
+### Step 1: Environment variables
 
 Create a new file in the root directory with the name `.env` use `.env.tpl` as a reference.  
 Fill in licence key `AIDBOX_LICENSE` you can obtain it [here](https://aidbox.app).
 
 #### Step 2: Install dependencies
 
-```
+```bash
 npm install
 ```
 
@@ -52,13 +52,13 @@ aidbox.subscriptionEntry({
 });
 ```
 
-#### Step 3: [Create queue](https://github.com/Aidbox/aidbox-sdk-js/blob/c1347852b0894944b542db3096309c7e92a0bf7e/subscription-sample/src/sqs.ts#L14) and [pushes](https://github.com/Aidbox/aidbox-sdk-js/blob/c1347852b0894944b542db3096309c7e92a0bf7e/subscription-sample/src/endpoints.ts#L9) to queue.
+#### Step 3: [Create queue](https://github.com/Aidbox/aidbox-sdk-js/blob/c1347852b0894944b542db3096309c7e92a0bf7e/subscription-sample/src/sqs.ts#L14) and [pushes](https://github.com/Aidbox/aidbox-sdk-js/blob/c1347852b0894944b542db3096309c7e92a0bf7e/subscription-sample/src/endpoints.ts#L9) to queue
 
 This part can be implemented in different ways and depends on your needs. But here we want to show the
 most predictable and safe way to handle Aidbox events - instantly [redirect](https://github.com/Aidbox/aidbox-sdk-js/blob/c1347852b0894944b542db3096309c7e92a0bf7e/subscription-sample/src/endpoints.ts#L9) them to a queue. By this approach we avoid
 any load from endpoint handler place and move it to async workers that can be safe scaled horizontally.
 
-#### Step 4: [Implement simple worker](https://github.com/Aidbox/aidbox-sdk-js/blob/f1660e6fffc2e2e936769f2f44e2491244cc4aa5/subscription-sample/src/periodic-jobs.ts#L11) that will process notifications from the queue.
+#### Step 4: [Implement simple worker](https://github.com/Aidbox/aidbox-sdk-js/blob/f1660e6fffc2e2e936769f2f44e2491244cc4aa5/subscription-sample/src/periodic-jobs.ts#L11) that will process notifications from the queue
 
 There is the place where you want to keep your business logic. Just make any needed actions for each event in queue
 asynchronously. In this sample we just [create](https://github.com/Aidbox/aidbox-sdk-js/blob/f1660e6fffc2e2e936769f2f44e2491244cc4aa5/subscription-sample/src/workers.ts#L27) "Task" resource for every notification.

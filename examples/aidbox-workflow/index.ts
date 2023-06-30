@@ -23,7 +23,7 @@ const { workflow, task } = client
 
 const mailgun = new MailgunClient.default(FormData).client({ username: 'api', key: mailgunApiKey })
 
-async function generateDepressionForm (patientId?: string, encounterId?: string): Promise<string> {
+async function generateDepressionForm(patientId?: string, encounterId?: string): Promise<string> {
   try {
     const form = await client.client.post('/rpc', {
       method: 'aidbox.sdc/launch',
@@ -45,7 +45,7 @@ async function generateDepressionForm (patientId?: string, encounterId?: string)
   }
 }
 
-async function sendEmail (email: string, text: string) {
+async function sendEmail(email: string, text: string) {
   const message = {
     from: `Upcoming appointment <support@${domain}>`,
     to: email,
@@ -56,7 +56,7 @@ async function sendEmail (email: string, text: string) {
   await mailgun.messages.create(domain, message)
 }
 
-function findTargetDate (date: string | undefined, daysOut: number, targetHour = 10) {
+function findTargetDate(date: string | undefined, daysOut: number, targetHour = 10) {
   if (date === undefined) return undefined
 
   const zone = 'America/New_York'
@@ -135,3 +135,16 @@ workflow.implement('notification/appointment-created', async ({ params: { event 
     ]
   }
 })
+
+
+
+export const init = (client: Client) => {
+
+}
+
+
+if (require == "__main__") {
+  const client = new Client();
+  init(client)
+}
+
