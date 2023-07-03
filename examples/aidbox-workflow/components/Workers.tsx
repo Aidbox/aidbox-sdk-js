@@ -1,23 +1,61 @@
 import { Card, Grid, Row, Text } from '@nextui-org/react'
+import { useEffect, useState } from 'react'
+
+import { socketIo } from './WorkflowEngine'
+
+const green = '#17C964'
+const gray = '#889096'
+
+interface WorkerData {
+  title: string,
+  color: typeof green | typeof gray,
+}
+
+interface WorkersProps {
+  appointmentId: string | null;
+}
 
 const workerList = [
   {
-    title: 'Worker  1',
-    color: '#17C964'
+    title: 'Worker 1',
+    color: gray
   },
   {
-    title: 'Worker  2',
-    color: '#889096'
+    title: 'Worker 2',
+    color: gray
   },
   {
     title: 'Worker 3',
-    color: '#889096'
+    color: gray
   }
-]
+] as Array<WorkerData>
 
-export const Workers = () => {
+export const Workers = ({ appointmentId }: WorkersProps) => {
+  const [workersData, setWorkersData] = useState<WorkerData[]>(workerList)
+
+  const updateWorkerData = (data: number) => {
+    const undatedWorkerData = workersData.map((item, index): WorkerData => {
+      if (data > index) {
+        return { ...item, color: green }
+      }
+      return item
+    })
+
+    setTimeout(() => setWorkersData(undatedWorkerData), 800)
+  }
+
+  useEffect(() => {
+    socketIo.on('worker', function (data) {
+      updateWorkerData(data)
+    })
+
+    return () => {
+      socketIo.off()
+    }
+}, [])
+console.log(workersData, 'workersData')
   return (
-    <Card>
+    appointmentId && <Card>
       <Card.Body
         css={{ width: 'auto' }}
       >
@@ -28,9 +66,9 @@ export const Workers = () => {
           alignItems='center'
           direction='column'
         >
-          {workerList.map((item, index) => (
+          {workersData.map((item, index) => (
             <Grid xs={6} sm={3} key={index}>
-              <Card isPressable>
+              <Card>
                 <Card.Body css={{ p: 0, height: '140px', width: '175px', backgroundColor: item.color }} />
                 <Card.Footer css={{ justifyItems: 'flex-start' }}>
                   <Row wrap='wrap' justify='space-between' align='center'>
@@ -39,7 +77,7 @@ export const Workers = () => {
                 </Card.Footer>
               </Card>
             </Grid>
-    ))}
+  ))}
         </Grid.Container>
       </Card.Body>
     </Card>

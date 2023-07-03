@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs'
+import * as http from 'http'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -7,11 +8,12 @@ import dotenv from 'dotenv'
 import FormData from 'form-data'
 import { DateTime } from 'luxon'
 import MailgunClient from 'mailgun.js'
+import { Server } from 'socket.io'
 
 import { aidboxClient as client } from '../shared/client.js'
 
 dotenv.config()
-
+const port = 8000
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -70,7 +72,41 @@ function findTargetDate (date: string | undefined, daysOut: number, targetHour =
   }
 }
 
+const server = http.createServer(async (req, res) => {
+  try {
+    res.setHeader('Content-Type', 'application/json')
+    if (req.url === '/') {
+      res.writeHead(200)
+      res.end('Hello!')
+    } else {
+      res.writeHead(404)
+      res.end(JSON.stringify({ error: 'Resource not found' }))
+    }
+  } catch (error: unknown) {
+    console.dir(error, { depth: 9 })
+    res.end(JSON.stringify({ error }))
+    res.writeHead(400)
+  }
+})
+
+export const io = new Server(server, {
+  cors: { origin: '*' }
+})
+
+io.on('connection', (socket) => {
+  console.log('We are live and connected')
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected')
+  })
+})
+
+server.listen(port, () => {
+  console.log(`Server is running on the port ${port}`)
+})
+
 task.implement('notification/send-email', async ({ params }) => {
+  io.emit('worker', 3)
   const appointment = await client.getResource('Appointment', params.id)
   const participant = appointment.participant.find(({ actor }) => actor?.reference?.includes('Patient'))
   const patientId = participant?.actor?.reference?.split('/').pop()
@@ -113,19 +149,23 @@ task.implement('notification/send-email', async ({ params }) => {
 
 workflow.implement('notification/appointment-created', async ({ params: { event }, requester }, { execute, complete }) => {
   if (event === 'awf.workflow.event/workflow-init') {
+    io.emit('worker', 1)
     const { data: workflow } = await client.client.get(`/AidboxWorkflow/${requester.id}`)
     const appointment = await client.getResource('Appointment', workflow.params.id)
     const targetDate = findTargetDate(appointment.start, 2)
+    io.emit('start_task', requester.id)
 
     return [targetDate ? execute({ definition: 'awf.task/wait', params: { until: targetDate } }) : complete({})]
   }
 
   if (event === 'awf.workflow.event/task-completed') {
+    io.emit('worker', 2)
     const { data: workflow } = await client.client.get(`/AidboxWorkflow/${requester.id}`)
     const communications = await client.getResources('Encounter')
       .where('appointment', `Appointment/${workflow.params.id}`)
       .where('class', 'VR')
       .count(0)
+    io.emit('start_task', requester.id)
 
     return [
       communications.total === 0

@@ -2,15 +2,13 @@ import './css.css'
 
 import { Container, Grid, Link, Text } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
+import { io } from 'socket.io-client'
 
 import { aidboxClient } from '../../shared/client'
 import { getTasksList, getAppointment, Task, AppointmentWithParticipant } from '../backend'
 
-import Image from './polling.svg'
-import { QueueComponent } from './Queue'
 import { SampleDesc } from './SampleDesc'
 import { Tasks } from './Tasks'
-import { WorkerSpawn } from './Worker'
 import { Workers } from './Workers'
 
 const appointmentData = {
@@ -29,6 +27,12 @@ const appointmentData = {
   }]
 }
 
+export const socketIo = io('http://localhost:8000', {
+  auth: {
+    token: 'json-web-token'
+  }
+})
+
 export function WorkflowEngine () {
   const [items, updateTasks] = useState<Array<{ task: Task, appointment: AppointmentWithParticipant }>>([])
   const [appointmentId, setAppointmentId] = useState<string | null>(null)
@@ -37,7 +41,6 @@ export function WorkflowEngine () {
     getTasksList()
       .then((tasks) => Promise.all(tasks
         .filter((task) => {
-          console.log(task, 222)
           return task.status === 'ready'
         })
         .map(async (task) => {
@@ -104,13 +107,8 @@ export function WorkflowEngine () {
         md={6}
         css={{ pr: 0 }}
       >
-        <Workers />
+        <Workers appointmentId={appointmentId} />
       </Grid>
     </Grid.Container>
-    <section className='section'>
-      <QueueComponent tasks={items} />
-      <Image />
-      <WorkerSpawn />
-    </section>
   </Container>
 }
