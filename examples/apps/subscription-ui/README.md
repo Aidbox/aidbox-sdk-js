@@ -11,7 +11,7 @@ This example shows the flow of working with aidbox subscriptions in the node js 
 ### Step 1: Environment variables
 
 Create a new file in the root directory with the name `.env` use `.env.tpl` as a reference.  
-Fill in licence key `AIDBOX_LICENSE` you can obtain it [here](https://aidbox.app).
+Fill in license key `AIDBOX_LICENSE` you can obtain it [here](https://aidbox.app).
 
 #### Step 2: Install dependencies
 
@@ -21,24 +21,24 @@ npm install
 
 #### Step 3: Run docker containers
 
-```
+```bash
 make up
 ```
 
 #### Step : Run docker containers
 
-```
+```bash
 make backend
 ```
 
 ## Flow the application implements
 
-#### Step 1: [Create a subscription listener](https://github.com/Aidbox/aidbox-sdk-js/blob/c1347852b0894944b542db3096309c7e92a0bf7e/subscription-sample/src/endpoints.ts#L135)
+### Step 1: [Create a subscription listener](https://github.com/Aidbox/aidbox-sdk-js/blob/c1347852b0894944b542db3096309c7e92a0bf7e/subscription-sample/src/endpoints.ts#L135)
 
 We want to create an endpoint in our backend service to handle our future Aidbox notifications about selected resource change.
 Make sure that your http endpoint [responses](https://github.com/Aidbox/aidbox-sdk-js/blob/main/subscription-sample/src/endpoints.ts#L140) with `status: 200` on Aidbox subscription [handshake](https://docs.aidbox.app/api-1/reactive-api-and-subscriptions/subscriptions-1#protocol) request.
 
-#### Step 2: [Register a subscription in Aidbox](https://github.com/Aidbox/aidbox-sdk-js/blob/main/subscription-sample/src/subscriptions.ts)
+### Step 2: [Register a subscription in Aidbox](https://github.com/Aidbox/aidbox-sdk-js/blob/main/subscription-sample/src/subscriptions.ts)
 
 Then we have to tell Aidbox about our endpoint and register a subscription to resource that we want to be notified about changes for.
 We provide `id`, `status`, `trigger`, and the `channel` with the endpoint that we created on step 1.
@@ -52,7 +52,7 @@ aidbox.subscriptionEntry({
 });
 ```
 
-#### Step 3: [Create queue](https://github.com/Aidbox/aidbox-sdk-js/blob/c1347852b0894944b542db3096309c7e92a0bf7e/subscription-sample/src/sqs.ts#L14) and [pushes](https://github.com/Aidbox/aidbox-sdk-js/blob/c1347852b0894944b542db3096309c7e92a0bf7e/subscription-sample/src/endpoints.ts#L9) to queue
+### Step 3: [Create queue](https://github.com/Aidbox/aidbox-sdk-js/blob/c1347852b0894944b542db3096309c7e92a0bf7e/subscription-sample/src/sqs.ts#L14) and [pushes](https://github.com/Aidbox/aidbox-sdk-js/blob/c1347852b0894944b542db3096309c7e92a0bf7e/subscription-sample/src/endpoints.ts#L9) to queue
 
 This part can be implemented in different ways and depends on your needs. But here we want to show the
 most predictable and safe way to handle Aidbox events - instantly [redirect](https://github.com/Aidbox/aidbox-sdk-js/blob/c1347852b0894944b542db3096309c7e92a0bf7e/subscription-sample/src/endpoints.ts#L9) them to a queue. By this approach we avoid
@@ -74,7 +74,7 @@ Aidbox is able to integrate with [different services](https://docs.aidbox.app/co
 Also, we have the ability to [send logs from node application](https://github.com/Aidbox/aidbox-sdk-js/blob/f1660e6fffc2e2e936769f2f44e2491244cc4aa5/subscription-sample/src/endpoints.ts#L20) through http directly to Aidbox using [sendLog](https://github.com/Aidbox/aidbox-sdk-js#sendlog).
 This is a fine approach for applications with small infrastructure's size.
 
-#### Test characteristics
+### Test characteristics
 
 We register subscriptions for the Patient, Observation, Encounter and DiagnosticReport FHIR resources and upload some [synthetic data](https://github.com/synthetichealth/synthea) to aidbox.
 
