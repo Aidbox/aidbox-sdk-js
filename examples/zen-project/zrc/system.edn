@@ -25,9 +25,29 @@
                   {:engine "allow"
                    :link   [{:resourceType "Client" :id "demo"}]}}}}
 
+ data-seed
+ {:zen/tags #{aidbox/service}
+  :engine   aidbox/seed-v2
+  :resources
+  {:Patient {:03cb8799-bfbd-40fa-9ea8-96114cf1fec1
+             {:name        [{:given ["Peter" "James"]
+                             :family "Chalmers"}]}}}}
+
+ seed
+ {:zen/tags  #{aidbox/service}
+  :engine    aidbox/seed
+  :files     ["Condition.ndjson.gz"
+              "Encounter.ndjson.gz"
+              "Immunization.ndjson.gz"
+              "Observation.ndjson.gz"
+              "Organization.ndjson.gz"
+              "Patient.ndjson.gz"]}
+
  box
  {:zen/tags #{aidbox/system}
   :services {:admin-user-seed admin-user-seed
+             :data-seed  data-seed
+             :preload seed
              :demo-client-seed demo-client-seed
              :task-service awf.task/task-service
              :subscription-trigger-service appointment-trigger/subscription-service}}}

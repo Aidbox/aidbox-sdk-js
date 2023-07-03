@@ -1,10 +1,10 @@
-import { NextUIProvider } from "@nextui-org/react";
 import { Patient } from "aidbox-sdk/types";
 import { useEffect, useState } from "react";
 
 import { PatientInfo } from "./components/patient-info";
 import { Workspace } from "./components/workspace";
 import { Client } from "aidbox-sdk";
+import { ClientContext } from "./context";
 
 export function App({ client }: { client: Client }) {
   const [patient, setPatient] = useState<Patient>({});
@@ -24,7 +24,7 @@ export function App({ client }: { client: Client }) {
   }, [patient_id]);
 
   return (
-    <NextUIProvider>
+    <ClientContext.Provider value={{ client }}>
       <div style={{ display: "flex", flexDirection: "row" }}>
         <PatientInfo patient={patient} />
         <div
@@ -37,6 +37,6 @@ export function App({ client }: { client: Client }) {
           <Workspace patient={patient} />
         </div>
       </div>
-    </NextUIProvider>
+    </ClientContext.Provider>
   );
 }

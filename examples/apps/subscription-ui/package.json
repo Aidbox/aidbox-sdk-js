@@ -1,0 +1,31 @@
+{
+  "name": "subscription-ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@nextui-org/react": "^1.0.0-beta.12",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "aidbox-sdk": "file:aidbox-javascript-sdk-1.0.0.tgz",
+    "antd": "5.6.3",
+    "react-iconly": "2.2.10",
+    "dayjs": "1.11.8",
+    "socket.io-client": "4.7.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.14",
+    "@types/react-dom": "18.2.6",
+    "@vitejs/plugin-react": "^3.1.0",
+    "vite": "^4.1.0",
+    "vite-plugin-svgr": "^2.4.0"
+  }
+}

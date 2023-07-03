@@ -1,0 +1,37 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon",
+    "build": "tsc",
+    "prod": "node build/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.3.2",
+    "@types/node-cron": "^3.0.7",
+    "fastify-tsconfig": "^1.0.1",
+    "ts-node": "^10.9.1",
+    "types-fastify-socket.io": "^0.0.1",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sqs": "^3.363.0",
+    "@fastify/cors": "^8.3.0",
+    "aidbox-sdk": "file:aidbox-javascript-sdk-1.0.0.tgz",
+    "dotenv": "^16.3.1",
+    "fastify": "^4.18.0",
+    "fastify-metrics": "^10.3.0",
+    "fastify-socket.io": "^4.0.0",
+    "luxon": "^3.3.0",
+    "node-cron": "^3.0.2",
+    "prom-client": "^14.2.0",
+    "socket.io": "^4.7.1",
+    "zod": "^3.21.4",
+    "zod-error": "^1.5.0"
+  }
+}

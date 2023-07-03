@@ -1,0 +1,9 @@
+APP_URL=http://host.docker.internal:8080
+APP_PORT=8080
+AIDBOX_URL=http://localhost:8888
+AIDBOX_CLIENT_ID=demo
+AIDBOX_CLIENT_SECRET=secret
+SQS_URL=http://localhost:9324
+SQS_ACCESS_KEY_ID=accessKeyId
+SQS_SECRET_ACCESS_KEY=secretAccessKey
+SQS_REGION=eu-central-1
