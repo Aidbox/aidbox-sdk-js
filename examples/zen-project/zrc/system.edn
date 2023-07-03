@@ -36,6 +36,7 @@
  seed
  {:zen/tags  #{aidbox/service}
   :engine    aidbox/seed
+  :convert-to-aidbox-format true
   :files     ["Condition.ndjson.gz"
               "Encounter.ndjson.gz"
               "Immunization.ndjson.gz"
