@@ -6,8 +6,8 @@ RUN chmod +x /usr/bin/jq
 RUN corepack enable
 WORKDIR /app
 COPY . .
-RUN jq 'to_entries | map_values({ (.key) : ("$" + .key | ascii_upcase) }) | reduce .[] as $item ({}; . + $item)' ./src/config.json > ./src/config.tmp.json && mv ./src/config.tmp.json ./src/config.json
-RUN pnpm install && pnpm run build
+RUN jq 'to_entries | map_values({ (.key) : ("$" + .key | ascii_upcase) }) | reduce .[] as $item ({}; . + $item)' ./apps/mega-ui/src/config.json > ./apps/mega-ui/src/config.tmp.json && mv ./apps/mega-ui/src/config.tmp.json ./apps/mega-ui/src/config.json
+RUN pnpm install && cd ./apps/mega-ui && pnpm run build
 
 FROM nginx:1.25
 ENV DEBIAN_FRONTEND=noninteractive
@@ -16,5 +16,7 @@ COPY start-nginx.sh /usr/bin/start-nginx.sh
 RUN apt update && apt-get install moreutils -y
 RUN chmod +x /usr/bin/start-nginx.sh
 WORKDIR /usr/share/nginx/html
-COPY --from=builder /app/dist .
+COPY --from=builder /app/apps/mega-ui/dist .
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d
 ENTRYPOINT ["start-nginx.sh"]

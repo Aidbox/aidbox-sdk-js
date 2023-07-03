@@ -1,83 +1,10 @@
 import { readFile } from "fs/promises";
-import { aidboxClient } from "../shared/client.js";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-
-const data = [
-    {
-        resourceType: 'Encounter',
-        url: 'https://storage.googleapis.com/aidbox-public/synthea/100/Encounter.ndjson.gz'
-    },
-    {
-        resourceType: 'Organization',
-        url: 'https://storage.googleapis.com/aidbox-public/synthea/100/Organization.ndjson.gz'
-    },
-    {
-        resourceType: 'Patient',
-        url: 'https://storage.googleapis.com/aidbox-public/synthea/100/Patient.ndjson.gz'
-    },
-    {
-        resourceType: 'Condition',
-        url: 'https://storage.googleapis.com/aidbox-public/synthea/100/Condition.ndjson.gz'
-    },
-    {
-        resourceType: 'Immunization',
-        url: 'https://storage.googleapis.com/aidbox-public/synthea/100/Immunization.ndjson.gz'
-    },
-    {
-        resourceType: 'Observation',
-        url: 'https://storage.googleapis.com/aidbox-public/synthea/100/Observation.ndjson.gz'
-    }
-]
 
 const main = async () => {
-    const env: Record<string, string> = {};
-    await readFile(resolve(__dirname, "..", ".env"))
-        .then((b) => {
-            b.toString().replace(/(\w+)=(.+)/g, ($0, $1, $2) => { env[$1] = $2; return $0 })
-        }).catch(() => null)
-    if (!env["AIDBOX_BASE_URL"]) {
-        console.error("Please run `npm run setup` and check that .env file exist in /examples folder")
-        return
-    }
-    const ids = data.map((item, index) => ({ resource: item.resourceType, id: 'synthea_' + index }));
-    console.log("Clean up resources...");
-    const deleteResult = await aidboxClient.rawSQL("truncate encounter; truncate organization; truncate patient; truncate condition; truncate immunization; truncate observation").catch(e => e.response.data);
-    if (deleteResult.message) {
-        console.log("Successfully clean up")
-    } else {
-        console.dir(deleteResult)
-        return
-    }
-    await Promise.all(
-        data.map((item, index) =>
-            aidboxClient.client.post('/fhir/$import', {
-                id: 'synthea_' + index,
-                contentEncoding: 'gzip',
-                inputs: [item]
-            })
-        )
-    )
-    let notFinished = [...ids]
-
-    while (notFinished.length > 0) {
-        for (const item of notFinished) {
-            const result = await aidboxClient.client.get(`/BulkImportStatus/${item.id}`);
-            if (result.data.status === "finished") {
-                notFinished = notFinished.filter(({ id }) => id !== item.id)
-                console.log(`${item.resource} loading finished`)
-            }
-        }
-    }
-    console.log("All resources loaded")
-    console.log("Create indexes for Aidbox Complex Query Example")
-
-
 
     const APPOINTMENT_START_INDEX =
         "create index if not exists appointment_start on appointment ((appointment.resource #>> '{ start }'));";
@@ -117,16 +44,16 @@ const main = async () => {
         query: QUERY,
         "count-query": COUNT_QUERY,
     };
-    await Promise.all([
-        // Creating index on field "start"
-        aidboxClient.rawSQL(APPOINTMENT_START_INDEX),
+    // await Promise.all([
+    //     // Creating index on field "start"
+    //     aidboxClient.rawSQL(APPOINTMENT_START_INDEX),
 
-        // Creating index on practitioner id
-        aidboxClient.rawSQL(APPOINTMENT_PRACTITIONER_ID_INDEX),
+    //     // Creating index on practitioner id
+    //     aidboxClient.rawSQL(APPOINTMENT_PRACTITIONER_ID_INDEX),
 
-        // Saving query as resource to call it later
-        aidboxClient.createQuery("dashboard-query", queryOptions),
-    ]).catch(e => console.log(e.response.data));
+    //     // Saving query as resource to call it later
+    //     aidboxClient.createQuery("dashboard-query", queryOptions),
+    // ]).catch(e => console.log(e.response.data));
 }
 
 main()

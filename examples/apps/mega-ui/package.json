@@ -1,0 +1,57 @@
+{
+  "name": "mega-ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">16.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "subscription-ui": "workspace:*",
+    "phr": "workspace:*",
+    "@aws-sdk/client-sqs": "^3.354.0",
+    "@nextui-org/react": "^1.0.0-beta.12",
+    "aidbox-sdk": "file:aidbox-javascript-sdk-1.0.0.tgz",
+    "antd": "^5.6.3",
+    "chart.js": "^4.2.1",
+    "classnames": "^2.3.2",
+    "dayjs": "1.11.7",
+    "form-data": "4.0.0",
+    "mailgun.js": "9.0.1",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.2.0",
+    "react-iconly": "^2.2.10",
+    "react-router-dom": "^6.11.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.2.1",
+    "@types/node-cron": "^3.0.7",
+    "@types/prettier": "2.7.3",
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "@typescript-eslint/parser": "^5.60.1",
+    "@vitejs/plugin-react": "^3.1.0",
+    "eslint": "^8.32.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-react": "^7.32.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "2.8.8",
+    "prompts": "^2.4.2",
+    "ts-node": "10.9.1",
+    "typescript": "^4.9.3",
+    "vite": "^4.1.0",
+    "vite-plugin-svgr": "^2.4.0"
+  }
+}
