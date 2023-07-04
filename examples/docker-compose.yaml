@@ -27,7 +27,6 @@ services:
     environment:
       PGPORT: 5432
       PGHOST: aidbox-db
-      AIDBOX_ES_URL: http://es-container:9200
 
   sqs:
     image: softwaremill/elasticmq
@@ -39,33 +38,5 @@ services:
       interval: 15s
       timeout: 5s
       retries: 60
-  
-  elasticsearch:
-    container_name: es-container
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.0.1
-    volumes:
-      - es:/usr/share/elasticsearch/data
-    environment:
-      - xpack.security.enabled=false
-      - "discovery.type=single-node"
-    ports:
-      - 9200:9200
 
-  kibana:
-    container_name: kb-container
-    image: docker.elastic.co/kibana/kibana:8.0.1
-    environment:
-      - ELASTICSEARCH_HOSTS=http://es-container:9200
-    volumes:
-      - kibanadata:/usr/share/kibana/data
-    depends_on:
-      - elasticsearch
-    ports:
-      - 5601:5601
-
-volumes:
-  es:
-    driver: local
-  kibanadata:
-    driver: local
   
