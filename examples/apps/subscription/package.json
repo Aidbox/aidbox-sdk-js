@@ -1,8 +1,8 @@
 {
-  "name": "server",
+  "name": "subscription",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",

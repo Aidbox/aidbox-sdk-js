@@ -21,8 +21,8 @@ export function AllergiesIntoleranceCard({ id: patient_id }: { id: string }) {
       .where("patient", `Patient/${patient_id}`)
       .count(3)
       .then((response) => {
-        if (response.entry.length > 0) {
-          setAllergies(response.entry.map((allergy) => allergy.resource));
+        if (response.entry?.length > 0) {
+          setAllergies(response.entry?.map((allergy) => allergy.resource));
           setTotal(response.total);
         }
         setLoading(false);
@@ -91,7 +91,7 @@ export function AllergiesIntoleranceCard({ id: patient_id }: { id: string }) {
             </p>
           </div>
 
-          {index !== allergies.length - 1 && (
+          {index !== allergies?.length - 1 && (
             <Divider verticalMargin={"0.5rem"} />
           )}
         </div>

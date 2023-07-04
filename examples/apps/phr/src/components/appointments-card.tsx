@@ -27,11 +27,11 @@ export function AppointmentsCard({ id: patient_id }: { id: string }) {
       .where("date", new Date().toISOString(), "gt")
       .sort("date", "asc");
 
-    if (response.entry.length > 0) {
-      setNextAppointment(response?.entry[0].resource ?? {});
+    if (response.entry?.length > 0) {
+      setNextAppointment(response?.entry?.[0].resource ?? {});
     }
     setLoading(false);
-    return response.entry.length > 0;
+    return response.entry?.length > 0;
   }, [patient_id]);
 
   const getAppointments = useCallback(async () => {
@@ -39,10 +39,8 @@ export function AppointmentsCard({ id: patient_id }: { id: string }) {
       .getResources("Appointment")
       .where("patient", `Patient/${patient_id}`);
 
-    if (response.entry.length > 0) {
-      setAppointments(response?.entry.map((r) => r.resource));
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+    if (response.entry?.length > 0) {
+      setAppointments(response?.entry?.map((r) => r.resource) || []);
       setTotal(response.total);
     }
     setLoading(false);

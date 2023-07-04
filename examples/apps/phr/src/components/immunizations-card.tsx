@@ -22,7 +22,9 @@ export function ImmunizationsCard({ id: patient_id }: { id: string }) {
       .where("patient", `Patient/${patient_id}`)
       .count(3)
       .then((response) => {
-        setImmunizations(response.entry.map((allergy) => allergy.resource));
+        setImmunizations(
+          response.entry?.map((allergy) => allergy.resource) || []
+        );
         setTotal(response.total);
         setLoading(false);
       });

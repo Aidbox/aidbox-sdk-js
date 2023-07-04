@@ -58,7 +58,7 @@ export function ClinicalVitals({
       .where("patient", `Patient/${patient_id}`)
       .where("code", observationCodes[selectedOption])
       .then((response) => {
-        setObservations(response.entry.map((i) => i.resource));
+        setObservations(response.entry?.map((i) => i.resource));
       });
   }, [selectedOption, patient_id]);
 

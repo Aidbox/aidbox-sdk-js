@@ -1,4 +1,4 @@
-import { createApp } from "./app";
+import { createApp } from 'subscription/src/app';
 
 const main = async () => {
   const { app, config } = await createApp();
@@ -8,6 +8,9 @@ const main = async () => {
     app.log.error(err)
     process.exit(1)
   }
+
 }
 
-main().catch(e => console.error(e))
+
+
+main().catch(console.error)

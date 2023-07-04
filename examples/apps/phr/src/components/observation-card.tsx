@@ -58,7 +58,7 @@ export function ObservationsCard({
       .count(3)
       .then((response) => {
         setTotal(response.total);
-        setObservations(response.entry.map((i) => i.resource));
+        setObservations(response.entry?.map((i) => i.resource) || []);
         setLoading(false);
       });
   }, [patient_id]);

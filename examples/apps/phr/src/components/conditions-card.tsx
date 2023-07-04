@@ -20,7 +20,9 @@ export function ConditionsCard({ id: patient_id }: { id: string }) {
       .where("patient", `Patient/${patient_id}`)
       .count(3)
       .then((response) => {
-        setConditions(response.entry.map((condition) => condition.resource));
+        setConditions(
+          response.entry?.map((condition) => condition.resource) || []
+        );
         setTotal(response.total);
         setLoading(false);
       });

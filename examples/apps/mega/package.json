@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "mega",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -14,12 +14,14 @@
     "@types/node": "^20.3.2",
     "fastify-tsconfig": "^1.0.1",
     "ts-node": "^10.9.1",
+    "nodemon": "2.0.22",
     "types-fastify-socket.io": "^0.0.1",
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "subscription": "workspace:*",
     "@aws-sdk/client-sqs": "^3.363.0",
-    "aidbox-sdk": "file:./../aidbox-javascript-sdk-1.0.0.tgz",
+    "aidbox-sdk": "file:aidbox-javascript-sdk-1.0.0.tgz",
     "dotenv": "^16.3.1",
     "fastify": "^4.18.0",
     "fastify-metrics": "^10.3.0",
