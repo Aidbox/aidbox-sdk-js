@@ -2,6 +2,7 @@ import { Card, Grid, Link, Row, Text } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
 
 import { socketIo } from './app'
+import { MermaidChart } from './mermaid'
 
 const green = '#17C964'
 const gray = '#889096'
@@ -77,6 +78,13 @@ const workerList = [
   }
 ] as Array<WorkerData>
 
+const mermaidDefinition = `
+flowchart TD
+    A[Init workflow] 
+    -->|Get appointment<br>Find target date<br>Execute wait task| B[Wait till 2 days before appoitemnt]
+    B --> |Get Encouter<br>Execute send-email task|C((Send email))
+`
+
 export const Workers = ({ appointmentId }: WorkersProps) => {
   const [workersData, setWorkersData] = useState<WorkerData[]>(workerList)
 
@@ -100,7 +108,6 @@ export const Workers = ({ appointmentId }: WorkersProps) => {
       socketIo.off()
     }
 }, [])
-console.log(workersData, 'workersData')
   return (
     appointmentId && <Card>
       <Card.Body
@@ -117,6 +124,7 @@ console.log(workersData, 'workersData')
           alignItems='center'
           direction='column'
         >
+          <MermaidChart chartDefinition={mermaidDefinition} />
           {workersData.map((item, index) => (
             <Grid
               key={index}
