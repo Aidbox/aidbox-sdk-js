@@ -1,4 +1,4 @@
-import { Card, Grid, Row, Text } from '@nextui-org/react'
+import { Card, Grid, Link, Row, Text } from '@nextui-org/react'
 import { useEffect, useState } from 'react'
 
 import { socketIo } from './WorkflowEngine'
@@ -13,6 +13,53 @@ interface WorkerData {
 
 interface WorkersProps {
   appointmentId: string | null;
+}
+
+const FirstWorker = () => {
+  return (
+    <Text>
+      Aidbox &nbsp;
+      <Link
+        href='https://docs.aidbox.app/modules-1/workflow-engine/task/aidbox-predefined-tasks#awf.workflow-decision-task'
+        target='_blank'
+      >
+        predefined decision task
+      </Link> which is executed first in the context of the current workflow instance.
+    </Text>
+  )
+}
+
+const SecondWorker = () => {
+  return (
+    <>
+      <Text>
+        Task that will wait for the indicated duration or until the indicated datetime. Used in workflow when need to be paused for some purposes.
+      </Text>
+      <Text css={{ m: 0 }}>
+        <Link
+          href='https://github.com/Aidbox/aidbox-sdk-js/blob/4c6d512588f57232a6d6faeabb0a682fede7bccf/examples/aidbox-workflow/index.ts#L116'
+          target='_blank'
+        >
+          In our case
+        </Link>, we wait till 2 days before the appointment.
+      </Text>
+      <Text weight='bold'>You can press the skip wait button to run the workflow further.</Text>
+    </>
+  )
+}
+
+const ThirdWorker = () => {
+  return (
+    <Text>
+      This task is configured by ourselves in&nbsp;
+      <Link
+        href='https://github.com/Aidbox/aidbox-sdk-js/blob/4c6d512588f57232a6d6faeabb0a682fede7bccf/examples/zen-project/zrc/notification.edn#L4'
+        target='_blank'
+      >
+        the zen-project.
+      </Link>
+    </Text>
+  )
 }
 
 const workerList = [
@@ -67,14 +114,21 @@ console.log(workersData, 'workersData')
           direction='column'
         >
           {workersData.map((item, index) => (
-            <Grid xs={6} sm={3} key={index}>
-              <Card>
-                <Card.Body css={{ p: 0, height: '140px', width: '175px', backgroundColor: item.color }} />
-                <Card.Footer css={{ justifyItems: 'flex-start' }}>
+            <Grid
+              key={index}
+              css={{ width: '95%' }}
+            >
+              <Card css={{ border: 'solid', borderColor: item.color, borderWidth: '2px' }}>
+                <Card.Header css={{ justifyItems: 'flex-start', backgroundColor: item.color, width: 'auto' }}>
                   <Row wrap='wrap' justify='space-between' align='center'>
                     <Text b>{item.title}</Text>
                   </Row>
-                </Card.Footer>
+                </Card.Header>
+                <Card.Body css={{ py: '15px', width: 'auto' }} >
+                  {item.title === 'Worker 1' && <FirstWorker />}
+                  {item.title === 'Worker 2' && <SecondWorker />}
+                  {item.title === 'Worker 3' && <ThirdWorker />}
+                </Card.Body>
               </Card>
             </Grid>
   ))}
