@@ -11,7 +11,7 @@ interface SampleDescProps {
 
 export const SampleDesc = ({ createAppointment, appointmentData, appointmentId }: SampleDescProps) => {
    return (
-     <Card>
+     <Card css={{ mt: '20px' }}>
        <Card.Body css={{ width: 'auto' }} >
          <Grid.Container
            gap={2}

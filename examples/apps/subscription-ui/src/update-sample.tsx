@@ -34,7 +34,7 @@ const appointmentData = {
   ]
 }
 
-const prettifyDate = (dateString: string) => {
+export const prettifyDate = (dateString: string) => {
   if (!dateString) {
     return ''
   }
@@ -72,7 +72,7 @@ export const AppointmentInfo = ({
           color='primary'
         />
         <Text
-          css={{ ml: '$2' }}
+          css={{ ml: '$2', pl: '10px' }}
           weight='bold'
         >
           Patient name:
@@ -90,7 +90,7 @@ export const AppointmentInfo = ({
           variant='dot'
         />
         <Text
-          css={{ ml: '$2' }}
+          css={{ ml: '$2', pl: '10px' }}
           weight='bold'
         >
           Start time:
@@ -108,7 +108,7 @@ export const AppointmentInfo = ({
           variant='dot'
         />
         <Text
-          css={{ ml: '$2' }}
+          css={{ ml: '$2', pl: '10px' }}
           weight='bold'
         >
           Description:

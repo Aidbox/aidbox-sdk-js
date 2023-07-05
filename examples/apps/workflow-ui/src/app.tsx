@@ -5,7 +5,7 @@ import { io } from 'socket.io-client'
 
 import { SampleDesc } from './SampleDesc'
 import { Tasks } from './Tasks'
-import { Workers } from './Workers'
+import { WorkflowSchema } from './WorkflowSchema'
 
 const appointmentData = {
   resourceType: 'Appointment',
@@ -89,29 +89,14 @@ export function App ({
         createAppointment={createAppointment}
         appointmentId={appointmentId}
       />
-      <Grid.Container
-        gap={2}
-        justify='center'
-      >
-        <Grid
-          xs={12}
-          md={6}
-          direction='column'
-          css={{ pl: 0 }}
-        >
+      {appointmentId &&
+        <>
+          <WorkflowSchema />
           <Tasks
             appointmentId={appointmentId}
             config={config}
           />
-        </Grid>
-        <Grid
-          xs={6}
-          md={6}
-          css={{ pr: 0 }}
-        >
-          <Workers appointmentId={appointmentId} />
-        </Grid>
-      </Grid.Container>
+        </>}
     </Container>
   )
 }
