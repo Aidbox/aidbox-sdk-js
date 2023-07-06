@@ -21,13 +21,6 @@ fastify.get('/', async function handler(request, reply) {
 })
 
 
-fastify.ready(err => {
-  if (err) throw err
-
-  fastify.io.on('connect', (socket) => fastify.log.info('Socket connected!', socket.id))
-})
-
-
 const main = async () => {
   const { app, config } = await createApp(fastify)
   try {
@@ -38,4 +31,7 @@ const main = async () => {
   }
 }
 
-main().catch(e => console.error(e))
+if (require.main === module) {
+
+  main().catch(e => console.error(e))
+}

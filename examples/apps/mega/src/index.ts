@@ -22,17 +22,17 @@ fastify.get('/', async function handler(request, reply) {
 })
 
 
-fastify.ready(err => {
-  if (err) throw err
-
-  fastify.io.on('connect', (socket) => fastify.log.info('Socket connected!', socket.id))
-})
-
-
-
 const main = async () => {
   const { app, config } = await createApp(fastify)
   await WorkflowApp(fastify);
+
+  fastify.ready(err => {
+    if (err) throw err
+
+    fastify.io.on('connect', (socket) => fastify.log.info('Socket connected!', socket.id))
+  })
+
+
   try {
     await app.listen({ port: config.APP_PORT, host: '0.0.0.0' })
   } catch (err) {

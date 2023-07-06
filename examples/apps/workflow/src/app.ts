@@ -1,6 +1,5 @@
 import { readFileSync } from 'fs'
 import * as path from 'path'
-import cors from '@fastify/cors'
 import { Client } from 'aidbox-sdk'
 import { isAxiosError } from 'axios'
 import dotenv from 'dotenv'
@@ -152,7 +151,6 @@ export const createApp = async (fastify: FastifyInstance) => {
 
   const configData = getConfig()
   if (configData.success) {
-    await fastify.register(cors)
     const config = configData.data
     const aidboxClient = new Client(config.AIDBOX_URL, { username: config.AIDBOX_CLIENT_ID, password: config.AIDBOX_CLIENT_SECRET })
     initWorkflowActions(aidboxClient, fastify, config)
