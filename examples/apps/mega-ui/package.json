@@ -15,6 +15,7 @@
   "dependencies": {
     "subscription-ui": "workspace:*",
     "phr": "workspace:*",
+    "workflow-ui": "workspace:*",
     "@aws-sdk/client-sqs": "^3.354.0",
     "@nextui-org/react": "^1.0.0-beta.12",
     "aidbox-sdk": "file:aidbox-javascript-sdk-1.0.0.tgz",

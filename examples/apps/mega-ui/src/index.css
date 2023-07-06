@@ -94,3 +94,8 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.event-description {
+  margin: 0 0 20px 0;
+  max-width: 80%;
+}

@@ -105,52 +105,22 @@ interface WaitBodyProps {
 
 const linksToCodeData = {
   init: [
-    {
-      text: "Workflow-init event",
-      link: "https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L144",
-    },
-    {
-      text: "Retrieve the appointment",
-      link: "https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L147",
-    },
-    {
-      text: "Find target date",
-      link: "https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L148",
-    },
-    {
-      text: "Execute wait task",
-      link: "https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L151",
-    },
+    { text: 'Workflow-init event', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L118' },
+    { text: 'Retrieve the appointment', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L121' },
+    { text: 'Find target date', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L122' },
+    { text: 'Execute wait task', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L125' }
   ],
   wait: [
-    {
-      text: "Retrieve Encouter",
-      link: "https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L157",
-    },
-    {
-      text: "Execute send-email task",
-      link: "https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L165",
-    },
+    { text: 'Retrieve Encouter', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L131' },
+    { text: 'Execute send-email task', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L139' }
   ],
   send: [
-    {
-      text: "Retrieve patient's telecom",
-      link: "https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L109",
-    },
-    {
-      text: "Create Encounter and Communication",
-      link: "https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L115",
-    },
-    {
-      text: "Generate depression form",
-      link: "https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L132",
-    },
-    {
-      text: "Send email to the patient",
-      link: "https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L137main",
-    },
-  ],
-};
+    { text: 'Retrieve patient\'s telecom', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L83' },
+    { text: 'Create Encounter and Communication', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L89' },
+    { text: 'Generate depression form', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L106' },
+    { text: 'Send email to the patient', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L111' }
+  ]
+}
 
 const Completionist = () => <Text>Wait is completed</Text>;
 
@@ -178,6 +148,7 @@ const LinksToCode = ({ data }: { data: LinksToCodeProps[] }) => {
     <Grid.Container gap={0.5} css={{ h: "fit-content" }}>
       <Text weight="bold">Links to code:</Text>
       {data.map(({ text, link }, index) => {
+<<<<<<< HEAD
         return (
           <Grid xs={12} alignItems="center" key={index}>
             <Badge variant="dot" color="primary" />
@@ -189,6 +160,29 @@ const LinksToCode = ({ data }: { data: LinksToCodeProps[] }) => {
           </Grid>
         );
       })}
+=======
+      return (
+        <Grid
+          xs={12}
+          alignItems='center'
+          key={index}
+        >
+          <Badge
+            variant='dot'
+            color='primary'
+          />
+          <Text css={{ 'max-width': '80%', 'pl': '10px', 'm': 0 }}>
+            <Link
+              href={link}
+              target='_blank'
+            >{text}
+            </Link>
+          </Text>
+        </Grid>
+      )
+            })}
+
+>>>>>>> ada5765 (add workflow ui to mega ui, commit quiery sample, fix styles and links to code)
     </Grid.Container>
   );
 };
@@ -250,11 +244,22 @@ const WaitBody = ({
       </Grid>
       <Grid xs={6} md={6} direction="column">
         <LinksToCode data={linksToCodeData.wait} />
+<<<<<<< HEAD
         {waitDate && !skippedWait && (
           <Countdown date={Date.parse(waitDate)} renderer={CountdownTimer} />
         )}
         {waitDate && skippedWait && <Container css={{ height: "70px" }} />}
         {skipButton && !skippedWait && (
+=======
+        {waitDate && !skippedWait &&
+          <Countdown
+            date={Date.parse(waitDate)}
+            renderer={CountdownTimer}
+          />}
+        {waitDate && skippedWait &&
+          <Container css={{ height: '65px' }} />}
+        {skipButton && !skippedWait &&
+>>>>>>> ada5765 (add workflow ui to mega ui, commit quiery sample, fix styles and links to code)
           <Button
             onPress={() => {
               if (taskId) skipWaitTask(taskId);
@@ -425,6 +430,7 @@ export const Tasks = ({ appointmentId, config }: TasksProps) => {
                       width: "auto",
                     }}
                   >
+<<<<<<< HEAD
                     <Row wrap="wrap" justify="space-between" align="center">
                       <Text b css={{ pl: "10px" }}>
                         {item.title + " task"}
@@ -462,3 +468,33 @@ export const Tasks = ({ appointmentId, config }: TasksProps) => {
     )
   );
 };
+=======
+                    <Text
+                      b
+                      css={{ pl: '10px' }}
+                    >{item.title + ' task'}
+                    </Text>
+                    {item.params?.until &&
+                      <Text css={{ pr: '10px', m: 0 }}> <Text b>Wait until: </Text>{prettifyDate(item.params?.until)}</Text>}
+                  </Row>
+                </Card.Header>
+                <Card.Body css={{ py: '15px', width: 'auto' }}>
+                  {item.title === 'workflow-init' && <InitBody />}
+                  {item.title === 'wait' && <WaitBody
+                    skipButton={item.title === 'wait' && item.color === green}
+                    aidboxClient={aidboxClient}
+                    taskId={item.id}
+                    waitDate={item.params?.until}
+                                            />}
+                  {item.title === 'send-email' && <SendBody />}
+                </Card.Body>
+              </Card>
+            </Grid>
+    ))}
+          {emailSent && <TickIcon />}
+        </Grid.Container>
+      </Card.Body>
+                    </Card>
+  )
+}
+>>>>>>> ada5765 (add workflow ui to mega ui, commit quiery sample, fix styles and links to code)

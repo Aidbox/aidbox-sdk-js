@@ -41,17 +41,23 @@ export const Layout = ({ children }: { children: ReactElement }) => {
           >
             PHR
           </Navbar.Link>
-          <Navbar.Link
+          {/* <Navbar.Link
             onClick={() => navigate('/complex-query')}
             isActive={pathName === '/complex-query'}
           >
             Complex Query
-          </Navbar.Link>
+          </Navbar.Link> */}
           <Navbar.Link
             onClick={() => navigate('/subscriptions')}
             isActive={pathName === '/subscriptions'}
           >
             Aidbox Subscriptions
+          </Navbar.Link>
+          <Navbar.Link
+            onClick={() => navigate('/workflow')}
+            isActive={pathName === '/workflow'}
+          >
+            Aidbox Workflow
           </Navbar.Link>
         </Navbar.Content>
       </Navbar>

@@ -11,19 +11,26 @@ const sampleCardsInfo = [
       'https://github.com/Aidbox/aidbox-sdk-js/tree/main/examples/personal-health-record/README.md'
   },
   {
-    title: 'Complex Query',
-    body: 'It is an example of how you can store complex queries in Aidbox.',
-    sampleLink: '/complex-query',
-    readmeLink:
-      'https://github.com/Aidbox/aidbox-sdk-js/tree/main/examples/aidbox-querying/README.md'
-  },
-  {
     title: 'Aidbox Subscriptions',
     body: 'This example shows the complete flow of using Aidbox subscriptions in integration with a queue, starting from creating a subscription and ending with the implementation of the final business logic.',
     sampleLink: '/subscriptions',
     readmeLink:
       'https://github.com/Aidbox/aidbox-sdk-js/tree/main/examples/aidbox-subscription/README.md'
+  },
+  {
+    title: 'Aidbox Workflow',
+    body: 'This example shows how Aidbox Workflow and Task work in the case of sending notifications to a patient.',
+    sampleLink: '/workflow',
+    readmeLink:
+      'https://github.com/Aidbox/aidbox-sdk-js/tree/main/examples/apps/workflow-ui/README.md'
   }
+  // {
+  //   title: 'Complex Query',
+  //   body: 'It is an example of how you can store complex queries in Aidbox.',
+  //   sampleLink: '/complex-query',
+  //   readmeLink:
+  //     'https://github.com/Aidbox/aidbox-sdk-js/tree/main/examples/aidbox-querying/README.md'
+  // }
 ]
 
 export const App = () => {

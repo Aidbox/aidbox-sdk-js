@@ -11,10 +11,15 @@ import {
 import { Client } from 'aidbox-sdk'
 import { Appointment } from 'aidbox-sdk/types'
 import { DatePicker, Timeline } from 'antd'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
+import localeData from 'dayjs/plugin/localeData'
+import weekday from 'dayjs/plugin/weekday'
 import { useEffect, useState } from 'react'
 import { TickSquare } from 'react-iconly'
 import { io } from 'socket.io-client'
+
+dayjs.extend(weekday)
+dayjs.extend(localeData)
 
 const appointmentData = {
   resourceType: 'Appointment',
@@ -247,7 +252,7 @@ export const UpdateSample = ({
               value={appointmentStartTime}
               onChange={(date) => {
                 if (date) {
-                  setAppointmentStartTime(date)
+                  setAppointmentStartTime(date as Dayjs)
                 }
               }}
             />
