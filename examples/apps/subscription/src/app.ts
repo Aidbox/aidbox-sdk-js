@@ -2,9 +2,7 @@ import { SQS } from '@aws-sdk/client-sqs'
 import cors from '@fastify/cors'
 import { Client } from 'aidbox-sdk'
 import * as dotenv from 'dotenv'
-import Fastify from 'fastify'
-import socketioServer from 'fastify-socket.io'
-import { Server } from 'socket.io'
+import { FastifyInstance } from 'fastify'
 import { generateErrorMessage } from 'zod-error'
 
 import { getConfig } from './config'
@@ -13,20 +11,6 @@ import { createDefaultQueues } from './sqs'
 import { createSubscriptions } from './subscriptions'
 import { SocketType } from './types'
 
-dotenv.config()
-
-const fastify = Fastify({
-    logger: true
-})
-
-fastify.register(require('fastify-metrics'), { endpoint: '/metrics' })
-fastify.register(socketioServer, { cors: { origin: '*' } })
-
-declare module 'fastify' {
-    interface FastifyInstance {
-        io: Server
-    }
-}
 
 export const queuesName = [
     'patient-sqs',
@@ -36,7 +20,10 @@ export const queuesName = [
     'diagnosticreport-sqs'
 ]
 
-export const createApp = async () => {
+export const createApp = async (fastify: FastifyInstance) => {
+    dotenv.config()
+    fastify.register(require('fastify-metrics'), { endpoint: '/metrics' })
+
     const configData = getConfig()
     if (configData.success) {
         await fastify.register(cors)
@@ -66,10 +53,6 @@ export const createApp = async () => {
         fastify.log.info('Create SQS jobs')
 
         await createSqsJobs({ sqsClient, queues: queuesName, queueBaseUrl: config.SQS_URL, aidboxClient, handleSocket })
-
-        fastify.get('/', async function handler (request, reply) {
-            return 'Aidbox SDK Examples backend'
-        })
 
         fastify.post('/patient-created', async function (req, reply) {
             const data = req.body as any
@@ -199,12 +182,6 @@ export const createApp = async () => {
         fastify.log.info('Create Aidbox Subscriptions')
 
         await createSubscriptions(aidboxClient, config.APP_URL)
-
-        fastify.ready(err => {
-            if (err) throw err
-
-            fastify.io.on('connect', (socket) => fastify.log.info('Socket connected!', socket.id))
-        })
 
         return { app: fastify, config }
     } else {

@@ -12,12 +12,9 @@ COPY . .
 
 RUN corepack enable
 
-RUN pnpm install && pnpm audit fix && pnpm run build
+RUN pnpm install && pnpm run build
+RUN cp ./src/email.html ./build/email.html
 
-
-# This results in a single layer image
-# FROM node:lts-alpine AS release
-# COPY --from=builder /dist /dist
 
 EXPOSE 8080
 
