@@ -74,20 +74,20 @@ interface WaitBodyProps {
 
 const linksToCodeData = {
   init: [
-    { text: 'Workflow-init event', link: '' },
-    { text: 'Retrieve the appointment', link: '' },
-    { text: 'Find target date', link: '' },
-    { text: 'Execute wait task', link: '' }
+    { text: 'Workflow-init event', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L144' },
+    { text: 'Retrieve the appointment', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L147' },
+    { text: 'Find target date', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L148' },
+    { text: 'Execute wait task', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L151' }
   ],
   wait: [
-    { text: 'Retrieve Encouter', link: '' },
-    { text: 'Execute send-email task', link: '' }
+    { text: 'Retrieve Encouter', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L157' },
+    { text: 'Execute send-email task', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L165' }
   ],
   send: [
-    { text: 'Retrieve patient\'s telecom', link: '' },
-    { text: 'Create Encounter and Communication', link: '' },
-    { text: 'Generate depression form', link: '' },
-    { text: 'Send email to the patient', link: '' }
+    { text: 'Retrieve patient\'s telecom', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L109' },
+    { text: 'Create Encounter and Communication', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L115' },
+    { text: 'Generate depression form', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L132' },
+    { text: 'Send email to the patient', link: 'https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts#L137main' }
   ]
 }
 
@@ -199,12 +199,7 @@ const WaitBody = ({ skipButton, taskId, waitDate, aidboxClient }: WaitBodyProps)
           Task that will wait for the indicated duration or until the indicated datetime. Used in workflow when need to be paused for some purposes.
         </Text>
         <Text className='event-description'>
-          <Link
-            href='https://github.com/Aidbox/aidbox-sdk-js/blob/4c6d512588f57232a6d6faeabb0a682fede7bccf/examples/aidbox-workflow/index.ts#L116'
-            target='_blank'
-          >
-            In our case
-          </Link>, we wait till 2 days before the appointment.
+          In our case, we wait till 2 days before the appointment.
         </Text>
         <Text
           weight='bold'

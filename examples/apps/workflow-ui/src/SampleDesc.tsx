@@ -1,15 +1,36 @@
-import { Badge, Button, Card, Container, Grid, Link, Text } from '@nextui-org/react'
+import { Badge, Button, Card, Container, Grid, Input, Link, Text, useInput } from '@nextui-org/react'
 import { Appointment } from 'aidbox-sdk/types'
+import { useMemo } from 'react'
 
-import { AppointmentInfo } from '../../subscription-ui/src/update-sample'
+import { prettifyDate } from '../../subscription-ui/src/update-sample'
 
 interface SampleDescProps {
-  createAppointment: () => void;
+  createAppointment: (email: string) => void;
   appointmentData: Appointment;
   appointmentId: string | null;
 }
 
 export const SampleDesc = ({ createAppointment, appointmentData, appointmentId }: SampleDescProps) => {
+  const { value, reset, bindings } = useInput('')
+
+  const validateEmail = (value: string) => {
+    return value.match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$/i)
+  }
+
+  const helper = useMemo((): {text?: 'Correct email' | 'Enter a valid email', color?: 'success' | 'error'} => {
+    if (!value) {
+      return {
+        text: undefined,
+        color: undefined
+      }
+  }
+  const isValid = validateEmail(value)
+    return {
+      text: isValid ? 'Correct email' : 'Enter a valid email',
+      color: isValid ? 'success' : 'error'
+    }
+  }, [value])
+
    return (
      <Card css={{ mt: '20px' }}>
        <Card.Body css={{ width: 'auto' }} >
@@ -37,7 +58,7 @@ export const SampleDesc = ({ createAppointment, appointmentData, appointmentId }
                  />
                  <Text css={{ 'max-width': '80%', 'pl': '10px' }}>
                    <Link
-                     href='https://github.com/Aidbox/aidbox-sdk-js/blob/dbe512df8538f01f933253c62464b895a73ad4f6/examples/zen-project/zrc/appointment-trigger.edn#L5'
+                     href='https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/zen-project/zrc/appointment-trigger.edn#L5'
                      target='_blank'
                    >Appointment trigger
                    </Link>
@@ -55,7 +76,7 @@ export const SampleDesc = ({ createAppointment, appointmentData, appointmentId }
                  />
                  <Text css={{ 'max-width': '80%', 'pl': '10px' }}>
                    <Link
-                     href='https://github.com/Aidbox/aidbox-sdk-js/blob/dbe512df8538f01f933253c62464b895a73ad4f6/examples/zen-project/zrc/notification.edn#L15'
+                     href='https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/zen-project/zrc/notification.edn#L15'
                      target='_blank'
                    >Workflow definition
                    </Link>
@@ -72,7 +93,7 @@ export const SampleDesc = ({ createAppointment, appointmentData, appointmentId }
                  />
                  <Text css={{ 'max-width': '80%', 'pl': '10px' }}>
                    <Link
-                     href='https://github.com/Aidbox/aidbox-sdk-js/blob/dbe512df8538f01f933253c62464b895a73ad4f6/examples/zen-project/zrc/notification.edn#L4'
+                     href='https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/zen-project/zrc/notification.edn#L4'
                      target='_blank'
                    >Task definition
                    </Link>
@@ -81,7 +102,7 @@ export const SampleDesc = ({ createAppointment, appointmentData, appointmentId }
              </Grid.Container>
              <Text css={{ 'max-width': '80%' }}>And created&nbsp;
                <Link
-                 href='https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/aidbox-workflow/index.ts'
+                 href='https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/workflow/src/app.ts'
                  target='_blank'
                >business logic
                </Link> to send patient an email notifications with the depression form two days before an appointment.
@@ -96,27 +117,98 @@ export const SampleDesc = ({ createAppointment, appointmentData, appointmentId }
                display='flex'
                wrap='wrap'
              >
-               <Text
-                 css={{ 'text-align': 'center', 'margin-top': 0 }}
-               >
-                 We have data for appointment with following information:
-               </Text>
+               {appointmentId &&
+                 <Text
+                   css={{ 'text-align': 'center', 'margin-top': 0 }}
+                 >
+                   We have data for appointment with following information:
+                 </Text>}
+               {!appointmentId &&
+                 <Text
+                   css={{ 'text-align': 'center', 'margin-top': 0 }}
+                 >
+                   Please provide your email to send you the notification at the end of the workflow:
+                 </Text>}
 
-               <AppointmentInfo
-                 patientName={appointmentData?.participant[0]?.actor?.display || ''}
-                 startDate={appointmentData?.start || ''}
-                 description={appointmentData?.description || ''}
-               />
+               <Grid.Container gap={0.5}>
+                 <Grid
+                   xs={12}
+                   alignItems='center'
+                 >
+                   <Badge
+                     variant='dot'
+                     color='primary'
+                   />
+                   <Text
+                     css={{ ml: '$2', pl: '10px' }}
+                     weight='bold'
+                   >
+                     Patient email:
+                   </Text>
+                   {!appointmentId &&
+                     <Input
+                       css={{ ml: '10px', my: '5px', width: '75%' }}
+                       {...bindings}
+                       clearable
+                       shadow={false}
+                       onClearClick={reset}
+                       status={helper.color}
+                       color={helper.color}
+                       helperColor={helper.color}
+                       helperText={helper.text}
+                       type='email'
+                       placeholder='type email'
+                     />}
 
-               <Text>
-                 Let's create the appointment to run the workflow and observe how it works.
+                   {appointmentId && <Text css={{ my: '10px' }}>&nbsp;{value}</Text> }
+                 </Grid>
+                 <Grid
+                   xs={12}
+                   alignItems='center'
+                   css={{ h: '30px' }}
+                 >
+                   <Badge
+                     color='primary'
+                     variant='dot'
+                   />
+                   <Text
+                     css={{ ml: '$2', pl: '10px' }}
+                     weight='bold'
+                   >
+                     Appointment start time:
+                   </Text>
+        &nbsp;
+                   <Text>{prettifyDate(appointmentData?.start || '')}</Text>
+                 </Grid>
+                 <Grid
+                   xs={12}
+                   alignItems='center'
+                   css={{ h: '30px' }}
+                 >
+                   <Badge
+                     color='primary'
+                     variant='dot'
+                   />
+                   <Text
+                     css={{ ml: '$2', pl: '10px' }}
+                     weight='bold'
+                   >
+                     Description:
+                   </Text>
+        &nbsp;
+                   <Text>{appointmentData?.description || ''}</Text>
+                 </Grid>
+               </Grid.Container>
+               <Text css={{ mb: '10px', width: '80%' }}>
+                 Let's create patient and appointment to run the workflow and observe how it works.
                </Text>
                {appointmentId
-? <Button color='success'>Appointment created</Button>
+? <Button color='success'>Patient and appointment created</Button>
 : <Button
-    onPress={createAppointment}
+    onPress={() => { createAppointment(value) }}
+    disabled={!validateEmail(value)}
   >
-  Create appointment
+  Create patient and appointment
   </Button>}
              </Container>
            </Grid>

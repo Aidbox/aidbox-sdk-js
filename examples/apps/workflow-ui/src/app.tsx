@@ -23,6 +23,26 @@ const appointmentData = {
   }]
 }
 
+const patientData = {
+    name: [
+     {
+      given: [
+       'Peter',
+       'James'
+      ],
+      family: 'Chalmers'
+     }
+    ],
+    telecom: [
+     {
+      value: '',
+      system: 'email'
+     }
+    ],
+    id: '03cb8799-bfbd-40fa-9ea8-96114cf1fec1',
+    resourceType: 'Patient'
+   }
+
 export const socketIo = io('http://localhost:8080', {
   auth: {
     token: 'json-web-token'
@@ -41,12 +61,21 @@ export function App ({
 }) {
   const [appointmentId, setAppointmentId] = useState<string | null>(null)
 
-  const createAppointment = async () => {
+  const createAppointment = async (email: string) => {
     const aidboxClient = new Client(config.aidbox_url, {
       username: config.aidbox_client,
       password: config.aidbox_secret
     })
 
+    const patient = {
+      ...patientData,
+      telecom: [{
+        value: email,
+            system: 'email'
+        }]
+      }
+
+    await aidboxClient.client.put(`/Patient/${patient.id}`, patient)
     const data = await aidboxClient.createResource('Appointment', appointmentData)
 
     if (data.id) {
