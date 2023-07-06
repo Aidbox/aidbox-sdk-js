@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Grid, Link, Row, Text } from '@nextui-org/react'
+import { Badge, Button, Card, Container, Grid, Link, Row, Text } from '@nextui-org/react'
 import { Client } from 'aidbox-sdk'
 import { useEffect, useState } from 'react'
 import Countdown, { CountdownRenderProps } from 'react-countdown'
@@ -6,6 +6,7 @@ import Countdown, { CountdownRenderProps } from 'react-countdown'
 import { prettifyDate } from '../../subscription-ui/src/update-sample'
 
 import { socketIo } from './app'
+import { TickIcon } from './TickIcon'
 
 interface TasksProps {
   appointmentId: string | null;
@@ -217,11 +218,13 @@ const WaitBody = ({ skipButton, taskId, waitDate, aidboxClient }: WaitBodyProps)
         direction='column'
       >
         <LinksToCode data={linksToCodeData.wait} />
-        {waitDate &&
+        {waitDate && !skippedWait &&
           <Countdown
             date={Date.parse(waitDate)}
             renderer={CountdownTimer}
           />}
+        {waitDate && skippedWait &&
+          <Container css={{ height: '70px' }} />}
         {skipButton && !skippedWait &&
           <Button
             onPress={() => {
@@ -256,7 +259,7 @@ const SendBody = () => {
         md={6}
         direction='column'
       >
-        <Text>
+        <Text className='event-description'>
           This task is configured by ourselves in&nbsp;
           <Link
             href='https://github.com/Aidbox/aidbox-sdk-js/blob/4c6d512588f57232a6d6faeabb0a682fede7bccf/examples/zen-project/zrc/notification.edn#L4'
@@ -264,6 +267,10 @@ const SendBody = () => {
           >
             the zen-project.
           </Link>
+        </Text>
+        <Text className='event-description'>
+          This task executes the business logic defined in the code.
+          It&nbsp;involves retrieving the patient's email address, creating Encounter and Communication resources, generating the depression form, and sending the email.
         </Text>
       </Grid>
       <Grid
@@ -304,6 +311,7 @@ const taskNameMap = {
 export const Tasks = ({ appointmentId, config }: TasksProps) => {
   const [tasksData, setTasks] = useState<TaskData[]>(taskList)
   const [workflowData, setWorkflow] = useState<Workflow | null>(null)
+  const [emailSent, setEmailSent] = useState<boolean>(false)
 
   const aidboxClient = new Client(config.aidbox_url, {
     username: config.aidbox_client,
@@ -343,6 +351,10 @@ export const Tasks = ({ appointmentId, config }: TasksProps) => {
   useEffect(() => {
     socketIo.on('start_task', function (data) {
       setTimeout(() => getTasks(data), 1700)
+    })
+
+    socketIo.on('sent_email', function () {
+      setTimeout(() => setEmailSent(true), 1700)
     })
 
     return () => {
@@ -400,8 +412,9 @@ return (
               </Card>
             </Grid>
     ))}
+          {emailSent && <TickIcon />}
         </Grid.Container>
       </Card.Body>
-    </Card>
+                    </Card>
   )
 }

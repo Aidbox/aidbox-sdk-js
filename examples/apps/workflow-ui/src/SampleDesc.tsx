@@ -84,7 +84,7 @@ export const SampleDesc = ({ createAppointment, appointmentData, appointmentId }
                  href='https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/aidbox-workflow/index.ts'
                  target='_blank'
                >business logic
-               </Link> to send patient an email notifications two days before an appointment.
+               </Link> to send patient an email notifications with the depression form two days before an appointment.
              </Text>
            </Grid>
            <Grid

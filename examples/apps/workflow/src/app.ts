@@ -134,8 +134,9 @@ task.implement('notification/send-email', async ({ params }) => {
     .replace('{name}', (patientName?.given?.join(' ') || '') + ' ' + patientName?.family)
     .replace('{link}', link)
 
-  await sendEmail(contact?.value || '', message)
+    await sendEmail(contact?.value || '', message)
 
+  fastify.io.emit('sent_email')
   return { status: true }
 })
 
