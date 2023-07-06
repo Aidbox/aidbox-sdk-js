@@ -414,7 +414,7 @@ export const Tasks = ({ appointmentId, config }: TasksProps) => {
 
   useEffect(() => {
     socketIo.on('start_task', function (data) {
-      setTimeout(() => getTasks(data), 1700)
+      setTimeout(() => getTasks(data), 1000)
     })
 
     socketIo.on('sent_email', function () {

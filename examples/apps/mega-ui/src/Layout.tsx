@@ -36,7 +36,7 @@ export const Layout = ({ children }: { children: ReactElement }) => {
         </Navbar.Brand>
         <Navbar.Content variant='underline'>
           <Navbar.Link
-            onClick={() => navigate('/phr')}
+            href='/phr'
             isActive={pathName === '/phr'}
           >
             PHR
@@ -48,13 +48,13 @@ export const Layout = ({ children }: { children: ReactElement }) => {
             Complex Query
           </Navbar.Link> */}
           <Navbar.Link
-            onClick={() => navigate('/subscriptions')}
+            href='/subscriptions'
             isActive={pathName === '/subscriptions'}
           >
             Aidbox Subscriptions
           </Navbar.Link>
           <Navbar.Link
-            onClick={() => navigate('/workflow')}
+            href='/workflow'
             isActive={pathName === '/workflow'}
           >
             Aidbox Workflow
