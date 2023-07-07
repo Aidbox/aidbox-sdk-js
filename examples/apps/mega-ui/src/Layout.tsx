@@ -1,12 +1,10 @@
 import { Navbar, Text } from '@nextui-org/react'
 import { ReactElement } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import Logo from './assets/logo.svg'
 import { Box } from './shared'
 
 export const Layout = ({ children }: { children: ReactElement }) => {
-  const navigate = useNavigate()
   const pathName = window.location.pathname
 
   return (

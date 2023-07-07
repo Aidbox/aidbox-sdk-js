@@ -269,7 +269,7 @@ const WaitBody = ({
             renderer={CountdownTimer}
           />}
         {waitDate && skippedWait &&
-          <Container css={{ height: '65px' }} />}
+          <Container css={{ height: '65px', p: 0, m: 0 }} />}
         {skipButton && !skippedWait &&
           <Button
             onPress={() => {
