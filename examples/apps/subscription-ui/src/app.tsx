@@ -45,7 +45,7 @@ export function App ({
       >
         We've created some subscriptions on&nbsp;
         <Link
-          href='https://github.com/Aidbox/aidbox-sdk-js/blob/8ea42b1c0bdf41d61257bdb3a0452e7dbcc15eb6/examples/aidbox-subscription/backend/subscriptions.ts#L6'
+          href='https://github.com/Aidbox/aidbox-sdk-js/blob/main/examples/apps/subscription/src/subscriptions.ts'
           target='_blank'
         >
           our backend

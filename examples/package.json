@@ -7,7 +7,9 @@
     "node": ">16.0.0"
   },
   "scripts": {
-    "setup": "ts-node --esm scripts/env.ts"
+    "setup": "ts-node --esm scripts/env.ts",
+    "app": "pnpm  run --filter \"{apps/mega-ui}\" dev",
+    "backend": "pnpm  run --filter \"{apps/mega}\" dev"
   },
   "dependencies": {
     "@nextui-org/react": "1.0.0-beta.13",

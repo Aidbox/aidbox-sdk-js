@@ -46,6 +46,8 @@ Tis script will be upload all needed sample data into Aidbox.
 
 ## Run examples
 
+These commands run all examples in one application. Also, you can run every sample [separately](https://github.com/Aidbox/aidbox-sdk-js/tree/main/examples/apps/README.md).
+
 Will run backend applications
 
 ```bash
