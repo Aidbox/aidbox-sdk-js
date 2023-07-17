@@ -1,19 +1,20 @@
 import { readFileSync } from 'fs'
 import * as path from 'path'
+
 import { Client } from 'aidbox-sdk'
 import { isAxiosError } from 'axios'
 import dotenv from 'dotenv'
+import { FastifyInstance } from 'fastify'
 import FormData from 'form-data'
 import { DateTime } from 'luxon'
 import MailgunClient from 'mailgun.js'
 import { generateErrorMessage } from 'zod-error'
+
 import { Config, getConfig } from './config'
-import { FastifyInstance } from 'fastify'
 
 const template = readFileSync(path.resolve(__dirname, 'email.html')).toString()
 
-
-async function generateDepressionForm(client: Client, patientId?: string, encounterId?: string): Promise<string> {
+async function generateDepressionForm (client: Client, patientId?: string, encounterId?: string): Promise<string> {
   try {
     const form = await client.client.post('/rpc', {
       method: 'aidbox.sdc/launch',
@@ -35,7 +36,7 @@ async function generateDepressionForm(client: Client, patientId?: string, encoun
   }
 }
 
-async function sendEmail(config: Config, email: string, text: string) {
+async function sendEmail (config: Config, email: string, text: string) {
   if (config.MAILGUN_API_KEY && config.MAILGUN_DOMAIN) {
     const message = {
       from: `Upcoming appointment <support@${config.MAILGUN_DOMAIN}>`,
@@ -46,14 +47,13 @@ async function sendEmail(config: Config, email: string, text: string) {
 
     const mailgun = new MailgunClient.default(FormData).client({ username: 'api', key: config.MAILGUN_API_KEY })
 
-
     await mailgun.messages.create(config.MAILGUN_DOMAIN, message)
   } else {
-    console.log("Mailgun creds not configured")
+    console.log('Mailgun creds not configured')
   }
 }
 
-function findTargetDate(date: string | undefined, daysOut: number, targetHour = 10) {
+function findTargetDate (date: string | undefined, daysOut: number, targetHour = 10) {
   if (date === undefined) return undefined
 
   const zone = 'America/New_York'
@@ -69,7 +69,7 @@ function findTargetDate(date: string | undefined, daysOut: number, targetHour = 
 }
 
 const initWorkflowActions = (aidboxClient: Client, fastify: FastifyInstance, config: Config) => {
-  const { task, workflow } = aidboxClient;
+  const { task, workflow } = aidboxClient
 
   task.implement('notification/send-email', async ({ params }) => {
     fastify.io.emit('worker', 3)
@@ -143,7 +143,6 @@ const initWorkflowActions = (aidboxClient: Client, fastify: FastifyInstance, con
 
     return [complete({})]
   })
-
 }
 
 export const createApp = async (fastify: FastifyInstance) => {

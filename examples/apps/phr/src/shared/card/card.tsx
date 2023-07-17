@@ -29,7 +29,7 @@ export function CardWrapper ({
 }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h4 style={{ marginBottom: '.5rem' }}>{title}</h4>
+      <h4 style={{ marginBottom: '.5rem', fontWeight: 500 }}>{title}</h4>
 
       <div
         className={cx(styles.cardWrapper, {

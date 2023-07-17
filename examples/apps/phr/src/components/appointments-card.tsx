@@ -1,79 +1,79 @@
-import { Appointment, Practitioner, PractitionerRole } from "aidbox-sdk/types";
-import dayjs from "dayjs";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { Client } from 'aidbox-sdk'
+import { Appointment, Practitioner, PractitionerRole } from 'aidbox-sdk/types'
+import dayjs from 'dayjs'
+import { useCallback, useContext, useEffect, useState } from 'react'
 
-import ClockIcon from "../assets/clock.svg";
-import UserIcon from "../assets/user.svg";
-import { CardWrapper } from "../shared/card";
-import { Divider } from "../shared/divider/divider";
-import { formatDate, transformName } from "../utils";
+import ClockIcon from '../assets/clock.svg'
+import UserIcon from '../assets/user.svg'
+import { ClientContext } from '../context'
+import { CardWrapper } from '../shared/card'
+import { Divider } from '../shared/divider/divider'
+import { formatDate, transformName } from '../utils'
 
-import styles from "./workspace.module.css";
-import { ClientContext } from "../context";
-import { Client } from "aidbox-sdk";
+import styles from './workspace.module.css'
 
-export function AppointmentsCard({ id: patient_id }: { id: string }) {
-  const { client } = useContext(ClientContext);
+export function AppointmentsCard ({ id: patient_id }: { id: string }) {
+  const { client } = useContext(ClientContext)
 
-  const [nextAppointment, setNextAppointment] = useState<Appointment>();
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [total, setTotal] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
+  const [nextAppointment, setNextAppointment] = useState<Appointment>()
+  const [appointments, setAppointments] = useState<Appointment[]>([])
+  const [total, setTotal] = useState<number>(0)
+  const [loading, setLoading] = useState(true)
 
   const getNextAppointment = useCallback(async () => {
     const response = await client
-      .getResources("Appointment")
-      .where("patient", `Patient/${patient_id}`)
-      .where("date", new Date().toISOString(), "gt")
-      .sort("date", "asc");
+      .getResources('Appointment')
+      .where('patient', `Patient/${patient_id}`)
+      .where('date', new Date().toISOString(), 'gt')
+      .sort('date', 'asc')
 
     if (response.entry?.length > 0) {
-      setNextAppointment(response?.entry?.[0].resource ?? {});
+      setNextAppointment(response?.entry?.[0].resource ?? {})
     }
-    setLoading(false);
-    return response.entry?.length > 0;
-  }, [patient_id]);
+    setLoading(false)
+    return response.entry?.length > 0
+  }, [patient_id])
 
   const getAppointments = useCallback(async () => {
     const response = await client
-      .getResources("Appointment")
-      .where("patient", `Patient/${patient_id}`);
+      .getResources('Appointment')
+      .where('patient', `Patient/${patient_id}`)
 
     if (response.entry?.length > 0) {
-      setAppointments(response?.entry?.map((r) => r.resource) || []);
-      setTotal(response.total);
+      setAppointments(response?.entry?.map((r) => r.resource) || [])
+      setTotal(response.total)
     }
-    setLoading(false);
-  }, [patient_id]);
+    setLoading(false)
+  }, [patient_id])
 
   useEffect(() => {
     getNextAppointment().then((haveNextAppointment) => {
       if (!haveNextAppointment) {
-        getAppointments();
+        getAppointments()
       }
-    });
-  }, [getAppointments, getNextAppointment]);
+    })
+  }, [getAppointments, getNextAppointment])
 
   const nextAppointmentAction = {
-    label: "Manage Appointment",
-    onClick: () => ({}),
-  };
+    label: 'Manage Appointment',
+    onClick: () => ({})
+  }
 
   const appointmentsAction = {
-    label: "Show all",
-    onClick: () => ({}),
-  };
+    label: 'Show all',
+    onClick: () => ({})
+  }
 
   const bottomAction = getButtonAction({
     appointments,
     nextAppointment,
     nextAppointmentAction,
-    appointmentsAction,
-  });
+    appointmentsAction
+  })
 
   const title = nextAppointment
-    ? "Next Appointment"
-    : "Appointments" + (total > 0 ? `(${total})` : "");
+    ? 'Next Appointment'
+    : 'Appointments' + (total > 0 ? `(${total})` : '')
 
   return (
     <CardWrapper
@@ -83,13 +83,18 @@ export function AppointmentsCard({ id: patient_id }: { id: string }) {
       title={title}
       bottomActions={bottomAction}
     >
-      {nextAppointment ? (
-        <NextAppointment appointment={nextAppointment} client={client} />
-      ) : (
-        <Appointments appointments={appointments} />
+      {nextAppointment
+? (
+  <NextAppointment
+    appointment={nextAppointment}
+    client={client}
+  />
+      )
+: (
+  <Appointments appointments={appointments} />
       )}
     </CardWrapper>
-  );
+  )
 }
 
 interface ButtonActionProps {
@@ -105,108 +110,111 @@ interface ButtonActionProps {
   };
 }
 
-function getButtonAction({
+function getButtonAction ({
   appointments,
   nextAppointment,
   nextAppointmentAction,
-  appointmentsAction,
+  appointmentsAction
 }: ButtonActionProps) {
   if (nextAppointment) {
-    return [nextAppointmentAction, appointmentsAction];
+    return [nextAppointmentAction, appointmentsAction]
   }
   if (appointments.length) {
-    return appointmentsAction;
+    return appointmentsAction
   }
-  return undefined;
+  return undefined
 }
 
 interface NextAppointmentProps {
   appointment: Appointment;
   client: Client;
 }
-function NextAppointment({ appointment, client }: NextAppointmentProps) {
-  const [practitionerRole, setPractitionerRole] = useState<PractitionerRole>();
-  const [practitioner, setPractitioner] = useState<Practitioner>();
+function NextAppointment ({ appointment, client }: NextAppointmentProps) {
+  const [practitionerRole, setPractitionerRole] = useState<PractitionerRole>()
+  const [practitioner, setPractitioner] = useState<Practitioner>()
 
-  async function getPractitionerRole(id: string) {
+  async function getPractitionerRole (id: string) {
     const response = await client
-      .getResources("PractitionerRole")
+      .getResources('PractitionerRole')
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      .where(".practitioner.reference", `Practitioner/${id}`);
+      .where('.practitioner.reference', `Practitioner/${id}`)
 
     if (response.entry.length > 0) {
-      setPractitionerRole(response.entry[0].resource);
+      setPractitionerRole(response.entry[0].resource)
     }
 
-    return response.entry.length > 0;
+    return response.entry.length > 0
   }
 
-  async function getPractitioner(id: string) {
-    const practitioner = await client.getResource("Practitioner", id);
+  async function getPractitioner (id: string) {
+    const practitioner = await client.getResource('Practitioner', id)
 
     if (!(practitioner instanceof Error)) {
-      setPractitioner(practitioner);
+      setPractitioner(practitioner)
     }
   }
 
   useEffect(() => {
     const practitioner = appointment.participant?.find(
-      (p: any) => p.actor?.resourceType === "Practitioner"
-    );
-    const id = practitioner?.actor?.id;
+      (p: any) => p.actor?.resourceType === 'Practitioner'
+    )
+    const id = practitioner?.actor?.id
     if (id) {
       getPractitionerRole(id).then((practitionerRole) => {
         if (!practitionerRole) {
-          getPractitioner(id as string);
+          getPractitioner(id as string)
         }
-      });
+      })
     }
-  }, [appointment.participant]);
-  const startDate = dayjs(new Date(appointment.start ?? "")).format("dd MMMM");
+  }, [appointment.participant])
+  const startDate = dayjs(new Date(appointment.start ?? '')).format('dd MMMM')
   const startTime =
-    appointment.start && dayjs(new Date(appointment.start)).format("hh:mm a");
+    appointment.start && dayjs(new Date(appointment.start)).format('hh:mm a')
   const endTime =
-    appointment.end && dayjs(new Date(appointment.end)).format("hh:mm a");
+    appointment.end && dayjs(new Date(appointment.end)).format('hh:mm a')
 
-  const time = startTime ? startTime + (endTime ? " - " + endTime : "") : null;
+  const time = startTime ? startTime + (endTime ? ' - ' + endTime : '') : null
 
   const practitionerName =
     practitionerRole?.practitioner?.display ??
-    transformName(practitioner?.name);
+    transformName(practitioner?.name)
 
   return (
-    <div style={{ padding: "1rem 0.5rem" }}>
-      <h4 style={{ fontSize: "2rem" }}>{startDate}</h4>
+    <div style={{ padding: '1rem 0.5rem' }}>
+      <h4 style={{ fontSize: '2rem' }}>{startDate}</h4>
       <div
         style={{
-          display: "flex",
-          marginTop: "0.7rem",
-          gap: "0.3rem",
-          flexDirection: "column",
+          display: 'flex',
+          marginTop: '0.7rem',
+          gap: '0.3rem',
+          flexDirection: 'column'
         }}
       >
-        {time && <RowWithIcon icon={<ClockIcon />} value={time} />}
+        {time && <RowWithIcon
+          icon={<ClockIcon />}
+          value={time}
+                 />}
 
         {practitionerName && (
           <RowWithIcon
             icon={<UserIcon />}
             value={[
               practitionerName,
-              practitionerRole?.specialty?.[0]?.coding?.[0]?.display,
+              practitionerRole?.specialty?.[0]?.coding?.[0]?.display
             ]}
           />
         )}
       </div>
     </div>
-  );
+  )
 }
 
 interface AppointmentProps {
   appointments: Appointment[];
 }
 
-function Appointments({ appointments }: AppointmentProps) {
+function Appointments ({ appointments }: AppointmentProps) {
   return (
     <div>
       {appointments.map((appointment, index) => (
@@ -214,70 +222,71 @@ function Appointments({ appointments }: AppointmentProps) {
           <div
             key={appointment.id}
             style={{
-              display: "grid",
-              gridTemplateColumns: "5fr 1fr",
-              alignItems: "center",
+              display: 'grid',
+              gridTemplateColumns: '5fr 1fr',
+              alignItems: 'center'
             }}
           >
             <p
               style={{
-                fontSize: "1rem",
-                fontWeight: "500",
-                maxWidth: "90%",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-                textOverflow: "ellipsis",
+                fontSize: '1rem',
+                fontWeight: '500',
+                maxWidth: '90%',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
               }}
             >
               {appointment.description}
             </p>
             <p
               style={{
-                textTransform: "capitalize",
-                fontSize: "0.8rem",
-                fontWeight: "500",
+                textTransform: 'capitalize',
+                fontSize: '0.8rem',
+                fontWeight: '500'
               }}
             >
               {appointment.status}
             </p>
             <p className={styles.cardSmallText}>
-              {formatDate(appointment.start ?? "")}
+              {formatDate(appointment.start ?? '')}
             </p>
           </div>
           {index !== appointments.length - 1 && (
-            <Divider verticalMargin={"0.5rem"} />
+            <Divider verticalMargin={'0.5rem'} />
           )}
         </>
       ))}
     </div>
-  );
+  )
 }
 
 interface RowWithIconProps {
   icon: JSX.Element;
   value: string | (string | undefined)[];
 }
-function RowWithIcon({ icon, value }: RowWithIconProps) {
+function RowWithIcon ({ icon, value }: RowWithIconProps) {
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "row",
-        gap: "0.6rem",
-        alignItems: "center",
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '0.6rem',
+        alignItems: 'center'
       }}
     >
-      <div style={{ width: "22px", height: "22px" }}>{icon}</div>
+      <div style={{ width: '22px', height: '22px' }}>{icon}</div>
       <div>
-        {Array.isArray(value) ? (
+        {Array.isArray(value)
+? (
           value.map(
             (text, index) =>
               text && (
                 <p
                   style={{
-                    lineHeight: "20px",
-                    fontSize: "0.9rem",
-                    fontWeight: 500,
+                    lineHeight: '20px',
+                    fontSize: '0.9rem',
+                    fontWeight: 500
                   }}
                   key={index}
                 >
@@ -285,10 +294,11 @@ function RowWithIcon({ icon, value }: RowWithIconProps) {
                 </p>
               )
           )
-        ) : (
-          <p style={{ fontSize: "0.9rem", fontWeight: 500 }}>{value}</p>
+        )
+: (
+  <p style={{ fontSize: '0.9rem', fontWeight: 500 }}>{value}</p>
         )}
       </div>
     </div>
-  );
+  )
 }
