@@ -1,8 +1,8 @@
 import Fastify from 'fastify'
 import socketioServer from 'fastify-socket.io'
-import { createApp } from './app'
 import { Server } from 'socket.io'
 
+import { createApp } from './app'
 
 const fastify = Fastify({
   logger: true
@@ -16,10 +16,9 @@ declare module 'fastify' {
   }
 }
 
-fastify.get('/', async function handler(request, reply) {
+fastify.get('/', async function handler (request, reply) {
   return 'Aidbox SDK Examples backend'
 })
-
 
 const main = async () => {
   const { app, config } = await createApp(fastify)
@@ -32,6 +31,5 @@ const main = async () => {
 }
 
 if (require.main === module) {
-
   main().catch(e => console.error(e))
 }

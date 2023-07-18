@@ -15,6 +15,8 @@
     "@nextui-org/react": "^1.0.0-beta.12",
     "aidbox-sdk": "file:aidbox-javascript-sdk-1.0.0.tgz",
     "antd": "5.6.3",
+    "effector": "^22.8.6",
+    "effector-react": "^22.5.3",
     "mermaid": "^10.2.4",
     "react": "18.2.0",
     "react-countdown": "^2.3.5",

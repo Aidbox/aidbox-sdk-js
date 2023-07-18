@@ -1,8 +1,9 @@
 import { Container, Link, Text } from '@nextui-org/react'
 import { Client } from 'aidbox-sdk'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Socket, io } from 'socket.io-client'
 
+import { aidboxClient, socketIo } from './client'
 import { AppContext } from './context'
 import { SampleDesc } from './SampleDesc'
 import { Tasks } from './Tasks'
@@ -54,27 +55,8 @@ export function App ({
   };
 }) {
   const [appointmentId, setAppointmentId] = useState<string | null>(null)
-  const [aidboxClient, setClient] = useState<Client>()
-  const [socketIo, setSocket] = useState<Socket>()
 
-  useEffect(() => {
-    const aidboxClient = new Client(config.aidbox_url, {
-      username: config.aidbox_client,
-      password: config.aidbox_secret
-    })
-
-    setClient(aidboxClient)
-
-    const socketIo = io(config.app_url, {
-      auth: {
-        token: 'json-web-token'
-      }
-    })
-
-    setSocket(socketIo)
-  }, [])
-
-  const createAppointment = async (email: string) => {
+  const createAppointment = useCallback(async (email: string) => {
     const patient = {
       ...patientData,
       telecom: [
@@ -85,9 +67,8 @@ export function App ({
       ]
     }
 
-    if (aidboxClient) {
       await aidboxClient.client.put(`/Patient/${patient.id}`, patient)
-      const data = await aidboxClient.createResource(
+      const data = await aidboxClient.createResource( // TODO: put appointment id in query params
         'Appointment',
         appointmentData
       )
@@ -95,10 +76,8 @@ export function App ({
       if (data.id) {
         setAppointmentId(data.id)
       }
-    }
-  }
-
-  if (!aidboxClient || !socketIo) return null
+  }, [])
+console.log(1)
 
   return (
     <AppContext.Provider value={{ client: aidboxClient, socketIo }}>

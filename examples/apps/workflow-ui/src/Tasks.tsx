@@ -12,6 +12,7 @@ import { Client } from 'aidbox-sdk'
 import { useContext, useEffect, useState } from 'react'
 import Countdown, { CountdownRenderProps } from 'react-countdown'
 
+import { aidboxClient } from './client'
 import { AppContext } from './context'
 import { TickIcon } from './TickIcon'
 
@@ -78,9 +79,6 @@ interface Workflow {
     versionId: string;
   };
 }
-
-const green = '#17C964'
-const gray = '#889096'
 
 interface TaskData {
   title: 'workflow-init' | 'wait' | 'send-email';
@@ -362,11 +360,6 @@ export const Tasks = ({ appointmentId, config }: TasksProps) => {
   const [workflowData, setWorkflow] = useState<Workflow | null>(null)
   const [emailSent, setEmailSent] = useState<boolean>(false)
 
-  const aidboxClient = new Client(config.aidbox_url, {
-    username: config.aidbox_client,
-    password: config.aidbox_secret
-  })
-
   const getTasks = async (workflowId: string) => {
     const { data } = await aidboxClient.client.get<{
       entry: Array<{ resource: Task }>;
@@ -411,20 +404,6 @@ export const Tasks = ({ appointmentId, config }: TasksProps) => {
       fetchData().catch(console.error)
     }
   }, [appointmentId])
-
-  useEffect(() => {
-    socketIo.on('start_task', function (data) {
-      setTimeout(() => getTasks(data), 1000)
-    })
-
-    socketIo.on('sent_email', function () {
-      setTimeout(() => setEmailSent(true), 1700)
-    })
-
-    return () => {
-      socketIo.off()
-    }
-  }, [])
 
   return (
     workflowData && (
