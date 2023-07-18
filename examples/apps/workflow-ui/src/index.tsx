@@ -1,16 +1,16 @@
-import './index.css'
+import "./index.css";
 
-import { NextUIProvider } from '@nextui-org/react'
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import { NextUIProvider } from "@nextui-org/react";
+import React from "react";
+import ReactDOM from "react-dom/client";
 
-import { App } from './app'
-import Config from './config.json'
+import { App } from "./app";
+import Config from "./config.json";
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <NextUIProvider>
-      <App config={Config} />
+      <App />
     </NextUIProvider>
   </React.StrictMode>
-)
+);
