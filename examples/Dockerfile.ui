@@ -8,6 +8,7 @@ WORKDIR /app
 COPY . .
 RUN jq 'to_entries | map_values({ (.key) : ("$" + .key | ascii_upcase) }) | reduce .[] as $item ({}; . + $item)' ./apps/mega-ui/src/config.json > ./apps/mega-ui/src/config.tmp.json && mv ./apps/mega-ui/src/config.tmp.json ./apps/mega-ui/src/config.json
 RUN jq 'to_entries | map_values({ (.key) : ("$" + .key | ascii_upcase) }) | reduce .[] as $item ({}; . + $item)' ./apps/workflow-ui/src/config.json > ./apps/workflow-ui/src/config.tmp.json && mv ./apps/workflow-ui/src/config.tmp.json ./apps/workflow-ui/src/config.json
+RUN jq 'to_entries | map_values({ (.key) : ("$" + .key | ascii_upcase) }) | reduce .[] as $item ({}; . + $item)' ./apps/subscription-ui/src/config.json > ./apps/subscription-ui/src/config.tmp.json && mv ./apps/subscription-ui/src/config.tmp.json ./apps/subscription-ui/src/config.json
 
 RUN pnpm install && cd ./apps/mega-ui && pnpm run build
 
