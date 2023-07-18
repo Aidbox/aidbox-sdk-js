@@ -1,35 +1,25 @@
-import Fastify from 'fastify'
-import socketioServer from 'fastify-socket.io'
-import { Server } from 'socket.io'
+import Fastify from "fastify";
 
-import { createApp } from './app'
+import { createApp } from "./app";
 
 const fastify = Fastify({
-  logger: true
-})
+  logger: true,
+});
 
-fastify.register(socketioServer, { cors: { origin: '*' } })
-
-declare module 'fastify' {
-  interface FastifyInstance {
-    io: Server
-  }
-}
-
-fastify.get('/', async function handler (request, reply) {
-  return 'Aidbox SDK Examples backend'
-})
+fastify.get("/", async function handler(request, reply) {
+  return "Aidbox SDK Examples backend";
+});
 
 const main = async () => {
-  const { app, config } = await createApp(fastify)
+  const { app, config } = await createApp(fastify);
   try {
-    await app.listen({ port: config.APP_PORT, host: '0.0.0.0' })
+    await app.listen({ port: config.APP_PORT, host: "0.0.0.0" });
   } catch (err) {
-    app.log.error(err)
-    process.exit(1)
+    app.log.error(err);
+    process.exit(1);
   }
-}
+};
 
 if (require.main === module) {
-  main().catch(e => console.error(e))
+  main().catch((e) => console.error(e));
 }
