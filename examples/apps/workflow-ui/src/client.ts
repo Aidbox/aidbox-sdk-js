@@ -2,6 +2,7 @@ import { Client } from 'aidbox-sdk'
 import { io } from 'socket.io-client'
 
 import config from './config.json'
+import { emailSent, getTasks } from './model'
 
 export const aidboxClient = new Client(config.aidbox_url, {
   username: config.aidbox_client,
@@ -19,5 +20,5 @@ socketIo.on('start_task', function (data) {
 })
 
 socketIo.on('sent_email', function () {
-  setTimeout(() => setEmailSent(true), 1700)
+  setTimeout(() => emailSent(), 1700)
 })
