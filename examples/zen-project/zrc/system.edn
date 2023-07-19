@@ -1,5 +1,5 @@
 {:ns system
- import #{aidbox loinc appointment-trigger notification hl7-fhir-r4-core aidbox.forms awf.workflow awf.task}
+ import #{aidbox loinc trigger notification hl7-fhir-r4-core aidbox.forms awf.workflow awf.task}
 
  admin-user-seed
  {:zen/tags #{aidbox/service}
@@ -51,4 +51,4 @@
              :preload seed
              :demo-client-seed demo-client-seed
              :task-service awf.task/task-service
-             :subscription-trigger-service appointment-trigger/subscription-service}}}
+             :subscription-trigger-service trigger/subscription-service}}}

@@ -1,6 +1,5 @@
-{:ns     appointment-trigger
+{:ns     trigger
  import #{aidbox notification awf.subscription-trigger}
-
 
  on-appointment
  {:zen/tags    #{awf.subscription-trigger/rule}
@@ -9,7 +8,14 @@
   :workflow-request {:definition notification/appointment-created
                      :params {:id (get-in [:id])}}}
 
+ on-sdcdocument
+ {:zen/tags    #{awf.subscription-trigger/rule}
+  :select-by    [{:get-in [:resourceType] :comparator :eq :value "SDCDocument"}
+                 {:get-in [:status] :comparator :eq :value "completed"}]
+  :workflow-request {:definition notification/sdcdocument-created
+                     :params {:id (get-in [:id])}}}
+
  subscription-service
  {:zen/tags #{aidbox/service}
   :engine   awf.subscription-trigger/subscription-trigger-service-engine
-  :rules    #{on-appointment}}}
+  :rules    #{on-appointment on-sdcdocument}}}
