@@ -13,12 +13,14 @@
   "license": "ISC",
   "dependencies": {
     "@nextui-org/react": "^1.0.0-beta.12",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
     "aidbox-sdk": "file:aidbox-javascript-sdk-1.0.0.tgz",
     "antd": "5.6.3",
-    "react-iconly": "2.2.10",
     "dayjs": "1.11.8",
+    "effector": "^22.8.6",
+    "effector-react": "^22.5.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-iconly": "2.2.10",
     "socket.io-client": "4.7.1"
   },
   "devDependencies": {

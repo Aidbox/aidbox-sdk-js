@@ -6,10 +6,19 @@ import {
   Progress,
   Text,
 } from "@nextui-org/react";
+<<<<<<< Updated upstream
 import { Timeline } from "antd";
 import { useEffect, useState } from "react";
 import { Plus, TickSquare } from "react-iconly";
 import { aidboxClient, socketIo } from "./client";
+=======
+import { Client } from "aidbox-sdk";
+import { Timeline } from "antd";
+import { useEffect, useState } from "react";
+import { Plus, TickSquare } from "react-iconly";
+import { io } from "socket.io-client";
+import { socketIo } from "./client";
+>>>>>>> Stashed changes
 
 const Patient = {
   resourceType: "Patient",
@@ -77,6 +86,13 @@ export const CreateSample = ({
   const [createdTasks, setCreatedTasks] = useState<string[]>([]);
 
   const createPatients = async () => {
+<<<<<<< Updated upstream
+=======
+    const aidboxClient = new Client(config.aidbox_url, {
+      username: config.aidbox_client,
+      password: config.aidbox_secret,
+    });
+>>>>>>> Stashed changes
     await aidboxClient.bundleRequest(
       aidboxClient.transformToBundle(Array(10).fill(Patient), "POST")
     );

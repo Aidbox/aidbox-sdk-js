@@ -8,14 +8,18 @@ import {
   Text,
   Link,
 } from "@nextui-org/react";
+<<<<<<< Updated upstream
 import { Client } from "aidbox-sdk";
 import { Appointment } from "aidbox-sdk/types";
+=======
+>>>>>>> Stashed changes
 import { DatePicker, Timeline } from "antd";
 import dayjs, { Dayjs } from "dayjs";
 import localeData from "dayjs/plugin/localeData";
 import weekday from "dayjs/plugin/weekday";
 import { useEffect, useState } from "react";
 import { TickSquare } from "react-iconly";
+<<<<<<< Updated upstream
 import { io } from "socket.io-client";
 import { aidboxClient, socketIo } from "./client";
 
@@ -39,6 +43,21 @@ const appointmentData = {
     },
   ],
 };
+=======
+import { useUnit } from "effector-react";
+import {
+  $appointment,
+  $appointmentStartTime,
+  $isAppointmentUpdated,
+  createAppointment,
+  updateAppointment,
+  updateStartTime,
+} from "./model";
+import { socketIo } from "./client";
+
+dayjs.extend(weekday);
+dayjs.extend(localeData);
+>>>>>>> Stashed changes
 
 export const prettifyDate = (dateString: string) => {
   if (!dateString) {
@@ -107,17 +126,37 @@ export const UpdateSample = ({
     sqs_url: string;
   };
 }) => {
+<<<<<<< Updated upstream
   const [appointment, setAppointment] = useState<Appointment | null>(null);
   const [appointmentStartTime, setAppointmentStartTime] = useState(
     dayjs(appointmentData.start)
   );
   const [isAppointmentUpdated, setIsAppointmentUpdated] = useState(false);
+=======
+  const [
+    create,
+    update,
+    updateTime,
+    appointment,
+    startTime,
+    isAppointmentUpdated,
+  ] = useUnit([
+    createAppointment,
+    updateAppointment,
+    updateStartTime,
+    $appointment,
+    $appointmentStartTime,
+    $isAppointmentUpdated,
+  ]);
+
+>>>>>>> Stashed changes
   const [subsNotifications, setSubsNotifications] = useState(false);
   const [pushedAppointment, setPushedAppointment] = useState(false);
   const [pulledAppointment, setPulledAppointment] = useState(false);
   const [createdTasks, setCreatedTasks] = useState(false);
 
   useEffect(() => {
+<<<<<<< Updated upstream
     const createAppointment = async () => {
       const data = await aidboxClient.createResource(
         "Appointment",
@@ -140,6 +179,10 @@ export const UpdateSample = ({
       setTimeout(() => setIsAppointmentUpdated(true), 500);
     }
   };
+=======
+    create();
+  }, []);
+>>>>>>> Stashed changes
 
   useEffect(() => {
     socketIo.on("subs_notification_appointment", function (data) {
@@ -165,6 +208,10 @@ export const UpdateSample = ({
         setTimeout(() => setCreatedTasks(true), 500);
       }
     });
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     return () => {
       socketIo.off("subs_notification_appointment");
       socketIo.off("push_appointment");
@@ -199,15 +246,28 @@ export const UpdateSample = ({
             <DatePicker
               style={{ borderColor: "#0072F5", borderRadius: "15px" }}
               showTime
-              defaultValue={appointmentStartTime}
-              value={appointmentStartTime}
+              defaultValue={startTime}
+              value={startTime}
               onChange={(date) => {
                 if (date) {
+<<<<<<< Updated upstream
                   setAppointmentStartTime(date as Dayjs);
                 }
               }}
             />
             <Button onPress={updateAppointment} css={{ ml: "20px" }}>
+=======
+                  updateTime(date as Dayjs);
+                }
+              }}
+            />
+            <Button
+              onPress={() =>
+                update({ appointmentId: appointment?.id!, startTime })
+              }
+              css={{ ml: "20px" }}
+            >
+>>>>>>> Stashed changes
               Update start time
             </Button>
             {isAppointmentUpdated && (
