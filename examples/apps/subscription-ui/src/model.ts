@@ -22,17 +22,12 @@ const appointmentData = {
 };
 
 export const $appointment = createStore<Appointment | null>(null);
-export const $appointmentStartTime = createStore<Dayjs>(
-  dayjs(appointmentData.start)
-);
+export const $appointmentStartTime = createStore<Dayjs>(dayjs(appointmentData.start));
 
 export const createAppointment = createEvent();
 
 const createAppointmentFx = createEffect<void, Appointment>(async () => {
-  const data = await aidboxClient.createResource(
-    "Appointment",
-    appointmentData
-  );
+  const data = await aidboxClient.createResource("Appointment", appointmentData);
   return data;
 });
 
@@ -43,16 +38,15 @@ export const updateAppointment = createEvent<{
 
 export const updateStartTime = createEvent<Dayjs>();
 
-const updateAppointmentFx = createEffect<
-  { appointmentId: string; startTime: Dayjs },
-  Appointment
->(async ({ appointmentId, startTime }) => {
-  const data = await aidboxClient.patchResource("Appointment", appointmentId, {
-    start: startTime.toISOString(),
-  });
+const updateAppointmentFx = createEffect<{ appointmentId: string; startTime: Dayjs }, Appointment>(
+  async ({ appointmentId, startTime }: { appointmentId: string; startTime: Dayjs }) => {
+    const data = await aidboxClient.patchResource("Appointment", appointmentId, {
+      start: startTime.toISOString(),
+    });
 
-  return data;
-});
+    return data;
+  }
+);
 
 export const $isAppointmentUpdated = createStore<boolean>(false).on(
   updateAppointmentFx.doneData,

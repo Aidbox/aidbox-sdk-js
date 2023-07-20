@@ -10,21 +10,12 @@ export interface Task {
     event?: string;
     until?: string;
   };
-  status:
-    | "created"
-    | "ready"
-    | "requested"
-    | "in-progress"
-    | "done"
-    | "waiting";
+  status: "created" | "ready" | "requested" | "in-progress" | "done" | "waiting";
   requester: {
     id: string;
     resourceType: "AidboxWorkflow";
   };
-  definition:
-    | "awf.workflow/decision-task"
-    | "awf.task/wait"
-    | "notification/send-email";
+  definition: "awf.workflow/decision-task" | "awf.task/wait" | "notification/send-email";
   "workflow-definition": "notification/appointment-created";
 }
 
@@ -91,49 +82,42 @@ const patientData = {
 export const $appointment = createStore<Appointment | null>(null);
 
 export const createAppointment = createEvent<string>();
-const createAppointmentFx = createEffect<string, Appointment>(
-  async (email: string) => {
-    const patient = {
-      ...patientData,
-      telecom: [
-        {
-          value: email,
-          system: "email",
+const createAppointmentFx = createEffect<string, Appointment>(async (email: string) => {
+  const patient = {
+    ...patientData,
+    telecom: [
+      {
+        value: email,
+        system: "email",
+      },
+    ],
+  };
+
+  const patientResponse = await aidboxClient.createResource(`Patient`, patient);
+
+  const data = await aidboxClient.createResource("Appointment", {
+    ...appointmentData,
+    participant: [
+      {
+        actor: {
+          reference: `Patient/${patientResponse.id!}`,
+          display: "Peter James Chalmers",
         },
-      ],
-    };
+        status: "accepted",
+      },
+    ],
+  });
+  return data;
+});
 
-    const patientResponse = await aidboxClient.createResource(
-      `Patient`,
-      patient
-    );
+const getWorkflowFx = createEffect<string, Workflow | null>(async (appointmentId) => {
+  const { data } = await aidboxClient.client.get<{
+    entry: Array<{ resource: Workflow }>;
+  }>(`AidboxWorkflow?.params.id=${appointmentId}`);
 
-    const data = await aidboxClient.createResource("Appointment", {
-      ...appointmentData,
-      participant: [
-        {
-          actor: {
-            reference: `Patient/${patientResponse.id!}`,
-            display: "Peter James Chalmers",
-          },
-          status: "accepted",
-        },
-      ],
-    });
-    return data;
-  }
-);
-
-const getWorkflowFx = createEffect<string, Workflow | null>(
-  async (appointmentId) => {
-    const { data } = await aidboxClient.client.get<{
-      entry: Array<{ resource: Workflow }>;
-    }>(`AidboxWorkflow?.params.id=${appointmentId}`);
-
-    const workflow = data.entry[0]?.resource;
-    return workflow || null;
-  }
-);
+  const workflow = data.entry[0]?.resource;
+  return workflow || null;
+});
 
 sample({ clock: createAppointment, target: createAppointmentFx });
 sample({ clock: createAppointmentFx.doneData, target: $appointment });
@@ -146,8 +130,7 @@ sample({
 });
 
 const waitFx = createEffect<string, string>(
-  (appointmentId: string) =>
-    new Promise((rs) => setTimeout(() => rs(appointmentId), 1000))
+  (appointmentId: string) => new Promise((rs) => setTimeout(() => rs(appointmentId), 1000))
 );
 export const $workflow = createStore<Workflow | null>(null);
 
@@ -202,45 +185,40 @@ export const $emailSent = $tasks.map(
   (tasks) => tasks.filter((item) => item?.status === "done").length === 3
 );
 
-const getTasksFx = createEffect<
-  { tasksData: TaskData[]; workflowId: string },
-  TaskData[]
->(async ({ workflowId, tasksData }) => {
-  const { data } = await aidboxClient.client.get<{
-    entry: Array<{ resource: Task }>;
-  }>(`AidboxTask?.requester.id=${workflowId}`);
-  const updatedTasks = tasksData.map((item) => {
-    const curTask = data.entry.find(
-      ({ resource }) => taskNameMap[resource.definition] === item.title
-    );
-    if (curTask) {
-      const curColor: TaskData["color"] = greenStatuses.includes(
-        curTask.resource.status
-      )
-        ? green
-        : gray;
-      if (taskNameMap[curTask.resource.definition] === item.title) {
-        return {
-          ...item,
-          color: curColor,
-          id: curTask.resource?.id,
-          params: curTask.resource?.params,
-          status: curTask.resource?.status,
-        };
+const getTasksFx = createEffect<{ tasksData: TaskData[]; workflowId: string }, TaskData[]>(
+  async ({ workflowId, tasksData }) => {
+    const { data } = await aidboxClient.client.get<{
+      entry: Array<{ resource: Task }>;
+    }>(`AidboxTask?.requester.id=${workflowId}`);
+    const updatedTasks = tasksData.map((item) => {
+      const curTask = data.entry.find(
+        ({ resource }) => taskNameMap[resource.definition] === item.title
+      );
+      if (curTask) {
+        const curColor: TaskData["color"] = greenStatuses.includes(curTask.resource.status)
+          ? green
+          : gray;
+        if (taskNameMap[curTask.resource.definition] === item.title) {
+          return {
+            ...item,
+            color: curColor,
+            id: curTask.resource?.id,
+            params: curTask.resource?.params,
+            status: curTask.resource?.status,
+          };
+        }
       }
-    }
 
-    return item;
-  });
+      return item;
+    });
 
-  return updatedTasks;
-});
+    return updatedTasks;
+  }
+);
 
 export const $skipWait = createStore(false);
 export const skipWait = createEvent<string>();
-export const skipWaitFx = createEffect((taskId: string) =>
-  aidboxClient.task.cancel(taskId)
-);
+export const skipWaitFx = createEffect((taskId: string) => aidboxClient.task.cancel(taskId));
 sample({ clock: skipWait, target: skipWaitFx });
 
 sample({ clock: skipWaitFx.doneData, fn: () => true, target: $skipWait });
