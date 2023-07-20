@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "Aidbox TypeScript SDK",
   description: "A VitePress Site",
+  base: "/aidbox-sdk-js/",
   markdown: {
     lineNumbers: true,
     theme: "material-theme-palenight"
