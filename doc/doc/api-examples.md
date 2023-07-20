@@ -7,7 +7,7 @@ We're simply trying to answer to these basic questions:
 * how to get the access to Aidbox FHIR data from my JavaScript application?   
 * how to manage healthcare FHIR data from my application?
 
-## AUTH
+## Auth
 Healthcare data is sensitive and confidential, containing personal health information of patients,
 authentication helps ensure that only authorized and authenticated users or applications can access this data.
 Aidbox supports multiple approaches including Client Credentials, Resource Owner, SMART on FHIR etc. 
@@ -33,14 +33,14 @@ const aidbox = new Client(
 ### OAuth 2.0 Client Credentials Grant
 
 
-## FHIR CRUD
+## FHIR REST
 The CRUD features in a FHIR server provides a standard way
 for interacting with healthcare data and resources, 
 supports data exchange between different healthcare systems and applications, 
 facilitates data integration and data sharing.
 
-### Create
-This operation allows healthcare data to be added to the FHIR server. For example, when a new patient record, observation, or medication needs to be added to the system, the Create operation is used. It ensures that new resources can be stored and made available for future retrieval and processing.
+### Create Resource
+This operation allows healthcare data to be added to the FHIR server. For example, when a new patient record, observation, or medication needs to be added to the system, the Create operation is used. It ensures that new resources can be stored and made available for future retrieval and processing
 
 ##### Parameters
 
@@ -216,8 +216,8 @@ await aidbox.createResource("Observation", {
 relevant for FHIR version 4.0.1
 :::
 
-### Read
-The Read operation allows users and applications to retrieve healthcare data from the FHIR server. It enables querying and fetching specific resources or sets of resources based on criteria like patient ID, date range, or other relevant attributes. This operation is crucial for accessing patient records, lab results, medications, and more. 
+### Read Resource
+The Read operation allows users and applications to retrieve healthcare data from the FHIR server. It enables querying and fetching specific resources or sets of resources based on criteria like patient ID, date range, or other relevant attributes. This operation is crucial for accessing patient records, lab results, medications, and more 
 
 ##### Parameters
 <ParamsComponent :items="[
@@ -274,8 +274,8 @@ await aidbox.getResource("Observation", "090a5975-ad8e-48d7-a777-cbb2d910d395")
 
 
 
-### Update
-The Update operation allows modifications to existing healthcare data stored in the FHIR server. When changes are made to a patient's information, an observation, or any other resource, the Update operation ensures that the modified data is stored and reflected in subsequent requests for that resource.
+### Update Resource
+The Update operation allows modifications to existing healthcare data stored in the FHIR server. When changes are made to a patient's information, an observation, or any other resource, the Update operation ensures that the modified data is stored and reflected in subsequent requests for that resource
 
 ##### Parameters
 <ParamsComponent :items="[
@@ -351,8 +351,8 @@ await aidbox.patchResource("Observation", "090a5975-ad8e-48d7-a777-cbb2d910d395"
 ```
 :::
 
-### Delete
-The Delete operation enables the removal of healthcare data from the FHIR server when it is no longer needed or becomes obsolete. This is important for maintaining data hygiene and adhering to data retention policies.
+### Delete Resource
+The Delete operation enables the removal of healthcare data from the FHIR server when it is no longer needed or becomes obsolete. This is important for maintaining data hygiene and adhering to data retention policies
 
 ##### Parameters
 <ParamsComponent :items="[
@@ -407,13 +407,88 @@ await aidbox.deleteResource("Observation", "090a5975-ad8e-48d7-a777-cbb2d910d395
 ```
 :::
 
-## LIST
-### Limit
-Allows you to restrict the number of rows returned by a query, fetching all matching records at once can be resource-intensive and slow
+## Search
+
+### Where
+Each [FHIR resource](https://hl7.org/fhir/R4/resourcelist.html) includes the default [search parameters](https://hl7.org/fhir/R4/patient.html#search)
+that you can use for resource searching by certain attribute even in the case when attribute places deep
+in the resource. The example shows usage flow of search parameter `.where('address-city', 'PleasantVille')` that defined on [Patient](https://hl7.org/fhir/R4/patient.html#search) resource
+and getting one patient record that lives in PleasantVille city as a result
 
 ##### Parameters
 <ParamsComponent :items="[
-  { name: 'arg1', required: true, type: 'number', description: `How many resourses will return with single request. (By default, Aidbox return a maximum of 100 rows)` },
+  { name: 'name', required: true, type: 'number', description: `The search parameter name` },
+  { name: 'value', required: true, type: 'depends on search parameter', description: `The value we want to find resource with` }
+]"/>
+
+::: code-group
+
+```typescript jsx [Request]
+await aidbox.getResources("Patient")
+  .where('address-city', 'PleasantVille')
+  .count(1)
+```
+
+```JSON [Response]
+{
+  "resourceType": "Bundle",
+  "total": 134,
+  "entry": [
+    {
+      "resource": {
+        "address": [{
+          "use": "home",
+          "city": "PleasantVille", // [!code hl]
+          "type": "physical",
+          "state": "Vic",
+          "line": ["534 Erewhon St"],
+          "postalCode": "3999",
+          "period": { "start": "1974-12-25" },
+          "district": "Rainbow",
+          "text": "534 Erewhon St PeasantVille, Rainbow, Vic  3999"
+        }],
+        "managingOrganization": {
+          "reference": "Organization/organization-1"
+        },
+        "name": [{
+          "use": "official",
+          "given": ["Peter", "James"],
+          "family": "Chalmers"
+        }],
+        "birthDate": "1974-12-25",
+        "resourceType": "Patient",
+        "id": "patient-1",
+        "gender": "male",
+        "meta": {
+          "lastUpdated": "2023-07-17T13:53:23.791113Z",
+          "versionId": "197",
+          "extension": [{ "url": "ex:createdAt", "valueInstant": "2023-07-17T13:53:23.791113Z" }]
+        }
+      },
+      "search": { "mode": "match" },
+      "fullUrl": "https://aidbox.app/Patient/patient-1",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-1" }]
+    }
+  ],
+  "link": [
+    { "relation": "first", "url": "/fhir/Patient?_count=1&_page=1"   },
+    { "relation": "self",  "url": "/fhir/Patient?_count=1&_page=1"   },
+    { "relation": "next",  "url": "/fhir/Patient?_count=1&_page=2"   },
+    { "relation": "last",  "url": "/fhir/Patient?_count=1&_page=134" }
+  ],
+  "type": "searchset",
+  "meta": { "versionId": "0" }
+}
+```
+:::
+
+### Limit
+Allows you to restrict the number of rows returned by a query, fetching all matching records at once can be resource-intensive and slow.
+Example shows that `.count(1)` returns just a single record of 134
+
+##### Parameters
+<ParamsComponent :items="[
+  { name: 'arg1', required: true, type: 'number', description: `The number of resourses that return with single request. By default, Aidbox returns a maximum of 100 rows.` },
 ]"/>
 
 ::: code-group
@@ -465,10 +540,87 @@ await aidbox.getResources("Patient")
     }
   ],
   "link": [
-    { "relation": "first", "url": "/fhir/Patient?_count=1&page=1" },
-    { "relation": "self",  "url": "/fhir/Patient?_count=1&page=1" },
-    { "relation": "next",  "url": "/fhir/Patient?_count=1&page=2" },
-    { "relation": "last",  "url": "/fhir/Patient?_count=1&page=134" }
+    { "relation": "first", "url": "/fhir/Patient?_count=1&_page=1"   },
+    { "relation": "self",  "url": "/fhir/Patient?_count=1&_page=1"   },
+    { "relation": "next",  "url": "/fhir/Patient?_count=1&_page=2"   },
+    { "relation": "last",  "url": "/fhir/Patient?_count=1&_page=134" }
+  ],
+  "type": "searchset",
+  "meta": { "versionId": "0" }
+}
+```
+:::
+
+### Order
+To arrange the result set of a query in a specified order based on the values of one or more attributes.
+Example shows that `.order('lastUpdate', 'desc')` returns a list of patients sorted from the newest record to the oldest
+
+##### Parameters
+<ParamsComponent :items="[
+  { name: 'arg1', required: true, type: 'string', description: `The attribute name which list should be sorted by` },
+  { name: 'arg2', required: false, type: 'asc | desc', description: `The order in which data should be arranged` },
+]"/>
+
+::: code-group
+```typescript jsx [Request]
+await aidbox.getResources("Patient")
+  .order('lastUpdated', 'desc')
+  .count(3)
+```
+
+```JSON [Response]
+{
+  "resourceType": "Bundle",
+  "total": 134,
+  "entry": [
+    {
+      "resource": {
+        "id": "patient-1",
+        "resourceType": "Patient",
+        "meta": {
+          "lastUpdated": "2023-07-17T13:53:23.791113Z", // [!code hl]
+          "versionId": "197",
+          "extension": [{ "url": "ex:createdAt", "valueInstant": "2023-07-17T13:53:23.791113Z" }]
+        }
+      },
+      "search": { "mode": "match" },
+      "fullUrl": "https://aidbox.app/Patient/patient-1",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-1" }]
+    }, 
+    {
+      "resource": {
+        "id": "patient-4",
+        "resourceType": "Patient",
+        "meta": {
+          "lastUpdated": "2023-07-17T12:30:47.200521Z", // [!code hl]
+          "versionId": "197",
+          "extension": [{ "url": "ex:createdAt", "valueInstant": "2023-07-17T12:30:47.200521Z" }]
+        }
+      },
+      "search": { "mode": "match" },
+      "fullUrl": "https://aidbox.app/Patient/patient-4",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-4" }]
+    },
+    {
+      "resource": {
+        "id": "patient-3",
+        "resourceType": "Patient",
+        "meta": {
+          "lastUpdated": "2023-07-17T12:27:52.608092Z", // [!code hl]
+          "versionId": "178",
+          "extension": [{ "url": "ex:createdAt", "valueInstant": "2023-07-17T12:27:52.608092Z" }]
+        }
+      },
+      "search": { "mode": "match" },
+      "fullUrl": "https://aidbox.app/Patient/patient-3",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-3" }]
+    }
+  ],
+  "link": [
+    { "relation": "first", "url": "/fhir/Patient?_page=1" },
+    { "relation": "self",  "url": "/fhir/Patient?_page=1" },
+    { "relation": "next",  "url": "/fhir/Patient?_page=2" },
+    { "relation": "last",  "url": "/fhir/Patient?_page=2" }
   ],
   "type": "searchset",
   "meta": { "versionId": "0" }
@@ -477,7 +629,8 @@ await aidbox.getResources("Patient")
 :::
 
 ### Elements
-The ability to pick the included attributes helps you to get rid of irrelevant fields and reduce the overall data size
+The ability to pick the included attributes helps you to get rid of irrelevant fields and reduce the overall data size.
+Example shows that `.elements(['name'])` return a list of patients that contains only name attribute and skips the rest
 
 ##### Parameters
 <ParamsComponent :items="[
@@ -542,10 +695,10 @@ await aidbox.getResources("Patient")
     }
   ],
   "link": [
-    { "relation": "first", "url": "/fhir/Patient?_count=3&page=1" },
-    { "relation": "self",  "url": "/fhir/Patient?_count=3&page=1" },
-    { "relation": "next",  "url": "/fhir/Patient?_count=3&page=2" },
-    { "relation": "last",  "url": "/fhir/Patient?_count=3&page=45" }
+    { "relation": "first", "url": "/fhir/Patient?_count=3&_page=1" },
+    { "relation": "self",  "url": "/fhir/Patient?_count=3&_page=1" },
+    { "relation": "next",  "url": "/fhir/Patient?_count=3&_page=2" },
+    { "relation": "last",  "url": "/fhir/Patient?_count=3&_page=45" }
   ],
   "type": "searchset",
   "meta": { "versionId": "0" }
@@ -554,7 +707,8 @@ await aidbox.getResources("Patient")
 :::
 
 ### Pagination
-To split the data into smaller, more manageable pages, making it easier for users to navigate through the information
+To split the data into smaller, more manageable pages, making it easier for users to navigate through the information.
+The example shows that `.page(3)` returns patients list that skips ((page - 1) * count) = 6 records
 
 ##### Parameters
 <ParamsComponent :items="[
@@ -569,79 +723,47 @@ await aidbox.getResources("Patient")
 ```
 
 ```JSON [Response]
-
-```
-:::
-
-### Order
-To arrange the result set of a query in a specified order based on the values of one or more attributes
-
-##### Parameters
-<ParamsComponent :items="[
-  { name: 'arg1', required: true, type: 'string', description: `The attribute name which list should be sorted by` },
-  { name: 'arg2', required: false, type: 'asc | desc', description: `The order in which data should be arranged` },
-]"/>
-
-::: code-group
-```typescript jsx [Request]
-await aidbox.getResources("Patient")
-  .order('lastUpdated', 'desc')
-  .count(3)
-```
-
-```JSON [Response]
 {
   "resourceType": "Bundle",
   "total": 134,
   "entry": [
     {
       "resource": {
-        "id": "patient-1",
+        ...patient attributes...
         "resourceType": "Patient",
-        "meta": {
-          "lastUpdated": "2023-07-17T13:53:23.791113Z", // [!code hl]
-          "versionId": "197",
-          "extension": [{ "url": "ex:createdAt", "valueInstant": "2023-07-17T13:53:23.791113Z" }]
-        }
+        "id": "patient-7"
       },
       "search": { "mode": "match" },
-      "fullUrl": "https://aidbox.app/Patient/patient-1",
-      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-1" }]
-    }, 
-    {
-      "resource": {
-        "id": "patient-4",
-        "resourceType": "Patient",
-        "meta": {
-          "lastUpdated": "2023-07-17T12:30:47.200521Z", // [!code hl]
-          "versionId": "197",
-          "extension": [{ "url": "ex:createdAt", "valueInstant": "2023-07-17T12:30:47.200521Z" }]
-        }
-      },
-      "search": { "mode": "match" },
-      "fullUrl": "https://aidbox.app/Patient/patient-4",
-      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-4" }]
+      "fullUrl": "https://aidbox.app/Patient/patient-7",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-7" }]
     },
     {
       "resource": {
-        "id": "patient-3",
-        "resourceType": "Patient",
-        "meta": {
-          "lastUpdated": "2023-07-17T12:27:52.608092Z", // [!code hl]
-          "versionId": "178",
-          "extension": [{ "url": "ex:createdAt", "valueInstant": "2023-07-17T12:27:52.608092Z" }]
-        }
+        ...patient attributes...
+        "id": "patient-8",
+        "resourceType": "Patient"
       },
       "search": { "mode": "match" },
-      "fullUrl": "https://aidbox.app/Patient/patient-3",
-      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-3" }]
+      "fullUrl": "https://aidbox.app/Patient/patient-8",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-8" }]
+    },
+    {
+      "resource": {
+        ...patient attributes...
+        "id": "patient-9",
+        "resourceType": "Patient"
+      },
+      "search": { "mode": "match" },
+      "fullUrl": "https://aidbox.app/Patient/patient-9",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-9" }]
     }
   ],
   "link": [
-    { "relation": "first", "url": "/fhir/Patient?page=1" },
-    { "relation": "self",  "url": "/fhir/Patient?page=1" },
-    { "relation": "next",  "url": "/fhir/Patient?page=2" },
-    { "relation": "last",  "url": "/fhir/Patient?page=2" }
+    { "relation": "first",     "url": "/fhir/Patient?_count=3&_page=1"  },
+    { "relation": "self",      "url": "/fhir/Patient?_count=3&_page=3"  }, // [!code hl]
+    { "relation": "next",      "url": "/fhir/Patient?_count=3&_page=4"  },
+    { "relation": "previous",  "url": "/fhir/Patient?_count=3&_page=2"  },
+    { "relation": "last",      "url": "/fhir/Patient?_count=3&_page=45" }  // [!code hl]
   ],
   "type": "searchset",
   "meta": { "versionId": "0" }
