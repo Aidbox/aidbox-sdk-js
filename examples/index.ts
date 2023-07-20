@@ -5,6 +5,6 @@ const aidbox = new Client(
   { username: 'client-name', password: 'secret' }
 )
 
-const patient = await aidbox.getResource('Patient', '03cb8799-bfbd-40fa-9ea8-96114cf1fec1')
+const patient = await aidbox.getResources('Patient')
 
 console.log(patient)

@@ -1,67 +1,58 @@
 ---
 outline: [2, 3]
 ---
-# API
-Description Intro
+# Fundamentals
+This section contains essential and the most fundamental terms and features that you will face during learning FHIR servers.
+We're simply trying to answer to these basic questions:   
+* how to get the access to Aidbox FHIR data from my JavaScript application?   
+* how to manage healthcare FHIR data from my application?
 
-Что в этой секции должно быть
+## AUTH
+Healthcare data is sensitive and confidential, containing personal health information of patients,
+authentication helps ensure that only authorized and authenticated users or applications can access this data.
+Aidbox supports multiple approaches including Client Credentials, Resource Owner, SMART on FHIR etc. 
 
-Input params in the general case depends on Resource that we want to create
+### Basic Access
+Is a way of providing credentials (username and password) to access a web service. 
+It is one of the simplest and oldest methods of authentication on the internet. These credentials 
+are sent to the server in an encoded format (base64) as a part of the HTTP request header
 
-[resource type](http://hl7.org/fhir/resourcelist.html),
-[FHIR version](http://hl7.org/fhir/directory.html),
+##### Parameters
+<ParamsComponent :items="[
+  { name: 'aidboxURL', required: true, type: 'string', description: `URL of Aidbox instance, you can simply create one <a target='_blank' href='https://aidbox.app'>here</a>` },
+  { name: 'username and password', required: true, type: 'string', description: `Username and password from client that <a target='_blank' href='https://docs.aidbox.app/modules-1/security-and-access-control/auth/basic-auth#register-client'>you registred</a> in Aidbox` }
+]"/>
 
-## Auth
-Section Description
-### Basic
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vel maximus arcu. Aliquam consequat erat ut leo rutrum, vel vulputate tortor vestibulum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur vestibulum mi sodales ullamcorper vestibulum. Duis a turpis turpis. Praesent augue lectus, iaculis at ante sodales, pellentesque efficitur neque. Sed tempor in ligula in dictum. Cras eu velit in augue finibus dictum.
-### Client Credentials
-Vivamus euismod sit amet massa eu interdum. Praesent egestas tellus id arcu placerat, vel luctus tellus laoreet. Sed lacinia ante quis maximus scelerisque. Integer euismod, lectus vitae malesuada aliquam, massa massa pellentesque risus, sed faucibus purus libero at lectus. Quisque ultrices vestibulum elit non egestas. Curabitur et sem justo. Maecenas condimentum nisi porttitor justo iaculis, sit amet accumsan quam pellentesque.
-### Resource Owner
-Pellentesque nisl est, auctor non porttitor nec, volutpat eu sapien. Suspendisse ac nisl vel quam vehicula vulputate at vel justo. Cras ullamcorper luctus ante, sed accumsan velit imperdiet at. Cras dictum, ante a ultrices rhoncus, dolor velit congue justo, eget pulvinar odio nunc non leo. Integer nisl mi, pretium sit amet arcu nec, sagittis molestie velit. Aenean tempus eros nec felis condimentum congue. In commodo tortor felis, nec ullamcorper mauris commodo in. Duis ultrices lorem eget magna lacinia, sit amet dapibus tellus lobortis. Mauris in vestibulum diam. Integer tristique at magna id ultrices. Proin efficitur nunc imperdiet, iaculis enim id, ultrices mauris. Vivamus erat magna, interdum nec pellentesque sed, dictum id urna. Quisque sit amet varius lorem, eget placerat lectus.
-### Authorization Code
-Curabitur et tortor ac purus efficitur imperdiet ac a orci. Praesent eu vestibulum augue, sed molestie orci. Vivamus vitae turpis consectetur, semper arcu quis, interdum est. Mauris ut mauris enim. Duis suscipit dolor sit amet turpis facilisis, accumsan vehicula nisi mollis. Proin ac pellentesque turpis. Duis faucibus, tortor vel consequat dapibus, orci libero egestas sem, eleifend gravida enim sem non magna. Fusce libero lorem, mollis quis viverra at, pharetra ut dui. Quisque a vehicula urna, ut ornare diam. Sed eleifend tellus sed tellus malesuada, vitae ultrices augue tempus. Vestibulum tincidunt nisi in turpis condimentum lacinia. Etiam lacus lectus, tincidunt ut magna et, tincidunt euismod mi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-### Implicit
-Suspendisse placerat facilisis lacus ut pellentesque. Morbi finibus felis eu molestie venenatis. Fusce bibendum elementum dui, eu ullamcorper velit molestie luctus. Maecenas eros ipsum, tempus eu leo non, eleifend consequat urna. Nunc in metus et orci porta dignissim vel nec neque. Vivamus gravida semper dui, ac pharetra metus. Aliquam mollis pharetra nulla id tempus. Maecenas mauris sem, pellentesque vitae ligula vitae, pulvinar euismod turpis. Sed sollicitudin, magna non porta volutpat, velit risus imperdiet magna, vitae iaculis quam eros et sapien. Cras vitae aliquam sapien, nec elementum magna. Mauris viverra euismod lorem, nec finibus turpis condimentum non. Nulla cursus mi eros, et vehicula sem iaculis ac. Nunc eleifend nec odio id suscipit. Praesent neque orci, mattis a condimentum eget, lobortis ut ipsum.
-### SMART on FHIR
-Suspendisse placerat facilisis lacus ut pellentesque. Morbi finibus felis eu molestie venenatis. Fusce bibendum elementum dui, eu ullamcorper velit molestie luctus. Maecenas eros ipsum, tempus eu leo non, eleifend consequat urna. Nunc in metus et orci porta dignissim vel nec neque. Vivamus gravida semper dui, ac pharetra metus. Aliquam mollis pharetra nulla id tempus. Maecenas mauris sem, pellentesque vitae ligula vitae, pulvinar euismod turpis. Sed sollicitudin, magna non porta volutpat, velit risus imperdiet magna, vitae iaculis quam eros et sapien. Cras vitae aliquam sapien, nec elementum magna. Mauris viverra euismod lorem, nec finibus turpis condimentum non. Nulla cursus mi eros, et vehicula sem iaculis ac. Nunc eleifend nec odio id suscipit. Praesent neque orci, mattis a condimentum eget, lobortis ut ipsum.
+```typescript jsx
+const aidbox = new Client(
+  'https://example.aidbox.app',
+  { username: '<client-name>', password: '<client-secret>' }
+)
+```
 
-## CRUD for Single FHIR Resource
+### OAuth 2.0 Client Credentials Grant
 
-### Create Resource
-Some text here
 
-<div style="display: flex; flex-direction: row;">
-<div style="display: flex; flex-direction: column; width: fit-content; margin-right: 24px">
-  <div style="height: 0px; border-top: 1px solid rgba(82, 82, 89, 0.32)"/>  
-  <div style="padding: 6px 45px 6px 6px">
-    <div><span style="color: white; font-family: Consolas, monospace">type</span> <span style="padding: 2px 6px; margin: 0 6px; border: 1px solid orange; border-radius: 10px; font-size: 10px; color: #ffb224; background-color: #341c00">REQUIRED</span> <span style="font-size: 12px; opacity: .7">string</span></div>
-    <div style="font-size: 12px; opacity: .7">FHIR resource name Patient, Observation etc.</div>
-  </div>
-  <div style="height: 0px; border-top: 1px solid rgba(82, 82, 89, 0.32)"/>
-  <div style="padding: 6px 45px 6px 6px">
-    <div><span style="color: white; font-family: Consolas, monospace">id</span> <span style="padding: 2px 6px; margin: 0 6px; border: 1px solid orange; border-radius: 10px; font-size: 10px; color: #ffb224; background-color: #341c00">REQUIRED</span> <span style="font-size: 12px; opacity: .7">string</span></div>
-    <div style="font-size: 12px; opacity: .7">Unique identifier of a resource</div>
-  </div>
-  <div style="height: 0px; border-top: 1px solid rgba(82, 82, 89, 0.32)"/> 
-</div>
+## FHIR CRUD
+The CRUD features in a FHIR server provides a standard way
+for interacting with healthcare data and resources, 
+supports data exchange between different healthcare systems and applications, 
+facilitates data integration and data sharing.
 
-<div style="display: flex; flex-direction: column; width: fit-content;">
-  <div style="height: 0px; border-top: 1px solid rgba(82, 82, 89, 0.32)"/>  
-  <div style="padding: 6px 45px 6px 6px">
-    <div><span style="color: white; font-family: Consolas, monospace">type</span> <span style="padding: 2px 6px; margin: 0 6px; border: 1px solid orange; border-radius: 10px; font-size: 10px; color: #ffb224; background-color: #341c00">REQUIRED</span> <span style="font-size: 12px; opacity: .7">string</span></div>
-    <div style="font-size: 12px; opacity: .7">FHIR resource name Patient, Observation etc.</div>
-  </div>
-  <div style="height: 0px; border-top: 1px solid rgba(82, 82, 89, 0.32)"/>
-  <div style="padding: 6px 45px 6px 6px">
-    <div><span style="color: white; font-family: Consolas, monospace">id</span> <span style="padding: 2px 6px; margin: 0 6px; border: 1px solid orange; border-radius: 10px; font-size: 10px; color: #ffb224; background-color: #341c00">REQUIRED</span> <span style="font-size: 12px; opacity: .7">string</span></div>
-    <div style="font-size: 12px; opacity: .7">Unique identifier of a resource</div>
-  </div>
-  <div style="height: 0px; border-top: 1px solid rgba(82, 82, 89, 0.32)"/> 
-</div>
-</div>
+### Create
+This operation allows healthcare data to be added to the FHIR server. For example, when a new patient record, observation, or medication needs to be added to the system, the Create operation is used. It ensures that new resources can be stored and made available for future retrieval and processing.
 
-And may be some text here as well
+##### Parameters
+
+<script setup>
+  import ParamsComponent from './ParamsComponent.vue'
+</script>
+
+<ParamsComponent :items="[
+  { name: 'resourceType', required: true, type: 'string', description: `Unique identifier given to each specific type of <a target='_blank' href='https://hl7.org/fhir/R4/resourcelist.html'>resource</a> defined in the FHIR specification` },
+  { name: 'body', required: true, type: 'object', description: `Each FHIR resource type has its own set of attributes, which define the structure and content of <a target='_blank' href='https://hl7.org/fhir/R4/observation.html'>that resource</a>` }
+]"/>
+
 ::: code-group
 ```TYPESCRIPT jsx [Request]
 await aidbox.createResource("Observation", {
@@ -142,10 +133,10 @@ await aidbox.createResource("Observation", {
 In the context of a FHIR (Fast Healthcare Interoperability Resources) server, structure definition validation refers to the process of verifying that the resources conform to the rules and constraints defined in the FHIR structure definitions.
 There are basic FHIR Server validation layers:
 
-1. Type: Ensuring that the data types of elements within the resource are valid and comply with the specified data type constraints
-2. Cardinality: Verifying that the required elements are present and that optional elements are either present or absent based on their cardinality defined in the structure definition
-3. Terminology: Validating that coded elements (such as codes in terminology systems like SNOMED CT or LOINC) are using valid codes as defined by the associated value sets or code systems
-4. Reference: Ensuring that references to other resources are valid and exist in the server
+1. **Type**: Ensuring that the data types of elements within the resource are valid and comply with the specified data type constraints
+2. **Cardinality**: Verifying that the required elements are present and that optional elements are either present or absent based on their cardinality defined in the structure definition
+3. **Terminology**: Validating that coded elements (such as codes in terminology systems like SNOMED CT or LOINC) are using valid codes as defined by the associated value sets or code systems
+4. **Reference**: Ensuring that references to other resources are valid and exist in the server
 
 ::: warning [FHIR 4.0.1] Observation constraints
 Let's consider the validation layers on the [`Observation`](https://hl7.org/fhir/R4/observation.html#resource) resource type.
@@ -225,16 +216,14 @@ await aidbox.createResource("Observation", {
 relevant for FHIR version 4.0.1
 :::
 
+### Read
+The Read operation allows users and applications to retrieve healthcare data from the FHIR server. It enables querying and fetching specific resources or sets of resources based on criteria like patient ID, date range, or other relevant attributes. This operation is crucial for accessing patient records, lab results, medications, and more. 
 
-
-
-### Fetch Resource
-Generic method that allows you to retrieve a [FHIR resource](http://hl7.org/fhir/resourcelist.html)
-by providing its type and id. 
-
-#### Parameters
-resourceType (required) string
-resourceId (required) string
+##### Parameters
+<ParamsComponent :items="[
+  { name: 'resourceName', required: true, type: 'string', description: `Unique identifier given to each specific type of <a target='_blank' href='https://hl7.org/fhir/R4/resourcelist.html'>resource</a> defined in the FHIR specification` },
+  { name: 'id', required: true, type: 'object', description: `Unique identifier of the resource across all resources of the same type in a FHIR server` }
+]"/>
 
 ::: code-group
 ```TYPESCRIPT jsx [Request]
@@ -285,7 +274,16 @@ await aidbox.getResource("Observation", "090a5975-ad8e-48d7-a777-cbb2d910d395")
 
 
 
-### Update Resource
+### Update
+The Update operation allows modifications to existing healthcare data stored in the FHIR server. When changes are made to a patient's information, an observation, or any other resource, the Update operation ensures that the modified data is stored and reflected in subsequent requests for that resource.
+
+##### Parameters
+<ParamsComponent :items="[
+  { name: 'resourceName', required: true, type: 'string', description: `Unique identifier given to each specific type of <a target='_blank' href='https://hl7.org/fhir/R4/resourcelist.html'>resource</a> defined in the FHIR specification` },
+  { name: 'id', required: true, type: 'string', description: `Unique identifier of the resource across all resources of the same type in a FHIR server` },
+  { name: 'body', required: true, type: 'object', description: `Each FHIR resource type has its own set of attributes, which define the structure and content of <a target='_blank' href='https://hl7.org/fhir/R4/observation.html'>that resource</a>` }
+]"/>
+
 
 ::: code-group
 ```TYPESCRIPT jsx [Request]
@@ -353,14 +351,18 @@ await aidbox.patchResource("Observation", "090a5975-ad8e-48d7-a777-cbb2d910d395"
 ```
 :::
 
+### Delete
+The Delete operation enables the removal of healthcare data from the FHIR server when it is no longer needed or becomes obsolete. This is important for maintaining data hygiene and adhering to data retention policies.
 
-
-### Delete Resource
+##### Parameters
+<ParamsComponent :items="[
+  { name: 'resourceName', required: true, type: 'string', description: `Unique identifier given to each specific type of <a target='_blank' href='https://hl7.org/fhir/R4/resourcelist.html'>resource</a> defined in the FHIR specification` },
+  { name: 'id', required: true, type: 'string', description: `Unique identifier of the resource across all resources of the same type in a FHIR server` }
+]"/>
 
 ::: code-group
 ```TYPESCRIPT jsx [Request]
-
-await aidbox.deleteResource("Patient", "patient-1")
+await aidbox.deleteResource("Observation", "090a5975-ad8e-48d7-a777-cbb2d910d395")
 ```
 
 ```JSON [Response]
@@ -405,67 +407,244 @@ await aidbox.deleteResource("Patient", "patient-1")
 ```
 :::
 
-
-## Filter
-### Fetch List
-
-
-- By default, Aidbox return a maximum of 1,000 rows. This setting can be changed in your project's API settings. It's recommended that you keep it low to limit the payload size of accidental or malicious requests. You can use `.count(10)` and `.page(1)` to paginate through your data.
-- select() can be combined with Filters
-  select() can be combined with Modifiers
-  apikey is a reserved keyword if you're using the Supabase Platform and should be avoided as a column name.
-
-
-```typescript jsx
-await aidbox.getResources("Patient")
-```
-
+## LIST
 ### Limit
-```typescript jsx
+Allows you to restrict the number of rows returned by a query, fetching all matching records at once can be resource-intensive and slow
+
+##### Parameters
+<ParamsComponent :items="[
+  { name: 'arg1', required: true, type: 'number', description: `How many resourses will return with single request. (By default, Aidbox return a maximum of 100 rows)` },
+]"/>
+
+::: code-group
+
+```typescript jsx [Request]
 await aidbox.getResources("Patient")
-  .count(10)
+  .count(1)
 ```
+
+```JSON [Response]
+{
+  "resourceType": "Bundle",
+  "total": 134,
+  "entry": [
+    {
+      "resource": {
+        "address": [{
+          "use": "home",
+          "city": "PleasantVille",
+          "type": "physical",
+          "state": "Vic",
+          "line": ["534 Erewhon St"],
+          "postalCode": "3999",
+          "period": { "start": "1974-12-25" },
+          "district": "Rainbow",
+          "text": "534 Erewhon St PeasantVille, Rainbow, Vic  3999"
+        }],
+        "managingOrganization": {
+          "reference": "Organization/organization-1"
+        },
+        "name": [{
+          "use": "official",
+          "given": ["Peter", "James"],
+          "family": "Chalmers"
+        }],
+        "birthDate": "1974-12-25",
+        "resourceType": "Patient",
+        "id": "patient-1",
+        "gender": "male",
+        "meta": {
+          "lastUpdated": "2023-07-17T13:53:23.791113Z",
+          "versionId": "197",
+          "extension": [{ "url": "ex:createdAt", "valueInstant": "2023-07-17T13:53:23.791113Z" }]
+        }
+      },
+      "search": { "mode": "match" },
+      "fullUrl": "https://aidbox.app/Patient/patient-1",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-1" }]
+    }
+  ],
+  "link": [
+    { "relation": "first", "url": "/fhir/Patient?_count=1&page=1" },
+    { "relation": "self",  "url": "/fhir/Patient?_count=1&page=1" },
+    { "relation": "next",  "url": "/fhir/Patient?_count=1&page=2" },
+    { "relation": "last",  "url": "/fhir/Patient?_count=1&page=134" }
+  ],
+  "type": "searchset",
+  "meta": { "versionId": "0" }
+}
+```
+:::
+
+### Elements
+The ability to pick the included attributes helps you to get rid of irrelevant fields and reduce the overall data size
+
+##### Parameters
+<ParamsComponent :items="[
+  { name: 'arg1', required: true, type: 'Array<string>', description: `Resourse's atttibutes that returns in response` },
+]"/>
+
+
+::: code-group
+```typescript jsx [Request]
+await aidbox.getResources("Patient")
+  .elements(['name'])
+  .count(3)
+```
+
+```JSON [Response]
+{
+  "resourceType": "Bundle",
+  "total": 134,
+  "entry": [
+    {
+      "resource": {
+        "name": [{ // [!code hl]
+          "use": "official", // [!code hl]
+          "given": ["Peter", "James"], // [!code hl]
+          "family": "Chalmers" // [!code hl]
+        }], // [!code hl]
+        "resourceType": "Patient",
+        "id": "patient-1"
+      },
+      "search": { "mode": "match" },
+      "fullUrl": "https://aidbox.app/Patient/patient-1",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-1" }]
+    },
+    {
+      "resource": {
+        "name": [{ // [!code hl]
+          "use": "official", // [!code hl]
+          "given": ["Esperanza"], // [!code hl]
+          "family": "Hernandes", // [!code hl]
+          "prefix": ["Mrs."] // [!code hl]
+        }], // [!code hl]
+        "id": "patient-2",
+        "resourceType": "Patient"
+      },
+      "search": { "mode": "match" },
+      "fullUrl": "https://aidbox.app/Patient/patient-2",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-2" }]
+    },
+    {
+      "resource": {
+        "name": [{ // [!code hl]
+          "use": "official", // [!code hl]
+          "given": ["Josefine"], // [!code hl]
+          "family": "Sanford" // [!code hl]
+        }], // [!code hl]
+        "id": "patient-3",
+        "resourceType": "Patient"
+      },
+      "search": { "mode": "match" },
+      "fullUrl": "https://aidbox.app/Patient/patient-3",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-3" }]
+    }
+  ],
+  "link": [
+    { "relation": "first", "url": "/fhir/Patient?_count=3&page=1" },
+    { "relation": "self",  "url": "/fhir/Patient?_count=3&page=1" },
+    { "relation": "next",  "url": "/fhir/Patient?_count=3&page=2" },
+    { "relation": "last",  "url": "/fhir/Patient?_count=3&page=45" }
+  ],
+  "type": "searchset",
+  "meta": { "versionId": "0" }
+}
+```
+:::
 
 ### Pagination
-```typescript jsx
+To split the data into smaller, more manageable pages, making it easier for users to navigate through the information
+
+##### Parameters
+<ParamsComponent :items="[
+  { name: 'arg1', required: true, type: 'number', description: `The page number (offset)` },
+]"/>
+
+::: code-group
+```typescript jsx [Request]
 await aidbox.getResources("Patient")
-  .count(10)
   .page(3)
+  .count(3)
 ```
 
-### Order by
-```typescript jsx
+```JSON [Response]
+
+```
+:::
+
+### Order
+To arrange the result set of a query in a specified order based on the values of one or more attributes
+
+##### Parameters
+<ParamsComponent :items="[
+  { name: 'arg1', required: true, type: 'string', description: `The attribute name which list should be sorted by` },
+  { name: 'arg2', required: false, type: 'asc | desc', description: `The order in which data should be arranged` },
+]"/>
+
+::: code-group
+```typescript jsx [Request]
 await aidbox.getResources("Patient")
-  .order('birthDate', 'acs')
+  .order('lastUpdated', 'desc')
+  .count(3)
 ```
 
-### Selective attributes
-```typescript jsx
-await aidbox.getResources("Patient")
-  .elements(['active', 'name', 'address'])
+```JSON [Response]
+{
+  "resourceType": "Bundle",
+  "total": 134,
+  "entry": [
+    {
+      "resource": {
+        "id": "patient-1",
+        "resourceType": "Patient",
+        "meta": {
+          "lastUpdated": "2023-07-17T13:53:23.791113Z", // [!code hl]
+          "versionId": "197",
+          "extension": [{ "url": "ex:createdAt", "valueInstant": "2023-07-17T13:53:23.791113Z" }]
+        }
+      },
+      "search": { "mode": "match" },
+      "fullUrl": "https://aidbox.app/Patient/patient-1",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-1" }]
+    }, 
+    {
+      "resource": {
+        "id": "patient-4",
+        "resourceType": "Patient",
+        "meta": {
+          "lastUpdated": "2023-07-17T12:30:47.200521Z", // [!code hl]
+          "versionId": "197",
+          "extension": [{ "url": "ex:createdAt", "valueInstant": "2023-07-17T12:30:47.200521Z" }]
+        }
+      },
+      "search": { "mode": "match" },
+      "fullUrl": "https://aidbox.app/Patient/patient-4",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-4" }]
+    },
+    {
+      "resource": {
+        "id": "patient-3",
+        "resourceType": "Patient",
+        "meta": {
+          "lastUpdated": "2023-07-17T12:27:52.608092Z", // [!code hl]
+          "versionId": "178",
+          "extension": [{ "url": "ex:createdAt", "valueInstant": "2023-07-17T12:27:52.608092Z" }]
+        }
+      },
+      "search": { "mode": "match" },
+      "fullUrl": "https://aidbox.app/Patient/patient-3",
+      "link": [{ "relation": "self", "url": "https://aidbox.app/Patient/patient-3" }]
+    }
+  ],
+  "link": [
+    { "relation": "first", "url": "/fhir/Patient?page=1" },
+    { "relation": "self",  "url": "/fhir/Patient?page=1" },
+    { "relation": "next",  "url": "/fhir/Patient?page=2" },
+    { "relation": "last",  "url": "/fhir/Patient?page=2" }
+  ],
+  "type": "searchset",
+  "meta": { "versionId": "0" }
+}
 ```
-
-### Profiles
-```typescript jsx
-await aidbox.getResources("Patient")
-```
-
-### Fulltext search
-```typescript jsx
-await aidbox.getResources("Patient")
-```
-
-## Access Control
-### Provide access to ...
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vel maximus arcu. Aliquam consequat erat ut leo rutrum, vel vulputate tortor vestibulum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur vestibulum mi sodales ullamcorper vestibulum. Duis a turpis turpis. Praesent augue lectus, iaculis at ante sodales, pellentesque efficitur neque. Sed tempor in ligula in dictum. Cras eu velit in augue finibus dictum.
-
-# SEARCH
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras vel maximus arcu. Aliquam consequat erat ut leo rutrum, vel vulputate tortor vestibulum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Curabitur vestibulum mi sodales ullamcorper vestibulum. Duis a turpis turpis. Praesent augue lectus, iaculis at ante sodales, pellentesque efficitur neque. Sed tempor in ligula in dictum. Cras eu velit in augue finibus dictum.
-
-Vivamus euismod sit amet massa eu interdum. Praesent egestas tellus id arcu placerat, vel luctus tellus laoreet. Sed lacinia ante quis maximus scelerisque. Integer euismod, lectus vitae malesuada aliquam, massa massa pellentesque risus, sed faucibus purus libero at lectus. Quisque ultrices vestibulum elit non egestas. Curabitur et sem justo. Maecenas condimentum nisi porttitor justo iaculis, sit amet accumsan quam pellentesque.
-
-Pellentesque nisl est, auctor non porttitor nec, volutpat eu sapien. Suspendisse ac nisl vel quam vehicula vulputate at vel justo. Cras ullamcorper luctus ante, sed accumsan velit imperdiet at. Cras dictum, ante a ultrices rhoncus, dolor velit congue justo, eget pulvinar odio nunc non leo. Integer nisl mi, pretium sit amet arcu nec, sagittis molestie velit. Aenean tempus eros nec felis condimentum congue. In commodo tortor felis, nec ullamcorper mauris commodo in. Duis ultrices lorem eget magna lacinia, sit amet dapibus tellus lobortis. Mauris in vestibulum diam. Integer tristique at magna id ultrices. Proin efficitur nunc imperdiet, iaculis enim id, ultrices mauris. Vivamus erat magna, interdum nec pellentesque sed, dictum id urna. Quisque sit amet varius lorem, eget placerat lectus.
-
-Curabitur et tortor ac purus efficitur imperdiet ac a orci. Praesent eu vestibulum augue, sed molestie orci. Vivamus vitae turpis consectetur, semper arcu quis, interdum est. Mauris ut mauris enim. Duis suscipit dolor sit amet turpis facilisis, accumsan vehicula nisi mollis. Proin ac pellentesque turpis. Duis faucibus, tortor vel consequat dapibus, orci libero egestas sem, eleifend gravida enim sem non magna. Fusce libero lorem, mollis quis viverra at, pharetra ut dui. Quisque a vehicula urna, ut ornare diam. Sed eleifend tellus sed tellus malesuada, vitae ultrices augue tempus. Vestibulum tincidunt nisi in turpis condimentum lacinia. Etiam lacus lectus, tincidunt ut magna et, tincidunt euismod mi. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-
-Suspendisse placerat facilisis lacus ut pellentesque. Morbi finibus felis eu molestie venenatis. Fusce bibendum elementum dui, eu ullamcorper velit molestie luctus. Maecenas eros ipsum, tempus eu leo non, eleifend consequat urna. Nunc in metus et orci porta dignissim vel nec neque. Vivamus gravida semper dui, ac pharetra metus. Aliquam mollis pharetra nulla id tempus. Maecenas mauris sem, pellentesque vitae ligula vitae, pulvinar euismod turpis. Sed sollicitudin, magna non porta volutpat, velit risus imperdiet magna, vitae iaculis quam eros et sapien. Cras vitae aliquam sapien, nec elementum magna. Mauris viverra euismod lorem, nec finibus turpis condimentum non. Nulla cursus mi eros, et vehicula sem iaculis ac. Nunc eleifend nec odio id suscipit. Praesent neque orci, mattis a condimentum eget, lobortis ut ipsum.
+:::

@@ -52,7 +52,7 @@ export default defineConfig({
       {
         text: 'Client API',
         items: [
-          { text: 'Basics', link: '/api-examples' }, // Basics
+          { text: 'Fundamentals', link: '/api-examples' }, // Basics
           {
             text: 'Features', // Features Components Modules
             link: '/modules',
