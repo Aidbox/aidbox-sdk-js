@@ -13,16 +13,16 @@ export default defineConfig({
   themeConfig: {
     logo: 'logo.svg',
     //aside: 'left',
-    socialLinks: [{ icon: 'github', link: 'https://github.com/octoshikari/aidbox-tool' }],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/Aidbox/aidbox-sdk-js' }],
 
     editLink: {
-      pattern: 'https://github.com/octoshikari/aidbox-tool/edit/main/docs/:path',
+      pattern: 'https://github.com/Aidbox/aidbox-sdk-js/edit/main/docs/:path',
       text: 'Edit this page on GitHub',
     },
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: `Copyright © ${new Date().getFullYear()} Alex Streltsov`,
+      copyright: `Copyright © ${new Date().getFullYear()} HealthSamurai`,
     },
 
     nav: [
