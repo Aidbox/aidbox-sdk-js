@@ -1,6 +1,6 @@
 
 
-## Install as a package
+## Basic: Install as a package
 You can install @aidbox/sdk-r4 via the terminal
 
 ::: code-group
@@ -17,7 +17,7 @@ yarn add -D @aidbox/sdk-r4
 ```
 :::
 
-## Advanced: Generation from the Configuration Project
+## Advanced: Generate package from the Configuration Project
 
 ### Step 1: Install Aidbox CLI
 To generate SDK by your zen-project config you have to install zen-cli. This command will install the latest version of the zen-cli on your system. The -g flag tells npm to install the package globally, making it available to all projects on your system.
