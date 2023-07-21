@@ -19,7 +19,7 @@ cd aidbox-quickstart && npm install @aidbox/r4-sdk
 
 ## Step 3: Create the Aidbox Client
 Create a `/src/lib` directory in your Vue app, create a file called `aidbox.js` and add the following code to initialize 
-the Aidbox client with your instance **HOST_URL**, **CLIENT_ID** and **CLIENT_SECRET** from [auth client]('https://docs.aidbox.app/modules-1/security-and-access-control/auth/basic-auth#register-client').
+the Aidbox client with your instance **HOST_URL**, **CLIENT_ID** and **CLIENT_SECRET** from [auth client](https://docs.aidbox.app/modules-1/security-and-access-control/auth/basic-auth#register-client).
 
 ```javascript
 import { Client } from "@aidbox/sdk-r4";
