@@ -3,23 +3,23 @@
 layout: home
 
 hero:
-  name: "My Awesome Project"
-  text: "A VitePress Site"
-  tagline: My great project tagline
+  name: "JavaScript Client"
+  text: "for Aidbox FHIR Server"
+  tagline: a set of FHIR server - specific development tools
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: Installation Guide
+      link: /installation
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: Framework Quickstart
+      link: /framework-quickstart
 
 features:
-  - title: Feature A
+  - title: FHIR REST + Search
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
+  - title: Access Control
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
+  - title: Typescript Support
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
 

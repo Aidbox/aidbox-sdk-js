@@ -97,6 +97,10 @@ span {
     font-style: normal!important;
 }
 
+.VPHomeHero .text {
+    max-width: 676px!important;
+}
+
 /*p {*/
 /*    text-align: justify;*/
 /*}*/

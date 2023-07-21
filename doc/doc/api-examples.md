@@ -26,7 +26,7 @@ are sent to the server in an encoded format (base64) as a part of the HTTP reque
 ```typescript jsx
 const aidbox = new Client(
   'https://example.aidbox.app',
-  { username: '<client-name>', password: '<client-secret>' }
+  { username: '<client-id>', password: '<client-secret>' }
 )
 ```
 

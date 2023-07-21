@@ -1,18 +1,17 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: "Aidbox TypeScript SDK",
+  title: "Javascript Client",
   description: "A VitePress Site",
   base: "/aidbox-sdk-js/",
   markdown: {
     lineNumbers: true,
     theme: "material-theme-palenight"
-
   },
   useWebFonts: true,
   themeConfig: {
     logo: 'logo.svg',
-    //aside: 'left',
+
     socialLinks: [{ icon: 'github', link: 'https://github.com/Aidbox/aidbox-sdk-js' }],
 
     editLink: {
@@ -37,32 +36,28 @@ export default defineConfig({
           { text: 'Installation', link: '/installation' },
           {
             text: 'Framework Quickstart',
-            link: '/framework-quickstart',
-            // items: [
-            //   { text: 'REACT', link: '/api-examples-1' },
-            //   { text: 'ANGULAR', link: '/api-examples-1' },
-            //   { text: 'NEXT', link: '/api-examples-1' },
-            //   { text: 'VUE', link: '/api-examples-1' },
-            //   { text: 'SVELTE', link: '/api-examples-1' },
-            //   { text: 'FASTIFY', link: '/api-examples-1' },
-            // ]
+            collapsed: true,
+            items: [
+              { text: 'React', link: '/react-quickstart' },
+              { text: 'Vue', link: '/vue-quickstart' },
+              { text: 'Svelte', link: '/svelte-quickstart' },
+            ]
           },
-          { text: 'Tutorials', link: '/tutorials' },
+          { text: 'Typescript Support', link: '/api-examples-3' },
         ]
       },
       {
         text: 'API',
         items: [
-          { text: 'Fundamentals', link: '/api-examples' }, // Basics
+          { text: 'Fundamentals', link: '/api-examples' },
           {
             text: 'Features', // Features Components Modules
             link: '/modules',
-
             items: [
               { text: 'Terminology Service', link: '/modules#search' },
-              { text: 'C-CDA Healthcare Form', link: '/modules.html#auth' },
-              { text: 'Workflow', link: '/modules#search' },
-              { text: 'FHIR R5 Subscriptions', link: '/modules.html#methods' },
+              { text: 'C-CDA Forms', link: '/modules.html#auth' },
+              { text: 'Workflow Engine', link: '/modules#search' },
+              { text: 'Subscriptions', link: '/modules.html#methods' },
             ]
           },
           {
@@ -74,16 +69,13 @@ export default defineConfig({
               { text: 'HL7v2 => FHIR', link: '/modules#access-control' },
               { text: 'X12 => FHIR', link: '/modules#access-control' },
             ]
-          }
+          },
+
         ]
       },
       {
         text: 'Show Cases',
         items: [
-          { text: 'Search Params', link: '/markdown-examples-3' },
-          { text: 'FHIR Server as a Part <br/>of Your Cluster', link: '/api-examples-7' },
-          { text: '', link: '/api-examples-7' },
-          { text: 'Subscriptions', link: '/api-examples-7' }
         ]
       },
     ],
