@@ -1,6 +1,8 @@
 export interface SearchParams {
   'placeholder-1': {};
   'placeholder-2': {};
+  "Bundle": {},
+  "Patient": {}
 }
 
 export interface SubsSubscription {
@@ -12,6 +14,8 @@ export interface SubsSubscription {
 export interface ResourceTypeMap {
   'placeholder-1': {};
   'placeholder-2': {};
+  "Bundle": {},
+  "Patient": {}
 }
 
 export type TaskDefinitionsMap = {
