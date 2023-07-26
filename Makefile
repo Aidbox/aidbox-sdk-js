@@ -21,3 +21,9 @@ outdated:
 
 lint:
 	clj -Sdeps '{:deps {clj-kondo/clj-kondo {:mvn/version "RELEASE"}}}' -m clj-kondo.main --lint src --fail-level error --parallel
+
+native:
+	clojure -M:native-image
+
+nvd:
+	clojure -M:clj-nvd
