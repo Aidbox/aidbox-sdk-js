@@ -223,7 +223,7 @@ class Task {
 
 
   async pendingDecisions() {
-    return this.client.get('/AidboxWorkflow', {
+    return this.client.get('/AidboxTask', {
       searchParams: new URLSearchParams({ "_count": "0", ".status": "ready", "definition": "awf.workflow/decision-task" })
     }).json<{ total: number }>().then(r => r.total)
   }
