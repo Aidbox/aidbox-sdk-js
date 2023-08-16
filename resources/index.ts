@@ -215,9 +215,22 @@ class Task {
   }
 
 
-  async pendingActivities() {
+  /**
+   * Return number ready for execution tasks except Decisions task
+   * 
+   * @param {string} [definition] - Task definition name
+   * @returns {Promise<number>} 
+   * 
+   */
+
+  async pendingTasks(definition?: keyof TaskDefinitionsMap): Promise<number> {
+    const params = new URLSearchParams({ "_count": "0", ".status": "ready", "definition-not": "awf.workflow/decision-task" })
+    if (definition) {
+      params.append("definition", definition)
+      params.delete("definition-not")
+    }
     return this.client.get('/AidboxTask', {
-      searchParams: new URLSearchParams({ "_count": "0", ".status": "ready", "definition-not": "awf.workflow/decision-task" })
+      searchParams: params
     }).json<{ total: number }>().then(r => r.total)
   }
 
