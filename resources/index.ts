@@ -1,4 +1,4 @@
-import http, { HttpClient, HttpClientInstance } from './http-client'
+import http, { HttpClientInstance } from './http-client'
 import {
   TaskDefinitionsMap,
   WorkflowDefinitionsMap,
@@ -214,6 +214,37 @@ class Task {
     }).json<TasksBatch>()
   }
 
+
+  async pendingActivities() {
+    return this.client.get('/AidboxTask', {
+      searchParams: new URLSearchParams({ "_count": "0", ".status": "ready", "definition-not": "awf.workflow/decision-task" })
+    }).json<{ total: number }>().then(r => r.total)
+  }
+
+
+  async pendingDecisions() {
+    return this.client.get('/AidboxWorkflow', {
+      searchParams: new URLSearchParams({ "_count": "0", ".status": "ready", "definition": "awf.workflow/decision-task" })
+    }).json<{ total: number }>().then(r => r.total)
+  }
+
+  async history(id: string) {
+    return this.client.post('/rpc', {
+      json: {
+        method: 'awf.task/status',
+        params: { id, 'include-log?': true }
+      }
+    }).json<{ result: { resource: TaskMeta<TaskInput>, log: Record<string, any>[] } }>().then(r => r.result)
+  }
+
+
+  async inProgress() {
+    return this.client.get('/AidboxTask', {
+      searchParams: new URLSearchParams({ "_count": "0", ".status": "in-progress" })
+    }).json<{ total: number }>().then(r => r.total)
+  }
+
+
   createHandler<T extends TaskInput | DecisionInput>(handler: (task: TaskMeta<T>) => void) {
     return async (task: TaskMeta<T>) => {
       await this.start(task.id, task.execId)
@@ -337,6 +368,31 @@ class Workflow {
       }
     }).json<TasksBatch>()
   }
+
+  async terminate(id: string) {
+    return this.client.post('/rpc', {
+      json: {
+        method: 'awf.workflow/cancel',
+        params: { id }
+      }
+    }).json<WorkflowTerminateRpc>().then(r => r.result.resource)
+  }
+
+  async inProgress() {
+    return this.client.get('/AidboxWorkflow', {
+      searchParams: new URLSearchParams({ "_count": "0", ".status": "in-progress" })
+    }).json<{ total: number }>().then(r => r.total)
+  }
+
+  async history(id: string) {
+    return this.client.post('/rpc', {
+      json: {
+        method: 'awf.workflow/status',
+        params: { id, 'include-activities?': true }
+      }
+    }).json<WorkflowHistoryRpc>().then(r => r.result)
+  }
+
 }
 
 
@@ -609,6 +665,34 @@ interface TasksBatch {
 
 interface TaskRpcResult {
   result: { resource: TaskMeta<TaskInput> }
+}
+
+interface AidboxWorkflow {
+  requester: { id: string, resourceType: string }
+  retryCount: number
+  execId: string
+  status: "created" | "in-progress" | "done"
+  outcome?: "succeeded" | "failed" | "canceled"
+  outcomeReason?: {
+    type: "awf.task/failed-due-to-in-progress-timeout" | "awf.workflow/failed-by-executor" | "awf.executor/unknown-error",
+    message: string,
+    data?: any
+  }
+  result: any
+  error: any
+}
+
+interface WorkflowTerminateRpc {
+  result: {
+    resource: AidboxWorkflow
+  }
+}
+
+interface WorkflowHistoryRpc {
+  result: {
+    resource: AidboxWorkflow,
+    activities: TaskMeta<TaskInput>
+  }
 }
 
 interface WorkflowActions<K extends keyof WorkflowDefinitionsMap> {

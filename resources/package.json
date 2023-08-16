@@ -31,6 +31,8 @@
         "tsconfig.json",
         "index.js",
         "index.d.ts",
+        "http-client.js",
+        "http-client.d.ts",
         "types"
     ]
 }
