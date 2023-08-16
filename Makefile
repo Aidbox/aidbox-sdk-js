@@ -25,5 +25,10 @@ lint:
 native:
 	clojure -M:native-image
 
+CP=$(shell clojure -Spath -A:nrepl:profile:build-pm)
 nvd:
-	clojure -M:clj-nvd
+	clojure -Ttools install nvd-clojure/nvd-clojure '{:mvn/version "RELEASE"}' :as nvd
+	clojure -J-Dclojure.main.report=stderr -Tnvd nvd.task/check :classpath  \"$(CP)\"
+
+cve:
+	clojure -M:cve
