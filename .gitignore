@@ -17,3 +17,8 @@ clear-data.ts
 .cpcache/
 .lsp/
 cache
+*.iml
+
+# Added by cargo
+
+/target

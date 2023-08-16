@@ -4,10 +4,11 @@
  :version "0.0.1-SNAPSHOT"
 
  :deps {org.clojure/clojure  {:mvn/version "1.11.1"}
-        borkdude/edamame      {:mvn/version "1.3.22"}
+        borkdude/edamame      {:mvn/version "1.3.23"}
         com.taoensso/nippy   {:mvn/version "3.2.0"}
         zen-lang/zen         {:git/url "https://github.com/zen-lang/zen"
-                              :sha     "ce14aa4bcb81a86ae5bb813eff945a48e9a87b28"}}
+                              :sha     "b42170c22a1902976cc60efc92487af351c253aa"
+                              :exclusions [org.slf4j/slf4j-log4j12]}}
 
  :aliases
  {:nrepl
@@ -15,7 +16,7 @@
    :extra-deps {org.clojure/tools.nrepl       {:mvn/version "0.2.13"}
                 org.clojure/core.rrb-vector   {:mvn/version "0.1.2"}
                 cider/cider-nrepl             {:mvn/version "0.31.0"}
-                refactor-nrepl/refactor-nrepl {:mvn/version "3.6.0"}}
+                refactor-nrepl/refactor-nrepl {:mvn/version "3.9.0"}}
 
    :jvm-opts    ^:replace ["-XX:-OmitStackTraceInFastThrow"
                            "-XX:+UnlockDiagnosticVMOptions"
@@ -44,4 +45,29 @@
    :ns-default build
    :jvm-opts ^:replace ["-XX:-OmitStackTraceInFastThrow"]
    :extra-deps {io.github.clojure/tools.build {:git/url "https://github.com/clojure/tools.build"
-                                               :sha "fcb8ecb555d5db341c7fb8310a00c8c86c78aae3"}}}}}
+                                               :sha "fcb8ecb555d5db341c7fb8310a00c8c86c78aae3"}}}
+
+  :cve {:extra-deps {io.github.clj-holmes/clj-watson {:git/tag "v4.1.3" :git/sha "56dfd3e0e38a74b23736367c0c262efec9f9e9df"}}
+        :main-opts ["-m" "clj-watson.cli" "scan" "-p" "deps.edn"]}
+
+  :native-image
+  {:extra-paths ["native-build"]
+   :main-opts  ["-m" "clj.native-image"
+                "generator.cli"
+                "--no-fallback"
+                "--enable-https"
+                "--enable-http"
+                "--enable-url-protocols=http,https"
+                "--report-unsupported-elements-at-runtime"
+                "--initialize-at-build-time=org.eclipse.jgit.merge.StrategyOneSided"
+                "--features=clj_easy.graal_build_time.InitClojureClasses"
+                "-H:IncludeResources=.*edn,.*ts,.*json"
+                "-H:ReflectionConfigurationFiles=./META-INF/native-image/reflect-config.json"
+                "-H:Name=zen-cli"
+                "-H:+ReportExceptionStackTraces"]
+   :jvm-opts   ["-Dclojure.compiler.direct-linking=true"
+                "-Dclojure.spec.skip-macros=true"
+                #_"-agentlib:native-image-agent=config-dir=META-INF/native-image"]
+   :extra-deps {org.clojure/tools.deps.alpha {:mvn/version "0.15.1254"}
+                org.clojure/tools.namespace {:mvn/version "1.4.4"}
+                com.github.clj-easy/graal-build-time {:mvn/version "1.0.5"}}}}}

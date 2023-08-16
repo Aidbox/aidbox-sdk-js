@@ -1,0 +1,15 @@
+{:tasks
+ {:requires ([babashka.fs :as fs]
+             [clojure.string :as str])
+
+  compile-clj (do
+                (fs/create-dirs "classes")
+                (clojure "-M -e" "(compile 'generator.cli)"))
+
+  classpath (str (str/trim (with-out-str (clojure "-Spath"))) ":classes")
+
+  gen-reflect-config
+  {:depends [compile-clj classpath]
+   :task
+   (binding [*command-line-args* ["java" "-cp" classpath "generator.cli"]]
+     (load-file "script/gen-reflect-config.clj"))}}}

@@ -265,6 +265,7 @@
     (io/make-parents (io/file path "package" "types" "index.ts"))
     (when (gen-types ztx path (io/file "package" "types"))
       (copy-from-resources (io/resource "index.ts") (io/file path  "package" "index.ts"))
+      (copy-from-resources (io/resource "http-client.ts") (io/file path  "package" "http-client.ts"))
       (copy-from-resources (io/resource "tsconfig.json") (io/file path  "package" "tsconfig.json"))
       (copy-from-resources (io/resource "package.json") (io/file path  "package" "package.json"))
       (println "[sdk] Run prettier for source files")
