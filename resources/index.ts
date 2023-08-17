@@ -18,8 +18,6 @@ export function encode(str: string): string {
 
 
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-export const addLeadingSlash = (str: string) => str.startsWith('/') ? str : "/" + str;
-
 export const buildResourceUrl = (resource: string, id?: string) => ["fhir", resource, id && id].filter(Boolean).join("/")
 
 type PartialResourceBody<T extends keyof ResourceTypeMap> = Partial<Omit<ResourceTypeMap[T], 'id' | 'meta'>>;
@@ -142,7 +140,7 @@ class Task {
   }
 
   async cancel(id: string) {
-    const response = await this.client.post('/rpc', {
+    const response = await this.client.post('rpc', {
       json: {
         method: 'awf.task/cancel',
         params: { id }
@@ -154,7 +152,7 @@ class Task {
 
   async start(id: string, executionId: string) {
     try {
-      return this.client.post('/rpc', {
+      return this.client.post('rpc', {
         json: {
           method: 'awf.task/start',
           params: { id, execId: executionId }
@@ -170,7 +168,7 @@ class Task {
 
 
   async complete(id: string, executionId: string, payload: unknown) {
-    return this.client.post('/rpc', {
+    return this.client.post('rpc', {
       json: {
         method: 'awf.task/success',
         params: { id, execId: executionId, result: payload }
@@ -180,7 +178,7 @@ class Task {
 
   async fail(id: string, executionId: string, payload: unknown) {
     try {
-      return this.client.post('/rpc', {
+      return this.client.post('rpc', {
         json: {
           method: 'awf.task/fail',
           params: { id, execId: executionId, result: payload }
@@ -198,7 +196,7 @@ class Task {
     definition: K,
     params: TaskDefinitionsMap[K]['params']
   ): Promise<TasksBatch> {
-    return this.client.post('/rpc', {
+    return this.client.post('rpc', {
       json: {
         method: 'awf.task/create-and-execute',
         params: { definition, params }
@@ -221,20 +219,20 @@ class Task {
       params.append("definition", definition)
       params.delete("definition-not")
     }
-    return this.client.get('/AidboxTask', {
+    return this.client.get('AidboxTask', {
       searchParams: params
     }).json<{ total: number }>().then(r => r.total)
   }
 
 
   async pendingDecisions() {
-    return this.client.get('/AidboxTask', {
+    return this.client.get('AidboxTask', {
       searchParams: new URLSearchParams({ "_count": "0", ".status": "ready", "definition": "awf.workflow/decision-task" })
     }).json<{ total: number }>().then(r => r.total)
   }
 
   async history(id: string) {
-    return this.client.post('/rpc', {
+    return this.client.post('rpc', {
       json: {
         method: 'awf.task/status',
         params: { id, 'include-log?': true }
@@ -244,7 +242,7 @@ class Task {
 
 
   async inProgress() {
-    return this.client.get('/AidboxTask', {
+    return this.client.get('AidboxTask', {
       searchParams: new URLSearchParams({ "_count": "0", ".status": "in-progress" })
     }).json<{ total: number }>().then(r => r.total)
   }
@@ -271,7 +269,7 @@ class Task {
     }
   }
   async poll(params: { workflowDefinitions?: [string]; taskDefinitions?: [string] }, options: WorkerOptions) {
-    const tasksBatch = await this.client.post('/rpc', {
+    const tasksBatch = await this.client.post('rpc', {
       json: {
         method: 'awf.task/poll',
         params: { ...params, maxBatchSize: options.batchSize }
@@ -366,7 +364,7 @@ class Workflow {
     definition: K,
     params: WorkflowDefinitionsMap[K]['params']
   ): Promise<TasksBatch> {
-    return this.client.post('/rpc', {
+    return this.client.post('rpc', {
       json: {
         method: 'awf.workflow/create-and-execute',
         params: { definition, params }
@@ -375,7 +373,7 @@ class Workflow {
   }
 
   async terminate(id: string) {
-    return this.client.post('/rpc', {
+    return this.client.post('rpc', {
       json: {
         method: 'awf.workflow/cancel',
         params: { id }
@@ -384,13 +382,13 @@ class Workflow {
   }
 
   async inProgress() {
-    return this.client.get('/AidboxWorkflow', {
+    return this.client.get('AidboxWorkflow', {
       searchParams: new URLSearchParams({ "_count": "0", ".status": "in-progress" })
     }).json<{ total: number }>().then(r => r.total)
   }
 
   async history(id: string) {
-    return this.client.post('/rpc', {
+    return this.client.post('rpc', {
       json: {
         method: 'awf.workflow/status',
         params: { id, 'include-activities?': true }
@@ -474,7 +472,7 @@ export class Client {
   }
 
   async rpc<T = any>(method: string, params: any): Promise<T> {
-    const response = await this.client.post("/rpc", {
+    const response = await this.client.post("rpc", {
       method: "POST",
       json: { method, params }
     })
@@ -483,7 +481,7 @@ export class Client {
   }
   aidboxQuery = {
     create: async (name: string, json: CreateQueryBody) => {
-      const response = await this.client.put(`/AidboxQuery/${name}`, { json })
+      const response = await this.client.put(`AidboxQuery/${name}`, { json })
       return response.json()
     },
     execute: async <T>(name: string,
@@ -518,7 +516,7 @@ export class Client {
   async rawSQL(sql: string, params?: unknown[]) {
     const body = [sql, ...(params?.map((value: any) => value?.toString()) ?? [])]
 
-    const response = await this.client.post('/$sql', { json: body })
+    const response = await this.client.post('$sql', { json: body })
     return response.json()
   }
 
