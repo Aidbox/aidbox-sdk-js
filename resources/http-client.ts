@@ -261,7 +261,6 @@ export async function timeout(
 
             reject(new TimeoutError(request));
         }, options.timeout);
-
         void options
             .fetch(request)
             .then(resolve)
@@ -355,15 +354,6 @@ export type HttpClientInstance = {
     @param url - `Request` object, `URL` object, or URL string.
     @returns A promise with `Body` method added.
 
-    @example
-    ```
-    import ky from 'ky';
-
-    const json = await ky('https://example.com', {json: {foo: true}}).json();
-
-    console.log(json);
-    //=> `{data: '🦄'}`
-    ```
     */
     (url: Input, options?: Options): ResponsePromise;
 
@@ -416,51 +406,28 @@ export type HttpClientInstance = {
     head: (url: Input, options?: Options) => ResponsePromise;
 
     /**
-    Create a new Ky instance with complete new defaults.
+    Create a new  instance with complete new defaults.
 
-    @returns A new Ky instance.
+    @returns A new client instance.
     */
     create: (defaultOptions: Options) => HttpClientInstance;
 
     /**
-    Create a new Ky instance with some defaults overridden with your own.
+    Create a new client instance with some defaults overridden with your own.
 
-    In contrast to `ky.create()`, `ky.extend()` inherits defaults from its parent.
+    In contrast to `client.create()`, `client.extend()` inherits defaults from its parent.
 
-    @returns A new Ky instance.
+    @returns A new client instance.
     */
     extend: (defaultOptions: Options) => HttpClientInstance;
 
     /**
     A `Symbol` that can be returned by a `beforeRetry` hook to stop the retry. This will also short circuit the remaining `beforeRetry` hooks.
 
-    Note: Returning this symbol makes Ky abort and return with an `undefined` response. Be sure to check for a response before accessing any properties on it or use [optional chaining](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining). It is also incompatible with body methods, such as `.json()` or `.text()`, because there is no response to parse. In general, we recommend throwing an error instead of returning this symbol, as that will cause Ky to abort and then throw, which avoids these limitations.
+    Note: Returning this symbol makes client abort and return with an `undefined` response. Be sure to check for a response before accessing any properties on it or use [optional chaining](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining). It is also incompatible with body methods, such as `.json()` or `.text()`, because there is no response to parse. In general, we recommend throwing an error instead of returning this symbol, as that will cause client to abort and then throw, which avoids these limitations.
 
-    A valid use-case for `ky.stop` is to prevent retries when making requests for side effects, where the returned data is not important. For example, logging client activity to the server.
+    A valid use-case for `client.stop` is to prevent retries when making requests for side effects, where the returned data is not important. For example, logging client activity to the server.
 
-    @example
-    ```
-    import ky from 'ky';
-
-    const options = {
-        hooks: {
-            beforeRetry: [
-                async ({request, options, error, retryCount}) => {
-                    const shouldStopRetry = await ky('https://example.com/api');
-                    if (shouldStopRetry) {
-                        return ky.stop;
-                    }
-                }
-            ]
-        }
-    };
-
-    // Note that response will be `undefined` in case `ky.stop` is returned.
-    const response = await ky.post('https://example.com', options);
-
-    // Using `.text()` or other body methods is not supported.
-    const text = await ky('https://example.com', options).text();
-    ```
     */
     readonly stop: typeof stop;
 };
@@ -488,7 +455,7 @@ export type BeforeErrorHook = (error: HTTPError) => HTTPError | Promise<HTTPErro
 
 export type Hooks = {
     /**
-    This hook enables you to modify the request right before it is sent. Ky will make no further changes to the request after this. The hook function receives normalized input and options as arguments. You could, forf example, modiy `options.headers` here.
+    This hook enables you to modify the request right before it is sent. client will make no further changes to the request after this. The hook function receives normalized input and options as arguments. You could, forf example, modiy `options.headers` here.
 
     A [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response) can be returned from this hook to completely avoid making a HTTP request. This can be used to mock a request, check an internal cache, etc. An **important** consideration when returning a `Response` from this hook is that all the following hooks will be skipped, so **ensure you only return a `Response` from the last hook**.
 
@@ -497,68 +464,22 @@ export type Hooks = {
     beforeRequest?: BeforeRequestHook[];
 
     /**
-    This hook enables you to modify the request right before retry. Ky will make no further changes to the request after this. The hook function receives an object with the normalized request and options, an error instance, and the retry count. You could, for example, modify `request.headers` here.
+    This hook enables you to modify the request right before retry. client will make no further changes to the request after this. The hook function receives an object with the normalized request and options, an error instance, and the retry count. You could, for example, modify `request.headers` here.
 
     If the request received a response, the error will be of type `HTTPError` and the `Response` object will be available at `error.response`. Be aware that some types of errors, such as network errors, inherently mean that a response was not received. In that case, the error will not be an instance of `HTTPError`.
 
-    You can prevent Ky from retrying the request by throwing an error. Ky will not handle it in any way and the error will be propagated to the request initiator. The rest of the `beforeRetry` hooks will not be called in this case. Alternatively, you can return the [`ky.stop`](#ky.stop) symbol to do the same thing but without propagating an error (this has some limitations, see `ky.stop` docs for details).
+    You can prevent client from retrying the request by throwing an error. client will not handle it in any way and the error will be propagated to the request initiator. The rest of the `beforeRetry` hooks will not be called in this case. Alternatively, you can return the [`client.stop`](#client.stop) symbol to do the same thing but without propagating an error (this has some limitations, see `client.stop` docs for details).
 
-    @example
-    ```
-    import ky from 'ky';
-
-    const response = await ky('https://example.com', {
-        hooks: {
-            beforeRetry: [
-                async ({request, options, error, retryCount}) => {
-                    const token = await ky('https://example.com/refresh-token');
-                    options.headers.set('Authorization', `token ${token}`);
-                }
-            ]
-        }
-    });
-    ```
 
     @default []
     */
     beforeRetry?: BeforeRetryHook[];
 
     /**
-    This hook enables you to read and optionally modify the response. The hook function receives normalized input, options, and a clone of the response as arguments. The return value of the hook function will be used by Ky as the response object if it's an instance of [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response).
+    This hook enables you to read and optionally modify the response. The hook function receives normalized input, options, and a clone of the response as arguments. The return value of the hook function will be used by client as the response object if it's an instance of [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response).
 
     @default []
 
-    @example
-    ```
-    import ky from 'ky';
-
-    const response = await ky('https://example.com', {
-        hooks: {
-            afterResponse: [
-                (_input, _options, response) => {
-                    // You could do something with the response, for example, logging.
-                    log(response);
-
-                    // Or return a `Response` instance to overwrite the response.
-                    return new Response('A different response', {status: 200});
-                },
-
-                // Or retry with a fresh token on a 403 error
-                async (input, options, response) => {
-                    if (response.status === 403) {
-                        // Get a fresh token
-                        const token = await ky('https://example.com/token').text();
-
-                        // Retry with the token
-                        options.headers.set('Authorization', `token ${token}`);
-
-                        return ky(input, options);
-                    }
-                }
-            ]
-        }
-    });
-    ```
     */
     afterResponse?: AfterResponseHook[];
 
@@ -569,9 +490,9 @@ export type Hooks = {
 
     @example
     ```
-    import ky from 'ky';
+    import client from 'client';
 
-    await ky('https://example.com', {
+    await client('https://example.com', {
         hooks: {
             beforeError: [
                 error => {
@@ -631,32 +552,6 @@ export type Options = {
 
     You can remove a header with `.extend()` by passing the header with an `undefined` value.
 
-    @example
-    ```
-    import ky from 'ky';
-
-    const url = 'https://sindresorhus.com';
-
-    const original = ky.create({
-        headers: {
-            rainbow: 'rainbow',
-            unicorn: 'unicorn'
-        }
-    });
-
-    const extended = original.extend({
-        headers: {
-            rainbow: undefined
-        }
-    });
-
-    const response = await extended(url).json();
-
-    console.log('rainbow' in response);
-    //=> false
-
-    console.log('unicorn' in response);
-    //=> true
     ```
     */
     headers?: HttpClientHeadersInit;
@@ -677,14 +572,6 @@ export type Options = {
 
     @default JSON.parse()
 
-    @example
-    ```
-    import ky from 'ky';
-    import bourne from '@hapijs/bourne';
-
-    const json = await ky('https://example.com', {
-        parseJson: text => bourne(text)
-    }).json();
     ```
     */
     parseJson?: (text: string) => unknown;
@@ -699,24 +586,12 @@ export type Options = {
     /**
     A prefix to prepend to the `input` URL when making the request. It can be any valid URL, either relative or absolute. A trailing slash `/` is optional and will be added automatically, if needed, when it is joined with `input`. Only takes effect when `input` is a string. The `input` argument cannot start with a slash `/` when using this option.
 
-    Useful when used with [`ky.extend()`](#kyextenddefaultoptions) to create niche-specific Ky-instances.
+    Useful when used with [`client.extend()`](#clientextenddefaultoptions) to create niche-specific client-instances.
 
     Notes:
      - After `prefixUrl` and `input` are joined, the result is resolved against the [base URL](https://developer.mozilla.org/en-US/docs/Web/API/Node/baseURI) of the page (if any).
      - Leading slashes in `input` are disallowed when using this option to enforce consistency and avoid confusion about how the `input` URL is handled, given that `input` will not follow the normal URL resolution rules when `prefixUrl` is being used, which changes the meaning of a leading slash.
 
-    @example
-    ```
-    import ky from 'ky';
-
-    // On https://example.com
-
-    const response = await ky('unicorn', {prefixUrl: '/api'});
-    //=> 'https://example.com/api/unicorn'
-
-    const response = await ky('unicorn', {prefixUrl: 'https://cats.com'});
-    //=> 'https://cats.com/unicorn'
-    ```
     */
     prefixUrl?: URL | string;
 
@@ -731,18 +606,6 @@ export type Options = {
 
     Retries are not triggered following a timeout.
 
-    @example
-    ```
-    import ky from 'ky';
-
-    const json = await ky('https://example.com', {
-        retry: {
-            limit: 10,
-            methods: ['get'],
-            statusCodes: [413]
-        }
-    }).json();
-    ```
     */
     retry?: RetryOptions | number;
 
@@ -775,19 +638,6 @@ export type Options = {
 
     @param chunk - Note: It's empty for the first call.
 
-    @example
-    ```
-    import ky from 'ky';
-
-    const response = await ky('https://example.com', {
-        onDownloadProgress: (progress, chunk) => {
-            // Example output:
-            // `0% - 0 of 1271 bytes`
-            // `100% - 1271 of 1271 bytes`
-            console.log(`${progress.percent * 100}% - ${progress.transferredBytes} of ${progress.totalBytes} bytes`);
-        }
-    });
-    ```
     */
     onDownloadProgress?: (progress: DownloadProgress, chunk: Uint8Array) => void;
 
@@ -801,13 +651,6 @@ export type Options = {
 
     @default fetch
 
-    @example
-    ```
-    import ky from 'ky';
-    import fetch from 'isomorphic-unfetch';
-
-    const json = await ky('https://example.com', {fetch}).json();
-    ```
     */
     fetch?: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
 } & Omit<RequestInit, 'headers'>;
@@ -830,7 +673,7 @@ export type NormalizedOptions = {
     method: RequestInit['method'];
     credentials: RequestInit['credentials'];
 
-    // Extended from custom `KyOptions`, but ensured to be set (not optional).
+    // Extended from custom `clientOptions`, but ensured to be set (not optional).
     retry: RetryOptions;
     prefixUrl: string;
     onDownloadProgress: Options['onDownloadProgress'];
@@ -839,23 +682,23 @@ export type NormalizedOptions = {
 
 export class HttpClient {
     static create(input: Input, options: Options): ResponsePromise {
-        const ky = new HttpClient(input, options);
+        const client = new HttpClient(input, options);
 
         const fn = async (): Promise<Response> => {
-            if (typeof ky._options.timeout === 'number' && ky._options.timeout > maxSafeTimeout) {
+            if (typeof client._options.timeout === 'number' && client._options.timeout > maxSafeTimeout) {
                 throw new RangeError(`The \`timeout\` option cannot be greater than ${maxSafeTimeout}`);
             }
 
             // Delay the fetch so that body method shortcuts can set the Accept header
             await Promise.resolve();
-            let response = await ky._fetch();
+            let response = await client._fetch();
 
-            for (const hook of ky._options.hooks.afterResponse) {
+            for (const hook of client._options.hooks.afterResponse) {
                 // eslint-disable-next-line no-await-in-loop
                 const modifiedResponse = await hook(
-                    ky.request,
-                    ky._options as NormalizedOptions,
-                    ky._decorateResponse(response.clone()),
+                    client.request,
+                    client._options as NormalizedOptions,
+                    client._decorateResponse(response.clone()),
                 );
 
                 if (modifiedResponse instanceof globalThis.Response) {
@@ -863,12 +706,12 @@ export class HttpClient {
                 }
             }
 
-            ky._decorateResponse(response);
+            client._decorateResponse(response);
 
-            if (!response.ok && ky._options.throwHttpErrors) {
-                let error = new HTTPError(response, ky.request, (ky._options as unknown) as NormalizedOptions);
+            if (!response.ok && client._options.throwHttpErrors) {
+                let error = new HTTPError(response, client.request, (client._options as unknown) as NormalizedOptions);
 
-                for (const hook of ky._options.hooks.beforeError) {
+                for (const hook of client._options.hooks.beforeError) {
                     // eslint-disable-next-line no-await-in-loop
                     error = await hook(error);
                 }
@@ -876,8 +719,8 @@ export class HttpClient {
                 throw error;
             }
 
-            if (ky._options.onDownloadProgress) {
-                if (typeof ky._options.onDownloadProgress !== 'function') {
+            if (client._options.onDownloadProgress) {
+                if (typeof client._options.onDownloadProgress !== 'function') {
                     throw new TypeError('The `onDownloadProgress` option must be a function');
                 }
 
@@ -885,19 +728,19 @@ export class HttpClient {
                     throw new Error('Streams are not supported in your environment. `ReadableStream` is missing.');
                 }
 
-                return ky._stream(response.clone(), ky._options.onDownloadProgress);
+                return client._stream(response.clone(), client._options.onDownloadProgress);
             }
 
             return response;
         };
 
-        const isRetriableMethod = ky._options.retry.methods.includes(ky.request.method.toLowerCase());
-        const result = (isRetriableMethod ? ky._retry(fn) : fn()) as ResponsePromise;
+        const isRetriableMethod = client._options.retry.methods.includes(client.request.method.toLowerCase());
+        const result = (isRetriableMethod ? client._retry(fn) : fn()) as ResponsePromise;
 
         for (const [type, mimeType] of Object.entries(responseTypes) as ObjectEntries<typeof responseTypes>) {
             result[type] = async () => {
                 // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-                ky.request.headers.set('accept', ky.request.headers.get('accept') || mimeType);
+                client.request.headers.set('accept', client.request.headers.get('accept') || mimeType);
 
                 const awaitedResult = await result;
                 const response = awaitedResult.clone();
@@ -992,7 +835,6 @@ export class HttpClient {
         }
 
         this.request = new globalThis.Request(this._input as RequestInfo, this._options as RequestInit);
-
         if (this._options.searchParams) {
             // eslint-disable-next-line unicorn/prevent-abbreviations
             const textSearchParams = typeof this._options.searchParams === 'string'
@@ -1178,22 +1020,21 @@ export class HttpClient {
 
 
 const createInstance = (defaults?: Partial<Options>): HttpClientInstance => {
-    const ky: Partial<Mutable<HttpClientInstance>> = (input: Input, options?: Options) => HttpClient.create(input, validateAndMerge(defaults, options));
+    const client: Partial<Mutable<HttpClientInstance>> = (input: Input, options?: Options) => HttpClient.create(input, validateAndMerge(defaults, options));
 
     for (const method of requestMethods) {
-        ky[method] = (input: Input, options?: Options) => HttpClient.create(input, validateAndMerge(defaults, options, { method }));
+        client[method] = (input: Input, options?: Options) => HttpClient.create(input, validateAndMerge(defaults, options, { method }));
     }
 
-    ky.create = (newDefaults?: Partial<Options>) => createInstance(validateAndMerge(newDefaults));
-    ky.extend = (newDefaults?: Partial<Options>) => createInstance(validateAndMerge(defaults, newDefaults));
-    ky.stop = stop;
+    client.create = (newDefaults?: Partial<Options>) => createInstance(validateAndMerge(newDefaults));
+    client.extend = (newDefaults?: Partial<Options>) => createInstance(validateAndMerge(defaults, newDefaults));
+    client.stop = stop;
 
-    return ky as HttpClientInstance;
+    return client as HttpClientInstance;
 };
 
-const httpClient = createInstance();
+export const httpClient = createInstance();
 
-export default httpClient;
 
 
 

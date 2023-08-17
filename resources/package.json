@@ -15,8 +15,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@juanelas/base64": "^1.1.2",
-        "cross-fetch": "4.0.0"
+        "@juanelas/base64": "^1.1.2"
     },
     "devDependencies": {
         "@type-challenges/utils": "^0.1.1",

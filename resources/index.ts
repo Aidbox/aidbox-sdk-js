@@ -1,4 +1,4 @@
-import http, { HttpClientInstance } from './http-client'
+import { HttpClientInstance, httpClient as http } from './http-client'
 import {
   TaskDefinitionsMap,
   WorkflowDefinitionsMap,
@@ -7,7 +7,6 @@ import {
   SubsSubscription
 } from './types'
 import base64 from '@juanelas/base64'
-import { fetch } from 'cross-fetch'
 
 export function decode(str: string): string {
   return base64.decode(str, true).toString()
@@ -19,7 +18,6 @@ export function encode(str: string): string {
 
 
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-export const removeTrailingSlash = (str: string) => str.endsWith('/') ? str.slice(0, -1) : str;
 export const addLeadingSlash = (str: string) => str.startsWith('/') ? str : "/" + str;
 
 export const buildResourceUrl = (resource: string, id?: string) => ["fhir", resource, id && id].filter(Boolean).join("/")
@@ -108,12 +106,6 @@ export type LogData = {
 };
 
 
-export const enum AuthMethod {
-  Basic = "basic",
-  ResourceOwner = "password"
-}
-
-
 export interface TokenStorage {
   get: () => Promise<string>,
   set: (token: string) => Promise<string>
@@ -121,14 +113,14 @@ export interface TokenStorage {
 
 export type ClientConfig = {
   baseUrl: string
-  authMethod: AuthMethod.Basic
+  authMethod: "basic"
   username: string
   password: string
 
 } |
 {
   baseUrl: string
-  authMethod: AuthMethod.ResourceOwner
+  authMethod: "password"
   clientId: string
   clientSecret?: string
   storage: TokenStorage
@@ -415,11 +407,11 @@ export class Client {
   workflow: Workflow
   constructor(config: ClientConfig) {
     this.client = http.create({
-      prefixUrl: removeTrailingSlash(config.baseUrl), fetch, hooks: {
+      prefixUrl: config.baseUrl, hooks: {
         beforeRequest: [
           async (request) => {
             request.headers.set("Authorization", await (async function () {
-              if (config.authMethod === AuthMethod.Basic) {
+              if (config.authMethod === "basic") {
                 return `Basic ${encode(`${config.username}:${config.password}`)}`
               }
               return `Bearer ${await config.storage.get()}`
