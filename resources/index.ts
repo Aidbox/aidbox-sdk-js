@@ -513,11 +513,11 @@ export class Client {
     }
   }
 
-  async rawSQL(sql: string, params?: unknown[]) {
+  async rawSQL<T = any>(sql: string, params?: string[]) {
     const body = [sql, ...(params?.map((value: any) => value?.toString()) ?? [])]
 
     const response = await this.client.post('$sql', { json: body })
-    return response.json()
+    return response.json<T>()
   }
 
 
