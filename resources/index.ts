@@ -428,7 +428,7 @@ export class Client {
   }
 
   resource = {
-    list: async  <T extends keyof ResourceTypeMap>(resourceName: T) => {
+    list: <T extends keyof ResourceTypeMap>(resourceName: T) => {
       return new GetResources(this.client, resourceName)
     },
     get: async <T extends keyof ResourceTypeMap>(resourceName: T, id: string): Promise<BaseResponseResource<T>> => {
