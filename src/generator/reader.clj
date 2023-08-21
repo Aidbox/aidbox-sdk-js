@@ -402,7 +402,8 @@
                                                  [:base])))
 
           parsed (read-schema ztx schema
-                              {:base-path    base-path
+                              {:isResource   (:isResource opts)
+                               :base-path    base-path
                                :imports-path (conj base-path :imports)
                                :resource     (or sub-name main-name)
                                :parent       (when (and sub-name (not (contains? wrong-main-names main-name))) main-name)

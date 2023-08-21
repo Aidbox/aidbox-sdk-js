@@ -68,6 +68,8 @@
                          (when-let [extends (get-in schema [:extends :name])]
                            (str " extends " extends))
                          " {\n"))
+        (when (:isResource schema)
+          (.write res (format "resourceType: '%s'\n" resource)))
         (doseq [[k v] (:properties schema)]
           (write-by-type v k :property res))
         (.write res "}\n")
