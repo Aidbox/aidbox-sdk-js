@@ -189,7 +189,7 @@
               (keys (get @r/schema package)))
         (.write r "\n\n")
         (.write r "export interface SubsSubscription {\nid?:string;\nresourceType: 'SubsSubscription';\nstatus: 'active' | 'off';trigger: Partial<Record<ResourceType, { event: Array<'all' | 'create' | 'update' | 'delete'>; filter?: unknown }>>; channel: {\ntype: 'rest-hook';\nendpoint: string;\npayload?: { content: string; contentType: string; context: unknown };headers?: Record<string, string>;\ntimeout?: number;\n};\n}")
-        (.write r "export type ResourceTypeMap = {\n SubsSubscription: SubsSubscription;\n")
+        (.write r "export type ResourceTypeMap = {\n SubsSubscription: SubsSubscription;\n User: Record<string,any>;\n")
         (mapv #(when-not (contains? #{"string" "boolean"} %) (.write r (format "  %s: %s;\n" % %)))
               (keys (get @r/schema package)))
         (.write r "}\n")
