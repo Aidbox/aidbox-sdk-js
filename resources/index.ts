@@ -70,7 +70,7 @@ export type BaseResponseResources<T extends keyof ResourceTypeMap> = {
   total: number;
   link: Link[];
   'query-timeout': number;
-  entry: {
+  entry?: {
     resource: ResourceTypeMap[T];
   }[];
   'query-sql': (string | number)[];
