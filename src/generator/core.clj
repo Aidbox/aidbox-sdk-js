@@ -178,7 +178,7 @@
     (println "[types] Generate base schemas" (count schemas))
     (doseq [sym schemas]
       (zen.core/read-ns ztx (symbol (namespace sym)))
-      (r/read-source-schema ztx sym {:isResource true}))
+      (r/read-source-schema ztx sym))
     (doseq [package (keys @r/schema)]
       (io/make-parents (io/file path package "indexPackage.ts"))
       (with-open [r (io/writer (io/file path package "indexPackage.ts"))]

@@ -402,8 +402,7 @@
                                                  [:base])))
 
           parsed (read-schema ztx schema
-                              {:isResource   (:isResource opts)
-                               :base-path    base-path
+                              {:base-path    base-path
                                :imports-path (conj base-path :imports)
                                :resource     (or sub-name main-name)
                                :parent       (when (and sub-name (not (contains? wrong-main-names main-name))) main-name)
@@ -413,7 +412,7 @@
                                        sub-name
                                        (or main-name sub-name)))
       (swap! target-schema assoc-in
-             target-path parsed)
+             target-path (assoc parsed :isResource (get-in schema [:zen/tags 'zen.fhir/base-schema])))
       (->> (filter (fn [[_ v]] (false? v)) @visited)
            keys
            (mapv #(read-source-schema ztx %)))
