@@ -506,8 +506,8 @@ hooks: {
     }
   }
 
-  async rawSQL<T = any> (sql: string, params?: string[]) {
-    const body = [sql, ...(params?.map((value: any) => value?.toString()) ?? [])]
+  async rawSQL<T> (sql: string, params?: string[]): Promise<T> {
+    const body = [sql, ...(params?.map((value: unknown) => value?.toString()) ?? [])]
 
     const response = await this.client.post('$sql', { json: body })
     return response.json<T>()
