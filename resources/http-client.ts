@@ -1,5 +1,5 @@
-import type { Expect, Equal } from '@type-challenges/utils';
-import { fetch } from 'cross-fetch'
+import type { Expect, Equal } from '@type-challenges/utils'
+
 export type RetryOptions = {
     /**
     The number of times to retry failed requests.
@@ -53,153 +53,151 @@ export type RetryOptions = {
     backoffLimit?: number;
 };
 
-const isDomExceptionSupported = Boolean(globalThis.DOMException);
+const isDomExceptionSupported = Boolean(globalThis.DOMException)
 
 // TODO: When targeting Node.js 18, use `signal.throwIfAborted()` (https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/throwIfAborted)
-export function composeAbortError(signal?: AbortSignal) {
+export function composeAbortError (signal?: AbortSignal) {
     /*
     NOTE: Use DomException with AbortError name as specified in MDN docs (https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort)
     > When abort() is called, the fetch() promise rejects with an Error of type DOMException, with name AbortError.
     */
     if (isDomExceptionSupported) {
-        return new DOMException(signal?.reason ?? 'The operation was aborted.', 'AbortError');
+        return new DOMException(signal?.reason ?? 'The operation was aborted.', 'AbortError')
     }
 
     // DOMException not supported. Fall back to use of error and override name.
-    const error = new Error(signal?.reason ?? 'The operation was aborted.');
-    error.name = 'AbortError';
+    const error = new Error(signal?.reason ?? 'The operation was aborted.')
+    error.name = 'AbortError'
 
-    return error;
+    return error
 }
 
 // eslint-lint-disable-next-line @typescript-eslint/naming-convention
 export class HTTPError extends Error {
-    public response: Response;
-    public request: Request;
-    public options: NormalizedOptions;
+    public response: Response
+    public request: Request
+    public options: NormalizedOptions
 
-    constructor(response: Response, request: Request, options: NormalizedOptions) {
-        const code = (response.status || response.status === 0) ? response.status : '';
-        const title = response.statusText || '';
-        const status = `${code} ${title}`.trim();
-        const reason = status ? `status code ${status}` : 'an unknown error';
+    constructor (response: Response, request: Request, options: NormalizedOptions) {
+        const code = (response.status || response.status === 0) ? response.status : ''
+        const title = response.statusText || ''
+        const status = `${code} ${title}`.trim()
+        const reason = status ? `status code ${status}` : 'an unknown error'
 
-        super(`Request failed with ${reason}`);
+        super(`Request failed with ${reason}`)
 
-        this.name = 'HTTPError';
-        this.response = response;
-        this.request = request;
-        this.options = options;
+        this.name = 'HTTPError'
+        this.response = response
+        this.request = request
+        this.options = options
     }
 }
 
 export class TimeoutError extends Error {
-    public request: Request;
+    public request: Request
 
-    constructor(request: Request) {
-        super('Request timed out');
-        this.name = 'TimeoutError';
-        this.request = request;
+    constructor (request: Request) {
+        super('Request timed out')
+        this.name = 'TimeoutError'
+        this.request = request
     }
 }
-
 
 export type DelayOptions = {
     signal?: InternalOptions['signal'];
 };
 
-export async function delay(
+export async function delay (
     ms: number,
-    { signal }: DelayOptions,
+    { signal }: DelayOptions
 ): Promise<void> {
     return new Promise((resolve, reject) => {
         if (signal) {
             if (signal.aborted) {
-                reject(composeAbortError(signal));
-                return;
+                reject(composeAbortError(signal))
+                return
             }
 
-            signal.addEventListener('abort', handleAbort, { once: true });
+            signal.addEventListener('abort', handleAbort, { once: true })
         }
 
-        function handleAbort() {
-            reject(composeAbortError(signal!));
-            clearTimeout(timeoutId);
+        function handleAbort () {
+            reject(composeAbortError(signal!))
+            clearTimeout(timeoutId)
         }
 
         const timeoutId = setTimeout(() => {
-            signal?.removeEventListener('abort', handleAbort);
-            resolve();
-        }, ms);
-    });
+            signal?.removeEventListener('abort', handleAbort)
+            resolve()
+        }, ms)
+    })
 }
-export const isObject = (value: unknown): value is object => value !== null && typeof value === 'object';
+export const isObject = (value: unknown): value is object => value !== null && typeof value === 'object'
 
 export const validateAndMerge = (...sources: Array<Partial<Options> | undefined>): Partial<Options> => {
     for (const source of sources) {
         if ((!isObject(source) || Array.isArray(source)) && source !== undefined) {
-            throw new TypeError('The `options` argument must be an object');
+            throw new TypeError('The `options` argument must be an object')
         }
     }
 
-    return deepMerge({}, ...sources);
-};
+    return deepMerge({}, ...sources)
+}
 
 export const mergeHeaders = (source1: HttpClientHeadersInit = {}, source2: HttpClientHeadersInit = {}) => {
-    const result = new globalThis.Headers(source1 as HeadersInit);
-    const isHeadersInstance = source2 instanceof globalThis.Headers;
-    const source = new globalThis.Headers(source2 as HeadersInit);
+    const result = new globalThis.Headers(source1 as HeadersInit)
+    const isHeadersInstance = source2 instanceof globalThis.Headers
+    const source = new globalThis.Headers(source2 as HeadersInit)
     // @ts-ignore
     for (const [key, value] of source.entries()) {
         if ((isHeadersInstance && value === 'undefined') || value === undefined) {
-            result.delete(key);
+            result.delete(key)
         } else {
-            result.set(key, value);
+            result.set(key, value)
         }
     }
 
-    return result;
-};
+    return result
+}
 
 export const deepMerge = <T>(...sources: Array<Partial<T> | undefined>): T => {
-    let returnValue: any = {};
-    let headers = {};
+    let returnValue: any = {}
+    let headers = {}
 
     for (const source of sources) {
         if (Array.isArray(source)) {
             if (!Array.isArray(returnValue)) {
-                returnValue = [];
+                returnValue = []
             }
 
-            returnValue = [...returnValue, ...source];
+            returnValue = [...returnValue, ...source]
         } else if (isObject(source)) {
             for (let [key, value] of Object.entries(source)) {
                 if (isObject(value) && key in returnValue) {
-                    value = deepMerge(returnValue[key], value);
+                    value = deepMerge(returnValue[key], value)
                 }
 
-                returnValue = { ...returnValue, [key]: value };
+                returnValue = { ...returnValue, [key]: value }
             }
 
             if (isObject((source as any).headers)) {
-                headers = mergeHeaders(headers, (source as any).headers);
-                returnValue.headers = headers;
+                headers = mergeHeaders(headers, (source as any).headers)
+                returnValue.headers = headers
             }
         }
     }
 
-    return returnValue;
-};
-
+    return returnValue
+}
 
 export const normalizeRequestMethod = (input: string): string =>
-    requestMethods.includes(input as HttpMethod) ? input.toUpperCase() : input;
+    requestMethods.includes(input as HttpMethod) ? input.toUpperCase() : input
 
-const retryMethods = ['get', 'put', 'head', 'delete', 'options', 'trace'];
+const retryMethods = ['get', 'put', 'head', 'delete', 'options', 'trace']
 
-const retryStatusCodes = [408, 413, 429, 500, 502, 503, 504];
+const retryStatusCodes = [408, 413, 429, 500, 502, 503, 504]
 
-const retryAfterStatusCodes = [413, 429, 503];
+const retryAfterStatusCodes = [413, 429, 503]
 
 const defaultRetryOptions: Required<RetryOptions> = {
     limit: 2,
@@ -207,31 +205,31 @@ const defaultRetryOptions: Required<RetryOptions> = {
     statusCodes: retryStatusCodes,
     afterStatusCodes: retryAfterStatusCodes,
     maxRetryAfter: Number.POSITIVE_INFINITY,
-    backoffLimit: Number.POSITIVE_INFINITY,
-};
+    backoffLimit: Number.POSITIVE_INFINITY
+}
 
 export const normalizeRetryOptions = (retry: number | RetryOptions = {}): Required<RetryOptions> => {
     if (typeof retry === 'number') {
         return {
             ...defaultRetryOptions,
-            limit: retry,
-        };
+            limit: retry
+        }
     }
 
     if (retry.methods && !Array.isArray(retry.methods)) {
-        throw new Error('retry.methods must be an array');
+        throw new Error('retry.methods must be an array')
     }
 
     if (retry.statusCodes && !Array.isArray(retry.statusCodes)) {
-        throw new Error('retry.statusCodes must be an array');
+        throw new Error('retry.statusCodes must be an array')
     }
 
     return {
         ...defaultRetryOptions,
         ...retry,
-        afterStatusCodes: retryAfterStatusCodes,
-    };
-};
+        afterStatusCodes: retryAfterStatusCodes
+    }
+}
 
 export type Mutable<T> = {
     -readonly [P in keyof T]: T[P]
@@ -241,36 +239,34 @@ export type ObjectEntries<T> = T extends ArrayLike<infer U>
     ? Array<[string, U]>
     : Array<{ [K in keyof T]: [K, T[K]] }[keyof T]>;
 
-
-
 export type TimeoutOptions = {
     timeout: number;
     fetch: typeof fetch;
 };
 
-export async function timeout(
+export async function timeout (
     request: Request,
     abortController: AbortController | undefined,
-    options: TimeoutOptions,
+    options: TimeoutOptions
 ): Promise<Response> {
     return new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
             if (abortController) {
-                abortController.abort();
+                abortController.abort()
             }
 
-            reject(new TimeoutError(request));
-        }, options.timeout);
-        void options
+            reject(new TimeoutError(request))
+        }, options.timeout)
+
+        options
             .fetch(request)
             .then(resolve)
             .catch(reject)
             .then(() => {
-                clearTimeout(timeoutId);
-            });
-    });
+                clearTimeout(timeoutId)
+            })
+    })
 }
-
 
 export type ResponsePromise = {
     arrayBuffer: () => Promise<ArrayBuffer>;
@@ -287,7 +283,6 @@ export type ResponsePromise = {
     text: () => Promise<string>;
 } & Promise<HttpClientResponse>;
 
-
 export type Primitive = null | undefined | string | number | boolean | symbol | bigint;
 
 export type Required<T, K extends keyof T = keyof T> = T & { [P in K]-?: T[P] };
@@ -296,56 +291,54 @@ export type LiteralUnion<LiteralType extends BaseType, BaseType extends Primitiv
     | LiteralType
     | (BaseType & { _?: never });
 
-
-
 export type HttpClientResponse = {
     json: <T = unknown>() => Promise<T>;
 } & Response;
 
 export const supportsRequestStreams = (() => {
-    let duplexAccessed = false;
-    let hasContentType = false;
-    const supportsReadableStream = typeof globalThis.ReadableStream === 'function';
-    const supportsRequest = typeof globalThis.Request === 'function';
+    let duplexAccessed = false
+    let hasContentType = false
+    const supportsReadableStream = typeof globalThis.ReadableStream === 'function'
+    const supportsRequest = typeof globalThis.Request === 'function'
 
     if (supportsReadableStream && supportsRequest) {
         hasContentType = new globalThis.Request('https://empty.invalid', {
             body: new globalThis.ReadableStream(),
             method: 'POST',
             // @ts-expect-error - Types are outdated.
-            get duplex() {
-                duplexAccessed = true;
-                return 'half';
-            },
-        }).headers.has('Content-Type');
+            get duplex () {
+                duplexAccessed = true
+                return 'half'
+            }
+        }).headers.has('Content-Type')
     }
 
-    return duplexAccessed && !hasContentType;
-})();
+    return duplexAccessed && !hasContentType
+})()
 
-export const supportsAbortController = typeof globalThis.AbortController === 'function';
-export const supportsResponseStreams = typeof globalThis.ReadableStream === 'function';
-export const supportsFormData = typeof globalThis.FormData === 'function';
+export const supportsAbortController = typeof globalThis.AbortController === 'function'
+export const supportsResponseStreams = typeof globalThis.ReadableStream === 'function'
+export const supportsFormData = typeof globalThis.FormData === 'function'
 
-export const requestMethods = ['get', 'post', 'put', 'patch', 'head', 'delete'] as const;
+export const requestMethods = ['get', 'post', 'put', 'patch', 'head', 'delete'] as const
 
-const validate = <T extends Array<true>>() => undefined as unknown as T;
+const validate = <T extends Array<true>>() => undefined as unknown as T
 validate<[
     Expect<Equal<typeof requestMethods[number], HttpMethod>>,
-]>();
+]>()
 
 export const responseTypes = {
     json: 'application/json',
     text: 'text/*',
     formData: 'multipart/form-data',
     arrayBuffer: '*/*',
-    blob: '*/*',
-} as const;
+    blob: '*/*'
+} as const
 
 // The maximum value of a 32bit int (see issue #117)
-export const maxSafeTimeout = 2_147_483_647;
+export const maxSafeTimeout = 2_147_483_647
 
-export const stop = Symbol('stop');
+export const stop = Symbol('stop')
 
 export type HttpClientInstance = {
     /**
@@ -470,7 +463,6 @@ export type Hooks = {
 
     You can prevent client from retrying the request by throwing an error. client will not handle it in any way and the error will be propagated to the request initiator. The rest of the `beforeRetry` hooks will not be called in this case. Alternatively, you can return the [`client.stop`](#client.stop) symbol to do the same thing but without propagating an error (this has some limitations, see `client.stop` docs for details).
 
-
     @default []
     */
     beforeRetry?: BeforeRetryHook[];
@@ -511,8 +503,6 @@ export type Hooks = {
     */
     beforeError?: BeforeErrorHook[];
 };
-
-
 
 export type SearchParamsInit = string | string[][] | Record<string, string> | URLSearchParams | undefined;
 
@@ -679,104 +669,103 @@ export type NormalizedOptions = {
     onDownloadProgress: Options['onDownloadProgress'];
 } & RequestInit;
 
-
 export class HttpClient {
-    static create(input: Input, options: Options): ResponsePromise {
-        const client = new HttpClient(input, options);
+    static create (input: Input, options: Options): ResponsePromise {
+        const client = new HttpClient(input, options)
 
         const fn = async (): Promise<Response> => {
             if (typeof client._options.timeout === 'number' && client._options.timeout > maxSafeTimeout) {
-                throw new RangeError(`The \`timeout\` option cannot be greater than ${maxSafeTimeout}`);
+                throw new RangeError(`The \`timeout\` option cannot be greater than ${maxSafeTimeout}`)
             }
 
             // Delay the fetch so that body method shortcuts can set the Accept header
-            await Promise.resolve();
-            let response = await client._fetch();
+            await Promise.resolve()
+            let response = await client._fetch()
 
             for (const hook of client._options.hooks.afterResponse) {
                 // eslint-disable-next-line no-await-in-loop
                 const modifiedResponse = await hook(
                     client.request,
                     client._options as NormalizedOptions,
-                    client._decorateResponse(response.clone()),
-                );
+                    client._decorateResponse(response.clone())
+                )
 
                 if (modifiedResponse instanceof globalThis.Response) {
-                    response = modifiedResponse;
+                    response = modifiedResponse
                 }
             }
 
-            client._decorateResponse(response);
+            client._decorateResponse(response)
 
             if (!response.ok && client._options.throwHttpErrors) {
-                let error = new HTTPError(response, client.request, (client._options as unknown) as NormalizedOptions);
+                let error = new HTTPError(response, client.request, (client._options as unknown) as NormalizedOptions)
 
                 for (const hook of client._options.hooks.beforeError) {
                     // eslint-disable-next-line no-await-in-loop
-                    error = await hook(error);
+                    error = await hook(error)
                 }
 
-                throw error;
+                throw error
             }
 
             if (client._options.onDownloadProgress) {
                 if (typeof client._options.onDownloadProgress !== 'function') {
-                    throw new TypeError('The `onDownloadProgress` option must be a function');
+                    throw new TypeError('The `onDownloadProgress` option must be a function')
                 }
 
                 if (!supportsResponseStreams) {
-                    throw new Error('Streams are not supported in your environment. `ReadableStream` is missing.');
+                    throw new Error('Streams are not supported in your environment. `ReadableStream` is missing.')
                 }
 
-                return client._stream(response.clone(), client._options.onDownloadProgress);
+                return client._stream(response.clone(), client._options.onDownloadProgress)
             }
 
-            return response;
-        };
+            return response
+        }
 
-        const isRetriableMethod = client._options.retry.methods.includes(client.request.method.toLowerCase());
-        const result = (isRetriableMethod ? client._retry(fn) : fn()) as ResponsePromise;
+        const isRetriableMethod = client._options.retry.methods.includes(client.request.method.toLowerCase())
+        const result = (isRetriableMethod ? client._retry(fn) : fn()) as ResponsePromise
 
         for (const [type, mimeType] of Object.entries(responseTypes) as ObjectEntries<typeof responseTypes>) {
             result[type] = async () => {
                 // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-                client.request.headers.set('accept', client.request.headers.get('accept') || mimeType);
+                client.request.headers.set('accept', client.request.headers.get('accept') || mimeType)
 
-                const awaitedResult = await result;
-                const response = awaitedResult.clone();
+                const awaitedResult = await result
+                const response = awaitedResult.clone()
 
                 if (type === 'json') {
                     if (response.status === 204) {
-                        return '';
+                        return ''
                     }
 
-                    const arrayBuffer = await response.clone().arrayBuffer();
-                    const responseSize = arrayBuffer.byteLength;
+                    const arrayBuffer = await response.clone().arrayBuffer()
+                    const responseSize = arrayBuffer.byteLength
                     if (responseSize === 0) {
-                        return '';
+                        return ''
                     }
 
                     if (options.parseJson) {
-                        return options.parseJson(await response.text());
+                        return options.parseJson(await response.text())
                     }
                 }
 
-                return response[type]();
-            };
+                return response[type]()
+            }
         }
 
-        return result;
+        return result
     }
 
-    public request: Request;
-    protected abortController?: AbortController;
-    protected _retryCount = 0;
-    protected _input: Input;
-    protected _options: InternalOptions;
+    public request: Request
+    protected abortController?: AbortController
+    protected _retryCount = 0
+    protected _input: Input
+    protected _options: InternalOptions
 
     // eslint-disable-next-line complexity
-    constructor(input: Input, options: Options = {}) {
-        this._input = input;
+    constructor (input: Input, options: Options = {}) {
+        this._input = input
         this._options = {
             // TODO: credentials can be removed when the spec change is implemented in all browsers. Context: https://www.chromestatus.com/feature/4539473312350208
             credentials: (this._input as Request).credentials || 'same-origin',
@@ -787,9 +776,9 @@ export class HttpClient {
                     beforeRequest: [],
                     beforeRetry: [],
                     beforeError: [],
-                    afterResponse: [],
+                    afterResponse: []
                 },
-                options.hooks,
+                options.hooks
             ),
             method: normalizeRequestMethod(options.method ?? (this._input as Request).method),
             // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
@@ -797,124 +786,122 @@ export class HttpClient {
             retry: normalizeRetryOptions(options.retry),
             throwHttpErrors: options.throwHttpErrors !== false,
             timeout: options.timeout ?? 10_000,
-            fetch: options.fetch ?? globalThis.fetch.bind(globalThis),
-        };
+            fetch: options.fetch ?? globalThis.fetch.bind(globalThis)
+        }
 
         if (typeof this._input !== 'string' && !(this._input instanceof URL || this._input instanceof globalThis.Request)) {
-            throw new TypeError('`input` must be a string, URL, or Request');
+            throw new TypeError('`input` must be a string, URL, or Request')
         }
 
         if (this._options.prefixUrl && typeof this._input === 'string') {
             if (this._input.startsWith('/')) {
-                throw new Error('`input` must not begin with a slash when using `prefixUrl`');
+                throw new Error('`input` must not begin with a slash when using `prefixUrl`')
             }
 
             if (!this._options.prefixUrl.endsWith('/')) {
-                this._options.prefixUrl += '/';
+                this._options.prefixUrl += '/'
             }
 
-            this._input = this._options.prefixUrl + this._input;
+            this._input = this._options.prefixUrl + this._input
         }
 
         if (supportsAbortController) {
-            this.abortController = new globalThis.AbortController();
+            this.abortController = new globalThis.AbortController()
             if (this._options.signal) {
-                const originalSignal = this._options.signal;
+                const originalSignal = this._options.signal
 
                 this._options.signal.addEventListener('abort', () => {
-                    this.abortController!.abort(originalSignal.reason);
-                });
+                    this.abortController!.abort(originalSignal.reason)
+                })
             }
 
-            this._options.signal = this.abortController.signal;
+            this._options.signal = this.abortController.signal
         }
 
         if (supportsRequestStreams) {
             // @ts-expect-error - Types are outdated.
-            this._options.duplex = 'half';
+            this._options.duplex = 'half'
         }
 
-        this.request = new globalThis.Request(this._input as RequestInfo, this._options as RequestInit);
+        this.request = new globalThis.Request(this._input as RequestInfo, this._options as RequestInit)
         if (this._options.searchParams) {
-            // eslint-disable-next-line unicorn/prevent-abbreviations
             const textSearchParams = typeof this._options.searchParams === 'string'
                 ? this._options.searchParams.replace(/^\?/, '')
-                : new URLSearchParams(this._options.searchParams as unknown as SearchParamsInit).toString();
-            // eslint-disable-next-line unicorn/prevent-abbreviations
-            const searchParams = '?' + textSearchParams;
-            const url = this.request.url.replace(/(?:\?.*?)?(?=#|$)/, searchParams);
+                : new URLSearchParams(this._options.searchParams as unknown as SearchParamsInit).toString()
+            const searchParams = '?' + textSearchParams
+            const url = this.request.url.replace(/(?:\?.*?)?(?=#|$)/, searchParams)
 
             // To provide correct form boundary, Content-Type header should be deleted each time when new Request instantiated from another one
             if (
-                ((supportsFormData && this._options.body instanceof globalThis.FormData)
-                    || this._options.body instanceof URLSearchParams) && !(this._options.headers && (this._options.headers as Record<string, string>)['content-type'])
+                ((supportsFormData && this._options.body instanceof globalThis.FormData) ||
+                    this._options.body instanceof URLSearchParams) && !(this._options.headers && (this._options.headers as Record<string, string>)['content-type'])
             ) {
-                this.request.headers.delete('content-type');
+                this.request.headers.delete('content-type')
             }
 
             // The spread of `this.request` is required as otherwise it misses the `duplex` option for some reason and throws.
-            this.request = new globalThis.Request(new globalThis.Request(url, { ...this.request }), this._options as RequestInit);
+            this.request = new globalThis.Request(new globalThis.Request(url, { ...this.request }), this._options as RequestInit)
         }
 
         if (this._options.json !== undefined) {
-            this._options.body = JSON.stringify(this._options.json);
-            this.request.headers.set('content-type', this._options.headers.get('content-type') ?? 'application/json');
-            this.request = new globalThis.Request(this.request, { body: this._options.body });
+            this._options.body = JSON.stringify(this._options.json)
+            this.request.headers.set('content-type', this._options.headers.get('content-type') ?? 'application/json')
+            this.request = new globalThis.Request(this.request, { body: this._options.body })
         }
     }
 
-    protected _calculateRetryDelay(error: unknown) {
-        this._retryCount++;
+    protected _calculateRetryDelay (error: unknown) {
+        this._retryCount++
 
         if (this._retryCount < this._options.retry.limit && !(error instanceof TimeoutError)) {
             if (error instanceof HTTPError) {
                 if (!this._options.retry.statusCodes.includes(error.response.status)) {
-                    return 0;
+                    return 0
                 }
 
-                const retryAfter = error.response.headers.get('Retry-After');
+                const retryAfter = error.response.headers.get('Retry-After')
                 if (retryAfter && this._options.retry.afterStatusCodes.includes(error.response.status)) {
-                    let after = Number(retryAfter);
+                    let after = Number(retryAfter)
                     if (Number.isNaN(after)) {
-                        after = Date.parse(retryAfter) - Date.now();
+                        after = Date.parse(retryAfter) - Date.now()
                     } else {
-                        after *= 1000;
+                        after *= 1000
                     }
 
                     if (this._options.retry.maxRetryAfter !== undefined && after > this._options.retry.maxRetryAfter) {
-                        return 0;
+                        return 0
                     }
 
-                    return after;
+                    return after
                 }
 
                 if (error.response.status === 413) {
-                    return 0;
+                    return 0
                 }
             }
 
-            const BACKOFF_FACTOR = 0.3;
-            return Math.min(this._options.retry.backoffLimit, BACKOFF_FACTOR * (2 ** (this._retryCount - 1)) * 1000);
+            const BACKOFF_FACTOR = 0.3
+            return Math.min(this._options.retry.backoffLimit, BACKOFF_FACTOR * (2 ** (this._retryCount - 1)) * 1000)
         }
 
-        return 0;
+        return 0
     }
 
-    protected _decorateResponse(response: Response): Response {
+    protected _decorateResponse (response: Response): Response {
         if (this._options.parseJson) {
-            response.json = async () => this._options.parseJson!(await response.text());
+            response.json = async () => this._options.parseJson!(await response.text())
         }
 
-        return response;
+        return response
     }
 
     protected async _retry<T extends (...args: any) => Promise<any>>(fn: T): Promise<ReturnType<T> | void> {
         try {
-            return await fn();
+            return await fn()
         } catch (error) {
-            const ms = Math.min(this._calculateRetryDelay(error), maxSafeTimeout);
+            const ms = Math.min(this._calculateRetryDelay(error), maxSafeTimeout)
             if (ms !== 0 && this._retryCount > 0) {
-                await delay(ms, { signal: this._options.signal });
+                await delay(ms, { signal: this._options.signal })
 
                 for (const hook of this._options.hooks.beforeRetry) {
                     // eslint-disable-next-line no-await-in-loop
@@ -922,52 +909,52 @@ export class HttpClient {
                         request: this.request,
                         options: (this._options as unknown) as NormalizedOptions,
                         error: error as Error,
-                        retryCount: this._retryCount,
-                    });
+                        retryCount: this._retryCount
+                    })
 
                     // If `stop` is returned from the hook, the retry process is stopped
                     if (hookResult === stop) {
-                        return;
+                        return
                     }
                 }
 
-                return this._retry(fn);
+                return this._retry(fn)
             }
 
-            throw error;
+            throw error
         }
     }
 
-    protected async _fetch(): Promise<Response> {
+    protected async _fetch (): Promise<Response> {
         for (const hook of this._options.hooks.beforeRequest) {
             // eslint-disable-next-line no-await-in-loop
-            const result = await hook(this.request, (this._options as unknown) as NormalizedOptions);
+            const result = await hook(this.request, (this._options as unknown) as NormalizedOptions)
 
             if (result instanceof Request) {
-                this.request = result;
-                break;
+                this.request = result
+                break
             }
 
             if (result instanceof Response) {
-                return result;
+                return result
             }
         }
 
         if (this._options.timeout === false) {
-            return this._options.fetch(this.request.clone());
+            return this._options.fetch(this.request.clone())
         }
 
-        return timeout(this.request.clone(), this.abortController, this._options as TimeoutOptions);
+        return timeout(this.request.clone(), this.abortController, this._options as TimeoutOptions)
     }
 
     /* istanbul ignore next */
-    protected _stream(response: Response, onDownloadProgress: Options['onDownloadProgress']) {
-        const totalBytes = Number(response.headers.get('content-length')) || 0;
-        let transferredBytes = 0;
+    protected _stream (response: Response, onDownloadProgress: Options['onDownloadProgress']) {
+        const totalBytes = Number(response.headers.get('content-length')) || 0
+        let transferredBytes = 0
 
         if (response.status === 204) {
             if (onDownloadProgress) {
-                onDownloadProgress({ percent: 1, totalBytes, transferredBytes }, new Uint8Array());
+                onDownloadProgress({ percent: 1, totalBytes, transferredBytes }, new Uint8Array())
             }
 
             return new globalThis.Response(
@@ -975,66 +962,61 @@ export class HttpClient {
                 {
                     status: response.status,
                     statusText: response.statusText,
-                    headers: response.headers,
-                },
-            );
+                    headers: response.headers
+                }
+            )
         }
 
         return new globalThis.Response(
             new globalThis.ReadableStream({
-                async start(controller) {
-                    const reader = response.body!.getReader();
+                async start (controller) {
+                    const reader = response.body!.getReader()
 
                     if (onDownloadProgress) {
-                        onDownloadProgress({ percent: 0, transferredBytes: 0, totalBytes }, new Uint8Array());
+                        onDownloadProgress({ percent: 0, transferredBytes: 0, totalBytes }, new Uint8Array())
                     }
 
-                    async function read() {
-                        const { done, value } = await reader.read();
+                    async function read () {
+                        const { done, value } = await reader.read()
                         if (done) {
-                            controller.close();
-                            return;
+                            controller.close()
+                            return
                         }
 
                         if (onDownloadProgress) {
-                            transferredBytes += value.byteLength;
-                            const percent = totalBytes === 0 ? 0 : transferredBytes / totalBytes;
-                            onDownloadProgress({ percent, transferredBytes, totalBytes }, value);
+                            transferredBytes += value.byteLength
+                            const percent = totalBytes === 0 ? 0 : transferredBytes / totalBytes
+                            onDownloadProgress({ percent, transferredBytes, totalBytes }, value)
                         }
 
-                        controller.enqueue(value);
-                        await read();
+                        controller.enqueue(value)
+                        await read()
                     }
 
-                    await read();
-                },
+                    await read()
+                }
             }),
             {
                 status: response.status,
                 statusText: response.statusText,
-                headers: response.headers,
-            },
-        );
+                headers: response.headers
+            }
+        )
     }
 }
 
-
 const createInstance = (defaults?: Partial<Options>): HttpClientInstance => {
-    const client: Partial<Mutable<HttpClientInstance>> = (input: Input, options?: Options) => HttpClient.create(input, validateAndMerge(defaults, options));
+    const client: Partial<Mutable<HttpClientInstance>> = (input: Input, options?: Options) => HttpClient.create(input, validateAndMerge(defaults, options))
 
     for (const method of requestMethods) {
-        client[method] = (input: Input, options?: Options) => HttpClient.create(input, validateAndMerge(defaults, options, { method }));
+        client[method] = (input: Input, options?: Options) => HttpClient.create(input, validateAndMerge(defaults, options, { method }))
     }
 
-    client.create = (newDefaults?: Partial<Options>) => createInstance(validateAndMerge(newDefaults));
-    client.extend = (newDefaults?: Partial<Options>) => createInstance(validateAndMerge(defaults, newDefaults));
-    client.stop = stop;
+    client.create = (newDefaults?: Partial<Options>) => createInstance(validateAndMerge(newDefaults))
+    client.extend = (newDefaults?: Partial<Options>) => createInstance(validateAndMerge(defaults, newDefaults))
+    client.stop = stop
 
-    return client as HttpClientInstance;
-};
+    return client as HttpClientInstance
+}
 
-export const httpClient = createInstance();
-
-
-
-
+export const httpClient = createInstance()

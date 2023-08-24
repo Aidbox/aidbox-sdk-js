@@ -1,9 +1,16 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@juanelas/base64':
     specifier: ^1.1.2
     version: 1.1.2
+  tslib:
+    specifier: ^2.6.1
+    version: 2.6.1
 
 devDependencies:
   '@type-challenges/utils':
@@ -18,9 +25,6 @@ devDependencies:
   ts-node:
     specifier: 10.9.1
     version: 10.9.1(@types/node@20.4.4)(typescript@4.9.5)
-  tslib:
-    specifier: ^2.6.1
-    version: 2.6.1
   typescript:
     specifier: 4.9.5
     version: 4.9.5
@@ -145,7 +149,7 @@ packages:
 
   /tslib@2.6.1:
     resolution: {integrity: sha512-t0hLfiEKfMUoqhG+U1oid7Pva4bbDPHYfJNiB7BiIjRkj1pyC++4N3huJfqY6aRH6VTB0rvtzQwjM4K6qpfOig==}
-    dev: true
+    dev: false
 
   /typescript@4.9.5:
     resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
