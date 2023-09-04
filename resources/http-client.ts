@@ -72,7 +72,6 @@ export function composeAbortError (signal?: AbortSignal) {
     return error
 }
 
-// eslint-lint-disable-next-line @typescript-eslint/naming-convention
 export class HTTPError extends Error {
     public response: Response
     public request: Request
@@ -107,10 +106,7 @@ export type DelayOptions = {
     signal?: InternalOptions['signal'];
 };
 
-export async function delay (
-    ms: number,
-    { signal }: DelayOptions
-): Promise<void> {
+export async function delay (ms: number, { signal }: DelayOptions): Promise<void> {
     return new Promise((resolve, reject) => {
         if (signal) {
             if (signal.aborted) {
@@ -683,7 +679,6 @@ export class HttpClient {
             let response = await client._fetch()
 
             for (const hook of client._options.hooks.afterResponse) {
-                // eslint-disable-next-line no-await-in-loop
                 const modifiedResponse = await hook(
                     client.request,
                     client._options as NormalizedOptions,
@@ -701,7 +696,6 @@ export class HttpClient {
                 let error = new HTTPError(response, client.request, (client._options as unknown) as NormalizedOptions)
 
                 for (const hook of client._options.hooks.beforeError) {
-                    // eslint-disable-next-line no-await-in-loop
                     error = await hook(error)
                 }
 
@@ -723,12 +717,11 @@ export class HttpClient {
             return response
         }
 
-        const isRetriableMethod = client._options.retry.methods.includes(client.request.method.toLowerCase())
-        const result = (isRetriableMethod ? client._retry(fn) : fn()) as ResponsePromise
+        // const isRetriableMethod = client._options.retry.methods.includes(client.request.method.toLowerCase())
+        const result = fn() as ResponsePromise // (isRetriableMethod ? client._retry(fn) : fn()) as ResponsePromise
 
         for (const [type, mimeType] of Object.entries(responseTypes) as ObjectEntries<typeof responseTypes>) {
             result[type] = async () => {
-                // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
                 client.request.headers.set('accept', client.request.headers.get('accept') || mimeType)
 
                 const awaitedResult = await result
@@ -1009,7 +1002,9 @@ const createInstance = (defaults?: Partial<Options>): HttpClientInstance => {
     const client: Partial<Mutable<HttpClientInstance>> = (input: Input, options?: Options) => HttpClient.create(input, validateAndMerge(defaults, options))
 
     for (const method of requestMethods) {
-        client[method] = (input: Input, options?: Options) => HttpClient.create(input, validateAndMerge(defaults, options, { method }))
+        client[method] = (input: Input, options?: Options) => {
+            return HttpClient.create(input, validateAndMerge(defaults, options, { method }))
+        }
     }
 
     client.create = (newDefaults?: Partial<Options>) => createInstance(validateAndMerge(newDefaults))

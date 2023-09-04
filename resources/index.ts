@@ -1,6 +1,12 @@
 import base64 from '@juanelas/base64'
 
-import { HttpClientInstance, httpClient as http } from './http-client'
+import {
+  HttpClientInstance,
+  httpClient as http,
+  HTTPError,
+  Input,
+  Options, NormalizedOptions, ResponsePromise
+} from './http-client'
 import {
   TaskDefinitionsMap,
   WorkflowDefinitionsMap,
@@ -8,6 +14,8 @@ import {
   SearchParams,
   SubsSubscription
 } from './types'
+
+export { HTTPError }
 
 export function decode (str: string): string {
   return base64.decode(str, true).toString()
@@ -63,16 +71,14 @@ export type CreateQueryBody = {
 type Link = { relation: string; url: string };
 
 export type BaseResponseResources<T extends keyof ResourceTypeMap> = {
-  'query-time': number;
   meta: { versionId: string };
   type: string;
   resourceType: string;
   total: number;
   link: Link[];
+  entry?: { resource: ResourceTypeMap[T] }[];
   'query-timeout': number;
-  entry?: {
-    resource: ResourceTypeMap[T];
-  }[];
+  'query-time': number;
   'query-sql': (string | number)[];
 };
 
@@ -85,15 +91,7 @@ type SortKey<T extends keyof ResourceTypeMap> = keyof SearchParams[T] | `.${stri
 type ElementsParams<T extends keyof ResourceTypeMap, R extends ResourceTypeMap[T]> = Array<keyof ResourceKeys<T, R>>;
 
 type ChangeFields<T, R> = Omit<T, keyof R> & R;
-type SubscriptionParams = Omit<
-  ChangeFields<
-    SubsSubscription,
-    {
-      channel: Omit<SubsSubscription['channel'], 'type'>;
-    }
-  >,
-  'resourceType'
-> & { id: string };
+type SubscriptionParams = Omit<ChangeFields<SubsSubscription, { channel: Omit<SubsSubscription['channel'], 'type'> }>, 'resourceType'> & { id: string };
 
 export type LogData = {
   message: Record<string, any>;
@@ -102,30 +100,49 @@ export type LogData = {
   fx?: string;
 };
 
-export interface TokenStorage {
-  get: () => Promise<string>,
-  set: (token: string) => Promise<string>
-}
-
-export type ClientConfig = {
-  baseUrl: string
-  authMethod: 'basic'
-  username: string
-  password: string
-
-} |
-{
-  baseUrl: string
-  authMethod: 'password'
-  clientId: string
-  clientSecret?: string
-  storage: TokenStorage
-}
-
 interface JsonObject { [key: string]: JsonValue; }
 type JsonPrimitive = string | number | boolean | null
 type JsonValue = JsonPrimitive | JsonArray | JsonObject
 type JsonArray = JsonValue[]
+
+export interface R<T> {
+  // request: {},
+  response: { headers: Headers, url: string, status: number, data: T },
+}
+
+export class E<T> extends Error {
+  public response: R<T>['response']
+  public request: Request
+  public options: NormalizedOptions
+
+  constructor (data: T, response: Response, request: Request, options: NormalizedOptions) {
+    const code = (response.status || response.status === 0) ? response.status : ''
+    const title = response.statusText || ''
+    const status = `${code} ${title}`.trim()
+    const reason = status ? `status code ${status}` : 'an unknown error'
+
+    super(`Request failed with ${reason}`)
+
+    this.name = 'HTTPError'
+    this.response = { status: response.status, headers: response.headers, url: response.url, data }
+    this.request = request
+    this.options = options
+  }
+}
+
+const request = (fn: (url: Input, options?: Options) => ResponsePromise) => async <T>(url: Input, options?: Options): Promise<R<T>> => {
+  try {
+    const response = await fn(url, options)
+    return { response: { url: response.url, headers: response.headers, status: response.status, data: await response.json<T>() } }
+  } catch (error: unknown) {
+    if (error instanceof HTTPError) {
+      const data = await error.response.json()
+      throw new E(data, error.response, error.request, error.options)
+    }
+
+    throw error
+  }
+}
 
 class Task {
   private readonly workers: Array<object>
@@ -389,80 +406,130 @@ class Workflow {
   }
 }
 
-export class Client {
+export interface TokenStorage {
+  get: () => Promise<string | null> | string | null;
+  set: (token: string) => Promise<void> | void;
+}
+
+const resourceOwnerAuthorization = (httpclient: HttpClientInstance, auth: ResourceOwnerAuthorization) => async ({ username, password }: { username: string, password: string }) => {
+  if (typeof auth.storage.set === 'function') { await auth.storage.set('') }
+
+  const response = await httpclient.post('auth/token', {
+    json: {
+      username,
+      password,
+      client_id: auth.client.id,
+      client_secret: auth.client.secret,
+      grant_type: 'password'
+    }
+  }).json<{ access_token: string, token_type: 'Bearer', userinfo: { email: string, id: string } }>()
+
+  if (typeof auth.storage.set === 'function') { await auth.storage.set(response.access_token) }
+
+  return response
+}
+
+type BasicAuthorization = { method: 'basic', credentials: { username: string, password: string } }
+type ResourceOwnerAuthorization = { method: 'resource-owner', client: { id: string, secret: string }, storage: TokenStorage }
+
+function isBasic (params: BasicAuthorization | ResourceOwnerAuthorization): params is BasicAuthorization {
+  return params.method === 'basic'
+}
+
+function isResourceOwner (params: BasicAuthorization | ResourceOwnerAuthorization): params is ResourceOwnerAuthorization {
+  return params.method === 'resource-owner'
+}
+
+export class Client<T extends BasicAuthorization | ResourceOwnerAuthorization> {
   private client: HttpClientInstance
+  private config: { auth: T }
   task: Task
   workflow: Workflow
-  constructor (config: ClientConfig) {
-    this.client = http.create({
-      prefixUrl: config.baseUrl,
-hooks: {
+  constructor (baseURL: string, config: { auth: T }) {
+    this.config = config
+    const client = http.create({
+      prefixUrl: baseURL,
+      throwHttpErrors: true,
+      hooks: {
         beforeRequest: [
           async (request) => {
-            request.headers.set('Authorization', await (async function () {
-              if (config.authMethod === 'basic') {
-                return `Basic ${encode(`${config.username}:${config.password}`)}`
-              }
-              return `Bearer ${await config.storage.get()}`
-            })())
+            if (isBasic(config.auth)) {
+              const { username, password } = config.auth.credentials
+              request.headers.set('Authorization', `Basic ${encode(`${username}:${password}`)}`)
+            }
+
+            if (isResourceOwner(config.auth)) {
+              const token = config.auth.storage.get()
+              if (token) request.headers.set('Authorization', `Bearer ${token}`)
+            }
           }
         ]
       }
     })
-    const taskClient = new Task(this.client)
+    const taskClient = new Task(client)
     this.task = taskClient
-    this.workflow = new Workflow(this.client, taskClient)
+    this.workflow = new Workflow(client, taskClient)
+    this.client = client
   }
 
-  getHttpClient () {
-    return this.client
+  public get auth () {
+    if (isBasic(this.config.auth)) return this.config.auth
+
+    if (isResourceOwner(this.config.auth)) {
+      return {
+        ...this.config.auth,
+        signIn: resourceOwnerAuthorization(this.client, this.config.auth),
+        signUp: () => { console.log('TBD') },
+        signOut: () => { console.log('TBD') }
+      }
+    }
+
+    throw new Error('')
   }
+
+  // переделать на reduce и добавить полей
+  HTTPClient = () => ({
+    get: request(this.client.get),
+    post: request(this.client.post),
+    patch: request(this.client.patch),
+    put: request(this.client.put),
+    delete: request(this.client.delete),
+    head: request(this.client.head)
+  })
 
   resource = {
     list: <T extends keyof ResourceTypeMap>(resourceName: T) => {
       return new GetResources(this.client, resourceName)
     },
     get: async <T extends keyof ResourceTypeMap>(resourceName: T, id: string): Promise<BaseResponseResource<T>> => {
-      const response = await this.client.get(buildResourceUrl(resourceName, id)).json<BaseResponseResource<T>>()
-      return response
+      return this.client.get(buildResourceUrl(resourceName, id)).json<BaseResponseResource<T>>()
     },
     delete: async <T extends keyof ResourceTypeMap>(resourceName: T, id: string): Promise<BaseResponseResource<T>> => {
-      const response = await this.client.delete(buildResourceUrl(resourceName, id)).json<BaseResponseResource<T>>()
-      return response
+      return this.client.delete(buildResourceUrl(resourceName, id)).json<BaseResponseResource<T>>()
     },
     update: async<T extends keyof ResourceTypeMap>(
       resourceName: T,
       id: string,
       input: PartialResourceBody<T>
     ): Promise<BaseResponseResource<T>> => {
-      const response = await this.client.patch(buildResourceUrl(resourceName, id), {
-        json: input
-      }).json<BaseResponseResource<T>>()
-      return response
+      return this.client.patch(buildResourceUrl(resourceName, id), { json: input }).json<BaseResponseResource<T>>()
     },
     create: async<T extends keyof ResourceTypeMap>(
       resourceName: T,
       input: SetOptional<ResourceTypeMap[T] & { resourceType: string }, 'resourceType'>
     ): Promise<BaseResponseResource<T>> => {
-      const response = await this.client.post(buildResourceUrl(resourceName), {
-        json: input
-      }).json<BaseResponseResource<T>>()
-
-      return response
+      return this.client.post(buildResourceUrl(resourceName), { json: input }).json<BaseResponseResource<T>>()
     },
     override: async<T extends keyof ResourceTypeMap>(
       resourceName: T,
       id: string,
       input: PartialResourceBody<T>
     ): Promise<BaseResponseResource<T>> => {
-      const response = await this.client.put(buildResourceUrl(resourceName, id), {
-        json: input
-      }).json<BaseResponseResource<T>>()
-      return response
+      return this.client.put(buildResourceUrl(resourceName, id), { json: input }).json<BaseResponseResource<T>>()
     }
   }
 
-  async rpc<T = any> (method: string, params: any): Promise<T> {
+  async rpc<T = any> (method: string, params: unknown): Promise<T> {
     const response = await this.client.post('rpc', {
       method: 'POST',
       json: { method, params }

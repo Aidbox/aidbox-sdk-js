@@ -8,6 +8,7 @@
     "strict": true,
     "checkJs": false,
     "importHelpers": true,
+    "strictPropertyInitialization": false,
     "lib": ["es2020", "dom"]
   },
   "exclude": ["node_modules", "lib"]
