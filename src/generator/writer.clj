@@ -129,7 +129,7 @@
 (defmulti generate-types (fn [target _input _config]  target))
 
 (defmethod generate-types :typescript
-  [_target input {:keys [target-path] :as _config}]
+  [_target input {:keys [target-path] :as _config}] 
   (let [dir (io/file target-path)]
     (when-not (.exists dir)
       (.mkdir dir))

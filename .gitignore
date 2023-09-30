@@ -18,6 +18,8 @@ clear-data.ts
 .lsp/
 cache
 *.iml
+test_dir
+fhir-schema
 
 # Added by cargo
 

@@ -218,7 +218,6 @@
    {}
    searches))
 
-
 (defn gen-searches [ztx path]
   (println "[types] Generate search params")
   (let [definitions (->> (zen.core/get-tag ztx 'zen.fhir/searches)

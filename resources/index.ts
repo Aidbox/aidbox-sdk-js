@@ -408,7 +408,7 @@ class Workflow {
 
 export interface TokenStorage {
   get: () => Promise<string | null> | string | null;
-  set: (token: string) => Promise<void> | void;
+  set: (token: string | undefined) => Promise<void> | void;
 }
 
 const resourceOwnerAuthorization = (httpclient: HttpClientInstance, auth: ResourceOwnerAuthorization) => async ({ username, password }: { username: string, password: string }) => {
@@ -427,6 +427,10 @@ const resourceOwnerAuthorization = (httpclient: HttpClientInstance, auth: Resour
   if (typeof auth.storage.set === 'function') { await auth.storage.set(response.access_token) }
 
   return response
+}
+
+const resourceOwnerLogout = (httpclient: HttpClientInstance, auth: ResourceOwnerAuthorization) => async () => {
+  auth.storage.set(undefined)
 }
 
 type BasicAuthorization = { method: 'basic', credentials: { username: string, password: string } }
