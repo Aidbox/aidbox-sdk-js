@@ -5,7 +5,8 @@
    [clojure.string :as str]
    [edamame.core :as e]))
 
-(def dir "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/element")
+(def dir "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir")
+(def dirElement "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/element")
 (def dirResource "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/resource")
 
 (def primitives-string #{"dateTime" "xhtml" "Distance" "time" "date" "string" "uuid" "oid" "id" "Dosage" "Duration" "instant" "Count" "decimal" "code" "base64Binary" "unsignedInt" "url" "markdown" "uri" "positiveInt"  "canonical" "Age" "Timing"})
@@ -50,11 +51,13 @@
   (string-interpolation "Optional[", "]", string))
 
 (defn get-type [type]
+  (if (nil? type) (print "FUCK YOU") ())
   (cond
     (= type "boolean") "bool"
     (= type "integer") "int"
+    (= type "")        "str"
     (.contains primitives-string type) "str"
-    :else type))
+    :else (or type "str")))
 
 (defn derive-basic-type [type]
   (-> (get-resource-name type)
@@ -87,16 +90,16 @@
             (hash-map :elements (conj (:elements acc) (trans required item))
                       :imports (conj (:imports acc) (impr item)))) (hash-map :elements [] :imports []) elements))
 
-(filter boolean [nil, nil, "3"])
 
 (defn ttt [elements]
   (clojure.string/join (map (fn [item] (str "from element import " item "\n")), elements)))
 
 (defn create-class [elements, definition]
-  (println (str "class " (get-resource-name (:type definition))))
   (->  (filter boolean (:imports elements))
        (ttt)
        (str "\n")
+       (str "from fhir_resource import DomainResource\n")
+       (str "from backbone_elements import *\n")
        (str "from fhir_basic import Element\n\n")
        (str "from typing import Optional, Any\n\n\n")
        (str "class " (get-resource-name (:type definition)) "Origin" (get-parent (:base definition)) ":\n")
@@ -112,7 +115,7 @@
       (transform-elements-to-types (or (:required definition) []))
       (create-class definition)
       (str "class " (get-resource-name (:type definition)) "(" (get-resource-name (:type definition)) "Origin)" ": pass\n")
-      (open-for-write dir (clojure.string/lower-case (:type definition)))))
+      (open-for-write dirElement (clojure.string/lower-case (:type definition)))))
 
 (defn combine-class-by-definition2 [definition]
   (-> (map-to-vector definition)
@@ -149,12 +152,12 @@
          (str "from typing import Optional, Any\n")
          (open-for-write dir "resources")))
 
-#_(defn get-primitive-structure-definitions [structures]
-    (->> structures
-         (filter #(not (and (contains? % :from) (contains? % :to))))
-         (filter #(not (contains? % :derivation)))
-         (filter #(not (contains? % :base)))
-         (filter #(not (contains? % :elements)))))
+(defn get-primitive-structure-definitions [structures]
+  (->> structures
+       (filter #(not (and (contains? % :from) (contains? % :to))))
+       (filter #(not (contains? % :derivation)))
+       (filter #(not (contains? % :base)))
+       (filter #(not (contains? % :elements)))))
 
 
 
@@ -166,6 +169,11 @@
 (defn get-domain-structure-definition [structures]
   (->> structures
        (filter #(str/includes? (or (:base %) "") "/DomainResource"))
+       (filter #(= "specialization" (:derivation %)))))
+
+(defn get-backbone-element-structure-definition [structures]
+  (->> structures
+       (filter #(str/includes? (or (:base %) "") "/BackboneElement"))
        (filter #(= "specialization" (:derivation %)))))
 
 ;; here can be values without elements that inherits from element
@@ -197,14 +205,6 @@
        (filter #(not (contains? % :base)))
        (filter #(contains? % :elements))
        structures))
-
-#_(defn test [path]
-    (->> (load-structure-list path)
-         (construct-basic)
-         (map test-fun)
-         (clojure.string/join "\n\n")
-         (str "from typing import Optional, Any\n\n\n")
-         (open-for-write dir "fhir_basic")))
 
 (defn construct-elements [structures]
   (->> structures
@@ -247,14 +247,19 @@
 (defn doallmap [elements]
   (doall (map combine-class-by-definition2 elements)))
 
-(defn test3 [path]
+(defn compile-domain-resources [path]
   (->> (load-structure-list path)
        (get-domain-structure-definition)
-       (doallmap)
-       #_(clojure.string/join "\n\n")
-       #_(str "from fhir_resource import DomainResource\n\n\n")
-       #_(str "from typing import Optional, Any\n")
-       #_(open-for-write dir "domain_resource")))
+       (doallmap)))
+
+#_(defn test [path]
+    (->> (load-structure-list path)
+         (construct-basic)
+         (map test-fun)
+         (clojure.string/join "\n\n")
+         (str "from typing import Optional, Any\n\n\n")
+         (open-for-write dir "fhir_basic")))
+
 
 ;;  (total) ;; 1968
 ;;  (get-trash) ;; 1310 - ignore
@@ -269,13 +274,47 @@
 ;; (defn elements-index []
 ;;   (-> (map (fn [element] (str "from element." (clojure.string/lower-case element) " import " element "\n")) elements)
 ;;       (clojure.string/join)
-;;       (open-for-write "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir" "element")))
+;;       (open-for-write "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir" "elements")))
 
 ;; (elements-index)
-;; (test "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz")
-;; (step1 "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz")
-(test3 "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz")
 
-;; (test2 "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz")
-;; (test3 "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz")
+;; (compile-domain-resources "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz")
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(defn test-test [definition]
+  (->> (map-to-vector definition)
+       (map (fn [[k, v]] (str "\t" (escape-keyword (name k)) ": " (transform-element v (.contains (or (:required definition) []) (name k))))))
+       (clojure.string/join "\n")
+       (str "\n\nclass " (get-resource-name (:type definition)) "(BackboneElement):\n")))
+
+(defn test-test-1 [elements] (map test-test elements))
+
+(defn post-processing [string]
+  (->> (str string)
+       (str "from element import *\n")
+       (str "from fhir_basic import *\n")
+       (str "from typing import Optional, Any\n")))
+
+(defn compile-backbone-elements [path]
+  (-> (load-structure-list path)
+      (get-backbone-element-structure-definition)
+      (test-test-1)
+      (clojure.string/join)
+      (post-processing)
+      (open-for-write dir "backbone_elements")))
+
+(compile-backbone-elements "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz")
