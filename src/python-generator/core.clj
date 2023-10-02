@@ -51,7 +51,6 @@
   (string-interpolation "Optional[", "]", string))
 
 (defn get-type [type]
-  (if (nil? type) (print "FUCK YOU") ())
   (cond
     (= type "boolean") "bool"
     (= type "integer") "int"
