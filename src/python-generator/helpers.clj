@@ -3,12 +3,12 @@
    [python-generator.extractor]
    [cheshire.core]
    [clojure.java.io :as io]
-   [clojure.string :as str]
-   [edamame.core :as e]))
+   [clojure.string :as str]))
 
 
 ;; TODO: do not hardcode
 (def elements #{"HumanName" "Signature" "Range" "Coding" "Attachment" "BackboneElement" "Address" "Money" "Period" "Expression" "TriggerDefinition" "Contributor" "Identifier" "Extension" "Quantity" "RelatedArtifact" "Ratio" "UsageContext" "ContactPoint" "Narrative" "Meta" "SampledData" "Annotation" "Reference" "CodeableConcept" "ContactDetail" "ParameterDefinition" "DataRequirement"})
+(def backbone-elements #{"Population" "Timing" "MarketingStatus" "SubstanceAmount" "ProductShelfLife" "ProdCharacteristic" "Dosage" "ElementDefinition"})
 (def primitives-string #{"dateTime" "xhtml" "Distance" "time" "date" "string" "uuid" "oid" "id" "Dosage" "Duration" "instant" "Count" "decimal" "code" "base64Binary" "unsignedInt" "url" "markdown" "uri" "positiveInt"  "canonical" "Age" "Timing"})
 
 (defn escape-keyword [word]
@@ -27,7 +27,6 @@
   (last (str/split (str reference) #"/")))
 
 (defn get-type [type]
-  (if (nil? type) (print "FUCK YOU") ())
   (cond
     (= type "boolean") "bool"
     (= type "integer") "int"
@@ -65,17 +64,24 @@
 
 (defn collect-imports [[_, v]]
   (let [type (derive-basic-type (:type v))]
-    (print type)
     (if (.contains elements type) type nil)))
 
-(defn ttt [data]
-  (print data)
+(defn collect-backbone-imports [[_, v]]
+  (let [type (derive-basic-type (:type v))]
+    (if (.contains backbone-elements type) type nil)))
+
+(defn add-element-import [data]
   (clojure.string/join (map (fn [item] (str "from element.index import " item "\n")), data)))
+
+(defn add-backbone-element-import [data]
+  (clojure.string/join (map (fn [item] (str "from backbone.index import " item "\n")), data)))
 
 (defn get-typings-and-imports [required, data]
   (reduce (fn [acc, item]
             (hash-map :elements (conj (:elements acc) (collect-types required item))
-                      :imports (conj (:imports acc) (collect-imports item)))) (hash-map :elements [] :imports []) data))
+                      :imports-element (conj (:imports-element acc) (collect-imports item))
+                      :imports-backbone-element (conj (:imports-backbone-element acc) (collect-backbone-imports item))))
+          (hash-map :elements [] :imports-element [] :imports-backbone-element []) data))
 
 (defn parse-ndjson-gz [path]
   (with-open [rdr (-> path
