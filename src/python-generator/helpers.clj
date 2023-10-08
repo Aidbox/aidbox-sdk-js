@@ -11,6 +11,9 @@
 (def backbone-elements #{"Population" "Timing" "MarketingStatus" "SubstanceAmount" "ProductShelfLife" "ProdCharacteristic" "Dosage" "ElementDefinition"})
 (def primitives-string #{"dateTime" "xhtml" "Distance" "time" "date" "string" "uuid" "oid" "id" "Dosage" "Duration" "instant" "Count" "decimal" "code" "base64Binary" "unsignedInt" "url" "markdown" "uri" "positiveInt"  "canonical" "Age" "Timing"})
 
+(defn uppercase-first-letter [string]
+  (str (str/upper-case (first string)) (subs string 1)))
+
 (defn escape-keyword [word]
   (if (.contains #{"class", "global", "for", "import"} word) (str word "_") word))
 
@@ -26,23 +29,23 @@
 (defn get-resource-name [reference]
   (last (str/split (str reference) #"/")))
 
-(defn get-type [type]
+(defn get-type [name type]
   (cond
+    (= type "BackboneElement") (uppercase-first-letter name)
     (= type "boolean") "bool"
     (= type "integer") "int"
     (= type "")        "str"
     (.contains primitives-string type) "str"
     :else (or type "str")))
 
-(defn derive-basic-type [type]
-  (-> (get-resource-name type)
-      (get-type)))
+(defn derive-basic-type [name element]
+  (get-type name (get-resource-name (:type element))))
 
 (defn append-default-none [string] (str string " = None"))
 (defn append-default-vector [string] (str string " = []"))
 
-(defn transform-element [element required]
-  (->> (derive-basic-type (:type element))
+(defn transform-element [name element required]
+  (->> (derive-basic-type name element)
        ((if (:array element) wrap-vector str))
        ((if (and (not required) (not (:array element))) wrap-optional str))
        ((if (and (not required) (not (:array element))) append-default-none str))
@@ -52,36 +55,21 @@
   (->> (seq (:elements definition))
        (filter (fn [[_, v]] (not (contains? v :choices))))))
 
-(defn transform-element-to-type [definition]
-  (fn [[k, v]] (str "\t" (escape-keyword (name k)) ": " (transform-element v (.contains (or (:required definition) []) (name k))))))
-
 (defn get-parent [base-reference]
   (->> (get-resource-name base-reference)
        (string-interpolation "(" ")")))
 
 (defn collect-types [required, [k, v]]
-  (str "\t" (escape-keyword (name k)) ": " (transform-element v (.contains required (name k)))))
+  (str "\t" (escape-keyword (name k)) ": " (transform-element (name k) v (.contains required (name k)))))
 
-(defn collect-imports [[_, v]]
-  (let [type (derive-basic-type (:type v))]
-    (if (.contains elements type) type nil)))
-
-(defn collect-backbone-imports [[_, v]]
-  (let [type (derive-basic-type (:type v))]
-    (if (.contains backbone-elements type) type nil)))
-
-(defn add-element-import [data]
-  (clojure.string/join (map (fn [item] (str "from element.index import " item "\n")), data)))
-
-(defn add-backbone-element-import [data]
-  (clojure.string/join (map (fn [item] (str "from backbone.index import " item "\n")), data)))
+(defn resolve-backbone-elements [[k, v]]
+  (if (= (get-resource-name (:type v)) "BackboneElement") (vector k, v) (vector)))
 
 (defn get-typings-and-imports [required, data]
   (reduce (fn [acc, item]
             (hash-map :elements (conj (:elements acc) (collect-types required item))
-                      :imports-element (conj (:imports-element acc) (collect-imports item))
-                      :imports-backbone-element (conj (:imports-backbone-element acc) (collect-backbone-imports item))))
-          (hash-map :elements [] :imports-element [] :imports-backbone-element []) data))
+                      :backbone-elements (conj (:backbone-elements acc) (resolve-backbone-elements item))))
+          (hash-map :elements [] :backbone-elements []) data))
 
 (defn parse-ndjson-gz [path]
   (with-open [rdr (-> path

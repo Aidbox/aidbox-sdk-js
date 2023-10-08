@@ -41,15 +41,14 @@
        (helpers/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/backbone", "index")))
 
 (defn domain-index []
-  (helpers/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/domain", "__init__", "")
   (->> (helpers/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz")
        (extractors/filter-domain-resource)
-       (map (fn [definition] (str "from domain." (clojure.string/lower-case (helpers/get-resource-name (:type definition))) " import " (helpers/get-resource-name (:type definition)) "\n")))
+       (map (fn [definition] (str "from resources." (clojure.string/lower-case (helpers/get-resource-name (:type definition))) " import " (helpers/get-resource-name (:type definition)) "\n")))
        (clojure.string/join)
-       (helpers/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/domain", "index")))
+       (helpers/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/resources", "__init__")))
 
-(base-index)
-(element-index)
-(resource-index)
-(backbone-index)
+;; (base-index)
+;; (element-index)
+;; (resource-index)
+;; (backbone-index)
 (domain-index)
