@@ -41,11 +41,10 @@
        (helpers/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/backbone", "index")))
 
 (defn domain-index []
-  (->> (helpers/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz")
-       (extractors/filter-domain-resource)
-       (map (fn [definition] (str "from resources." (clojure.string/lower-case (helpers/get-resource-name (:type definition))) " import " (helpers/get-resource-name (:type definition)) "\n")))
-       (clojure.string/join)
-       (helpers/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/resources", "__init__")))
+  (let [data (extractors/filter-domain-resource (helpers/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz"))
+        imports (str/join (map (fn [definition] (str "from ." (clojure.string/lower-case (helpers/get-resource-name (:type definition))) " import " (helpers/get-resource-name (:type definition)) "\n")) data))
+        all (str "__all__=[" (str/join "," (map (fn [definition] (str "\n\"" (helpers/get-resource-name (:type definition)) "\"")) data)) "\n]\n\n")]
+    (helpers/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/resources", "__init__", (str all imports))))
 
 ;; (base-index)
 ;; (element-index)

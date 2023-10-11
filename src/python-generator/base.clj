@@ -31,13 +31,13 @@
 (defn compile-single-class []
   (fn [definition]
     (->> (helpers/elements-to-vector definition)
-         (helpers/get-typings-and-imports (or (:required definition) []))
+         (helpers/get-typings-and-imports "" (or (:required definition) []))
          (combine-file definition))))
 
 (defn compile-single-base-class []
   (fn [definition]
     (->> (helpers/elements-to-vector definition)
-         (helpers/get-typings-and-imports (or (:required definition) []))
+         (helpers/get-typings-and-imports "" (or (:required definition) []))
          (combine-base-file definition))))
 
 (defn compile-bases []

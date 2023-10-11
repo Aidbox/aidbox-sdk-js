@@ -15,7 +15,7 @@
   (str (str/upper-case (first string)) (subs string 1)))
 
 (defn escape-keyword [word]
-  (if (.contains #{"class", "global", "for", "import"} word) (str word "_") word))
+  (if (.contains #{"class", "from", "assert", "global", "for", "import"} word) (str word "_") word))
 
 (defn string-interpolation [left, right, string]
   (str left, string, right))
@@ -31,7 +31,7 @@
 
 (defn get-type [name type]
   (cond
-    (= type "BackboneElement") (uppercase-first-letter name)
+    (= type "BackboneElement") (str "" (uppercase-first-letter name))
     (= type "boolean") "bool"
     (= type "integer") "int"
     (= type "")        "str"
@@ -59,15 +59,15 @@
   (->> (get-resource-name base-reference)
        (string-interpolation "(" ")")))
 
-(defn collect-types [required, [k, v]]
-  (str "\t" (escape-keyword (name k)) ": " (transform-element (name k) v (.contains required (name k)))))
+(defn collect-types [parent_name, required, [k, v]]
+  (str "\t" (escape-keyword (name k)) ": " (transform-element (str parent_name "_" (uppercase-first-letter (name k))) v (.contains required (name k)))))
 
 (defn resolve-backbone-elements [[k, v]]
   (if (= (get-resource-name (:type v)) "BackboneElement") (vector k, v) (vector)))
 
-(defn get-typings-and-imports [required, data]
+(defn get-typings-and-imports [parent_name, required, data]
   (reduce (fn [acc, item]
-            (hash-map :elements (conj (:elements acc) (collect-types required item))
+            (hash-map :elements (conj (:elements acc) (collect-types parent_name required item))
                       :backbone-elements (conj (:backbone-elements acc) (resolve-backbone-elements item))))
           (hash-map :elements [] :backbone-elements []) data))
 
