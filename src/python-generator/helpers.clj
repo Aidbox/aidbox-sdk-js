@@ -3,16 +3,19 @@
    [python-generator.extractor]
    [cheshire.core]
    [clojure.java.io :as io]
-   [clojure.string :as str]
-   [edamame.core :as e]))
+   [clojure.string :as str]))
 
 
 ;; TODO: do not hardcode
 (def elements #{"HumanName" "Signature" "Range" "Coding" "Attachment" "BackboneElement" "Address" "Money" "Period" "Expression" "TriggerDefinition" "Contributor" "Identifier" "Extension" "Quantity" "RelatedArtifact" "Ratio" "UsageContext" "ContactPoint" "Narrative" "Meta" "SampledData" "Annotation" "Reference" "CodeableConcept" "ContactDetail" "ParameterDefinition" "DataRequirement"})
+(def backbone-elements #{"Population" "Timing" "MarketingStatus" "SubstanceAmount" "ProductShelfLife" "ProdCharacteristic" "Dosage" "ElementDefinition"})
 (def primitives-string #{"dateTime" "xhtml" "Distance" "time" "date" "string" "uuid" "oid" "id" "Dosage" "Duration" "instant" "Count" "decimal" "code" "base64Binary" "unsignedInt" "url" "markdown" "uri" "positiveInt"  "canonical" "Age" "Timing"})
 
+(defn uppercase-first-letter [string]
+  (str (str/upper-case (first string)) (subs string 1)))
+
 (defn escape-keyword [word]
-  (if (.contains #{"class", "global", "for", "import"} word) (str word "_") word))
+  (if (.contains #{"class", "from", "assert", "global", "for", "import"} word) (str word "_") word))
 
 (defn string-interpolation [left, right, string]
   (str left, string, right))
@@ -26,24 +29,23 @@
 (defn get-resource-name [reference]
   (last (str/split (str reference) #"/")))
 
-(defn get-type [type]
-  (if (nil? type) (print "FUCK YOU") ())
+(defn get-type [name type]
   (cond
+    (= type "BackboneElement") (str "" (uppercase-first-letter name))
     (= type "boolean") "bool"
     (= type "integer") "int"
     (= type "")        "str"
     (.contains primitives-string type) "str"
     :else (or type "str")))
 
-(defn derive-basic-type [type]
-  (-> (get-resource-name type)
-      (get-type)))
+(defn derive-basic-type [name element]
+  (get-type name (get-resource-name (:type element))))
 
 (defn append-default-none [string] (str string " = None"))
 (defn append-default-vector [string] (str string " = []"))
 
-(defn transform-element [element required]
-  (->> (derive-basic-type (:type element))
+(defn transform-element [name element required]
+  (->> (derive-basic-type name element)
        ((if (:array element) wrap-vector str))
        ((if (and (not required) (not (:array element))) wrap-optional str))
        ((if (and (not required) (not (:array element))) append-default-none str))
@@ -53,29 +55,21 @@
   (->> (seq (:elements definition))
        (filter (fn [[_, v]] (not (contains? v :choices))))))
 
-(defn transform-element-to-type [definition]
-  (fn [[k, v]] (str "\t" (escape-keyword (name k)) ": " (transform-element v (.contains (or (:required definition) []) (name k))))))
-
 (defn get-parent [base-reference]
   (->> (get-resource-name base-reference)
        (string-interpolation "(" ")")))
 
-(defn collect-types [required, [k, v]]
-  (str "\t" (escape-keyword (name k)) ": " (transform-element v (.contains required (name k)))))
+(defn collect-types [parent_name, required, [k, v]]
+  (str "\t" (escape-keyword (name k)) ": " (transform-element (str parent_name "_" (uppercase-first-letter (name k))) v (.contains required (name k)))))
 
-(defn collect-imports [[_, v]]
-  (let [type (derive-basic-type (:type v))]
-    (print type)
-    (if (.contains elements type) type nil)))
+(defn resolve-backbone-elements [[k, v]]
+  (if (= (get-resource-name (:type v)) "BackboneElement") (vector k, v) (vector)))
 
-(defn ttt [data]
-  (print data)
-  (clojure.string/join (map (fn [item] (str "from element.index import " item "\n")), data)))
-
-(defn get-typings-and-imports [required, data]
+(defn get-typings-and-imports [parent_name, required, data]
   (reduce (fn [acc, item]
-            (hash-map :elements (conj (:elements acc) (collect-types required item))
-                      :imports (conj (:imports acc) (collect-imports item)))) (hash-map :elements [] :imports []) data))
+            (hash-map :elements (conj (:elements acc) (collect-types parent_name required item))
+                      :backbone-elements (conj (:backbone-elements acc) (resolve-backbone-elements item))))
+          (hash-map :elements [] :backbone-elements []) data))
 
 (defn parse-ndjson-gz [path]
   (with-open [rdr (-> path
