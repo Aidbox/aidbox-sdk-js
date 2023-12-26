@@ -1,4 +1,4 @@
-(ns python-generator.helpers
+(ns python-generator.profile-helpers
   (:require
    [python-generator.extractor]
    [cheshire.core]
@@ -61,7 +61,7 @@
        (string-interpolation "(" ")")))
 
 (defn collect-types [parent_name, required, [k, v]]
-  (str "\t" (escape-keyword (name k)) ": " (transform-element (str parent_name "_" (uppercase-first-letter (name k))) v (.contains required (name k)))))
+  (hash-map :name (escape-keyword (name k)) :base parent_name :value (transform-element (str parent_name "_" (uppercase-first-letter (name k))) v (.contains required (name k)))))
 
 (defn resolve-backbone-elements [[k, v]]
   (if (= (get-resource-name (:type v)) "BackboneElement") (vector k, v) (vector)))
