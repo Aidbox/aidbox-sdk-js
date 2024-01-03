@@ -20,10 +20,6 @@
        (hash-map :backbone-elements)
        (conj data)))
 
-
-
-;; (helpers/get-resource-name (:type definition))
-
 (defn attach-parent-data [parent a context child]
   (if (nil? parent) child (conj child (hash-map :elements (concat (get-in context [:classes parent a :elements]) (:elements child))))))
 
@@ -88,42 +84,34 @@
   (->> (hash-map :structures (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz"))
        (group-by)
        (compile)
+       #_(:classes)
+       #_(:constraint)))
+
+(defn elements-to-properties [elements]
+  (map (fn [element]
+         (->> (str "\t" (:name element) ": " (:value element) "\n"))) elements))
+
+(defn create-class [[name value]]
+  (->> (str (str/join (elements-to-properties (:elements value))))
+       (str "class " (help/get-resource-name (:name value)) ":\n")
+       (str "from ..base import *\n\n")
+       (str "from typing import Optional\n")))
+
+(defn schema-to-class [items]
+  (map (fn [item]
+         (->> (create-class (first item))
+              (help/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/domain-resource" (help/get-resource-name (first (first item)))))) items))
+
+(defn dope []
+  (->> (compile-profiles)
        (:classes)
-       (:domain-resource)))
+       (:domain-resource)
+       (schema-to-class)))
 
-(compile-profiles)
-
-
-
+(dope)
 
 
 
-
-
-;; (filter (fn [item] (:elements item)) [{:elements {:a {:type 1} :b {:type 2} :c {:type 2}}}])
-
-#_(->> (helpers/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema/hl7.fhir.r4.core#4.0.1_package.ndjson.gz")
-       (filter #(= "constraint" (:derivation %)))
-       (filter (fn [item] ()))
-       (filter (fn [item]
-                 (some
-                  (fn [[_ value]] (and (= "hl7.fhir.r4.core#4.0.1/CodeableConcept" (:type value)) (contains? value :binding)))
-                  (:elements item)))))
-
-;; (map (fn [[key value]] key) {"hello" 3 "hello2" 3})
-;; (type (hash-map "hello" 3 "hello2" 3))
-;; ((hash-map "hello" 1 "hello2" 2) "hello2")
-
-#_(->> (helpers/parse-nippy "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema/hl7.fhir.r4.core#4.0.1_terminology-index.nippy")
-       #_(:valuesets)
-       (:codesystems)
-       #_(map (fn [[key value]] value))
-       #_(filter (fn [[key value]] (= key "http://terminology.hl7.org/CodeSystem/v2-0334")))
-       ((fn [map] (map "http://loinc.org"))))
-
-;; (map (fn [item] (print item)))
-;; (keyword "http://hl7.org/fhir/supplydelivery-status")
-;; (keyword "http://hl7.org/fhir/ValueSet/ldlcholesterol-codes")
 
 
 ;; :fhirVersions ["4.0.1"]
