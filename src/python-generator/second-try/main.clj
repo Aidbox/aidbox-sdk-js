@@ -1,0 +1,148 @@
+(ns python-generator.second-try.main
+  (:require
+   [python-generator.profile-helpers :as help]
+   [cheshire.core]
+   [clojure.string :as str]
+   [clojure.set :as set]))
+
+(defn compile-backbone [parent_name property_name definition]
+  (let [name (str parent_name "_" (help/uppercase-first-letter (name property_name)))
+        data (help/get-typings-and-imports name (or (:required definition) []) (help/elements-to-vector definition))
+        backbone-elements (filter (fn [item] (> (count item) 0)) (:backbone-elements data))]
+    (conj data (hash-map :backbone-elements (if (= (count backbone-elements) 0) [] (map (fn [[k, v]] (compile-backbone name k v)) backbone-elements))))))
+
+(defn test [name data]
+  (->> (filter (fn [item] (> (count item) 0)) (:backbone-elements data))
+       (map (fn [[k, v]] (compile-backbone name k v)))
+       (hash-map :backbone-elements)
+       (conj data)))
+
+(defn attach-parent-data [parent a context child]
+  (if (nil? parent) child (conj child (hash-map :elements (concat (get-in context [:classes parent a :elements]) (:elements child))))))
+
+(defn concat-elements-circulary [schemas parent-name elements]
+  (if (not (nil? parent-name))
+    (->> (concat elements (get-in schemas [parent-name :elements] []))
+         (concat-elements-circulary schemas (get-in schemas [parent-name :base])))
+    elements))
+
+(defn concat-backbones-circulary [schemas parent-name backbones]
+  (if (not (nil? parent-name))
+    (->> (concat backbones (get-in schemas [parent-name :backbone-elements] []))
+         (concat-backbones-circulary schemas (get-in schemas [parent-name :base])))
+    backbones))
+
+(defn mix-parents-elements-circular [schemas definition]
+  (if (not (nil? (get definition :base nil)))
+    (->> (concat-elements-circulary schemas (get definition :base) [])
+         (concat (:elements definition))
+         (hash-map :elements)
+         (conj definition))
+    definition))
+
+(defn mix-parents-backbones-circular [schemas definition]
+  (if (not (nil? (get definition :base nil)))
+    (->> (concat-backbones-circulary schemas (get definition :base) [])
+         (concat (:backbone-elements definition))
+         (hash-map :backbone-elements)
+         (conj definition))
+    definition))
+
+(defn safe-conj [a b] (conj a (or b {})))
+
+(defn compile-elements [schemas]
+  (->> (vec schemas)
+       #_(filter #(not (= (:derivation (last %)) "constraint")))
+       (map (fn [[name definition]]
+              (->> (help/elements-to-vector definition)
+                   (help/get-typings-and-imports (:type definition) (or (:required definition) []))
+                   (test (help/get-resource-name name))
+                   (safe-conj (hash-map :base (get definition :base)))
+                   (hash-map name))))
+       (into {})))
+
+(defn combine-elements [schemas]
+  (->> (vec schemas)
+       #_(filter #(= "hl7.fhir.r4.core#4.0.1/Observation" (first %)))
+       (map (fn [[name definition]]
+              (->> definition
+                   (mix-parents-elements-circular (dissoc schemas nil))
+                   (mix-parents-backbones-circular (dissoc schemas nil))
+                   (hash-map name))))
+       (into {})))
+
+(defn apply-excluded [excluded schema]
+  (filter (fn [field-schema]
+            (not (some #(= % (:name field-schema)) excluded))) schema))
+
+(defn apply-required [required schema]
+  (map (fn [field-schema]
+         (if (some #(= % (:name field-schema)) required)
+           (conj field-schema (hash-map :required true)) field-schema)) schema))
+
+(defn apply-choises [choises schema]
+  (->> (map (fn [[key, item]] (set/difference (set (:choices (first (filter #(= (:name %) (name key)) schema)))) (set (:choices item)))) choises)
+       (reduce set/union #{})
+       ((fn [choises-to-exclude]
+          (filter #(not (contains? choises-to-exclude (:name %))) schema)))))
+
+
+(defn apply-single-constraint [constraint parent-schema info]
+  (->> (:elements parent-schema)
+       (apply-required (:required constraint))
+       (apply-excluded (:excluded constraint))
+       (apply-choises (filter #(contains? (last %) :choices) (:elements constraint)))
+       (hash-map :elements)
+       (conj parent-schema)))
+
+(defn apply-constraints [constraint-schemas result base-schemas]
+  (if (reduce (fn [acc, [schema-name]]
+                (when (not (get result schema-name)) (reduced true))) false constraint-schemas)
+    (apply-constraints constraint-schemas
+                       (reduce (fn [acc [schema-name definition]]
+                                 (if (contains? result (:base definition))
+                                   (conj acc (hash-map schema-name (apply-single-constraint definition (get result (:base definition)) "from-result")))
+                                   (if (contains? base-schemas (:base definition))
+                                     (conj acc (hash-map schema-name (apply-single-constraint definition (get base-schemas (:base definition)) "from-base")))
+                                     acc))) result constraint-schemas) base-schemas) result))
+
+(defn transform-structure [data] (into {} (map #(hash-map (:fqn %) %) data)))
+
+(defn combine-single-class [name elements]
+  (->> (map (fn [item]
+              (when (not (contains? item :choices))
+                (->> (:value item)
+                     ((if (:array item) help/wrap-vector str))
+                     ((if (and (not (:required item)) (not (:array item))) help/wrap-optional str))
+                     ((if (and (not (:required item)) (not (:array item))) help/append-default-none str))
+                     ((if (and (not (:required item)) (:array item)) help/append-default-vector str))
+                     (str "\t" (:name item) ": ")
+                     (str "\n")))) elements)
+       (str/join "")
+       (str "\n\nclass " (help/get-resource-name name) ":")))
+
+(defn save-to-file [[name, definition]]
+  (->> (str (combine-single-class name (:elements definition)))
+       (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition))) (:backbone-elements definition))))
+       (str "from ..base import *\n\n")
+       (str "from typing import Optional\n")
+       (help/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/constraint" (help/get-resource-name name))))
+
+(defn doallmap [elements]
+  (doall (map save-to-file elements)))
+
+(defn main []
+  (let [schemas (transform-structure (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz"))
+        base-schemas (->> schemas (filter #(not (= (:derivation (last %)) "constraint"))))
+        constraint-schemas (->> schemas
+                                (filter #(= (:derivation (last %)) "constraint"))
+                                (filter #(or (= (first %) "hl7.fhir.r4.core#4.0.1/vitalsigns") (= (first %) "hl7.fhir.r4.core#4.0.1/bp"))))]
+    (->> base-schemas
+         (compile-elements)
+         (combine-elements)
+         (apply-constraints constraint-schemas {})
+         (doallmap))))
+
+
+
+(main)

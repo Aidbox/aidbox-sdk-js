@@ -29,7 +29,7 @@
                    (help/get-typings-and-imports (:type definition) (or (:required definition) []))
                    (test "ktulh-ftagn")
                    (attach-parent-data parent (:base definition) context)
-                   (conj (hash-map :name name :source (:base definition)))
+                   (conj (hash-map :name name :base (:base definition)))
                    (hash-map name))) (property (:accumulator context)))
        #_(apply merge)))
 
@@ -89,23 +89,28 @@
 
 (defn elements-to-properties [elements]
   (map (fn [element]
-         (->> (str "\t" (:name element) ": " (:value element) "\n"))) elements))
+         (str "\t" (:name element) ": " (:value element) "\n")) elements))
 
-(defn create-class [[name value]]
+;; (defn combine-parents [parent, classes])
+
+(defn create-class [[name value] classes]
   (->> (str (str/join (elements-to-properties (:elements value))))
-       (str "class " (help/get-resource-name (:name value)) ":\n")
-       (str "from ..base import *\n\n")
-       (str "from typing import Optional\n")))
+       #_(str "class " (help/get-resource-name (:name value)) ":\n")
+       #_(str "from ..base import *\n\n")
+       #_(str "from typing import Optional\n")))
 
-(defn schema-to-class [items]
+(defn schema-to-class [classes]
   (map (fn [item]
-         (->> (create-class (first item))
-              (help/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/domain-resource" (help/get-resource-name (first (first item)))))) items))
+         (->> (create-class (first item) classes)
+              #_(help/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/constraint" (help/get-resource-name (first (first item))))))
+       (:constraint classes)))
+
+;; 
+;; :constraint
 
 (defn dope []
   (->> (compile-profiles)
        (:classes)
-       (:domain-resource)
        (schema-to-class)))
 
 (dope)
