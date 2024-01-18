@@ -86,14 +86,41 @@
        ((fn [choises-to-exclude]
           (filter #(not (contains? choises-to-exclude (:name %))) schema)))))
 
+(defn pattern-codeable-concept [name schema]
+  (print)
+  (->> (str "\tcoding: list[" (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-"))) (get-in schema [:pattern :coding] []))) "] = [" (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-")) "()") (get-in schema [:pattern :coding] []))) "]\n")
+       (str "class " name "(CodeableConcept):\n")
+       (str (when-let [coding (:coding (:pattern schema))]
+              (str/join (map (fn [code] (->> (str (when (contains? code :code)  (str "\tcode: Literal[\"" (:code code) "\"] = \"" (:code code) "\"\n")))
+                                             (str (when (contains? code :system) (str "\tsystem: Literal[\"" (:system code) "\"] = \"" (:system code) "\"\n")))
+                                             (str (when (contains? code :display) (str "\tdisplay: Literal[\"" (:display code) "\"] = \"" (:display code) "\"\n")))
+                                             (str "class Coding" (str/join (str/split (:code code) #"-")) "(Coding):\n"))) coding))) "\n")))
 
-(defn apply-single-constraint [constraint parent-schema info]
+(defn create-single-pattern [constraint-name, [name, schema]]
+  (case (help/get-resource-name (:type schema))
+    "CodeableConcept" (pattern-codeable-concept (str (help/uppercase-first-letter (help/get-resource-name constraint-name)) (help/uppercase-first-letter (subs (str name) 1))) schema)
+    "default" ""))
+
+(defn apply-patterns [constraint-name patterns schema]
+  (->> (map (fn [item]
+              (if (some #(= (name (first %)) (:name item)) patterns)
+                (case (:value item)
+                  "CodeableConcept" (conj item (hash-map :value (str (help/uppercase-first-letter (help/get-resource-name constraint-name)) (help/uppercase-first-letter (:name item)) " = " (str (help/uppercase-first-letter (help/get-resource-name constraint-name)) (help/uppercase-first-letter (:name item))) "()")))
+                  "Quantity" item
+                  "default" item) item)) (:elements schema))
+       (hash-map :elements)
+       (conj schema)
+       (conj (hash-map :patterns (map (fn [item] (create-single-pattern constraint-name item)) patterns)))))
+
+
+(defn apply-single-constraint [constraint parent-schema]
   (->> (:elements parent-schema)
        (apply-required (:required constraint))
        (apply-excluded (:excluded constraint))
        (apply-choises (filter #(contains? (last %) :choices) (:elements constraint)))
        (hash-map :elements)
-       (conj parent-schema)))
+       (conj parent-schema)
+       (apply-patterns (:fqn constraint) (filter #(contains? (last %) :pattern) (:elements constraint)))))
 
 (defn apply-constraints [constraint-schemas result base-schemas]
   (if (reduce (fn [acc, [schema-name]]
@@ -101,9 +128,9 @@
     (apply-constraints constraint-schemas
                        (reduce (fn [acc [schema-name definition]]
                                  (if (contains? result (:base definition))
-                                   (conj acc (hash-map schema-name (apply-single-constraint definition (get result (:base definition)) "from-result")))
+                                   (conj acc (hash-map schema-name (apply-single-constraint definition (get result (:base definition)))))
                                    (if (contains? base-schemas (:base definition))
-                                     (conj acc (hash-map schema-name (apply-single-constraint definition (get base-schemas (:base definition)) "from-base")))
+                                     (conj acc (hash-map schema-name (apply-single-constraint definition (get base-schemas (:base definition)))))
                                      acc))) result constraint-schemas) base-schemas) result))
 
 (defn transform-structure [data] (into {} (map #(hash-map (:fqn %) %) data)))
@@ -119,11 +146,12 @@
                      (str "\t" (:name item) ": ")
                      (str "\n")))) elements)
        (str/join "")
-       (str "\n\nclass " (help/get-resource-name name) ":")))
+       (str "\n\nclass " (help/uppercase-first-letter (help/get-resource-name name)) ":")))
 
 (defn save-to-file [[name, definition]]
   (->> (str (combine-single-class name (:elements definition)))
        (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition))) (:backbone-elements definition))))
+       (str (str/join (:patterns definition)))
        (str "from ..base import *\n\n")
        (str "from typing import Optional\n")
        (help/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/constraint" (help/get-resource-name name))))
@@ -136,7 +164,7 @@
         base-schemas (->> schemas (filter #(not (= (:derivation (last %)) "constraint"))))
         constraint-schemas (->> schemas
                                 (filter #(= (:derivation (last %)) "constraint"))
-                                (filter #(or (= (first %) "hl7.fhir.r4.core#4.0.1/vitalsigns") (= (first %) "hl7.fhir.r4.core#4.0.1/bp"))))]
+                                (filter #(or (= (first %) "hl7.fhir.r4.core#4.0.1/vitalsigns") (= (first %) "hl7.fhir.r4.core#4.0.1/triglyceride"))))]
     (->> base-schemas
          (compile-elements)
          (combine-elements)
