@@ -49,7 +49,7 @@ zen-cli sdk
 **Example:**
 
 ```bash
-zen-cli sdk 
+zen-cli sdk
 ```
 
 After running the zen-cli get-sdk command, you should be able to find the aidbox-javascript-sdk.tgz npm package in the
@@ -82,11 +82,16 @@ and your [access policies](https://docs.aidbox.app/security-and-access-control-1
 granular access to resources you're trying to reach.
 
 ```javascript
-import {Client} from "aidbox-sdk";
+import { Client } from 'aidbox-sdk';
 
-export const aidbox = new Client("<HOST_URL>", {
-    username: "<CLIENT_NAME>",
-    password: "<CLIENT_SECRET>",
+export const aidbox = new Client('<HOST_URL>', {
+  auth: {
+    method: 'basic',
+    credentials: {
+      username: '<CLIENT_NAME>',
+      password: '<CLIENT_SECRET>',
+    },
+  },
 });
 ```
 
@@ -103,20 +108,18 @@ writing resources, searching for resources, and more.
 Then you can use aidboxClient in wherever you want
 
 ```javascript
-import {aidbox} from "../aidbox-client";
+import { aidbox } from '../aidbox-client';
 
 async function getPatients() {
-    return aidbox.getResources("Patient");
+  return aidbox.resource.list('Patient');
 }
 ```
 
 ## API
 
-### getResources
+### resource.list
 
-getResources method accepts the name of the resource and is the basis for the subsequent complication of the request
-
-![getResources example](./assets/get-resources.gif)
+list method accepts the name of the resource and is the basis for the subsequent complication of the request
 
 #### where
 
@@ -125,22 +128,20 @@ Method where add additional parameters for searching
 For example, you want to find all patients with name John, so
 
 ```typescript
-where("name", "John")
+resource.list('Patient').where('name', 'John');
 ```
 
 Or, you want to find all patients with name John or Steve
 
 ```typescript
-where("name", ["John", "Steve"])
+resource.list('Patient')where('name', ['John', 'Steve']);
 ```
 
 Also, method where support prefixes for numbers and date, just pass it as third parameter
 
 ```typescript
-where("birthDate", "2014-06-30", "gt")
+resource.list('Patient').where('birthDate', '2014-06-30', 'gt');
 ```
-
-![where example](./assets/where.gif)
 
 #### Sort
 
@@ -149,23 +150,21 @@ Method sort add additional parameters for sorting
 For example, you want to display the oldest patients
 
 ```typescript
-sort("birthDate", "acs")
+resource.list('Patient').sort('birthDate', 'acs');
 ```
 
 And also, you want to sort this data by patients name
 
 ```typescript
-sort("birthDate", "acs").sort("name", "acs")
+resource.list('Patient').sort('birthDate', 'acs').sort('name', 'acs');
 ```
-
-![sort](./assets/sort.gif)
 
 #### Count
 
 Method count used for make limit the number of resource returned by request
 
 ```typescript
-count(10)
+resource.list('Patient').count(10);
 ```
 
 #### Summary
@@ -200,48 +199,54 @@ To use the elements function, simply pass in the elements you want to retrieve a
 need the name and address fields from a resource, you can make a request using the following syntax:
 
 ```typescript
-elements(["name", "address"])
+resource.list('Patient').elements(['name', 'address']);
 ```
 
 This request will return only the name and address fields for each resource, rather than the entire dataset. By reducing
 the amount of data returned, you can help to streamline your requests and improve the performance of your application.
 
-### getResource
+### resource.get
 
-The getResource function is a tool for retrieving a single resource by its ID.
+The get function is a tool for retrieving a single resource by its ID.
 
 To use the getResource function, you must pass in the resource type and ID as arguments. For example, if you want to
 retrieve a patient resource with the ID some-id, you can make a request using the following syntax:
 
 ```typescript
-getResource("Patient", "id")
+resource.get('Patient', 'id');
 ```
 
-### createResource
+### resource.create
 
 The createResource function is used to create a new resource.
 
 The first argument is a resource name, the second one is body of resource
 
-![create resource](./assets/create-resource.gif)
+```typescript
+resource.create('Patient', { active: true });
+```
 
-### patchResource
+### resource.update()
 
-The patchResource function is used to update a specific resource identified by its id with a partial set of data
+The update function is used to update a specific resource identified by its id with a partial set of data
 provided in the third parameter. This function allows for partial updates of a resource without having to send the
 entire resource object.
 
 The first parameter specifies the name of the resource to be updated. The second parameter identifies the specific
 resource to be updated.
 
-![patch resource](./assets/patch-resource.gif)
+```typescript
+resource.update('Patient', 'c58f29eb-f28d-67c1-0400-9af3aba3d58c', {
+  active: false,
+});
+```
 
-### deleteResource
+### ### resource.delete()
 
 The deleteResource function is used to delete a specific resource identified by its id.
 
 ```typescript
-deleteResource("Patient", "c58f29eb-f28d-67c1-0400-9af3aba3d58c")
+resource.delete('Patient', 'c58f29eb-f28d-67c1-0400-9af3aba3d58c');
 ```
 
 ### createSubscription
@@ -251,10 +256,10 @@ our [subscription sample](https://github.com/Aidbox/aidbox-sdk-js/tree/main/subs
 
 ```javascript
 await client.createSubscription({
-    id: "patient-created",
-    status: "active",
-    trigger: {Patient: {event: ["create"]}},
-    channel: {endpoint: `${process.env.NODE_APP_URL}/patient-created`},
+  id: 'patient-created',
+  status: 'active',
+  trigger: { Patient: { event: ['create'] } },
+  channel: { endpoint: `${process.env.NODE_APP_URL}/patient-created` },
 });
 ```
 
@@ -279,18 +284,18 @@ SDK has helpers to prepare data for bundle request.
 
 ```javascript
 client.transformToBundle(
-    [
+  [
+    {
+      resourceType: 'Patient',
+      name: [
         {
-            resourceType: "Patient",
-            name: [
-                {
-                    given: [""],
-                    family: "",
-                },
-            ],
+          given: [''],
+          family: '',
         },
-    ],
-    "POST"
+      ],
+    },
+  ],
+  'POST',
 );
 ```
 
@@ -300,7 +305,7 @@ uses the "transaction" type by default but you can change it by providing it in 
 ```javascript
 const data = ArrayOfPatients.map(client.bundleEntryPost);
 
-await client.bundleRequest(data, "batch");
+await client.bundleRequest(data, 'batch');
 ```
 
 ## Task API
@@ -312,10 +317,11 @@ The asynchronous nature of queues allows tasks to be processed independently, en
 times.
 
 ```javascript
-import {Engine} from "aidbox-javascript-sdk";
+import { Engine } from 'aidbox-javascript-sdk';
 
-const client = new Engine("http://localhost:8888", {
-    username: "test", password: "secret"
+const client = new Engine('http://localhost:8888', {
+  username: 'test',
+  password: 'secret',
 });
 ```
 
@@ -346,20 +352,24 @@ Next step is creating business logic that will be considered as a worker,
 the worker will be handling each task, we can
 
 ```javascript
-client.task.implement("SendMessage", async ({params, status}) => {
-    const {message, phone} = params;
+client.task.implement(
+  'SendMessage',
+  async ({ params, status }) => {
+    const { message, phone } = params;
 
     try {
-        await fetch('https://message-sending-server.com/', {
-            method: 'POST',
-            body: JSON.stringify({message, phone}),
-        });
+      await fetch('https://message-sending-server.com/', {
+        method: 'POST',
+        body: JSON.stringify({ message, phone }),
+      });
 
-        return {status: 'success'}
+      return { status: 'success' };
     } catch (error) {
-        return {status: 'failure'}
+      return { status: 'failure' };
     }
-}, {batchSize: 5})
+  },
+  { batchSize: 5 },
+);
 ```
 
 ### Execution
@@ -367,7 +377,10 @@ client.task.implement("SendMessage", async ({params, status}) => {
 The way to execute a single task with unique context
 
 ```javascript
-await client.task.execute("SendMessage", {phone: "+1234567890", message: "Hi!"})
+await client.task.execute('SendMessage', {
+  phone: '+1234567890',
+  message: 'Hi!',
+});
 ```
 
 ## Workflow Engine
@@ -378,10 +391,11 @@ Defining task dependencies through workflow implementation allows the developer
 to control the order in which tasks are executed.
 
 ```javascript
-import {Engine} from "aidbox-javascript-sdk";
+import { Engine } from 'aidbox-javascript-sdk';
 
-const client = new Engine("http://localhost:8888", {
-    username: "test", password: "secret"
+const client = new Engine('http://localhost:8888', {
+  username: 'test',
+  password: 'secret',
 });
 ```
 
@@ -407,34 +421,48 @@ Notice: we have to regenerate SDK package each time we made changes into configu
 ### Workflow Implementation
 
 ```javascript
-await client.workflow.implement("CheckOutWorkflow", async ({params}, {execute, complete, fail}) => {
+await client.workflow.implement(
+  'CheckOutWorkflow',
+  async ({ params }, { execute, complete, fail }) => {
     if (params.event === 'awf.workflow.event/workflow-init') {
-        const response = await fetch("https://server.com/get-client")
-        const {phone} = response.json()
-        return [execute({definition: "SendMessage", params: {phone, message: "Hi!"}})]
+      const response = await fetch('https://server.com/get-client');
+      const { phone } = response.json();
+      return [
+        execute({
+          definition: 'SendMessage',
+          params: { phone, message: 'Hi!' },
+        }),
+      ];
     }
 
     try {
-        const response = await fetch("https://workflow-state.com")
-        const data = response.json()
+      const response = await fetch('https://workflow-state.com');
+      const data = response.json();
 
-        if (params.event === 'awf.workflow.event/task-completed' && data.step === 1) {
-            return [execute({definition: "UpdateInformation", params: {}})]
-        }
+      if (
+        params.event === 'awf.workflow.event/task-completed' &&
+        data.step === 1
+      ) {
+        return [execute({ definition: 'UpdateInformation', params: {} })];
+      }
 
-        if (params.event === 'awf.workflow.event/task-completed' && data.step === 2) {
-            return [complete({})]
-        }
+      if (
+        params.event === 'awf.workflow.event/task-completed' &&
+        data.step === 2
+      ) {
+        return [complete({})];
+      }
     } catch (error) {
-        return [fail({error})]
+      return [fail({ error })];
     }
 
-    return []
-})
+    return [];
+  },
+);
 ```
 
 ### Workflow Execution
 
 ```javascript
-await client.workflow.execute("CheckOutWorkflow", {clientId: ""})
+await client.workflow.execute('CheckOutWorkflow', { clientId: '' });
 ```
