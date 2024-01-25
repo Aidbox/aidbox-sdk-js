@@ -134,7 +134,7 @@ resource.list('Patient').where('name', 'John');
 Or, you want to find all patients with name John or Steve
 
 ```typescript
-resource.list('Patient')where('name', ['John', 'Steve']);
+resource.list('Patient').where('name', ['John', 'Steve']);
 ```
 
 Also, method where support prefixes for numbers and date, just pass it as third parameter
