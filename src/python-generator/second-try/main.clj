@@ -11,7 +11,7 @@
         backbone-elements (filter (fn [item] (> (count item) 0)) (:backbone-elements data))]
     (conj data (hash-map :backbone-elements (if (= (count backbone-elements) 0) [] (map (fn [[k, v]] (compile-backbone name k v)) backbone-elements))))))
 
-(defn test [name data]
+(defn test1 [name data]
   (->> (filter (fn [item] (> (count item) 0)) (:backbone-elements data))
        (map (fn [[k, v]] (compile-backbone name k v)))
        (hash-map :backbone-elements)
@@ -56,7 +56,7 @@
        (map (fn [[name definition]]
               (->> (help/elements-to-vector definition)
                    (help/get-typings-and-imports (:type definition) (or (:required definition) []))
-                   (test (help/get-resource-name name))
+                   (test1 (help/get-resource-name name))
                    (safe-conj (hash-map :base (get definition :base)))
                    (hash-map name))))
        (into {})))
@@ -94,7 +94,7 @@
               (str/join (map (fn [code] (->> (str (when (contains? code :code)  (str "\tcode: Literal[\"" (:code code) "\"] = \"" (:code code) "\"\n")))
                                              (str (when (contains? code :system) (str "\tsystem: Literal[\"" (:system code) "\"] = \"" (:system code) "\"\n")))
                                              (str (when (contains? code :display) (str "\tdisplay: Literal[\"" (:display code) "\"] = \"" (:display code) "\"\n")))
-                                             (str "class Coding" (str/join (str/split (:code code) #"-")) "(Coding):\n"))) coding))) "\n")))
+                                             (str "\nclass Coding" (str/join (str/split (:code code) #"-")) "(Coding):\n"))) coding))) "\n")))
 
 (defn create-single-pattern [constraint-name, [name, schema]]
   (case (help/get-resource-name (:type schema))
@@ -146,31 +146,29 @@
                      (str "\t" (:name item) ": ")
                      (str "\n")))) elements)
        (str/join "")
-       (str "\n\nclass " (help/uppercase-first-letter (help/get-resource-name name)) ":")))
+       (str "\n\nclass " (help/uppercase-first-letter (help/get-resource-name name)) "(BaseModel):")))
 
 (defn save-to-file [[name, definition]]
   (->> (str (combine-single-class name (:elements definition)))
        (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition))) (:backbone-elements definition))))
        (str (str/join (:patterns definition)))
-       (str "from ..base import *\n\n")
+       (str "from ..base import *\n")
        (str "from typing import Optional\n")
+       (str "from pydantic import BaseModel\n")
        (help/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/constraint" (help/get-resource-name name))))
 
-(defn doallmap [elements]
-  (doall (map save-to-file elements)))
+(defn doallmap [elements] (doall (map save-to-file elements)))
 
 (defn main []
-  (let [schemas (transform-structure (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/fhir-schema/hl7.fhir.r4.core#4.0.1/package.ndjson.gz"))
-        base-schemas (->> schemas (filter #(not (= (:derivation (last %)) "constraint"))))
+  (let [schemas (transform-structure (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.r4.core#4.0.1_package.ndjson.gz"))
+        base-schemas (->> schemas (filter #(= (:derivation (last %)) "specialization")))
         constraint-schemas (->> schemas
                                 (filter #(= (:derivation (last %)) "constraint"))
                                 (filter #(or (= (first %) "hl7.fhir.r4.core#4.0.1/vitalsigns") (= (first %) "hl7.fhir.r4.core#4.0.1/triglyceride"))))]
     (->> base-schemas
-         (compile-elements)
-         (combine-elements)
-         (apply-constraints constraint-schemas {})
-         (doallmap))))
-
-
+         #_(compile-elements)
+         #_(combine-elements)
+         #_(apply-constraints constraint-schemas {})
+         #_(map save-to-file))))
 
 (main)
