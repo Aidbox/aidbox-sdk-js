@@ -51,25 +51,17 @@
 (defn safe-conj [a b] (conj a (or b {})))
 
 (defn compile-elements [schemas]
-  (->> (vec schemas)
-       #_(filter #(not (= (:derivation (last %)) "constraint")))
-       (map (fn [[name definition]]
-              (->> (help/elements-to-vector definition)
-                   (help/get-typings-and-imports (:type definition) (or (:required definition) []))
-                   (test1 (help/get-resource-name name))
-                   (safe-conj (hash-map :base (get definition :base)))
-                   (hash-map name))))
-       (into {})))
+  (map (fn [schema]
+         (->> (help/elements-to-vector schema)
+              (help/get-typings-and-imports (:type schema) (or (:required schema) []))
+              (test1 (help/get-resource-name (:url schema)))
+              (safe-conj (hash-map :base (get schema :base) :url (get schema :url))))) schemas))
 
 (defn combine-elements [schemas]
-  (->> (vec schemas)
-       #_(filter #(= "hl7.fhir.r4.core#4.0.1/Observation" (first %)))
-       (map (fn [[name definition]]
-              (->> definition
-                   (mix-parents-elements-circular (dissoc schemas nil))
-                   (mix-parents-backbones-circular (dissoc schemas nil))
-                   (hash-map name))))
-       (into {})))
+  (map (fn [schema]
+         (->> schema
+              (mix-parents-elements-circular schemas)
+              (mix-parents-backbones-circular schemas))) schemas))
 
 (defn apply-excluded [excluded schema]
   (filter (fn [field-schema]
@@ -114,26 +106,26 @@
 
 
 (defn apply-single-constraint [constraint parent-schema]
+  (println parent-schema)
   (->> (:elements parent-schema)
        (apply-required (:required constraint))
        (apply-excluded (:excluded constraint))
        (apply-choises (filter #(contains? (last %) :choices) (:elements constraint)))
        (hash-map :elements)
        (conj parent-schema)
-       (apply-patterns (:fqn constraint) (filter #(contains? (last %) :pattern) (:elements constraint)))))
+       (apply-patterns (:url constraint) (filter #(contains? (last %) :pattern) (:elements constraint)))))
 
 (defn apply-constraints [constraint-schemas result base-schemas]
-  (if (reduce (fn [acc, [schema-name]]
-                (when (not (get result schema-name)) (reduced true))) false constraint-schemas)
-    (apply-constraints constraint-schemas
-                       (reduce (fn [acc [schema-name definition]]
-                                 (if (contains? result (:base definition))
-                                   (conj acc (hash-map schema-name (apply-single-constraint definition (get result (:base definition)))))
-                                   (if (contains? base-schemas (:base definition))
-                                     (conj acc (hash-map schema-name (apply-single-constraint definition (get base-schemas (:base definition)))))
-                                     acc))) result constraint-schemas) base-schemas) result))
+  (if (reduce (fn [_, constraint-schema]
+                (when (not (get result (:url constraint-schema))) (reduced true))) false constraint-schemas)
+    (apply-constraints
+     constraint-schemas
+     (reduce (fn [acc constraint-schema]
+               (if (contains? result (:base constraint-schema))
+                 (conj acc (hash-map (:url constraint-schema) (apply-single-constraint constraint-schema (get result (:base constraint-schema)))))
 
-(defn transform-structure [data] (into {} (map #(hash-map (:fqn %) %) data)))
+                 (if (contains? base-schemas (:base constraint-schema))
+                   (conj acc (hash-map (:url constraint-schema) (apply-single-constraint constraint-schema (get base-schemas (:base constraint-schema))))) acc))) result constraint-schemas) base-schemas) result))
 
 (defn combine-single-class [name elements]
   (->> (map (fn [item]
@@ -153,22 +145,26 @@
        (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition))) (:backbone-elements definition))))
        (str (str/join (:patterns definition)))
        (str "from ..base import *\n")
-       (str "from typing import Optional\n")
+       (str "from typing import Optional, Literal\n")
        (str "from pydantic import BaseModel\n")
        (help/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/constraint" (help/get-resource-name name))))
 
 (defn doallmap [elements] (doall (map save-to-file elements)))
 
 (defn main []
-  (let [schemas (transform-structure (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.r4.core#4.0.1_package.ndjson.gz"))
-        base-schemas (->> schemas (filter #(= (:derivation (last %)) "specialization")))
+  (let [schemas (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.r4.core#4.0.1_package.ndjson.gz")
+        base-schemas (->> schemas (filter #(= (:derivation %) "specialization")))
         constraint-schemas (->> schemas
-                                (filter #(= (:derivation (last %)) "constraint"))
-                                (filter #(or (= (first %) "hl7.fhir.r4.core#4.0.1/vitalsigns") (= (first %) "hl7.fhir.r4.core#4.0.1/triglyceride"))))]
+                                (filter #(= (:derivation %) "constraint"))
+                                (filter #(or (= (:url %) "http://hl7.org/fhir/StructureDefinition/vitalsigns") (= (:url %) "http://hl7.org/fhir/StructureDefinition/triglyceride") (= (:url %) "http://hl7.org/fhir/StructureDefinition/bmi"))))]
+
     (->> base-schemas
-         #_(compile-elements)
-         #_(combine-elements)
-         #_(apply-constraints constraint-schemas {})
-         #_(map save-to-file))))
+         (compile-elements)
+         (combine-elements)
+         (filter #(not (nil? (:url %))))
+         (map (fn [item] (hash-map (:url item) item)))
+         (into {})
+         (apply-constraints constraint-schemas {})
+         (map save-to-file))))
 
 (main)
