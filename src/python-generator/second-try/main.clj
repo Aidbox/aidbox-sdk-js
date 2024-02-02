@@ -5,6 +5,8 @@
    [clojure.string :as str]
    [clojure.set :as set]))
 
+(def constraint-count (atom 0))
+
 (defn compile-backbone [parent_name property_name definition]
   (let [name (str parent_name "_" (help/uppercase-first-letter (name property_name)))
         data (help/get-typings-and-imports name (or (:required definition) []) (help/elements-to-vector definition))
@@ -58,10 +60,10 @@
               (safe-conj (hash-map :base (get schema :base) :url (get schema :url))))) schemas))
 
 (defn combine-elements [schemas]
-  (map (fn [schema]
+  (map (fn [[name, schema]]
          (->> schema
               (mix-parents-elements-circular schemas)
-              (mix-parents-backbones-circular schemas))) schemas))
+              #_(mix-parents-backbones-circular schemas))) schemas))
 
 (defn apply-excluded [excluded schema]
   (filter (fn [field-schema]
@@ -79,7 +81,6 @@
           (filter #(not (contains? choises-to-exclude (:name %))) schema)))))
 
 (defn pattern-codeable-concept [name schema]
-  (print)
   (->> (str "\tcoding: list[" (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-"))) (get-in schema [:pattern :coding] []))) "] = [" (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-")) "()") (get-in schema [:pattern :coding] []))) "]\n")
        (str "class " name "(CodeableConcept):\n")
        (str (when-let [coding (:coding (:pattern schema))]
@@ -89,9 +90,11 @@
                                              (str "\nclass Coding" (str/join (str/split (:code code) #"-")) "(Coding):\n"))) coding))) "\n")))
 
 (defn create-single-pattern [constraint-name, [name, schema]]
-  (case (help/get-resource-name (:type schema))
-    "CodeableConcept" (pattern-codeable-concept (str (help/uppercase-first-letter (help/get-resource-name constraint-name)) (help/uppercase-first-letter (subs (str name) 1))) schema)
-    "default" ""))
+  (println constraint-name name schema)
+  ""
+  #_(case (help/get-resource-name (:type schema))
+      "CodeableConcept" (pattern-codeable-concept (str (help/uppercase-first-letter (help/get-resource-name constraint-name)) (help/uppercase-first-letter (subs (str name) 1))) schema)
+      "default" ""))
 
 (defn apply-patterns [constraint-name patterns schema]
   (->> (map (fn [item]
@@ -106,26 +109,32 @@
 
 
 (defn apply-single-constraint [constraint parent-schema]
-  (println parent-schema)
+  (println (:url constraint) (reset! constraint-count (+ 1 (deref constraint-count))))
   (->> (:elements parent-schema)
        (apply-required (:required constraint))
        (apply-excluded (:excluded constraint))
        (apply-choises (filter #(contains? (last %) :choices) (:elements constraint)))
        (hash-map :elements)
        (conj parent-schema)
-       (apply-patterns (:url constraint) (filter #(contains? (last %) :pattern) (:elements constraint)))))
+       #_(apply-patterns (:url constraint) (filter #(contains? (last %) :pattern) (:elements constraint)))))
+
+#_(reduce (fn [_, constraint-schema]
+            (when (not (get result (:url constraint-schema))) (reduced true))) false constraint-schemas)
 
 (defn apply-constraints [constraint-schemas result base-schemas]
-  (if (reduce (fn [_, constraint-schema]
-                (when (not (get result (:url constraint-schema))) (reduced true))) false constraint-schemas)
+  (println "run" (count result))
+  (if (not (= (count constraint-schemas) (count result)))
     (apply-constraints
      constraint-schemas
      (reduce (fn [acc constraint-schema]
-               (if (contains? result (:base constraint-schema))
+               (if (and (contains? result (:base constraint-schema)) (not (contains? result (:url constraint-schema))))
                  (conj acc (hash-map (:url constraint-schema) (apply-single-constraint constraint-schema (get result (:base constraint-schema)))))
 
-                 (if (contains? base-schemas (:base constraint-schema))
+                 (if (and (contains? base-schemas (:base constraint-schema)) (not (contains? result (:url constraint-schema))))
                    (conj acc (hash-map (:url constraint-schema) (apply-single-constraint constraint-schema (get base-schemas (:base constraint-schema))))) acc))) result constraint-schemas) base-schemas) result))
+
+(defn get-class-name [profile-name]
+  (str/join "" (map help/uppercase-first-letter (clojure.string/split (help/get-resource-name profile-name) #"-"))))
 
 (defn combine-single-class [name elements]
   (->> (map (fn [item]
@@ -138,7 +147,7 @@
                      (str "\t" (:name item) ": ")
                      (str "\n")))) elements)
        (str/join "")
-       (str "\n\nclass " (help/uppercase-first-letter (help/get-resource-name name)) "(BaseModel):")))
+       (str "\n\nclass " (get-class-name name) "(BaseModel):")))
 
 (defn save-to-file [[name, definition]]
   (->> (str (combine-single-class name (:elements definition)))
@@ -153,18 +162,28 @@
 
 (defn main []
   (let [schemas (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.r4.core#4.0.1_package.ndjson.gz")
-        base-schemas (->> schemas (filter #(= (:derivation %) "specialization")))
+        base-schemas (->> schemas (filter #(or (= (:url %) "http://hl7.org/fhir/StructureDefinition/headcircum") (= (:derivation %) "specialization"))))
         constraint-schemas (->> schemas
                                 (filter #(= (:derivation %) "constraint"))
-                                (filter #(or (= (:url %) "http://hl7.org/fhir/StructureDefinition/vitalsigns") (= (:url %) "http://hl7.org/fhir/StructureDefinition/triglyceride") (= (:url %) "http://hl7.org/fhir/StructureDefinition/bmi"))))]
+                                (filter #(not (= (:url %) "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris"))))
+        us-core (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.core#4.0.0_package.ndjson.gz")
+                     (filter #(= (:derivation %) "constraint")))
+        mcode (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.mcode#2.1.0_package.ndjson.gz")
+                   (filter #(= (:derivation %) "constraint")))
+        codex (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.codex-radiation-therapy#1.0.0_package.ndjson.gz")
+                   (filter #(= (:derivation %) "constraint")))]
 
     (->> base-schemas
          (compile-elements)
+         (filter #(not (nil? (:url %))))
+         (map (fn [item] (hash-map (:url item) item)))
+         (into {})
          (combine-elements)
          (filter #(not (nil? (:url %))))
          (map (fn [item] (hash-map (:url item) item)))
          (into {})
-         (apply-constraints constraint-schemas {})
-         (map save-to-file))))
+         (apply-constraints (concat us-core constraint-schemas mcode codex) {})
+         (doallmap))))
 
 (main)
+;; 479 -> 521
