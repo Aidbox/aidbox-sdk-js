@@ -19,11 +19,11 @@ import { date } from "./date";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** The EvidenceVariable resource describes a "PICO" element that knowledge (evidence, assertion, recommendation) is about. */
 export interface EvidenceVariable extends DomainResource {
+    resourceType: 'EvidenceVariable';
     /** Natural language description of the evidence variable */
     description?: markdown;
     /** Date last changed */
@@ -48,7 +48,7 @@ export interface EvidenceVariable extends DomainResource {
     copyright?: markdown;
     _approvalDate?: Element;
     /** dichotomous | continuous | descriptive */
-    type?: code;
+    type?: `${EvidenceVariableType}`;
     /** The category of the EvidenceVariable, such as Education, Treatment, Assessment, etc. */
     topic?: Array<CodeableConcept>;
     /** Name for this evidence variable (human friendly) */
@@ -62,7 +62,7 @@ export interface EvidenceVariable extends DomainResource {
     characteristic: Array<EvidenceVariableCharacteristic>;
     _lastReviewDate?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${EvidenceVariableStatus}`;
     /** Subordinate title of the EvidenceVariable */
     subtitle?: string;
     _name?: Element;
@@ -93,6 +93,21 @@ export interface EvidenceVariable extends DomainResource {
     /** When the evidence variable is expected to be used */
     effectivePeriod?: Period;
 }
+/** dichotomous | continuous | descriptive */
+export declare enum EvidenceVariableType {
+    Continuous = "continuous",
+    Descriptive = "descriptive",
+    Dichotomous = "dichotomous"
+}
+/** mean | median | mean-of-mean | mean-of-median | median-of-mean | median-of-median */
+export declare enum EvidenceVariableGroupMeasure {
+    Mean = "mean",
+    MeanOfMean = "mean-of-mean",
+    MeanOfMedian = "mean-of-median",
+    Median = "median",
+    MedianOfMean = "median-of-mean",
+    MedianOfMedian = "median-of-median"
+}
 /** What defines the members of the evidence element */
 export interface EvidenceVariableCharacteristic extends BackboneElement {
     /** Natural language description of the characteristic */
@@ -100,7 +115,7 @@ export interface EvidenceVariableCharacteristic extends BackboneElement {
     /** Whether the characteristic includes or excludes members */
     exclude?: boolean;
     /** mean | median | mean-of-mean | mean-of-median | median-of-mean | median-of-median */
-    groupMeasure?: code;
+    groupMeasure?: `${EvidenceVariableGroupMeasure}`;
     definitionExpression: Expression;
     /** Observation time from study start */
     timeFromStart?: Duration;
@@ -108,7 +123,7 @@ export interface EvidenceVariableCharacteristic extends BackboneElement {
     definitionDataRequirement: DataRequirement;
     definitionTriggerDefinition: TriggerDefinition;
     definitionCanonical: canonical;
-    definitionReference: Reference<"Group">;
+    definitionReference: Reference<'Group'>;
     _groupMeasure?: Element;
     participantEffectiveTiming?: Timing;
     participantEffectiveDateTime?: dateTime;
@@ -120,4 +135,11 @@ export interface EvidenceVariableCharacteristic extends BackboneElement {
     _exclude?: Element;
     /** What code/value pairs define members? */
     usageContext?: Array<UsageContext>;
+}
+/** draft | active | retired | unknown */
+export declare enum EvidenceVariableStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }

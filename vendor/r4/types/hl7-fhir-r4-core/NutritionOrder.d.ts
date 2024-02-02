@@ -12,13 +12,13 @@ import { DomainResource } from "./DomainResource";
 import { Ratio } from "./Ratio";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A request to supply a diet, formula feeding (enteral) or oral nutritional supplement to a patient/resident. */
 export interface NutritionOrder extends DomainResource {
+    resourceType: 'NutritionOrder';
     /** The person who requires the diet, formula or nutritional supplement */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     /** Oral diet components */
     oralDiet?: NutritionOrderOralDiet;
     /** Instantiates FHIR protocol or definition */
@@ -28,7 +28,7 @@ export interface NutritionOrder extends DomainResource {
     /** Instantiates protocol or definition */
     instantiates?: Array<uri>;
     /** The encounter associated with this nutrition order */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     _dateTime?: Element;
     _instantiates?: Array<Element>;
     _status?: Element;
@@ -42,15 +42,15 @@ export interface NutritionOrder extends DomainResource {
     /** Order-specific modifier about the type of food that should be given */
     foodPreferenceModifier?: Array<CodeableConcept>;
     /** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
-    status: code;
+    status: `${NutritionOrderStatus}`;
     /** Order-specific modifier about the type of food that should not be given */
     excludeFoodModifier?: Array<CodeableConcept>;
     /** Identifiers assigned to this order */
     identifier?: Array<Identifier>;
     /** proposal | plan | directive | order | original-order | reflex-order | filler-order | instance-order | option */
-    intent: code;
+    intent: `${NutritionOrderIntent}`;
     /** Who ordered the diet, formula or nutritional supplement */
-    orderer?: Reference<"PractitionerRole" | "Practitioner">;
+    orderer?: Reference<'PractitionerRole' | 'Practitioner'>;
     /** Supplement components */
     supplement?: Array<NutritionOrderSupplement>;
     _instantiatesCanonical?: Array<Element>;
@@ -120,6 +120,28 @@ export interface NutritionOrderEnteralFormula extends BackboneElement {
     _additiveProductName?: Element;
     /** Product or brand name of the enteral or infant formula */
     baseFormulaProductName?: string;
+}
+/** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
+export declare enum NutritionOrderStatus {
+    Active = "active",
+    Completed = "completed",
+    Draft = "draft",
+    EnteredInError = "entered-in-error",
+    OnHold = "on-hold",
+    Revoked = "revoked",
+    Unknown = "unknown"
+}
+/** proposal | plan | directive | order | original-order | reflex-order | filler-order | instance-order | option */
+export declare enum NutritionOrderIntent {
+    Order = "order",
+    FillerOrder = "filler-order",
+    Option = "option",
+    Directive = "directive",
+    Proposal = "proposal",
+    ReflexOrder = "reflex-order",
+    Plan = "plan",
+    InstanceOrder = "instance-order",
+    OriginalOrder = "original-order"
 }
 /** Supplement components */
 export interface NutritionOrderSupplement extends BackboneElement {

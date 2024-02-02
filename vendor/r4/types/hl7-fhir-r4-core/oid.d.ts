@@ -2,6 +2,6 @@
 DON'T MODIFY MANUALLY */
 import { uri } from "./uri";
 /** Base StructureDefinition for oid type: An OID represented as a URI
- * @pattern ^urn:oid:[0-2](\.(0|[1-9][0-9]*))+$
+* @pattern ^urn:oid:[0-2](\.(0|[1-9][0-9]*))+$
  */
 export type oid = uri;

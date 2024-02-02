@@ -9,6 +9,7 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** An ingredient of a manufactured item or pharmaceutical product. */
 export interface MedicinalProductIngredient extends DomainResource {
+    resourceType: 'MedicinalProductIngredient';
     /** Identifier for the ingredient */
     identifier?: Identifier;
     /** Ingredient role e.g. Active ingredient, excipient */

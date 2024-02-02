@@ -16,18 +16,18 @@ import { Duration } from "./Duration";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A group of related requests that can be used to capture intended activities that have inter-dependencies such as "give this medication after that one". */
 export interface RequestGroup extends DomainResource {
+    resourceType: 'RequestGroup';
     /** Instantiates FHIR protocol or definition */
     instantiatesCanonical?: Array<canonical>;
     /** Instantiates external protocol or definition */
     instantiatesUri?: Array<uri>;
     _authoredOn?: Element;
     /** Created as part of */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     _priority?: Element;
     _status?: Element;
     /** Why the request group is needed */
@@ -37,12 +37,12 @@ export interface RequestGroup extends DomainResource {
     /** Additional notes about the response */
     note?: Array<Annotation>;
     /** Device or practitioner that authored the request group */
-    author?: Reference<"PractitionerRole" | "Device" | "Practitioner">;
+    author?: Reference<'PractitionerRole' | 'Device' | 'Practitioner'>;
     _intent?: Element;
     /** routine | urgent | asap | stat */
-    priority?: code;
+    priority?: `${RequestGroupPriority}`;
     /** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
-    status: code;
+    status: `${RequestGroupStatus}`;
     /** Composite request this is part of */
     groupIdentifier?: Identifier;
     /** What's being requested/ordered */
@@ -50,7 +50,7 @@ export interface RequestGroup extends DomainResource {
     /** Business identifier */
     identifier?: Array<Identifier>;
     /** proposal | plan | directive | order | original-order | reflex-order | filler-order | instance-order | option */
-    intent: code;
+    intent: `${RequestGroupIntent}`;
     action?: Array<RequestGroupAction>;
     /** Request(s) replaced by this request */
     replaces?: Array<Reference>;
@@ -58,10 +58,78 @@ export interface RequestGroup extends DomainResource {
     basedOn?: Array<Reference>;
     _instantiatesCanonical?: Array<Element>;
     /** Who the request group is about */
-    subject?: Reference<"Patient" | "Group">;
+    subject?: Reference<'Patient' | 'Group'>;
     /** Why the request group is needed */
     reasonReference?: Array<Reference>;
     _instantiatesUri?: Array<Element>;
+}
+/** routine | urgent | asap | stat */
+export declare enum RequestGroupActionPriority {
+    Asap = "asap",
+    Routine = "routine",
+    Stat = "stat",
+    Urgent = "urgent"
+}
+/** yes | no */
+export declare enum RequestGroupActionPrecheckBehavior {
+    No = "no",
+    Yes = "yes"
+}
+/** proposal | plan | directive | order | original-order | reflex-order | filler-order | instance-order | option */
+export declare enum RequestGroupIntent {
+    Order = "order",
+    FillerOrder = "filler-order",
+    Option = "option",
+    Directive = "directive",
+    Proposal = "proposal",
+    ReflexOrder = "reflex-order",
+    Plan = "plan",
+    InstanceOrder = "instance-order",
+    OriginalOrder = "original-order"
+}
+/** single | multiple */
+export declare enum RequestGroupActionCardinalityBehavior {
+    Multiple = "multiple",
+    Single = "single"
+}
+/** any | all | all-or-none | exactly-one | at-most-one | one-or-more */
+export declare enum RequestGroupActionSelectionBehavior {
+    All = "all",
+    AllOrNone = "all-or-none",
+    Any = "any",
+    AtMostOne = "at-most-one",
+    ExactlyOne = "exactly-one",
+    OneOrMore = "one-or-more"
+}
+/** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
+export declare enum RequestGroupActionRelationship {
+    BeforeStart = "before-start",
+    Concurrent = "concurrent",
+    After = "after",
+    ConcurrentWithStart = "concurrent-with-start",
+    BeforeEnd = "before-end",
+    AfterEnd = "after-end",
+    AfterStart = "after-start",
+    Before = "before",
+    ConcurrentWithEnd = "concurrent-with-end"
+}
+/** Whether or not the action is applicable */
+export interface RequestGroupActionCondition extends BackboneElement {
+    /** applicability | start | stop */
+    kind: `${RequestGroupActionKind}`;
+    _kind?: Element;
+    /** Boolean-valued expression */
+    expression?: Expression;
+}
+/** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
+export declare enum RequestGroupStatus {
+    Active = "active",
+    Completed = "completed",
+    Draft = "draft",
+    EnteredInError = "entered-in-error",
+    OnHold = "on-hold",
+    Revoked = "revoked",
+    Unknown = "unknown"
 }
 /** Relationship to another action */
 export interface RequestGroupActionRelatedAction extends BackboneElement {
@@ -69,18 +137,10 @@ export interface RequestGroupActionRelatedAction extends BackboneElement {
     actionId: id;
     _actionId?: Element;
     /** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
-    relationship: code;
+    relationship: `${RequestGroupActionRelationship}`;
     _relationship?: Element;
     offsetDuration?: Duration;
     offsetRange?: Range;
-}
-/** Whether or not the action is applicable */
-export interface RequestGroupActionCondition extends BackboneElement {
-    /** applicability | start | stop */
-    kind: code;
-    _kind?: Element;
-    /** Boolean-valued expression */
-    expression?: Expression;
 }
 /** Proposed actions, if any */
 export interface RequestGroupAction extends BackboneElement {
@@ -109,20 +169,20 @@ export interface RequestGroupAction extends BackboneElement {
     /** User-visible prefix for the action (e.g. 1. or A.) */
     prefix?: string;
     /** any | all | all-or-none | exactly-one | at-most-one | one-or-more */
-    selectionBehavior?: code;
+    selectionBehavior?: `${RequestGroupActionSelectionBehavior}`;
     timingDateTime?: dateTime;
     timingTiming?: Timing;
     timingDuration?: Duration;
     /** routine | urgent | asap | stat */
-    priority?: code;
+    priority?: `${RequestGroupActionPriority}`;
     /** must | could | must-unless-documented */
-    requiredBehavior?: code;
+    requiredBehavior?: `${RequestGroupActionRequiredBehavior}`;
     /** Whether or not the action is applicable */
     condition?: Array<RequestGroupActionCondition>;
     /** The target of the action */
     resource?: Reference;
     /** visual-group | logical-group | sentence-group */
-    groupingBehavior?: code;
+    groupingBehavior?: `${RequestGroupActionGroupingBehavior}`;
     /** Code representing the meaning of the action or sub-actions */
     code?: Array<CodeableConcept>;
     timingAge?: Age;
@@ -131,10 +191,35 @@ export interface RequestGroupAction extends BackboneElement {
     action?: Array<RequestGroupAction>;
     _selectionBehavior?: Element;
     /** yes | no */
-    precheckBehavior?: code;
+    precheckBehavior?: `${RequestGroupActionPrecheckBehavior}`;
     _title?: Element;
     _cardinalityBehavior?: Element;
     _textEquivalent?: Element;
     /** single | multiple */
-    cardinalityBehavior?: code;
+    cardinalityBehavior?: `${RequestGroupActionCardinalityBehavior}`;
+}
+/** applicability | start | stop */
+export declare enum RequestGroupActionKind {
+    Applicability = "applicability",
+    Start = "start",
+    Stop = "stop"
+}
+/** visual-group | logical-group | sentence-group */
+export declare enum RequestGroupActionGroupingBehavior {
+    LogicalGroup = "logical-group",
+    SentenceGroup = "sentence-group",
+    VisualGroup = "visual-group"
+}
+/** routine | urgent | asap | stat */
+export declare enum RequestGroupPriority {
+    Asap = "asap",
+    Routine = "routine",
+    Stat = "stat",
+    Urgent = "urgent"
+}
+/** must | could | must-unless-documented */
+export declare enum RequestGroupActionRequiredBehavior {
+    Could = "could",
+    Must = "must",
+    MustUnlessDocumented = "must-unless-documented"
 }

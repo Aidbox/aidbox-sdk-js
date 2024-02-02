@@ -4,15 +4,22 @@ import { Resource } from "./Resource";
 import { base64Binary } from "./base64Binary";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 /** A resource that represents the data of a single raw artifact as digital content accessible in its native format.  A Binary resource can contain any content, whether text, image, pdf, zip archive, etc. */
 export interface Binary extends Resource {
+    resourceType: 'Binary';
     /** MimeType of the binary content */
-    contentType: code;
+    contentType: `${BinaryContentType}`;
     _contentType?: Element;
     /** Identifies another resource to use as proxy when enforcing access control */
     securityContext?: Reference;
     /** The actual content */
     data?: base64Binary;
     _data?: Element;
+}
+/** MimeType of the binary content */
+export declare enum BinaryContentType {
+    "Application/hl7Cda+xml" = "application/hl7-cda+xml",
+    "Application/sparqlResults+xml" = "application/sparql-results+xml",
+    "Application/sql" = "application/sql",
+    "Application/xquery" = "application/xquery"
 }

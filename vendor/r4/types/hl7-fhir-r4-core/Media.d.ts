@@ -10,18 +10,18 @@ import { DomainResource } from "./DomainResource";
 import { instant } from "./instant";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { decimal } from "./decimal";
 /** A photo, video, or audio recording acquired or used in healthcare. The actual content may be inline or provided by direct reference. */
 export interface Media extends DomainResource {
+    resourceType: 'Media';
     _issued?: Element;
     /** Name of the device/manufacturer */
     deviceName?: string;
     _width?: Element;
     _duration?: Element;
     /** Encounter associated with media */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     /** Actual Media - reference or data */
     content: Attachment;
     /** Number of frames if > 1 (photo) */
@@ -43,18 +43,18 @@ export interface Media extends DomainResource {
     _height?: Element;
     createdPeriod?: Period;
     /** preparation | in-progress | not-done | on-hold | stopped | completed | entered-in-error | unknown */
-    status: code;
+    status: `${MediaStatus}`;
     /** Identifier(s) for the image */
     identifier?: Array<Identifier>;
     /** The person who generated the image */
-    operator?: Reference<"CareTeam" | "Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    operator?: Reference<'CareTeam' | 'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** Observed body part */
     bodySite?: CodeableConcept;
     _createdDateTime?: Element;
     /** Date/Time this version was made available */
     issued?: instant;
     /** Observing Device */
-    device?: Reference<"Device" | "DeviceMetric">;
+    device?: Reference<'Device' | 'DeviceMetric'>;
     /** Procedure that caused this media to be created */
     basedOn?: Array<Reference>;
     _deviceName?: Element;
@@ -62,9 +62,20 @@ export interface Media extends DomainResource {
     partOf?: Array<Reference>;
     createdDateTime?: dateTime;
     /** Who/What this Media is a record of */
-    subject?: Reference<"Patient" | "PractitionerRole" | "Device" | "Location" | "Practitioner" | "Specimen" | "Group">;
+    subject?: Reference<'Patient' | 'PractitionerRole' | 'Device' | 'Location' | 'Practitioner' | 'Specimen' | 'Group'>;
     /** Imaging view, e.g. Lateral or Antero-posterior */
     view?: CodeableConcept;
     /** Height of the image in pixels (photo/video) */
     height?: positiveInt;
+}
+/** preparation | in-progress | not-done | on-hold | stopped | completed | entered-in-error | unknown */
+export declare enum MediaStatus {
+    Completed = "completed",
+    EnteredInError = "entered-in-error",
+    InProgress = "in-progress",
+    NotDone = "not-done",
+    OnHold = "on-hold",
+    Preparation = "preparation",
+    Stopped = "stopped",
+    Unknown = "unknown"
 }

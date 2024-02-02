@@ -2,13 +2,19 @@
 DON'T MODIFY MANUALLY */
 import { xhtml } from "./xhtml";
 import { Element } from "./Element";
-import { code } from "./code";
 /** Base StructureDefinition for Narrative Type: A human-readable summary of the resource conveying the essential clinical and business information for the resource. */
 export interface Narrative extends Element {
     /** generated | extensions | additional | empty */
-    status: code;
+    status: `${NarrativeStatus}`;
     _status?: Element;
     /** Limited xhtml content */
     div: xhtml;
     _div?: Element;
+}
+/** generated | extensions | additional | empty */
+export declare enum NarrativeStatus {
+    Additional = "additional",
+    Empty = "empty",
+    Extensions = "extensions",
+    Generated = "generated"
 }

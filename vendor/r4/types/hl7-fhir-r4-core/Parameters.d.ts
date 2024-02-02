@@ -53,6 +53,7 @@ import { decimal } from "./decimal";
 import { Contributor } from "./Contributor";
 /** This resource is a non-persisted resource used to pass information into and back from an [operation](operations.html). It has no other use, and there is no RESTful endpoint associated with it. */
 export interface Parameters extends Resource {
+    resourceType: 'Parameters';
     parameter?: Array<ParametersParameter>;
 }
 /** Operation Parameter */

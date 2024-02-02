@@ -8,8 +8,9 @@ import { Reference } from "./Reference";
 import { Identifier } from "./Identifier";
 /** Record details about an anatomical structure.  This resource may be used when a coded concept does not provide the necessary detail needed for the use case. */
 export interface BodyStructure extends DomainResource {
+    resourceType: 'BodyStructure';
     /** Who this is about */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     /** Text description */
     description?: string;
     _active?: Element;

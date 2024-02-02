@@ -7,10 +7,10 @@ import { Money } from "./Money";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** This resource provides the status of the payment for goods and services rendered, and the request and response resource references. */
 export interface PaymentNotice extends DomainResource {
+    resourceType: 'PaymentNotice';
     /** Response reference */
     response?: Reference;
     _created?: Element;
@@ -19,23 +19,30 @@ export interface PaymentNotice extends DomainResource {
     /** Request reference */
     request?: Reference;
     /** Payment reference */
-    payment: Reference<"PaymentReconciliation">;
+    payment: Reference<'PaymentReconciliation'>;
     _status?: Element;
     /** Party being notified */
-    recipient: Reference<"Organization">;
+    recipient: Reference<'Organization'>;
     /** Creation date */
     created: dateTime;
     /** Issued or cleared Status of the payment */
     paymentStatus?: CodeableConcept;
     /** active | cancelled | draft | entered-in-error */
-    status: code;
+    status: `${PaymentNoticeStatus}`;
     /** Party being paid */
-    payee?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    payee?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Payment or clearing date */
     paymentDate?: date;
     /** Business Identifier for the payment noctice */
     identifier?: Array<Identifier>;
     _paymentDate?: Element;
     /** Responsible practitioner */
-    provider?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    provider?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
+}
+/** active | cancelled | draft | entered-in-error */
+export declare enum PaymentNoticeStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    Draft = "draft",
+    EnteredInError = "entered-in-error"
 }

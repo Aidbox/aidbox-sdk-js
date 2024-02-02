@@ -9,11 +9,11 @@ import { canonical } from "./canonical";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** An occurrence of information being transmitted; e.g. an alert that was sent to a responsible provider, a public health agency that was notified about a reportable condition. */
 export interface Communication extends DomainResource {
+    resourceType: 'Communication';
     /** Message category */
     category?: Array<CodeableConcept>;
     /** When received */
@@ -26,7 +26,7 @@ export interface Communication extends DomainResource {
     instantiatesUri?: Array<uri>;
     _received?: Element;
     /** Encounter created as part of */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     /** A channel of communication */
     medium?: Array<CodeableConcept>;
     _priority?: Element;
@@ -44,11 +44,11 @@ export interface Communication extends DomainResource {
     /** Comments made about the communication */
     note?: Array<Annotation>;
     /** routine | urgent | asap | stat */
-    priority?: code;
+    priority?: `${CommunicationPriority}`;
     /** preparation | in-progress | not-done | on-hold | stopped | completed | entered-in-error | unknown */
-    status: code;
+    status: `${CommunicationStatus}`;
     /** Message sender */
-    sender?: Reference<"Patient" | "PractitionerRole" | "HealthcareService" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    sender?: Reference<'Patient' | 'PractitionerRole' | 'HealthcareService' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** Unique identifier */
     identifier?: Array<Identifier>;
     /** Reply to */
@@ -59,7 +59,7 @@ export interface Communication extends DomainResource {
     partOf?: Array<Reference>;
     _instantiatesCanonical?: Array<Element>;
     /** Focus of message */
-    subject?: Reference<"Patient" | "Group">;
+    subject?: Reference<'Patient' | 'Group'>;
     /** Resources that pertain to this communication */
     about?: Array<Reference>;
     /** Why was communication done? */
@@ -73,4 +73,22 @@ export interface CommunicationPayload extends BackboneElement {
     _contentString: Element;
     contentAttachment: Attachment;
     contentReference: Reference;
+}
+/** routine | urgent | asap | stat */
+export declare enum CommunicationPriority {
+    Asap = "asap",
+    Routine = "routine",
+    Stat = "stat",
+    Urgent = "urgent"
+}
+/** preparation | in-progress | not-done | on-hold | stopped | completed | entered-in-error | unknown */
+export declare enum CommunicationStatus {
+    Completed = "completed",
+    EnteredInError = "entered-in-error",
+    InProgress = "in-progress",
+    NotDone = "not-done",
+    OnHold = "on-hold",
+    Preparation = "preparation",
+    Stopped = "stopped",
+    Unknown = "unknown"
 }

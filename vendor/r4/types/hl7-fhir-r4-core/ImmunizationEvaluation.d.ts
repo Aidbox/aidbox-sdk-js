@@ -6,12 +6,12 @@ import { dateTime } from "./dateTime";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** Describes a comparison of an immunization event against published recommendations to determine if the administration is "valid" in relation to those  recommendations. */
 export interface ImmunizationEvaluation extends DomainResource {
+    resourceType: 'ImmunizationEvaluation';
     /** Who this evaluation is for */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     /** Evaluation notes */
     description?: string;
     seriesDosesPositiveInt?: positiveInt;
@@ -23,7 +23,7 @@ export interface ImmunizationEvaluation extends DomainResource {
     series?: string;
     _date?: Element;
     /** Who is responsible for publishing the recommendations */
-    authority?: Reference<"Organization">;
+    authority?: Reference<'Organization'>;
     _status?: Element;
     _doseNumberPositiveInt?: Element;
     doseNumberString?: string;
@@ -32,10 +32,10 @@ export interface ImmunizationEvaluation extends DomainResource {
     /** Reason for the dose status */
     doseStatusReason?: Array<CodeableConcept>;
     /** Immunization being evaluated */
-    immunizationEvent: Reference<"Immunization">;
+    immunizationEvent: Reference<'Immunization'>;
     _seriesDosesString?: Element;
     /** completed | entered-in-error */
-    status: code;
+    status: `${ImmunizationEvaluationStatus}`;
     /** Business identifier */
     identifier?: Array<Identifier>;
     /** Evaluation target disease */
@@ -44,4 +44,9 @@ export interface ImmunizationEvaluation extends DomainResource {
     doseStatus: CodeableConcept;
     _series?: Element;
     _seriesDosesPositiveInt?: Element;
+}
+/** completed | entered-in-error */
+export declare enum ImmunizationEvaluationStatus {
+    Completed = "completed",
+    EnteredInError = "entered-in-error"
 }

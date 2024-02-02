@@ -12,24 +12,24 @@ import { ElementDefinition } from "./ElementDefinition";
 import { DomainResource } from "./DomainResource";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A definition of a FHIR structure. This resource is used to describe the underlying resources, data types defined in FHIR, and also for describing extensions and constraints on resources and data types. */
 export interface StructureDefinition extends DomainResource {
+    resourceType: 'StructureDefinition';
     /** Natural language description of the structure definition */
     description?: markdown;
     _kind?: Element;
     /** Date last changed */
     date?: dateTime;
     /** specialization | constraint - How relates to base definition */
-    derivation?: code;
+    derivation?: `${StructureDefinitionDerivation}`;
     /** Name of the publisher (organization or individual) */
     publisher?: string;
     /** FHIRPath invariants - when the extension can be used */
     contextInvariant?: Array<string>;
     /** FHIR Version this StructureDefinition targets */
-    fhirVersion?: code;
+    fhirVersion?: `${StructureDefinitionFhirVersion}`;
     /** Intended jurisdiction for structure definition (if applicable) */
     jurisdiction?: Array<CodeableConcept>;
     _publisher?: Element;
@@ -64,9 +64,9 @@ export interface StructureDefinition extends DomainResource {
     /** Assist with indexing and finding */
     keyword?: Array<Coding>;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${StructureDefinitionStatus}`;
     /** primitive-type | complex-type | resource | logical */
-    kind: code;
+    kind: `${StructureDefinitionKind}`;
     _name?: Element;
     /** Canonical identifier for this structure definition, represented as a URI (globally unique) */
     url: uri;
@@ -90,6 +90,75 @@ export interface StructureDefinition extends DomainResource {
     /** Definition that this type is constrained/specialized from */
     baseDefinition?: canonical;
 }
+/** specialization | constraint - How relates to base definition */
+export declare enum StructureDefinitionDerivation {
+    Constraint = "constraint",
+    Specialization = "specialization"
+}
+/** Differential view of the structure */
+export interface StructureDefinitionDifferential extends BackboneElement {
+    /** Definition of elements in the resource (if no StructureDefinition) */
+    element: Array<ElementDefinition>;
+}
+/** If an extension, where it can be used in instances */
+export interface StructureDefinitionContext extends BackboneElement {
+    /** fhirpath | element | extension */
+    type: `${StructureDefinitionType}`;
+    _type?: Element;
+    /** Where the extension can be used in instances */
+    expression: string;
+    _expression?: Element;
+}
+/** primitive-type | complex-type | resource | logical */
+export declare enum StructureDefinitionKind {
+    ComplexType = "complex-type",
+    Logical = "logical",
+    PrimitiveType = "primitive-type",
+    Resource = "resource"
+}
+/** FHIR Version this StructureDefinition targets */
+export declare enum StructureDefinitionFhirVersion {
+    "Num1.8.0" = "1.8.0",
+    "Num0.05" = "0.05",
+    "Num0.01" = "0.01",
+    "Num3.0.1" = "3.0.1",
+    "Num1.0.0" = "1.0.0",
+    "Num3.3.0" = "3.3.0",
+    "Num0.0.82" = "0.0.82",
+    "Num1.6.0" = "1.6.0",
+    "Num1.4.0" = "1.4.0",
+    "Num3.0.0" = "3.0.0",
+    "Num0.0.80" = "0.0.80",
+    "Num4.0.0" = "4.0.0",
+    "Num0.11" = "0.11",
+    "Num0.06" = "0.06",
+    "Num1.0.2" = "1.0.2",
+    "Num1.0.1" = "1.0.1",
+    "Num0.4.0" = "0.4.0",
+    "Num4.0.1" = "4.0.1",
+    "Num3.5.0" = "3.5.0",
+    "Num0.5.0" = "0.5.0",
+    "Num1.1.0" = "1.1.0",
+    "Num0.0.81" = "0.0.81"
+}
+/** fhirpath | element | extension */
+export declare enum StructureDefinitionType {
+    Element = "element",
+    Extension = "extension",
+    Fhirpath = "fhirpath"
+}
+/** Snapshot view of the structure */
+export interface StructureDefinitionSnapshot extends BackboneElement {
+    /** Definition of elements in the resource (if no StructureDefinition) */
+    element: Array<ElementDefinition>;
+}
+/** draft | active | retired | unknown */
+export declare enum StructureDefinitionStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
 /** External specification that the content is mapped to */
 export interface StructureDefinitionMapping extends BackboneElement {
     /** Internal id when this mapping is used */
@@ -104,23 +173,4 @@ export interface StructureDefinitionMapping extends BackboneElement {
     /** Versions, Issues, Scope limitations etc. */
     comment?: string;
     _comment?: Element;
-}
-/** Snapshot view of the structure */
-export interface StructureDefinitionSnapshot extends BackboneElement {
-    /** Definition of elements in the resource (if no StructureDefinition) */
-    element: Array<ElementDefinition>;
-}
-/** If an extension, where it can be used in instances */
-export interface StructureDefinitionContext extends BackboneElement {
-    /** fhirpath | element | extension */
-    type: code;
-    _type?: Element;
-    /** Where the extension can be used in instances */
-    expression: string;
-    _expression?: Element;
-}
-/** Differential view of the structure */
-export interface StructureDefinitionDifferential extends BackboneElement {
-    /** Definition of elements in the resource (if no StructureDefinition) */
-    element: Array<ElementDefinition>;
 }

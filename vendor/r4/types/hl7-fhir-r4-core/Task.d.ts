@@ -53,6 +53,7 @@ import { decimal } from "./decimal";
 import { Contributor } from "./Contributor";
 /** A task to be performed. */
 export interface Task extends DomainResource {
+    resourceType: 'Task';
     /** Constraints on fulfillment tasks */
     restriction?: TaskRestriction;
     /** Human-readable explanation of task */
@@ -71,7 +72,7 @@ export interface Task extends DomainResource {
     relevantHistory?: Array<Reference>;
     _authoredOn?: Element;
     /** Healthcare event during which this task originated */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     _priority?: Element;
     _status?: Element;
     /** Why task is needed */
@@ -91,13 +92,13 @@ export interface Task extends DomainResource {
     /** Beneficiary of the Task */
     for?: Reference;
     /** Who is asking for task to be done */
-    requester?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    requester?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** Task Last Modified Date */
     lastModified?: dateTime;
     /** routine | urgent | asap | stat */
-    priority?: code;
+    priority?: `${TaskPriority}`;
     /** draft | requested | received | accepted | + */
-    status: code;
+    status: `${TaskStatus}`;
     /** Requisition or grouper id */
     groupIdentifier?: Identifier;
     /** Task Type */
@@ -105,7 +106,7 @@ export interface Task extends DomainResource {
     /** Task Instance Identifier */
     identifier?: Array<Identifier>;
     /** unknown | proposal | plan | order | original-order | reflex-order | filler-order | instance-order | option */
-    intent: code;
+    intent: `${TaskIntent}`;
     /** What task is acting on */
     focus?: Reference;
     /** Information used to perform task */
@@ -116,10 +117,10 @@ export interface Task extends DomainResource {
     partOf?: Array<Reference>;
     _lastModified?: Element;
     /** Where task occurs */
-    location?: Reference<"Location">;
+    location?: Reference<'Location'>;
     _instantiatesCanonical?: Element;
     /** Responsible individual */
-    owner?: Reference<"CareTeam" | "Patient" | "PractitionerRole" | "HealthcareService" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    owner?: Reference<'CareTeam' | 'Patient' | 'PractitionerRole' | 'HealthcareService' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** Why task is needed */
     reasonReference?: Reference;
     _instantiatesUri?: Element;
@@ -207,6 +208,40 @@ export interface TaskOutput extends BackboneElement {
     valueId: id;
     valueUrl: url;
     _valueInteger: Element;
+}
+/** routine | urgent | asap | stat */
+export declare enum TaskPriority {
+    Asap = "asap",
+    Routine = "routine",
+    Stat = "stat",
+    Urgent = "urgent"
+}
+/** draft | requested | received | accepted | + */
+export declare enum TaskStatus {
+    Draft = "draft",
+    Failed = "failed",
+    Cancelled = "cancelled",
+    Rejected = "rejected",
+    Ready = "ready",
+    InProgress = "in-progress",
+    EnteredInError = "entered-in-error",
+    Completed = "completed",
+    Received = "received",
+    Requested = "requested",
+    Accepted = "accepted",
+    OnHold = "on-hold"
+}
+/** unknown | proposal | plan | order | original-order | reflex-order | filler-order | instance-order | option */
+export declare enum TaskIntent {
+    Order = "order",
+    FillerOrder = "filler-order",
+    Option = "option",
+    Unknown = "unknown",
+    Proposal = "proposal",
+    ReflexOrder = "reflex-order",
+    Plan = "plan",
+    InstanceOrder = "instance-order",
+    OriginalOrder = "original-order"
 }
 /** Information used to perform task */
 export interface TaskInput extends BackboneElement {

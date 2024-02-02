@@ -13,12 +13,12 @@ import { date } from "./date";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** The ChargeItemDefinition resource provides the properties that apply to the (billing) codes necessary to calculate costs and prices. The properties may differ largely depending on type and realm, therefore this resource gives only a rough structure and requires profiling for each type of billing code system. */
 export interface ChargeItemDefinition extends DomainResource {
+    resourceType: 'ChargeItemDefinition';
     /** Natural language description of the charge item definition */
     description?: markdown;
     /** Date last changed */
@@ -52,7 +52,7 @@ export interface ChargeItemDefinition extends DomainResource {
     derivedFromUri?: Array<uri>;
     _lastReviewDate?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${ChargeItemDefinitionStatus}`;
     _derivedFromUri?: Array<Element>;
     /** Canonical identifier for this charge item definition, represented as a URI (globally unique) */
     url: uri;
@@ -79,10 +79,19 @@ export interface ChargeItemDefinition extends DomainResource {
     /** When the charge item definition is expected to be used */
     effectivePeriod?: Period;
 }
+/** base | surcharge | deduction | discount | tax | informational */
+export declare enum ChargeItemDefinitionType {
+    Base = "base",
+    Deduction = "deduction",
+    Discount = "discount",
+    Informational = "informational",
+    Surcharge = "surcharge",
+    Tax = "tax"
+}
 /** Components of total line item price */
 export interface ChargeItemDefinitionPriceComponent extends BackboneElement {
     /** base | surcharge | deduction | discount | tax | informational */
-    type: code;
+    type: `${ChargeItemDefinitionType}`;
     _type?: Element;
     /** Code identifying the specific component */
     code?: CodeableConcept;
@@ -98,6 +107,13 @@ export interface ChargeItemDefinitionPropertyGroup extends BackboneElement {
     applicability?: Array<ChargeItemDefinitionApplicability>;
     /** Components of total line item price */
     priceComponent?: Array<ChargeItemDefinitionPriceComponent>;
+}
+/** draft | active | retired | unknown */
+export declare enum ChargeItemDefinitionStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }
 /** Whether or not the billing code is applicable */
 export interface ChargeItemDefinitionApplicability extends BackboneElement {

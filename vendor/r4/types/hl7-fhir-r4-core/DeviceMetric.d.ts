@@ -6,44 +6,83 @@ import { DomainResource } from "./DomainResource";
 import { instant } from "./instant";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Describes a measurement, calculation or setting capability of a medical device. */
 export interface DeviceMetric extends DomainResource {
+    resourceType: 'DeviceMetric';
     /** measurement | setting | calculation | unspecified */
-    category: code;
+    category: `${DeviceMetricCategory}`;
     _color?: Element;
     /** Describes the measurement repetition time */
     measurementPeriod?: Timing;
     /** black | red | green | yellow | blue | magenta | cyan | white */
-    color?: code;
+    color?: `${DeviceMetricColor}`;
     /** Describes the link to the parent Device */
-    parent?: Reference<"Device">;
+    parent?: Reference<'Device'>;
     /** Unit of Measure for the Metric */
     unit?: CodeableConcept;
     /** Identity of metric, for example Heart Rate or PEEP Setting */
     type: CodeableConcept;
     /** Describes the link to the source Device */
-    source?: Reference<"Device">;
+    source?: Reference<'Device'>;
     _operationalStatus?: Element;
     /** Instance identifier */
     identifier?: Array<Identifier>;
     /** Describes the calibrations that have been performed or that are required to be performed */
     calibration?: Array<DeviceMetricCalibration>;
     /** on | off | standby | entered-in-error */
-    operationalStatus?: code;
+    operationalStatus?: `${DeviceMetricOperationalStatus}`;
     _category?: Element;
+}
+/** measurement | setting | calculation | unspecified */
+export declare enum DeviceMetricCategory {
+    Calculation = "calculation",
+    Measurement = "measurement",
+    Setting = "setting",
+    Unspecified = "unspecified"
+}
+/** black | red | green | yellow | blue | magenta | cyan | white */
+export declare enum DeviceMetricColor {
+    Black = "black",
+    Blue = "blue",
+    Cyan = "cyan",
+    Green = "green",
+    Magenta = "magenta",
+    Red = "red",
+    White = "white",
+    Yellow = "yellow"
+}
+/** unspecified | offset | gain | two-point */
+export declare enum DeviceMetricType {
+    Gain = "gain",
+    Offset = "offset",
+    TwoPoint = "two-point",
+    Unspecified = "unspecified"
+}
+/** not-calibrated | calibration-required | calibrated | unspecified */
+export declare enum DeviceMetricState {
+    Calibrated = "calibrated",
+    CalibrationRequired = "calibration-required",
+    NotCalibrated = "not-calibrated",
+    Unspecified = "unspecified"
 }
 /** Describes the calibrations that have been performed or that are required to be performed */
 export interface DeviceMetricCalibration extends BackboneElement {
     /** unspecified | offset | gain | two-point */
-    type?: code;
+    type?: `${DeviceMetricType}`;
     _type?: Element;
     /** not-calibrated | calibration-required | calibrated | unspecified */
-    state?: code;
+    state?: `${DeviceMetricState}`;
     _state?: Element;
     /** Describes the time last calibration has been performed */
     time?: instant;
     _time?: Element;
+}
+/** on | off | standby | entered-in-error */
+export declare enum DeviceMetricOperationalStatus {
+    EnteredInError = "entered-in-error",
+    Off = "off",
+    On = "on",
+    Standby = "standby"
 }

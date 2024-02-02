@@ -5,10 +5,10 @@ import { ContactPoint } from "./ContactPoint";
 import { DomainResource } from "./DomainResource";
 import { instant } from "./instant";
 import { Element } from "./Element";
-import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** The subscription resource is used to define a push-based subscription from a server to another system. Once a subscription is registered with the server, the server checks every resource that is created or updated, and if the resource matches the given criteria, it sends a message on the defined "channel" so that another system can take an appropriate action. */
 export interface Subscription extends DomainResource {
+    resourceType: 'Subscription';
     _end?: Element;
     /** Rule for server push */
     criteria: string;
@@ -19,7 +19,7 @@ export interface Subscription extends DomainResource {
     /** Description of why this subscription was created */
     reason: string;
     /** requested | active | error | off */
-    status: code;
+    status: `${SubscriptionStatus}`;
     _reason?: Element;
     /** Latest error note */
     error?: string;
@@ -29,18 +29,40 @@ export interface Subscription extends DomainResource {
     /** Contact details for source (e.g. troubleshooting) */
     contact?: Array<ContactPoint>;
 }
+/** rest-hook | websocket | email | sms | message */
+export declare enum SubscriptionType {
+    Email = "email",
+    Message = "message",
+    RestHook = "rest-hook",
+    Sms = "sms",
+    Websocket = "websocket"
+}
+/** MIME type to send, or omit for no payload */
+export declare enum SubscriptionPayload {
+    "Application/hl7Cda+xml" = "application/hl7-cda+xml",
+    "Application/sparqlResults+xml" = "application/sparql-results+xml",
+    "Application/sql" = "application/sql",
+    "Application/xquery" = "application/xquery"
+}
 /** The channel on which to report matches to the criteria */
 export interface SubscriptionChannel extends BackboneElement {
     /** rest-hook | websocket | email | sms | message */
-    type: code;
+    type: `${SubscriptionType}`;
     _type?: Element;
     /** Where the channel points to */
     endpoint?: url;
     _endpoint?: Element;
     /** MIME type to send, or omit for no payload */
-    payload?: code;
+    payload?: `${SubscriptionPayload}`;
     _payload?: Element;
     /** Usage depends on the channel type */
     header?: Array<string>;
     _header?: Array<Element>;
+}
+/** requested | active | error | off */
+export declare enum SubscriptionStatus {
+    Active = "active",
+    Error = "error",
+    Off = "off",
+    Requested = "requested"
 }

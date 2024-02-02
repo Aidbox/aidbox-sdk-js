@@ -6,23 +6,23 @@ import { dateTime } from "./dateTime";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A list is a curated collection of resources. */
 export interface List extends DomainResource {
+    resourceType: 'List';
     /** When the list was prepared */
     date?: dateTime;
     /** Context in which list created */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     _date?: Element;
     /** What order the list has */
     orderedBy?: CodeableConcept;
     _status?: Element;
     /** working | snapshot | changes */
-    mode: code;
+    mode: `${ListMode}`;
     /** Who and/or what defined the list contents (aka Author) */
-    source?: Reference<"Patient" | "PractitionerRole" | "Device" | "Practitioner">;
+    source?: Reference<'Patient' | 'PractitionerRole' | 'Device' | 'Practitioner'>;
     /** Descriptive name for the list */
     title?: string;
     /** Comments about the list */
@@ -30,7 +30,7 @@ export interface List extends DomainResource {
     /** Why list is empty */
     emptyReason?: CodeableConcept;
     /** current | retired | entered-in-error */
-    status: code;
+    status: `${ListStatus}`;
     /** What the purpose of this list is */
     code?: CodeableConcept;
     /** Business identifier */
@@ -40,7 +40,19 @@ export interface List extends DomainResource {
     _title?: Element;
     _mode?: Element;
     /** If all resources have the same subject */
-    subject?: Reference<"Patient" | "Device" | "Location" | "Group">;
+    subject?: Reference<'Patient' | 'Device' | 'Location' | 'Group'>;
+}
+/** working | snapshot | changes */
+export declare enum ListMode {
+    Changes = "changes",
+    Snapshot = "snapshot",
+    Working = "working"
+}
+/** current | retired | entered-in-error */
+export declare enum ListStatus {
+    Current = "current",
+    EnteredInError = "entered-in-error",
+    Retired = "retired"
 }
 /** Entries in the list */
 export interface ListEntry extends BackboneElement {

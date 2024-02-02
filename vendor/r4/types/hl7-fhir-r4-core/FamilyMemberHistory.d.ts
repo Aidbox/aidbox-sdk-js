@@ -12,15 +12,15 @@ import { DomainResource } from "./DomainResource";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Significant health conditions for a person related to the patient relevant in the context of care for the patient. */
 export interface FamilyMemberHistory extends DomainResource {
+    resourceType: 'FamilyMemberHistory';
     deceasedAge?: Age;
     _bornDate?: Element;
     /** Patient history is about */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     _deceasedDate?: Element;
     /** When history was recorded or last updated */
     date?: dateTime;
@@ -49,7 +49,7 @@ export interface FamilyMemberHistory extends DomainResource {
     note?: Array<Annotation>;
     _ageString?: Element;
     /** partial | completed | entered-in-error | health-unknown */
-    status: code;
+    status: `${FamilyMemberHistoryStatus}`;
     /** Condition that the related person had */
     condition?: Array<FamilyMemberHistoryCondition>;
     _name?: Element;
@@ -70,6 +70,13 @@ export interface FamilyMemberHistory extends DomainResource {
     _instantiatesUri?: Array<Element>;
     /** Age is estimated? */
     estimatedAge?: boolean;
+}
+/** partial | completed | entered-in-error | health-unknown */
+export declare enum FamilyMemberHistoryStatus {
+    Completed = "completed",
+    EnteredInError = "entered-in-error",
+    HealthUnknown = "health-unknown",
+    Partial = "partial"
 }
 /** Condition that the related person had */
 export interface FamilyMemberHistoryCondition extends BackboneElement {

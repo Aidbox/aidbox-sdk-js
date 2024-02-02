@@ -9,12 +9,12 @@ import { Money } from "./Money";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** Invoice containing collected ChargeItems from an Account with calculated individual and total price for Billing purpose. */
 export interface Invoice extends DomainResource {
+    resourceType: 'Invoice';
     /** Invoice date / posting date */
     date?: dateTime;
     /** Net total of this Invoice */
@@ -22,7 +22,7 @@ export interface Invoice extends DomainResource {
     _date?: Element;
     _status?: Element;
     /** Recipient of this invoice */
-    recipient?: Reference<"Patient" | "Organization" | "RelatedPerson">;
+    recipient?: Reference<'Patient' | 'Organization' | 'RelatedPerson'>;
     /** Components of Invoice total */
     totalPriceComponent?: Array<InvoiceLineItemPriceComponent>;
     /** Type of Invoice */
@@ -36,42 +36,59 @@ export interface Invoice extends DomainResource {
     /** Comments made about the invoice */
     note?: Array<Annotation>;
     /** Account that is being balanced */
-    account?: Reference<"Account">;
+    account?: Reference<'Account'>;
     /** draft | issued | balanced | cancelled | entered-in-error */
-    status: code;
+    status: `${InvoiceStatus}`;
     /** Line items of this Invoice */
     lineItem?: Array<InvoiceLineItem>;
     /** Business Identifier for item */
     identifier?: Array<Identifier>;
     /** Issuing Organization of Invoice */
-    issuer?: Reference<"Organization">;
+    issuer?: Reference<'Organization'>;
     /** Reason for cancellation of this Invoice */
     cancelledReason?: string;
     /** Payment details */
     paymentTerms?: markdown;
     /** Recipient(s) of goods and services */
-    subject?: Reference<"Patient" | "Group">;
+    subject?: Reference<'Patient' | 'Group'>;
 }
 /** Participant in creation of this Invoice */
 export interface InvoiceParticipant extends BackboneElement {
     /** Type of involvement in creation of this Invoice */
     role?: CodeableConcept;
     /** Individual who was involved */
-    actor: Reference<"Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    actor: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
+}
+/** draft | issued | balanced | cancelled | entered-in-error */
+export declare enum InvoiceStatus {
+    Balanced = "balanced",
+    Cancelled = "cancelled",
+    Draft = "draft",
+    EnteredInError = "entered-in-error",
+    Issued = "issued"
 }
 /** Line items of this Invoice */
 export interface InvoiceLineItem extends BackboneElement {
     /** Sequence number of line item */
     sequence?: positiveInt;
     _sequence?: Element;
-    chargeItemReference: Reference<"ChargeItem">;
+    chargeItemReference: Reference<'ChargeItem'>;
     chargeItemCodeableConcept: CodeableConcept;
     priceComponent?: Array<InvoiceLineItemPriceComponent>;
+}
+/** base | surcharge | deduction | discount | tax | informational */
+export declare enum InvoiceLineItemPriceComponentType {
+    Base = "base",
+    Deduction = "deduction",
+    Discount = "discount",
+    Informational = "informational",
+    Surcharge = "surcharge",
+    Tax = "tax"
 }
 /** Components of total line item price */
 export interface InvoiceLineItemPriceComponent extends BackboneElement {
     /** base | surcharge | deduction | discount | tax | informational */
-    type: code;
+    type: `${InvoiceLineItemPriceComponentType}`;
     _type?: Element;
     /** Code identifying the specific component */
     code?: CodeableConcept;

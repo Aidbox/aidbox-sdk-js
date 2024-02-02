@@ -10,6 +10,7 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** The regulatory authorization of a medicinal product. */
 export interface MedicinalProductAuthorization extends DomainResource {
+    resourceType: 'MedicinalProductAuthorization';
     /** A period of time after authorization before generic product applicatiosn can be submitted */
     dataExclusivityPeriod?: Period;
     /** The date when a suspended the marketing or the marketing authorization of the product is anticipated to be restored */
@@ -24,7 +25,7 @@ export interface MedicinalProductAuthorization extends DomainResource {
     /** The beginning of the time period in which the marketing authorization is in the specific status shall be specified A complete date consisting of day, month and year shall be specified using the ISO 8601 date format */
     validityPeriod?: Period;
     /** Medicines Regulatory Agency */
-    regulator?: Reference<"Organization">;
+    regulator?: Reference<'Organization'>;
     /** The status of the marketing authorization */
     status?: CodeableConcept;
     /** Business identifier for the marketing authorization, as assigned by a regulator */
@@ -37,13 +38,13 @@ export interface MedicinalProductAuthorization extends DomainResource {
     /** Date of first marketing authorization for a company's new medicinal product in any country in the World */
     internationalBirthDate?: dateTime;
     /** Marketing Authorization Holder */
-    holder?: Reference<"Organization">;
+    holder?: Reference<'Organization'>;
     _restoreDate?: Element;
     _dateOfFirstAuthorization?: Element;
     /** The country in which the marketing authorization has been granted */
     country?: Array<CodeableConcept>;
     /** The medicinal product that is being authorized */
-    subject?: Reference<"MedicinalProductPackaged" | "MedicinalProduct">;
+    subject?: Reference<'MedicinalProductPackaged' | 'MedicinalProduct'>;
     _statusDate?: Element;
 }
 /** Authorization in areas within a country */

@@ -9,19 +9,19 @@ import { Quantity } from "./Quantity";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A record of a request for a medication, substance or device used in the healthcare setting. */
 export interface SupplyRequest extends DomainResource {
+    resourceType: 'SupplyRequest';
     /** The kind of supply (central, non-stock, etc.) */
     category?: CodeableConcept;
     /** Who is intended to fulfill the request */
     supplier?: Array<Reference>;
     /** The destination of the supply */
-    deliverTo?: Reference<"Patient" | "Organization" | "Location">;
+    deliverTo?: Reference<'Patient' | 'Organization' | 'Location'>;
     _authoredOn?: Element;
-    itemReference: Reference<"Medication" | "Device" | "Substance">;
+    itemReference: Reference<'Medication' | 'Device' | 'Substance'>;
     _priority?: Element;
     _status?: Element;
     /** The reason why the supply item was requested */
@@ -30,14 +30,14 @@ export interface SupplyRequest extends DomainResource {
     authoredOn?: dateTime;
     occurrenceTiming?: Timing;
     /** The origin of the supply */
-    deliverFrom?: Reference<"Organization" | "Location">;
+    deliverFrom?: Reference<'Organization' | 'Location'>;
     /** Individual making the request */
-    requester?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    requester?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** routine | urgent | asap | stat */
-    priority?: code;
+    priority?: `${SupplyRequestPriority}`;
     occurrencePeriod?: Period;
     /** draft | active | suspended + */
-    status?: code;
+    status?: `${SupplyRequestStatus}`;
     /** Business Identifier for SupplyRequest */
     identifier?: Array<Identifier>;
     itemCodeableConcept: CodeableConcept;
@@ -49,6 +49,23 @@ export interface SupplyRequest extends DomainResource {
     /** The reason why the supply item was requested */
     reasonReference?: Array<Reference>;
     _occurrenceDateTime?: Element;
+}
+/** routine | urgent | asap | stat */
+export declare enum SupplyRequestPriority {
+    Asap = "asap",
+    Routine = "routine",
+    Stat = "stat",
+    Urgent = "urgent"
+}
+/** draft | active | suspended + */
+export declare enum SupplyRequestStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    Completed = "completed",
+    Draft = "draft",
+    EnteredInError = "entered-in-error",
+    Suspended = "suspended",
+    Unknown = "unknown"
 }
 /** Ordered item details */
 export interface SupplyRequestParameter extends BackboneElement {

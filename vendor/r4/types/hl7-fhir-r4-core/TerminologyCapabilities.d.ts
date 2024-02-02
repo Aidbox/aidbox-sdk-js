@@ -14,6 +14,7 @@ import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** A TerminologyCapabilities resource documents a set of capabilities (behaviors) of a FHIR Terminology Server that may be used as a statement of actual server functionality or a statement of required or desired server implementation. */
 export interface TerminologyCapabilities extends DomainResource {
+    resourceType: 'TerminologyCapabilities';
     /** Natural language description of the terminology capabilities */
     description?: markdown;
     _kind?: Element;
@@ -46,11 +47,11 @@ export interface TerminologyCapabilities extends DomainResource {
     _description?: Element;
     _purpose?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${TerminologyCapabilitiesStatus}`;
     /** Information about the [ValueSet/$validate-code](valueset-operation-validate-code.html) operation */
     validateCode?: TerminologyCapabilitiesValidateCode;
     /** instance | capability | requirements */
-    kind: code;
+    kind: `${TerminologyCapabilitiesKind}`;
     _name?: Element;
     /** Information about the [ConceptMap/$translate](conceptmap-operation-translate.html) operation */
     translation?: TerminologyCapabilitiesTranslation;
@@ -71,7 +72,7 @@ export interface TerminologyCapabilities extends DomainResource {
     implementation?: TerminologyCapabilitiesImplementation;
     _url?: Element;
     /** explicit | all */
-    codeSearch?: code;
+    codeSearch?: `${TerminologyCapabilitiesCodeSearch}`;
     /** Whether lockedDate is supported */
     lockedDate?: boolean;
     /** Information about the [ConceptMap/$closure](conceptmap-operation-closure.html) operation */
@@ -82,6 +83,11 @@ export interface TerminologyCapabilitiesTranslation extends BackboneElement {
     /** Whether the client must identify the map */
     needsMap: boolean;
     _needsMap?: Element;
+}
+/** explicit | all */
+export declare enum TerminologyCapabilitiesCodeSearch {
+    All = "all",
+    Explicit = "explicit"
 }
 /** Information about the [ValueSet/$expand](valueset-operation-expand.html) operation */
 export interface TerminologyCapabilitiesExpansion extends BackboneElement {
@@ -115,6 +121,12 @@ export interface TerminologyCapabilitiesSoftware extends BackboneElement {
     version?: string;
     _version?: Element;
 }
+/** instance | capability | requirements */
+export declare enum TerminologyCapabilitiesKind {
+    Capability = "capability",
+    Instance = "instance",
+    Requirements = "requirements"
+}
 /** A code system supported by the server */
 export interface TerminologyCapabilitiesCodeSystem extends BackboneElement {
     /** URI for the Code System */
@@ -134,6 +146,13 @@ export interface TerminologyCapabilitiesFilter extends BackboneElement {
     /** Operations supported for the property */
     op: Array<code>;
     _op?: Array<Element>;
+}
+/** draft | active | retired | unknown */
+export declare enum TerminologyCapabilitiesStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }
 /** Supported expansion parameter */
 export interface TerminologyCapabilitiesParameter extends BackboneElement {

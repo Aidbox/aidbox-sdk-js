@@ -9,6 +9,6 @@ export interface Money extends Element {
     value?: decimal;
     _value?: Element;
     /** ISO 4217 Currency Code */
-    currency?: code;
+    currency?: `${code}`;
     _currency?: Element;
 }

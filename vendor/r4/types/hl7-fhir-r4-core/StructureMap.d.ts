@@ -53,6 +53,7 @@ import { decimal } from "./decimal";
 import { Contributor } from "./Contributor";
 /** A Map of relationships between 2 structures that can be used to transform data. */
 export interface StructureMap extends DomainResource {
+    resourceType: 'StructureMap';
     /** Natural language description of the structure map */
     description?: markdown;
     /** Date last changed */
@@ -85,7 +86,7 @@ export interface StructureMap extends DomainResource {
     /** Structure Definition used by this map */
     structure?: Array<StructureMapStructure>;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${StructureMapStatus}`;
     _name?: Element;
     /** Canonical identifier for this structure map, represented as a URI (globally unique) */
     url: uri;
@@ -102,6 +103,69 @@ export interface StructureMap extends DomainResource {
     contact?: Array<ContactDetail>;
     _url?: Element;
 }
+/** Content to create because of this mapping rule */
+export interface StructureMapGroupRuleTarget extends BackboneElement {
+    /** create | copy + */
+    transform?: `${StructureMapGroupRuleTransform}`;
+    /** Named context for field, if desired, and a field is specified */
+    variable?: id;
+    /** Field to create in the context */
+    element?: string;
+    /** Internal rule reference for shared list items */
+    listRuleId?: id;
+    _transform?: Element;
+    /** Type or variable this rule applies to */
+    context?: id;
+    _element?: Element;
+    /** first | share | last | collate */
+    listMode?: Array<code>;
+    _listRuleId?: Element;
+    _listMode?: Array<Element>;
+    _contextType?: Element;
+    /** type | variable */
+    contextType?: `${StructureMapGroupRuleContextType}`;
+    _variable?: Element;
+    /** Parameters to the transform */
+    parameter?: Array<StructureMapGroupRuleParameter>;
+    _context?: Element;
+}
+/** Which other rules to apply in the context of this rule */
+export interface StructureMapGroupRuleDependent extends BackboneElement {
+    /** Name of a rule or group to apply */
+    name: id;
+    _name?: Element;
+    /** Variable to pass to the rule or group */
+    variable: Array<string>;
+    _variable?: Array<Element>;
+}
+/** Structure Definition used by this map */
+export interface StructureMapStructure extends BackboneElement {
+    /** Canonical reference to structure definition */
+    url: canonical;
+    _url?: Element;
+    /** source | queried | target | produced */
+    mode: `${StructureMapMode}`;
+    _mode?: Element;
+    /** Name for type in this map */
+    alias?: string;
+    _alias?: Element;
+    /** Documentation on use of structure */
+    documentation?: string;
+    _documentation?: Element;
+}
+/** Parameters to the transform */
+export interface StructureMapGroupRuleParameter extends BackboneElement {
+    _valueBoolean: Element;
+    _valueId: Element;
+    valueDecimal: decimal;
+    _valueDecimal: Element;
+    _valueString: Element;
+    valueString: string;
+    valueBoolean: boolean;
+    valueInteger: integer;
+    valueId: id;
+    _valueInteger: Element;
+}
 /** Named instance provided when invoking the map */
 export interface StructureMapInput extends BackboneElement {
     /** Name for this instance of data */
@@ -111,42 +175,9 @@ export interface StructureMapInput extends BackboneElement {
     type?: string;
     _type?: Element;
     /** source | target */
-    mode: code;
+    mode: `${StructureMapMode}`;
     _mode?: Element;
     /** Documentation for this instance of data */
-    documentation?: string;
-    _documentation?: Element;
-}
-/** Named sections for reader convenience */
-export interface StructureMapGroup extends BackboneElement {
-    _documentation?: Element;
-    /** Another group that this group adds rules to */
-    extends?: id;
-    _extends?: Element;
-    /** none | types | type-and-types */
-    typeMode: code;
-    /** Human-readable label */
-    name: id;
-    rule: Array<StructureMapGroupRule>;
-    _typeMode?: Element;
-    /** Additional description/explanation for group */
-    documentation?: string;
-    _name?: Element;
-    /** Named instance provided when invoking the map */
-    input: Array<StructureMapInput>;
-}
-/** Structure Definition used by this map */
-export interface StructureMapStructure extends BackboneElement {
-    /** Canonical reference to structure definition */
-    url: canonical;
-    _url?: Element;
-    /** source | queried | target | produced */
-    mode: code;
-    _mode?: Element;
-    /** Name for type in this map */
-    alias?: string;
-    _alias?: Element;
-    /** Documentation on use of structure */
     documentation?: string;
     _documentation?: Element;
 }
@@ -236,7 +267,7 @@ export interface StructureMapGroupRuleSource extends BackboneElement {
     _defaultValueDateTime?: Element;
     defaultValueUsageContext?: UsageContext;
     /** first | not_first | last | not_last | only_one */
-    listMode?: code;
+    listMode?: `${StructureMapGroupRuleListMode}`;
     defaultValueParameterDefinition?: ParameterDefinition;
     _listMode?: Element;
     defaultValueDateTime?: dateTime;
@@ -252,53 +283,29 @@ export interface StructureMapGroupRuleSource extends BackboneElement {
     _defaultValueDate?: Element;
     _context?: Element;
 }
-/** Parameters to the transform */
-export interface StructureMapGroupRuleParameter extends BackboneElement {
-    _valueBoolean: Element;
-    _valueId: Element;
-    valueDecimal: decimal;
-    _valueDecimal: Element;
-    _valueString: Element;
-    valueString: string;
-    valueBoolean: boolean;
-    valueInteger: integer;
-    valueId: id;
-    _valueInteger: Element;
-}
-/** Content to create because of this mapping rule */
-export interface StructureMapGroupRuleTarget extends BackboneElement {
-    /** create | copy + */
-    transform?: code;
-    /** Named context for field, if desired, and a field is specified */
-    variable?: id;
-    /** Field to create in the context */
-    element?: string;
-    /** Internal rule reference for shared list items */
-    listRuleId?: id;
-    _transform?: Element;
-    /** Type or variable this rule applies to */
-    context?: id;
-    _element?: Element;
-    /** first | share | last | collate */
-    listMode?: Array<code>;
-    _listRuleId?: Element;
-    _listMode?: Array<Element>;
-    _contextType?: Element;
-    /** type | variable */
-    contextType?: code;
-    _variable?: Element;
-    /** Parameters to the transform */
-    parameter?: Array<StructureMapGroupRuleParameter>;
-    _context?: Element;
-}
-/** Which other rules to apply in the context of this rule */
-export interface StructureMapGroupRuleDependent extends BackboneElement {
-    /** Name of a rule or group to apply */
+/** Named sections for reader convenience */
+export interface StructureMapGroup extends BackboneElement {
+    _documentation?: Element;
+    /** Another group that this group adds rules to */
+    extends?: id;
+    _extends?: Element;
+    /** none | types | type-and-types */
+    typeMode: `${StructureMapTypeMode}`;
+    /** Human-readable label */
     name: id;
+    rule: Array<StructureMapGroupRule>;
+    _typeMode?: Element;
+    /** Additional description/explanation for group */
+    documentation?: string;
     _name?: Element;
-    /** Variable to pass to the rule or group */
-    variable: Array<string>;
-    _variable?: Array<Element>;
+    /** Named instance provided when invoking the map */
+    input: Array<StructureMapInput>;
+}
+/** none | types | type-and-types */
+export declare enum StructureMapTypeMode {
+    None = "none",
+    TypeAndTypes = "type-and-types",
+    Types = "types"
 }
 /** Transform Rule from source to target */
 export interface StructureMapGroupRule extends BackboneElement {
@@ -316,4 +323,51 @@ export interface StructureMapGroupRule extends BackboneElement {
     /** Documentation for this instance of data */
     documentation?: string;
     _documentation?: Element;
+}
+/** create | copy + */
+export declare enum StructureMapGroupRuleTransform {
+    Copy = "copy",
+    Cast = "cast",
+    Cp = "cp",
+    Append = "append",
+    Uuid = "uuid",
+    Pointer = "pointer",
+    Evaluate = "evaluate",
+    Qty = "qty",
+    Cc = "cc",
+    C = "c",
+    Escape = "escape",
+    Truncate = "truncate",
+    Translate = "translate",
+    Create = "create",
+    DateOp = "dateOp",
+    Reference = "reference",
+    Id = "id"
+}
+/** draft | active | retired | unknown */
+export declare enum StructureMapStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
+/** first | not_first | last | not_last | only_one */
+export declare enum StructureMapGroupRuleListMode {
+    First = "first",
+    Last = "last",
+    "Not_first" = "not_first",
+    "Not_last" = "not_last",
+    "Only_one" = "only_one"
+}
+/** type | variable */
+export declare enum StructureMapGroupRuleContextType {
+    Type = "type",
+    Variable = "variable"
+}
+/** source | queried | target | produced */
+export declare enum StructureMapMode {
+    Produced = "produced",
+    Queried = "queried",
+    Source = "source",
+    Target = "target"
 }

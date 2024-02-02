@@ -22,11 +22,11 @@ import { date } from "./date";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** This resource allows for the definition of various types of plans as a sharable, consumable, and executable artifact. The resource is general enough to support the description of a broad range of clinical artifacts such as clinical decision support rules, order sets and protocols. */
 export interface PlanDefinition extends DomainResource {
+    resourceType: 'PlanDefinition';
     /** Natural language description of the plan definition */
     description?: markdown;
     _usage?: Element;
@@ -74,7 +74,7 @@ export interface PlanDefinition extends DomainResource {
     usage?: string;
     _lastReviewDate?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${PlanDefinitionStatus}`;
     /** Subordinate title of the plan definition */
     subtitle?: string;
     _name?: Element;
@@ -100,20 +100,56 @@ export interface PlanDefinition extends DomainResource {
     relatedArtifact?: Array<RelatedArtifact>;
     /** Contact details for the publisher */
     contact?: Array<ContactDetail>;
-    subjectReference?: Reference<"Group">;
+    subjectReference?: Reference<'Group'>;
     _url?: Element;
     /** When the plan definition is expected to be used */
     effectivePeriod?: Period;
 }
-/** Target outcome for the goal */
-export interface PlanDefinitionTarget extends BackboneElement {
-    /** The parameter whose value is to be tracked */
-    measure?: CodeableConcept;
-    detailQuantity?: Quantity;
-    detailRange?: Range;
-    detailCodeableConcept?: CodeableConcept;
-    /** Reach goal within */
-    due?: Duration;
+/** Dynamic aspects of the definition */
+export interface PlanDefinitionActionDynamicValue extends BackboneElement {
+    /** The path to the element to be set dynamically */
+    path?: string;
+    _path?: Element;
+    /** An expression that provides the dynamic value for the customization */
+    expression?: Expression;
+}
+/** Who should participate in the action */
+export interface PlanDefinitionActionParticipant extends BackboneElement {
+    /** patient | practitioner | related-person | device */
+    type: `${PlanDefinitionActionType}`;
+    _type?: Element;
+    /** E.g. Nurse, Surgeon, Parent */
+    role?: CodeableConcept;
+}
+/** patient | practitioner | related-person | device */
+export declare enum PlanDefinitionActionType {
+    Device = "device",
+    Patient = "patient",
+    Practitioner = "practitioner",
+    RelatedPerson = "related-person"
+}
+/** Relationship to another action */
+export interface PlanDefinitionActionRelatedAction extends BackboneElement {
+    /** What action is this related to */
+    actionId: id;
+    _actionId?: Element;
+    /** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
+    relationship: `${PlanDefinitionActionRelationship}`;
+    _relationship?: Element;
+    offsetDuration?: Duration;
+    offsetRange?: Range;
+}
+/** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
+export declare enum PlanDefinitionActionRelationship {
+    BeforeStart = "before-start",
+    Concurrent = "concurrent",
+    After = "after",
+    ConcurrentWithStart = "concurrent-with-start",
+    BeforeEnd = "before-end",
+    AfterEnd = "after-end",
+    AfterStart = "after-start",
+    Before = "before",
+    ConcurrentWithEnd = "concurrent-with-end"
 }
 /** What the plan is trying to accomplish */
 export interface PlanDefinitionGoal extends BackboneElement {
@@ -132,40 +168,33 @@ export interface PlanDefinitionGoal extends BackboneElement {
     /** Target outcome for the goal */
     target?: Array<PlanDefinitionTarget>;
 }
-/** Relationship to another action */
-export interface PlanDefinitionActionRelatedAction extends BackboneElement {
-    /** What action is this related to */
-    actionId: id;
-    _actionId?: Element;
-    /** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
-    relationship: code;
-    _relationship?: Element;
-    offsetDuration?: Duration;
-    offsetRange?: Range;
+/** visual-group | logical-group | sentence-group */
+export declare enum PlanDefinitionActionGroupingBehavior {
+    LogicalGroup = "logical-group",
+    SentenceGroup = "sentence-group",
+    VisualGroup = "visual-group"
 }
-/** Who should participate in the action */
-export interface PlanDefinitionActionParticipant extends BackboneElement {
-    /** patient | practitioner | related-person | device */
-    type: code;
-    _type?: Element;
-    /** E.g. Nurse, Surgeon, Parent */
-    role?: CodeableConcept;
+/** applicability | start | stop */
+export declare enum PlanDefinitionActionKind {
+    Applicability = "applicability",
+    Start = "start",
+    Stop = "stop"
 }
-/** Whether or not the action is applicable */
-export interface PlanDefinitionActionCondition extends BackboneElement {
-    /** applicability | start | stop */
-    kind: code;
-    _kind?: Element;
-    /** Boolean-valued expression */
-    expression?: Expression;
+/** draft | active | retired | unknown */
+export declare enum PlanDefinitionStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }
-/** Dynamic aspects of the definition */
-export interface PlanDefinitionActionDynamicValue extends BackboneElement {
-    /** The path to the element to be set dynamically */
-    path?: string;
-    _path?: Element;
-    /** An expression that provides the dynamic value for the customization */
-    expression?: Expression;
+/** any | all | all-or-none | exactly-one | at-most-one | one-or-more */
+export declare enum PlanDefinitionActionSelectionBehavior {
+    All = "all",
+    AllOrNone = "all-or-none",
+    Any = "any",
+    AtMostOne = "at-most-one",
+    ExactlyOne = "exactly-one",
+    OneOrMore = "one-or-more"
 }
 /** Action defined by the plan */
 export interface PlanDefinitionAction extends BackboneElement {
@@ -204,7 +233,7 @@ export interface PlanDefinitionAction extends BackboneElement {
     /** User-visible prefix for the action (e.g. 1. or A.) */
     prefix?: string;
     /** any | all | all-or-none | exactly-one | at-most-one | one-or-more */
-    selectionBehavior?: code;
+    selectionBehavior?: `${PlanDefinitionActionSelectionBehavior}`;
     _definitionCanonical?: Element;
     /** Why the action should be performed */
     reason?: Array<CodeableConcept>;
@@ -212,15 +241,15 @@ export interface PlanDefinitionAction extends BackboneElement {
     timingTiming?: Timing;
     timingDuration?: Duration;
     /** routine | urgent | asap | stat */
-    priority?: code;
+    priority?: `${PlanDefinitionActionPriority}`;
     _transform?: Element;
     /** must | could | must-unless-documented */
-    requiredBehavior?: code;
+    requiredBehavior?: `${PlanDefinitionActionRequiredBehavior}`;
     _goalId?: Array<Element>;
     /** Whether or not the action is applicable */
     condition?: Array<PlanDefinitionActionCondition>;
     /** visual-group | logical-group | sentence-group */
-    groupingBehavior?: code;
+    groupingBehavior?: `${PlanDefinitionActionGroupingBehavior}`;
     /** Dynamic aspects of the definition */
     dynamicValue?: Array<PlanDefinitionActionDynamicValue>;
     /** Code representing the meaning of the action or sub-actions */
@@ -231,15 +260,56 @@ export interface PlanDefinitionAction extends BackboneElement {
     action?: Array<PlanDefinitionAction>;
     _selectionBehavior?: Element;
     /** yes | no */
-    precheckBehavior?: code;
+    precheckBehavior?: `${PlanDefinitionActionPrecheckBehavior}`;
     _title?: Element;
     /** Input data requirements */
     input?: Array<DataRequirement>;
     _cardinalityBehavior?: Element;
     /** When the action should be triggered */
     trigger?: Array<TriggerDefinition>;
-    subjectReference?: Reference<"Group">;
+    subjectReference?: Reference<'Group'>;
     _textEquivalent?: Element;
     /** single | multiple */
-    cardinalityBehavior?: code;
+    cardinalityBehavior?: `${PlanDefinitionActionCardinalityBehavior}`;
+}
+/** Whether or not the action is applicable */
+export interface PlanDefinitionActionCondition extends BackboneElement {
+    /** applicability | start | stop */
+    kind: `${PlanDefinitionActionKind}`;
+    _kind?: Element;
+    /** Boolean-valued expression */
+    expression?: Expression;
+}
+/** yes | no */
+export declare enum PlanDefinitionActionPrecheckBehavior {
+    No = "no",
+    Yes = "yes"
+}
+/** single | multiple */
+export declare enum PlanDefinitionActionCardinalityBehavior {
+    Multiple = "multiple",
+    Single = "single"
+}
+/** Target outcome for the goal */
+export interface PlanDefinitionTarget extends BackboneElement {
+    /** The parameter whose value is to be tracked */
+    measure?: CodeableConcept;
+    detailQuantity?: Quantity;
+    detailRange?: Range;
+    detailCodeableConcept?: CodeableConcept;
+    /** Reach goal within */
+    due?: Duration;
+}
+/** routine | urgent | asap | stat */
+export declare enum PlanDefinitionActionPriority {
+    Asap = "asap",
+    Routine = "routine",
+    Stat = "stat",
+    Urgent = "urgent"
+}
+/** must | could | must-unless-documented */
+export declare enum PlanDefinitionActionRequiredBehavior {
+    Could = "could",
+    Must = "must",
+    MustUnlessDocumented = "must-unless-documented"
 }

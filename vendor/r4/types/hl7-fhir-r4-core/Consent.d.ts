@@ -9,13 +9,13 @@ import { dateTime } from "./dateTime";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A record of a healthcare consumer’s  choices, which permits or denies identified recipient(s) or recipient role(s) to perform one or more actions within a given policy context, for specific purposes and periods of time. */
 export interface Consent extends DomainResource {
+    resourceType: 'Consent';
     /** Who the consent applies to */
-    patient?: Reference<"Patient">;
+    patient?: Reference<'Patient'>;
     /** Classification of the consent statement - for indexing/retrieval */
     category: Array<CodeableConcept>;
     provision?: ConsentProvision;
@@ -30,11 +30,11 @@ export interface Consent extends DomainResource {
     scope: CodeableConcept;
     /** Policies covered by this consent */
     policy?: Array<ConsentPolicy>;
-    sourceReference?: Reference<"QuestionnaireResponse" | "Contract" | "DocumentReference" | "Consent">;
+    sourceReference?: Reference<'QuestionnaireResponse' | 'Contract' | 'DocumentReference' | 'Consent'>;
     /** When this Consent was created or indexed */
     dateTime?: dateTime;
     /** draft | proposed | active | rejected | inactive | entered-in-error */
-    status: code;
+    status: `${ConsentStatus}`;
     /** Regulation that this consents to */
     policyRule?: CodeableConcept;
     /** Identifier for this record (external references) */
@@ -48,7 +48,7 @@ export interface ConsentVerification extends BackboneElement {
     verified: boolean;
     _verified?: Element;
     /** Person who verified */
-    verifiedWith?: Reference<"Patient" | "RelatedPerson">;
+    verifiedWith?: Reference<'Patient' | 'RelatedPerson'>;
     /** When consent verified */
     verificationDate?: dateTime;
     _verificationDate?: Element;
@@ -62,17 +62,38 @@ export interface ConsentPolicy extends BackboneElement {
     uri?: uri;
     _uri?: Element;
 }
+/** draft | proposed | active | rejected | inactive | entered-in-error */
+export declare enum ConsentStatus {
+    Active = "active",
+    Draft = "draft",
+    EnteredInError = "entered-in-error",
+    Inactive = "inactive",
+    Proposed = "proposed",
+    Rejected = "rejected"
+}
+/** deny | permit */
+export declare enum ConsentProvisionType {
+    Deny = "deny",
+    Permit = "permit"
+}
 /** Who|what controlled by this rule (or group, by role) */
 export interface ConsentProvisionActor extends BackboneElement {
     /** How the actor is involved */
     role: CodeableConcept;
     /** Resource for the actor (or group, by role) */
-    reference: Reference<"CareTeam" | "Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson" | "Group">;
+    reference: Reference<'CareTeam' | 'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson' | 'Group'>;
+}
+/** instance | related | dependents | authoredby */
+export declare enum ConsentProvisionMeaning {
+    Authoredby = "authoredby",
+    Dependents = "dependents",
+    Instance = "instance",
+    Related = "related"
 }
 /** Data controlled by this rule */
 export interface ConsentProvisionData extends BackboneElement {
     /** instance | related | dependents | authoredby */
-    meaning: code;
+    meaning: `${ConsentProvisionMeaning}`;
     _meaning?: Element;
     /** The actual data reference */
     reference: Reference;
@@ -87,7 +108,7 @@ export interface ConsentProvision extends BackboneElement {
     dataPeriod?: Period;
     _type?: Element;
     /** deny | permit */
-    type?: code;
+    type?: `${ConsentProvisionType}`;
     /** e.g. Resource Type, Profile, CDA, etc. */
     class?: Array<Coding>;
     /** e.g. LOINC or SNOMED CT code, etc. in the content */

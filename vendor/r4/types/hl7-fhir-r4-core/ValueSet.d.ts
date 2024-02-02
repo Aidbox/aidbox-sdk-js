@@ -18,6 +18,7 @@ import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** A ValueSet resource instance specifies a set of codes drawn from one or more code systems, intended for use in a particular context. Value sets link between [[[CodeSystem]]] definitions and their use in [coded elements](terminologies.html). */
 export interface ValueSet extends DomainResource {
+    resourceType: 'ValueSet';
     /** Natural language description of the value set */
     description?: markdown;
     /** Content logical definition of the value set (CLD) */
@@ -49,7 +50,7 @@ export interface ValueSet extends DomainResource {
     _description?: Element;
     _purpose?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${ValueSetStatus}`;
     _immutable?: Element;
     _name?: Element;
     /** Canonical identifier for this value set, represented as a URI (globally unique) */
@@ -67,6 +68,43 @@ export interface ValueSet extends DomainResource {
     contact?: Array<ContactDetail>;
     _url?: Element;
 }
+/** = | is-a | descendent-of | is-not-a | regex | in | not-in | generalizes | exists */
+export declare enum ValueSetComposeIncludeOp {
+    Exists = "exists",
+    In = "in",
+    IsNotA = "is-not-a",
+    "=" = "=",
+    Generalizes = "generalizes",
+    DescendentOf = "descendent-of",
+    Regex = "regex",
+    IsA = "is-a",
+    NotIn = "not-in"
+}
+/** draft | active | retired | unknown */
+export declare enum ValueSetStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
+/** Used when the value set is "expanded" */
+export interface ValueSetExpansion extends BackboneElement {
+    contains?: Array<ValueSetExpansionContains>;
+    _timestamp?: Element;
+    _offset?: Element;
+    /** Offset at which this resource starts */
+    offset?: integer;
+    /** Total number of codes in the expansion */
+    total?: integer;
+    _identifier?: Element;
+    /** Identifies the value set expansion (business identifier) */
+    identifier?: uri;
+    /** Time ValueSet expansion happened */
+    timestamp: dateTime;
+    /** Parameter that controlled the expansion process */
+    parameter?: Array<ValueSetParameter>;
+    _total?: Element;
+}
 /** Content logical definition of the value set (CLD) */
 export interface ValueSetCompose extends BackboneElement {
     /** Fixed date for references with no specified version (transitive) */
@@ -78,6 +116,28 @@ export interface ValueSetCompose extends BackboneElement {
     include: Array<ValueSetComposeInclude>;
     /** Explicitly exclude codes from a code system or other value sets */
     exclude?: Array<ValueSetComposeInclude>;
+}
+/** Select codes/concepts by their properties (including relationships) */
+export interface ValueSetComposeIncludeFilter extends BackboneElement {
+    /** A property/filter defined by the code system */
+    property: code;
+    _property?: Element;
+    /** = | is-a | descendent-of | is-not-a | regex | in | not-in | generalizes | exists */
+    op: `${ValueSetComposeIncludeOp}`;
+    _op?: Element;
+    /** Code from the system, or regex criteria, or boolean value for exists */
+    value: string;
+    _value?: Element;
+}
+/** A concept defined in the system */
+export interface ValueSetComposeIncludeConcept extends BackboneElement {
+    /** Code or expression from system */
+    code: code;
+    _code?: Element;
+    /** Text to display for this code for this value set in this valueset */
+    display?: string;
+    _display?: Element;
+    designation?: Array<ValueSetComposeIncludeConceptDesignation>;
 }
 /** Parameter that controlled the expansion process */
 export interface ValueSetParameter extends BackboneElement {
@@ -99,45 +159,30 @@ export interface ValueSetParameter extends BackboneElement {
     _valueCode?: Element;
     _valueInteger?: Element;
 }
-/** Used when the value set is "expanded" */
-export interface ValueSetExpansion extends BackboneElement {
-    contains?: Array<ValueSetExpansionContains>;
-    _timestamp?: Element;
-    _offset?: Element;
-    /** Offset at which this resource starts */
-    offset?: integer;
-    /** Total number of codes in the expansion */
-    total?: integer;
-    _identifier?: Element;
-    /** Identifies the value set expansion (business identifier) */
-    identifier?: uri;
-    /** Time ValueSet expansion happened */
-    timestamp: dateTime;
-    /** Parameter that controlled the expansion process */
-    parameter?: Array<ValueSetParameter>;
-    _total?: Element;
-}
-/** A concept defined in the system */
-export interface ValueSetComposeIncludeConcept extends BackboneElement {
-    /** Code or expression from system */
-    code: code;
+/** Codes in the value set */
+export interface ValueSetExpansionContains extends BackboneElement {
+    /** If concept is inactive in the code system */
+    inactive?: boolean;
     _code?: Element;
-    /** Text to display for this code for this value set in this valueset */
+    /** System value for the code */
+    system?: uri;
+    /** Codes contained under this entry */
+    contains?: Array<ValueSetExpansionContains>;
+    /** If user cannot select this entry */
+    abstract?: boolean;
+    _abstract?: Element;
+    /** Code - if blank, this is not a selectable code */
+    code?: code;
+    /** User display for the concept */
     display?: string;
-    _display?: Element;
+    /** Additional representations for this item */
     designation?: Array<ValueSetComposeIncludeConceptDesignation>;
-}
-/** Select codes/concepts by their properties (including relationships) */
-export interface ValueSetComposeIncludeFilter extends BackboneElement {
-    /** A property/filter defined by the code system */
-    property: code;
-    _property?: Element;
-    /** = | is-a | descendent-of | is-not-a | regex | in | not-in | generalizes | exists */
-    op: code;
-    _op?: Element;
-    /** Code from the system, or regex criteria, or boolean value for exists */
-    value: string;
-    _value?: Element;
+    _system?: Element;
+    /** Version in which this code/display is defined */
+    version?: string;
+    _version?: Element;
+    _display?: Element;
+    _inactive?: Element;
 }
 /** Include one or more codes from a code system or other value set(s) */
 export interface ValueSetComposeInclude extends BackboneElement {
@@ -165,29 +210,4 @@ export interface ValueSetComposeIncludeConceptDesignation extends BackboneElemen
     /** The text value for this designation */
     value: string;
     _value?: Element;
-}
-/** Codes in the value set */
-export interface ValueSetExpansionContains extends BackboneElement {
-    /** If concept is inactive in the code system */
-    inactive?: boolean;
-    _code?: Element;
-    /** System value for the code */
-    system?: uri;
-    /** Codes contained under this entry */
-    contains?: Array<ValueSetExpansionContains>;
-    /** If user cannot select this entry */
-    abstract?: boolean;
-    _abstract?: Element;
-    /** Code - if blank, this is not a selectable code */
-    code?: code;
-    /** User display for the concept */
-    display?: string;
-    /** Additional representations for this item */
-    designation?: Array<ValueSetComposeIncludeConceptDesignation>;
-    _system?: Element;
-    /** Version in which this code/display is defined */
-    version?: string;
-    _version?: Element;
-    _display?: Element;
-    _inactive?: Element;
 }

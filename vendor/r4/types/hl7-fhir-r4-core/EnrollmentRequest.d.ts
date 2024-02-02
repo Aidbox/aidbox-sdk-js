@@ -4,24 +4,31 @@ import { dateTime } from "./dateTime";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** This resource provides the insurance enrollment details to the insurer regarding a specified coverage. */
 export interface EnrollmentRequest extends DomainResource {
+    resourceType: 'EnrollmentRequest';
     _created?: Element;
     /** The subject to be enrolled */
-    candidate?: Reference<"Patient">;
+    candidate?: Reference<'Patient'>;
     _status?: Element;
     /** Insurance information */
-    coverage?: Reference<"Coverage">;
+    coverage?: Reference<'Coverage'>;
     /** Creation date */
     created?: dateTime;
     /** Target */
-    insurer?: Reference<"Organization">;
+    insurer?: Reference<'Organization'>;
     /** active | cancelled | draft | entered-in-error */
-    status?: code;
+    status?: `${EnrollmentRequestStatus}`;
     /** Business Identifier */
     identifier?: Array<Identifier>;
     /** Responsible practitioner */
-    provider?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    provider?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
+}
+/** active | cancelled | draft | entered-in-error */
+export declare enum EnrollmentRequestStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    Draft = "draft",
+    EnteredInError = "entered-in-error"
 }

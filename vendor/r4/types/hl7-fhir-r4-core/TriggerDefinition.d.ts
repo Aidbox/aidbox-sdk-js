@@ -7,15 +7,14 @@ import { Timing } from "./Timing";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 /** Base StructureDefinition for TriggerDefinition Type: A description of a triggering event. Triggering events can be named events, data events, or periodic, as determined by the type element. */
 export interface TriggerDefinition extends Element {
-    timingReference?: Reference<"Schedule">;
+    timingReference?: Reference<'Schedule'>;
     /** Name or URI that identifies the event */
     name?: string;
     _type?: Element;
     /** named-event | periodic | data-changed | data-added | data-modified | data-removed | data-accessed | data-access-ended */
-    type: code;
+    type: `${TriggerDefinitionType}`;
     timingDateTime?: dateTime;
     timingTiming?: Timing;
     /** Whether the event triggers (boolean expression) */
@@ -26,4 +25,15 @@ export interface TriggerDefinition extends Element {
     _timingDate?: Element;
     /** Triggering data of the event (multiple = 'and') */
     data?: Array<DataRequirement>;
+}
+/** named-event | periodic | data-changed | data-added | data-modified | data-removed | data-accessed | data-access-ended */
+export declare enum TriggerDefinitionType {
+    DataAccessEnded = "data-access-ended",
+    DataAccessed = "data-accessed",
+    DataAdded = "data-added",
+    DataChanged = "data-changed",
+    DataModified = "data-modified",
+    DataRemoved = "data-removed",
+    NamedEvent = "named-event",
+    Periodic = "periodic"
 }

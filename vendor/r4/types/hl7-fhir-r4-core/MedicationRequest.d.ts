@@ -13,11 +13,11 @@ import { Duration } from "./Duration";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** An order or request for both supply of the medication and the instructions for administration of the medication to a patient. The resource is called "MedicationRequest" rather than "MedicationPrescription" or "MedicationOrder" to generalize the use across inpatient and outpatient settings, including care plans, etc., and to harmonize with workflow patterns. */
 export interface MedicationRequest extends DomainResource {
+    resourceType: 'MedicationRequest';
     /** Desired kind of performer of the medication administration */
     performerType?: CodeableConcept;
     /** Type of medication usage */
@@ -36,7 +36,7 @@ export interface MedicationRequest extends DomainResource {
     /** Clinical Issue with action */
     detectedIssue?: Array<Reference>;
     /** Encounter created as part of encounter/admission/stay */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     _doNotPerform?: Element;
     /** Medication supply authorization */
     dispenseRequest?: MedicationRequestDispenseRequest;
@@ -54,39 +54,39 @@ export interface MedicationRequest extends DomainResource {
     _reportedBoolean?: Element;
     _intent?: Element;
     /** Who/What requested the Request */
-    requester?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    requester?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** Information to support ordering of the medication */
     supportingInformation?: Array<Reference>;
-    reportedReference?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Practitioner" | "RelatedPerson">;
+    reportedReference?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Practitioner' | 'RelatedPerson'>;
     /** routine | urgent | asap | stat */
-    priority?: code;
+    priority?: `${MedicationRequestPriority}`;
     /** active | on-hold | cancelled | completed | entered-in-error | stopped | draft | unknown */
-    status: code;
+    status: `${MedicationRequestStatus}`;
     /** How the medication should be taken */
     dosageInstruction?: Array<Dosage>;
     /** Composite request this is part of */
     groupIdentifier?: Identifier;
     /** Person who entered the request */
-    recorder?: Reference<"PractitionerRole" | "Practitioner">;
+    recorder?: Reference<'PractitionerRole' | 'Practitioner'>;
     reportedBoolean?: boolean;
     /** External ids for this request */
     identifier?: Array<Identifier>;
     /** True if request is prohibiting action */
     doNotPerform?: boolean;
     /** proposal | plan | order | original-order | reflex-order | filler-order | instance-order | option */
-    intent: code;
+    intent: `${MedicationRequestIntent}`;
     /** What request fulfills */
     basedOn?: Array<Reference>;
     /** An order/prescription that is being replaced */
-    priorPrescription?: Reference<"MedicationRequest">;
-    medicationReference: Reference<"Medication">;
+    priorPrescription?: Reference<'MedicationRequest'>;
+    medicationReference: Reference<'Medication'>;
     /** Overall pattern of medication administration */
     courseOfTherapyType?: CodeableConcept;
     _instantiatesCanonical?: Array<Element>;
     /** Who or group medication request is for */
-    subject: Reference<"Patient" | "Group">;
+    subject: Reference<'Patient' | 'Group'>;
     /** Intended performer of administration */
-    performer?: Reference<"CareTeam" | "Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    performer?: Reference<'CareTeam' | 'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** Condition or observation that supports why the prescription is being written */
     reasonReference?: Array<Reference>;
     _instantiatesUri?: Array<Element>;
@@ -122,5 +122,34 @@ export interface MedicationRequestDispenseRequest extends BackboneElement {
     /** Number of days supply per dispense */
     expectedSupplyDuration?: Duration;
     /** Intended dispenser */
-    performer?: Reference<"Organization">;
+    performer?: Reference<'Organization'>;
+}
+/** routine | urgent | asap | stat */
+export declare enum MedicationRequestPriority {
+    Asap = "asap",
+    Routine = "routine",
+    Stat = "stat",
+    Urgent = "urgent"
+}
+/** active | on-hold | cancelled | completed | entered-in-error | stopped | draft | unknown */
+export declare enum MedicationRequestStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    Completed = "completed",
+    Draft = "draft",
+    EnteredInError = "entered-in-error",
+    OnHold = "on-hold",
+    Stopped = "stopped",
+    Unknown = "unknown"
+}
+/** proposal | plan | order | original-order | reflex-order | filler-order | instance-order | option */
+export declare enum MedicationRequestIntent {
+    FillerOrder = "filler-order",
+    InstanceOrder = "instance-order",
+    Option = "option",
+    Order = "order",
+    OriginalOrder = "original-order",
+    Plan = "plan",
+    Proposal = "proposal",
+    ReflexOrder = "reflex-order"
 }

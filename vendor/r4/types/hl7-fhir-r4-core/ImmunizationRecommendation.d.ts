@@ -10,15 +10,16 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A patient's point-in-time set of recommendations (i.e. forecasting) according to a published schedule with optional supporting justification. */
 export interface ImmunizationRecommendation extends DomainResource {
+    resourceType: 'ImmunizationRecommendation';
     /** Business identifier */
     identifier?: Array<Identifier>;
     /** Who this profile is for */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     /** Date recommendation(s) created */
     date: dateTime;
     _date?: Element;
     /** Who is responsible for protocol */
-    authority?: Reference<"Organization">;
+    authority?: Reference<'Organization'>;
     /** Vaccine administration recommendations */
     recommendation: Array<ImmunizationRecommendationRecommendation>;
 }

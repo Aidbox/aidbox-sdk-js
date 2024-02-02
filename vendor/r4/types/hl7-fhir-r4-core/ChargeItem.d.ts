@@ -12,22 +12,22 @@ import { DomainResource } from "./DomainResource";
 import { Money } from "./Money";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** The resource ChargeItem describes the provision of healthcare provider products for a certain patient, therefore referring not only to the product, but containing in addition details of the provision, like date, time, amounts and participating organizations and persons. Main Usage of the ChargeItem is to enable the billing process and internal cost allocation. */
 export interface ChargeItem extends DomainResource {
+    resourceType: 'ChargeItem';
     /** Which rendered service is being charged? */
     service?: Array<Reference>;
     /** Defining information about the code of this charge item */
     definitionUri?: Array<uri>;
     /** Individual who was entering */
-    enterer?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    enterer?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** Organization requesting the charged service */
-    requestingOrganization?: Reference<"Organization">;
+    requestingOrganization?: Reference<'Organization'>;
     productCodeableConcept?: CodeableConcept;
-    productReference?: Reference<"Medication" | "Device" | "Substance">;
+    productReference?: Reference<'Medication' | 'Device' | 'Substance'>;
     /** Resource defining the code of this ChargeItem */
     definitionCanonical?: Array<canonical>;
     _status?: Element;
@@ -36,7 +36,7 @@ export interface ChargeItem extends DomainResource {
     _definitionUri?: Array<Element>;
     occurrenceTiming?: Timing;
     /** Organization that has ownership of the (potential, future) revenue */
-    costCenter?: Reference<"Organization">;
+    costCenter?: Reference<'Organization'>;
     /** Comments made about the ChargeItem */
     note?: Array<Annotation>;
     /** Account to place this charge */
@@ -49,7 +49,7 @@ export interface ChargeItem extends DomainResource {
     supportingInformation?: Array<Reference>;
     occurrencePeriod?: Period;
     /** planned | billable | not-billable | aborted | billed | entered-in-error | unknown */
-    status: code;
+    status: `${ChargeItemStatus}`;
     _factorOverride?: Element;
     /** A code that identifies the charge, like a billing code */
     code: CodeableConcept;
@@ -57,7 +57,7 @@ export interface ChargeItem extends DomainResource {
     identifier?: Array<Identifier>;
     _enteredDate?: Element;
     /** Encounter / Episode associated with event */
-    context?: Reference<"EpisodeOfCare" | "Encounter">;
+    context?: Reference<'EpisodeOfCare' | 'Encounter'>;
     /** Quantity of which the charge item has been serviced */
     quantity?: Quantity;
     /** Part of referenced ChargeItem */
@@ -70,19 +70,29 @@ export interface ChargeItem extends DomainResource {
     /** Reason for overriding the list price/factor */
     overrideReason?: string;
     /** Organization providing the charged service */
-    performingOrganization?: Reference<"Organization">;
+    performingOrganization?: Reference<'Organization'>;
     /** Individual service was done for/to */
-    subject: Reference<"Patient" | "Group">;
+    subject: Reference<'Patient' | 'Group'>;
     /** Factor overriding the associated rules */
     factorOverride?: decimal;
     /** Who performed charged service */
     performer?: Array<ChargeItemPerformer>;
     _occurrenceDateTime?: Element;
 }
+/** planned | billable | not-billable | aborted | billed | entered-in-error | unknown */
+export declare enum ChargeItemStatus {
+    Aborted = "aborted",
+    Billable = "billable",
+    Billed = "billed",
+    EnteredInError = "entered-in-error",
+    NotBillable = "not-billable",
+    Planned = "planned",
+    Unknown = "unknown"
+}
 /** Who performed charged service */
 export interface ChargeItemPerformer extends BackboneElement {
     /** What type of performance was done */
     function?: CodeableConcept;
     /** Individual who was performing */
-    actor: Reference<"CareTeam" | "Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    actor: Reference<'CareTeam' | 'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
 }

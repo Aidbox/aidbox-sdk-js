@@ -23,6 +23,7 @@ import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** A structured set of questions intended to guide the collection of answers from end-users. Questionnaires provide detailed control over order, presentation, phraseology and grouping to allow coherent, consistent data collection. */
 export interface Questionnaire extends DomainResource {
+    resourceType: 'Questionnaire';
     /** Natural language description of the questionnaire */
     description?: markdown;
     /** Resource that can be subject of QuestionnaireResponse */
@@ -60,7 +61,7 @@ export interface Questionnaire extends DomainResource {
     _purpose?: Element;
     _lastReviewDate?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${QuestionnaireStatus}`;
     _name?: Element;
     /** Canonical identifier for this questionnaire, represented as a URI (globally unique) */
     url?: uri;
@@ -82,6 +83,48 @@ export interface Questionnaire extends DomainResource {
     /** When the questionnaire is expected to be used */
     effectivePeriod?: Period;
 }
+/** draft | active | retired | unknown */
+export declare enum QuestionnaireStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
+/** all | any */
+export declare enum QuestionnaireItemEnableBehavior {
+    All = "all",
+    Any = "any"
+}
+/** group | display | boolean | decimal | integer | date | dateTime + */
+export declare enum QuestionnaireItemType {
+    Display = "display",
+    Attachment = "attachment",
+    Question = "question",
+    Date = "date",
+    Decimal = "decimal",
+    Url = "url",
+    Quantity = "quantity",
+    Choice = "choice",
+    Integer = "integer",
+    String = "string",
+    Text = "text",
+    Group = "group",
+    Reference = "reference",
+    OpenChoice = "open-choice",
+    Time = "time",
+    DateTime = "dateTime",
+    Boolean = "boolean"
+}
+/** exists | = | != | > | < | >= | <= */
+export declare enum QuestionnaireItemOperator {
+    "!=" = "!=",
+    "<" = "<",
+    "<=" = "<=",
+    "=" = "=",
+    ">" = ">",
+    ">=" = ">=",
+    Exists = "exists"
+}
 /** Only allow data when */
 export interface QuestionnaireItemEnableWhen extends BackboneElement {
     _question?: Element;
@@ -100,7 +143,7 @@ export interface QuestionnaireItemEnableWhen extends BackboneElement {
     _answerDecimal: Element;
     answerString: string;
     /** exists | = | != | > | < | >= | <= */
-    operator: code;
+    operator: `${QuestionnaireItemOperator}`;
     _answerDateTime: Element;
     answerBoolean: boolean;
     answerCoding: Coding;
@@ -150,7 +193,7 @@ export interface QuestionnaireItemInitial extends BackboneElement {
 /** Questions and sections within the Questionnaire */
 export interface QuestionnaireItem extends BackboneElement {
     /** all | any */
-    enableBehavior?: code;
+    enableBehavior?: `${QuestionnaireItemEnableBehavior}`;
     /** ElementDefinition - details for the item */
     definition?: uri;
     _maxLength?: Element;
@@ -164,7 +207,7 @@ export interface QuestionnaireItem extends BackboneElement {
     item?: Array<QuestionnaireItem>;
     _type?: Element;
     /** group | display | boolean | decimal | integer | date | dateTime + */
-    type: code;
+    type: `${QuestionnaireItemType}`;
     _linkId?: Element;
     /** Only allow data when */
     enableWhen?: Array<QuestionnaireItemEnableWhen>;

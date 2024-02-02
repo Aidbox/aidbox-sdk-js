@@ -20,19 +20,19 @@ import { date } from "./date";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** Legally enforceable, formally recorded unilateral or bilateral directive i.e., a policy or agreement. */
 export interface Contract extends DomainResource {
+    resourceType: 'Contract';
     _issued?: Element;
     legallyBindingAttachment?: Attachment;
     /** Source Contract Definition */
-    instantiatesCanonical?: Reference<"Contract">;
+    instantiatesCanonical?: Reference<'Contract'>;
     /** External Contract Definition */
     instantiatesUri?: uri;
-    legallyBindingReference?: Reference<"QuestionnaireResponse" | "Composition" | "Contract" | "DocumentReference">;
+    legallyBindingReference?: Reference<'QuestionnaireResponse' | 'Composition' | 'Contract' | 'DocumentReference'>;
     /** Specific Location */
     site?: Array<Reference>;
     /** Key event in Contract History */
@@ -66,14 +66,14 @@ export interface Contract extends DomainResource {
     /** Contract Signatory */
     signer?: Array<ContractSigner>;
     /** Source of Contract */
-    author?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Practitioner">;
+    author?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Practitioner'>;
     term?: Array<ContractTerm>;
     /** Contract Friendly Language */
     friendly?: Array<ContractFriendly>;
     /** Acronym or short name */
     alias?: Array<string>;
     /** amended | appended | cancelled | disputed | entered-in-error | executable | executed | negotiable | offered | policy | rejected | renewed | revoked | resolved | terminated */
-    status?: code;
+    status?: `${ContractStatus}`;
     /** Subordinate Friendly name */
     subtitle?: string;
     _name?: Element;
@@ -104,7 +104,7 @@ export interface Contract extends DomainResource {
 /** Computable Contract Language */
 export interface ContractRule extends BackboneElement {
     contentAttachment: Attachment;
-    contentReference: Reference<"DocumentReference">;
+    contentReference: Reference<'DocumentReference'>;
 }
 /** Entity of the action */
 export interface ContractTermSubject extends BackboneElement {
@@ -126,12 +126,12 @@ export interface ContractTermContext extends BackboneElement {
 /** Contract Legal Language */
 export interface ContractLegal extends BackboneElement {
     contentAttachment: Attachment;
-    contentReference: Reference<"QuestionnaireResponse" | "Composition" | "DocumentReference">;
+    contentReference: Reference<'QuestionnaireResponse' | 'Composition' | 'DocumentReference'>;
 }
 /** Contract precursor content */
 export interface ContractContentDefinition extends BackboneElement {
     /** Publisher Entity */
-    publisher?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    publisher?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Publication Ownership */
     copyright?: markdown;
     /** Content structure and use */
@@ -139,7 +139,7 @@ export interface ContractContentDefinition extends BackboneElement {
     _publicationStatus?: Element;
     _publicationDate?: Element;
     /** amended | appended | cancelled | disputed | entered-in-error | executable | executed | negotiable | offered | policy | rejected | renewed | revoked | resolved | terminated */
-    publicationStatus: code;
+    publicationStatus: `${ContractPublicationStatus}`;
     _copyright?: Element;
     /** Detailed Content Type Definition */
     subType?: CodeableConcept;
@@ -180,7 +180,7 @@ export interface ContractSigner extends BackboneElement {
     /** Contract Signatory Role */
     type: Coding;
     /** Contract Signatory Party */
-    party: Reference<"Patient" | "PractitionerRole" | "Organization" | "Practitioner" | "RelatedPerson">;
+    party: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Practitioner' | 'RelatedPerson'>;
     /** Contract Documentation Signature */
     signature: Array<Signature>;
 }
@@ -206,6 +206,24 @@ export interface ContractTermOfferAnswer extends BackboneElement {
     valueInteger: integer;
     valueAttachment: Attachment;
     _valueInteger: Element;
+}
+/** amended | appended | cancelled | disputed | entered-in-error | executable | executed | negotiable | offered | policy | rejected | renewed | revoked | resolved | terminated */
+export declare enum ContractPublicationStatus {
+    Cancelled = "cancelled",
+    Amended = "amended",
+    Rejected = "rejected",
+    Negotiable = "negotiable",
+    Executed = "executed",
+    Executable = "executable",
+    Appended = "appended",
+    Offered = "offered",
+    Resolved = "resolved",
+    EnteredInError = "entered-in-error",
+    Policy = "policy",
+    Terminated = "terminated",
+    Revoked = "revoked",
+    Renewed = "renewed",
+    Disputed = "disputed"
 }
 /** Protection for the Term */
 export interface ContractTermSecurityLabel extends BackboneElement {
@@ -298,14 +316,14 @@ export interface ContractTermValuedItem extends BackboneElement {
     payment?: string;
     _factor?: Element;
     /** Who will receive payment */
-    recipient?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Practitioner" | "RelatedPerson">;
+    recipient?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Practitioner' | 'RelatedPerson'>;
     /** Total Contract Valued Item Value */
     net?: Money;
     /** Contract Valued Item Difficulty Scaling Factor */
     points?: decimal;
     _linkId?: Array<Element>;
     /** Who will make payment */
-    responsible?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Practitioner" | "RelatedPerson">;
+    responsible?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Practitioner' | 'RelatedPerson'>;
     _points?: Element;
     /** Security Labels that define affected terms */
     securityLabelNumber?: Array<unsignedInt>;
@@ -326,10 +344,28 @@ export interface ContractTermValuedItem extends BackboneElement {
     unitPrice?: Money;
     entityReference?: Reference;
 }
+/** amended | appended | cancelled | disputed | entered-in-error | executable | executed | negotiable | offered | policy | rejected | renewed | revoked | resolved | terminated */
+export declare enum ContractStatus {
+    Cancelled = "cancelled",
+    Amended = "amended",
+    Rejected = "rejected",
+    Negotiable = "negotiable",
+    Executed = "executed",
+    Executable = "executable",
+    Appended = "appended",
+    Offered = "offered",
+    Resolved = "resolved",
+    EnteredInError = "entered-in-error",
+    Policy = "policy",
+    Terminated = "terminated",
+    Revoked = "revoked",
+    Renewed = "renewed",
+    Disputed = "disputed"
+}
 /** Contract Friendly Language */
 export interface ContractFriendly extends BackboneElement {
     contentAttachment: Attachment;
-    contentReference: Reference<"QuestionnaireResponse" | "Composition" | "DocumentReference">;
+    contentReference: Reference<'QuestionnaireResponse' | 'Composition' | 'DocumentReference'>;
 }
 /** Entity being ascribed responsibility */
 export interface ContractTermAction extends BackboneElement {
@@ -370,7 +406,7 @@ export interface ContractTermAction extends BackboneElement {
     doNotPerform?: boolean;
     _reason?: Array<Element>;
     /** Episode associated with action */
-    context?: Reference<"EpisodeOfCare" | "Encounter">;
+    context?: Reference<'EpisodeOfCare' | 'Encounter'>;
     /** Purpose for the Contract Term Action */
     intent: CodeableConcept;
     /** Pointer to specific item */
@@ -379,7 +415,7 @@ export interface ContractTermAction extends BackboneElement {
     /** Entity of the action */
     subject?: Array<ContractTermSubject>;
     /** Actor that wil execute (or not) the action */
-    performer?: Reference<"CareTeam" | "Patient" | "PractitionerRole" | "Organization" | "Device" | "Location" | "Substance" | "Practitioner" | "RelatedPerson">;
+    performer?: Reference<'CareTeam' | 'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Location' | 'Substance' | 'Practitioner' | 'RelatedPerson'>;
     /** Pointer to specific item */
     contextLinkId?: Array<string>;
     /** Why is action (not) needed? */

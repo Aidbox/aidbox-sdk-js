@@ -9,11 +9,11 @@ import { DomainResource } from "./DomainResource";
 import { instant } from "./instant";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time. This may result in one or more Encounter(s). */
 export interface Appointment extends DomainResource {
+    resourceType: 'Appointment';
     _created?: Element;
     /** Shown on a subject line in a meeting request, or appointment list */
     description?: string;
@@ -51,7 +51,7 @@ export interface Appointment extends DomainResource {
     /** The style of appointment or patient that has been booked in the slot (not service type) */
     appointmentType?: CodeableConcept;
     /** proposed | pending | booked | arrived | fulfilled | cancelled | noshow | entered-in-error | checked-in | waitlist */
-    status: code;
+    status: `${AppointmentStatus}`;
     /** Additional comments */
     comment?: string;
     /** Can be less than start/end (e.g. estimate) */
@@ -68,17 +68,36 @@ export interface Appointment extends DomainResource {
     /** Reason the appointment is to take place (resource) */
     reasonReference?: Array<Reference>;
 }
+/** required | optional | information-only */
+export declare enum AppointmentRequired {
+    InformationOnly = "information-only",
+    Optional = "optional",
+    Required = "required"
+}
+/** proposed | pending | booked | arrived | fulfilled | cancelled | noshow | entered-in-error | checked-in | waitlist */
+export declare enum AppointmentStatus {
+    Fulfilled = "fulfilled",
+    Proposed = "proposed",
+    Cancelled = "cancelled",
+    Arrived = "arrived",
+    CheckedIn = "checked-in",
+    Noshow = "noshow",
+    EnteredInError = "entered-in-error",
+    Booked = "booked",
+    Pending = "pending",
+    Waitlist = "waitlist"
+}
 /** Participants involved in appointment */
 export interface AppointmentParticipant extends BackboneElement {
     /** Role of participant in the appointment */
     type?: Array<CodeableConcept>;
     /** Person, Location/HealthcareService or Device */
-    actor?: Reference<"Patient" | "PractitionerRole" | "HealthcareService" | "Device" | "Location" | "Practitioner" | "RelatedPerson">;
+    actor?: Reference<'Patient' | 'PractitionerRole' | 'HealthcareService' | 'Device' | 'Location' | 'Practitioner' | 'RelatedPerson'>;
     /** required | optional | information-only */
-    required?: code;
+    required?: `${AppointmentRequired}`;
     _required?: Element;
     /** accepted | declined | tentative | needs-action */
-    status: code;
+    status: `${AppointmentStatus}`;
     _status?: Element;
     /** Participation period of the actor */
     period?: Period;

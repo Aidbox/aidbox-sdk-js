@@ -11,6 +11,7 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Detailed definition of a medicinal product, typically for uses other than direct patient care (e.g. regulatory use). */
 export interface MedicinalProduct extends DomainResource {
+    resourceType: 'MedicinalProduct';
     /** Whether the Medicinal Product is subject to additional monitoring for regulatory reasons */
     additionalMonitoringIndicator?: CodeableConcept;
     /** An operation applied to the product, for manufacturing or adminsitrative purpose */
@@ -67,7 +68,7 @@ export interface MedicinalProductManufacturingBusinessOperation extends Backbone
     /** The manufacturer or establishment associated with the process */
     manufacturer?: Array<Reference>;
     /** A regulator which oversees the operation */
-    regulator?: Reference<"Organization">;
+    regulator?: Reference<'Organization'>;
 }
 /** Coding words or phrases of the name */
 export interface MedicinalProductNamePart extends BackboneElement {
@@ -112,5 +113,5 @@ export interface MedicinalProductSpecialDesignation extends BackboneElement {
     /** Identifier for the designation, or procedure number */
     identifier?: Array<Identifier>;
     indicationCodeableConcept?: CodeableConcept;
-    indicationReference?: Reference<"MedicinalProductIndication">;
+    indicationReference?: Reference<'MedicinalProductIndication'>;
 }

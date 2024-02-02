@@ -8,17 +8,17 @@ import { Range } from "./Range";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** An assessment of the likely outcome(s) for a patient or other subject as well as the likelihood of each outcome. */
 export interface RiskAssessment extends DomainResource {
+    resourceType: 'RiskAssessment';
     _mitigation?: Element;
     /** Part of this occurrence */
     parent?: Reference;
     /** Where was assessment performed? */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     /** Outcome predicted */
     prediction?: Array<RiskAssessmentPrediction>;
     /** Evaluation mechanism */
@@ -34,9 +34,9 @@ export interface RiskAssessment extends DomainResource {
     note?: Array<Annotation>;
     occurrencePeriod?: Period;
     /** registered | preliminary | final | amended + */
-    status: code;
+    status: `${RiskAssessmentStatus}`;
     /** Condition assessed */
-    condition?: Reference<"Condition">;
+    condition?: Reference<'Condition'>;
     /** Type of assessment */
     code?: CodeableConcept;
     /** Unique identifier for the assessment */
@@ -45,9 +45,9 @@ export interface RiskAssessment extends DomainResource {
     basedOn?: Reference;
     occurrenceDateTime?: dateTime;
     /** Who/what does assessment apply to? */
-    subject: Reference<"Patient" | "Group">;
+    subject: Reference<'Patient' | 'Group'>;
     /** Who did assessment? */
-    performer?: Reference<"PractitionerRole" | "Device" | "Practitioner">;
+    performer?: Reference<'PractitionerRole' | 'Device' | 'Practitioner'>;
     /** Why the assessment was necessary? */
     reasonReference?: Array<Reference>;
     _occurrenceDateTime?: Element;
@@ -69,4 +69,15 @@ export interface RiskAssessmentPrediction extends BackboneElement {
     qualitativeRisk?: CodeableConcept;
     probabilityDecimal?: decimal;
     _relativeRisk?: Element;
+}
+/** registered | preliminary | final | amended + */
+export declare enum RiskAssessmentStatus {
+    Amended = "amended",
+    Cancelled = "cancelled",
+    Corrected = "corrected",
+    EnteredInError = "entered-in-error",
+    Final = "final",
+    Preliminary = "preliminary",
+    Registered = "registered",
+    Unknown = "unknown"
 }

@@ -3,4 +3,6 @@
 DON'T MODIFY MANUALLY */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WorkflowDefinitionsNameMap = void 0;
-exports.WorkflowDefinitionsNameMap = {};
+exports.WorkflowDefinitionsNameMap = {
+    SystemCheckOutWorkflow: 'system/CheckOutWorkflow'
+};

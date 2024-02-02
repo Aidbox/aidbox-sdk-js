@@ -8,12 +8,12 @@ import { Dosage } from "./Dosage";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** A record of a medication that is being consumed by a patient.   A MedicationStatement may indicate that the patient may be taking the medication now or has taken the medication in the past or will be taking the medication in the future.  The source of this information can be the patient, significant other (such as a family member or spouse), or a clinician.  A common scenario where this information is captured is during the history taking process during a patient visit or stay.   The medication information may come from sources such as the patient's memory, from a prescription bottle,  or from a list of medications the patient, clinician or other party maintains.
 
 The primary difference between a medication statement and a medication administration is that the medication administration has complete administration information and is based on actual administration information from the person who administered the medication.  A medication statement is often, if not always, less specific.  There is no required date/time when the medication was administered, in fact we only know that a source has reported the patient is taking this medication, where details such as time, quantity, or rate or even medication product may be incomplete or missing or less precise.  As stated earlier, the medication statement information may come from the patient's memory, from a prescription bottle or from a list of medications the patient, clinician or other party maintains.  Medication administration is more formal and is not missing detailed information. */
 export interface MedicationStatement extends DomainResource {
+    resourceType: 'MedicationStatement';
     /** Type of medication usage */
     category?: CodeableConcept;
     _effectiveDateTime?: Element;
@@ -31,24 +31,35 @@ export interface MedicationStatement extends DomainResource {
     note?: Array<Annotation>;
     effectiveDateTime?: dateTime;
     /** active | completed | entered-in-error | intended | stopped | on-hold | unknown | not-taken */
-    status: code;
+    status: `${MedicationStatementStatus}`;
     _dateAsserted?: Element;
     /** External identifier */
     identifier?: Array<Identifier>;
     /** Encounter / Episode associated with MedicationStatement */
-    context?: Reference<"EpisodeOfCare" | "Encounter">;
+    context?: Reference<'EpisodeOfCare' | 'Encounter'>;
     /** When the statement was asserted? */
     dateAsserted?: dateTime;
     /** Fulfils plan, proposal or order */
     basedOn?: Array<Reference>;
-    medicationReference: Reference<"Medication">;
+    medicationReference: Reference<'Medication'>;
     /** Part of referenced event */
     partOf?: Array<Reference>;
     /** Person or organization that provided the information about the taking of this medication */
-    informationSource?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Practitioner" | "RelatedPerson">;
+    informationSource?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Practitioner' | 'RelatedPerson'>;
     /** Who is/was taking  the medication */
-    subject: Reference<"Patient" | "Group">;
+    subject: Reference<'Patient' | 'Group'>;
     effectivePeriod?: Period;
     /** Condition or observation that supports why the medication is being/was taken */
     reasonReference?: Array<Reference>;
+}
+/** active | completed | entered-in-error | intended | stopped | on-hold | unknown | not-taken */
+export declare enum MedicationStatementStatus {
+    Active = "active",
+    Completed = "completed",
+    EnteredInError = "entered-in-error",
+    Intended = "intended",
+    NotTaken = "not-taken",
+    OnHold = "on-hold",
+    Stopped = "stopped",
+    Unknown = "unknown"
 }

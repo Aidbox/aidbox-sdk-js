@@ -3,4 +3,6 @@
 DON'T MODIFY MANUALLY */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskDefinitionsNameMap = void 0;
-exports.TaskDefinitionsNameMap = {};
+exports.TaskDefinitionsNameMap = {
+    SystemSendMessage: 'system/SendMessage'
+};

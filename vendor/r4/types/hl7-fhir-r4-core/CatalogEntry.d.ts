@@ -6,17 +6,17 @@ import { dateTime } from "./dateTime";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Catalog entries are wrappers that contextualize items included in a catalog. */
 export interface CatalogEntry extends DomainResource {
+    resourceType: 'CatalogEntry';
     /** Additional characteristics of the catalog entry */
     additionalCharacteristic?: Array<CodeableConcept>;
     /** Additional classification of the catalog entry */
     additionalClassification?: Array<CodeableConcept>;
     /** The item that is being defined */
-    referencedItem: Reference<"PractitionerRole" | "HealthcareService" | "Medication" | "Organization" | "Device" | "Practitioner" | "PlanDefinition" | "SpecimenDefinition" | "ActivityDefinition" | "Binary" | "ObservationDefinition">;
+    referencedItem: Reference<'PractitionerRole' | 'HealthcareService' | 'Medication' | 'Organization' | 'Device' | 'Practitioner' | 'PlanDefinition' | 'SpecimenDefinition' | 'ActivityDefinition' | 'Binary' | 'ObservationDefinition'>;
     _validTo?: Element;
     _status?: Element;
     /** The type of item - medication, device, service, protocol or other */
@@ -28,7 +28,7 @@ export interface CatalogEntry extends DomainResource {
     /** Whether the entry represents an orderable item */
     orderable: boolean;
     /** draft | active | retired | unknown */
-    status?: code;
+    status?: `${CatalogEntryStatus}`;
     /** The date until which this catalog entry is expected to be active */
     validTo?: dateTime;
     /** Unique identifier of the catalog item */
@@ -42,11 +42,23 @@ export interface CatalogEntry extends DomainResource {
     /** An item that this catalog entry is related to */
     relatedEntry?: Array<CatalogEntryRelatedEntry>;
 }
+/** draft | active | retired | unknown */
+export declare enum CatalogEntryStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
+/** triggers | is-replaced-by */
+export declare enum CatalogEntryRelationtype {
+    IsReplacedBy = "is-replaced-by",
+    Triggers = "triggers"
+}
 /** An item that this catalog entry is related to */
 export interface CatalogEntryRelatedEntry extends BackboneElement {
     /** triggers | is-replaced-by */
-    relationtype: code;
+    relationtype: `${CatalogEntryRelationtype}`;
     _relationtype?: Element;
     /** The reference to the related item */
-    item: Reference<"CatalogEntry">;
+    item: Reference<'CatalogEntry'>;
 }

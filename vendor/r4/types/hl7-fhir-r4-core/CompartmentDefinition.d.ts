@@ -7,10 +7,10 @@ import { dateTime } from "./dateTime";
 import { DomainResource } from "./DomainResource";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
-import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** A compartment definition that defines how resources are accessed on a server. */
 export interface CompartmentDefinition extends DomainResource {
+    resourceType: 'CompartmentDefinition';
     /** Natural language description of the compartment definition */
     description?: markdown;
     _code?: Element;
@@ -36,14 +36,14 @@ export interface CompartmentDefinition extends DomainResource {
     _search?: Element;
     _purpose?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${CompartmentDefinitionStatus}`;
     /** How a resource is related to the compartment */
     resource?: Array<CompartmentDefinitionResource>;
     _name?: Element;
     /** Canonical identifier for this compartment definition, represented as a URI (globally unique) */
     url: uri;
     /** Patient | Encounter | RelatedPerson | Practitioner | Device */
-    code: code;
+    code: `${CompartmentDefinitionCode}`;
     /** Business version of the compartment definition */
     version?: string;
     _version?: Element;
@@ -51,10 +51,25 @@ export interface CompartmentDefinition extends DomainResource {
     contact?: Array<ContactDetail>;
     _url?: Element;
 }
+/** draft | active | retired | unknown */
+export declare enum CompartmentDefinitionStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
+/** Patient | Encounter | RelatedPerson | Practitioner | Device */
+export declare enum CompartmentDefinitionCode {
+    Device = "Device",
+    Encounter = "Encounter",
+    Patient = "Patient",
+    Practitioner = "Practitioner",
+    RelatedPerson = "RelatedPerson"
+}
 /** How a resource is related to the compartment */
 export interface CompartmentDefinitionResource extends BackboneElement {
     /** Name of resource type */
-    code: code;
+    code: `${CompartmentDefinitionCode}`;
     _code?: Element;
     /** Search Parameter Name, or chained parameters */
     param?: Array<string>;

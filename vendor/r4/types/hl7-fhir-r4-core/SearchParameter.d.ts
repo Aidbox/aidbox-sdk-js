@@ -13,6 +13,7 @@ import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** A search parameter that defines a named search item that can be used to search/filter on a resource. */
 export interface SearchParameter extends DomainResource {
+    resourceType: 'SearchParameter';
     _base?: Array<Element>;
     /** Natural language description of the search parameter */
     description: markdown;
@@ -51,9 +52,9 @@ export interface SearchParameter extends DomainResource {
     xpath?: string;
     _xpathUsage?: Element;
     /** normal | phonetic | nearby | distance | other */
-    xpathUsage?: code;
+    xpathUsage?: `${SearchParameterXpathUsage}`;
     /** number | date | string | token | reference | composite | quantity | uri | special */
-    type: code;
+    type: `${SearchParameterType}`;
     /** For testing purposes, not real usage */
     experimental?: boolean;
     /** For Composite resources to define the parts */
@@ -62,7 +63,7 @@ export interface SearchParameter extends DomainResource {
     _description?: Element;
     _purpose?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${SearchParameterStatus}`;
     _target?: Array<Element>;
     _name?: Element;
     /** Chained names supported */
@@ -88,6 +89,26 @@ export interface SearchParameter extends DomainResource {
     _url?: Element;
     _multipleAnd?: Element;
 }
+/** normal | phonetic | nearby | distance | other */
+export declare enum SearchParameterXpathUsage {
+    Distance = "distance",
+    Nearby = "nearby",
+    Normal = "normal",
+    Other = "other",
+    Phonetic = "phonetic"
+}
+/** number | date | string | token | reference | composite | quantity | uri | special */
+export declare enum SearchParameterType {
+    Uri = "uri",
+    Number = "number",
+    Date = "date",
+    Special = "special",
+    Quantity = "quantity",
+    String = "string",
+    Composite = "composite",
+    Token = "token",
+    Reference = "reference"
+}
 /** For Composite resources to define the parts */
 export interface SearchParameterComponent extends BackboneElement {
     /** Defines how the part works */
@@ -96,4 +117,11 @@ export interface SearchParameterComponent extends BackboneElement {
     /** Subexpression relative to main expression */
     expression: string;
     _expression?: Element;
+}
+/** draft | active | retired | unknown */
+export declare enum SearchParameterStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }

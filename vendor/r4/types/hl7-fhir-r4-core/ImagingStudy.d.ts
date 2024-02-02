@@ -9,11 +9,11 @@ import { dateTime } from "./dateTime";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Representation of the content produced in a DICOM imaging study. A study comprises a set of series, each of which includes a set of Service-Object Pair Instances (SOP Instances - images or other data) acquired or produced in a common context.  A series is of only one modality (e.g. X-ray, CT, MR, ultrasound), but a study may have multiple series of different modalities. */
 export interface ImagingStudy extends DomainResource {
+    resourceType: 'ImagingStudy';
     /** Institution-generated description */
     description?: string;
     /** When the study was started */
@@ -25,9 +25,9 @@ export interface ImagingStudy extends DomainResource {
     /** Each study has one or more series of instances */
     series?: Array<ImagingStudySeries>;
     /** The performed Procedure reference */
-    procedureReference?: Reference<"Procedure">;
+    procedureReference?: Reference<'Procedure'>;
     /** Encounter with which this imaging study is associated */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     _numberOfSeries?: Element;
     _status?: Element;
     /** Why the study was requested */
@@ -39,20 +39,20 @@ export interface ImagingStudy extends DomainResource {
     /** User-defined comments */
     note?: Array<Annotation>;
     /** Referring physician */
-    referrer?: Reference<"PractitionerRole" | "Practitioner">;
+    referrer?: Reference<'PractitionerRole' | 'Practitioner'>;
     _started?: Element;
     /** registered | available | cancelled | entered-in-error | unknown */
-    status: code;
+    status: `${ImagingStudyStatus}`;
     /** Identifiers for the whole study */
     identifier?: Array<Identifier>;
     /** Request fulfilled */
     basedOn?: Array<Reference>;
     /** Where ImagingStudy occurred */
-    location?: Reference<"Location">;
+    location?: Reference<'Location'>;
     /** Study access endpoint */
     endpoint?: Array<Reference>;
     /** Who or what is the subject of the study */
-    subject: Reference<"Patient" | "Device" | "Group">;
+    subject: Reference<'Patient' | 'Device' | 'Group'>;
     /** Number of Study Related Instances */
     numberOfInstances?: unsignedInt;
     /** Why was study performed */
@@ -79,7 +79,7 @@ export interface ImagingStudyPerformer extends BackboneElement {
     /** Type of performance */
     function?: CodeableConcept;
     /** Who performed the series */
-    actor: Reference<"CareTeam" | "Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    actor: Reference<'CareTeam' | 'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
 }
 /** Each study has one or more series of instances */
 export interface ImagingStudySeries extends BackboneElement {
@@ -112,4 +112,12 @@ export interface ImagingStudySeries extends BackboneElement {
     numberOfInstances?: unsignedInt;
     /** Who performed the series */
     performer?: Array<ImagingStudyPerformer>;
+}
+/** registered | available | cancelled | entered-in-error | unknown */
+export declare enum ImagingStudyStatus {
+    Available = "available",
+    Cancelled = "cancelled",
+    EnteredInError = "entered-in-error",
+    Registered = "registered",
+    Unknown = "unknown"
 }

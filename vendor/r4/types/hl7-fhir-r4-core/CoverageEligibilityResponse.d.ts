@@ -15,15 +15,16 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** This resource provides eligibility and plan details from the processing of an CoverageEligibilityRequest resource. */
 export interface CoverageEligibilityResponse extends DomainResource {
+    resourceType: 'CoverageEligibilityResponse';
     _created?: Element;
     /** Intended recipient of products and services */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     /** Party responsible for the request */
-    requestor?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    requestor?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Patient insurance information */
     insurance?: Array<CoverageEligibilityResponseInsurance>;
     /** Eligibility request reference */
-    request: Reference<"CoverageEligibilityRequest">;
+    request: Reference<'CoverageEligibilityRequest'>;
     /** Preauthorization reference */
     preAuthRef?: string;
     _disposition?: Element;
@@ -33,15 +34,15 @@ export interface CoverageEligibilityResponse extends DomainResource {
     /** Response creation date */
     created: dateTime;
     /** queued | complete | error | partial */
-    outcome: code;
+    outcome: `${CoverageEligibilityResponseOutcome}`;
     _outcome?: Element;
     /** Disposition Message */
     disposition?: string;
     _purpose?: Array<Element>;
     /** Coverage issuer */
-    insurer: Reference<"Organization">;
+    insurer: Reference<'Organization'>;
     /** active | cancelled | draft | entered-in-error */
-    status: code;
+    status: `${CoverageEligibilityResponseStatus}`;
     servicedDate?: date;
     /** Business Identifier for coverage eligiblity request */
     identifier?: Array<Identifier>;
@@ -101,13 +102,13 @@ export interface CoverageEligibilityResponseItem extends BackboneElement {
     network?: CodeableConcept;
     _authorizationRequired?: Element;
     /** Performing practitioner */
-    provider?: Reference<"PractitionerRole" | "Practitioner">;
+    provider?: Reference<'PractitionerRole' | 'Practitioner'>;
     _excluded?: Element;
 }
 /** Patient insurance information */
 export interface CoverageEligibilityResponseInsurance extends BackboneElement {
     /** Insurance information */
-    coverage: Reference<"Coverage">;
+    coverage: Reference<'Coverage'>;
     /** Coverage inforce indicator */
     inforce?: boolean;
     _inforce?: Element;
@@ -115,6 +116,20 @@ export interface CoverageEligibilityResponseInsurance extends BackboneElement {
     benefitPeriod?: Period;
     /** Benefits and authorization details */
     item?: Array<CoverageEligibilityResponseItem>;
+}
+/** queued | complete | error | partial */
+export declare enum CoverageEligibilityResponseOutcome {
+    Complete = "complete",
+    Error = "error",
+    Partial = "partial",
+    Queued = "queued"
+}
+/** active | cancelled | draft | entered-in-error */
+export declare enum CoverageEligibilityResponseStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    Draft = "draft",
+    EnteredInError = "entered-in-error"
 }
 /** Processing errors */
 export interface CoverageEligibilityResponseError extends BackboneElement {

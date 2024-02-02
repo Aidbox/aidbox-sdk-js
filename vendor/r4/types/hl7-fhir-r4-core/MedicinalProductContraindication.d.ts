@@ -7,6 +7,7 @@ import { Reference } from "./Reference";
 import { BackboneElement } from "./BackboneElement";
 /** The clinical particulars - indications, contraindications etc. of a medicinal product, including for regulatory purposes. */
 export interface MedicinalProductContraindication extends DomainResource {
+    resourceType: 'MedicinalProductContraindication';
     /** The medication for which this is an indication */
     subject?: Array<Reference>;
     /** The disease, symptom or procedure for the contraindication */
@@ -27,5 +28,5 @@ export interface MedicinalProductContraindicationOtherTherapy extends BackboneEl
     /** The type of relationship between the medicinal product indication or contraindication and another therapy */
     therapyRelationshipType: CodeableConcept;
     medicationCodeableConcept: CodeableConcept;
-    medicationReference: Reference<"Medication" | "SubstanceSpecification" | "Substance" | "MedicinalProduct">;
+    medicationReference: Reference<'Medication' | 'SubstanceSpecification' | 'Substance' | 'MedicinalProduct'>;
 }

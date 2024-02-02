@@ -8,6 +8,7 @@ import { Reference } from "./Reference";
 import { Identifier } from "./Identifier";
 /** A container for slots of time that may be available for booking appointments. */
 export interface Schedule extends DomainResource {
+    resourceType: 'Schedule';
     _active?: Element;
     /** High-level category */
     serviceCategory?: Array<CodeableConcept>;

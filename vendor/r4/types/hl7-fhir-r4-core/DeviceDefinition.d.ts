@@ -10,11 +10,11 @@ import { DomainResource } from "./DomainResource";
 import { ProductShelfLife } from "./ProductShelfLife";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** The characteristics, operational status and capabilities of a medical-related component of a medical device. */
 export interface DeviceDefinition extends DomainResource {
+    resourceType: 'DeviceDefinition';
     /** A name given to the device to identify it */
     deviceName?: Array<DeviceDefinitionDeviceName>;
     /** Shelf Life and storage information */
@@ -30,13 +30,13 @@ export interface DeviceDefinition extends DomainResource {
     udiDeviceIdentifier?: Array<DeviceDefinitionUdiDeviceIdentifier>;
     /** What kind of device or device system this is */
     type?: CodeableConcept;
-    manufacturerReference?: Reference<"Organization">;
+    manufacturerReference?: Reference<'Organization'>;
     /** Device capabilities */
     capability?: Array<DeviceDefinitionCapability>;
     /** The capabilities supported on a  device, the standards to which the device conforms for a particular purpose, and used for the communication */
     specialization?: Array<DeviceDefinitionSpecialization>;
     /** The parent device it can be part of */
-    parentDevice?: Reference<"DeviceDefinition">;
+    parentDevice?: Reference<'DeviceDefinition'>;
     /** Device notes and comments */
     note?: Array<Annotation>;
     /** Language code for the human-readable text strings produced by the device (all supported) */
@@ -57,7 +57,7 @@ export interface DeviceDefinition extends DomainResource {
     /** Details for human/organization for support */
     contact?: Array<ContactPoint>;
     /** Organization responsible for device */
-    owner?: Reference<"Organization">;
+    owner?: Reference<'Organization'>;
     _url?: Element;
     /** Access to on-line information */
     onlineInformation?: uri;
@@ -65,13 +65,22 @@ export interface DeviceDefinition extends DomainResource {
     physicalCharacteristics?: ProdCharacteristic;
     _manufacturerString?: Element;
 }
+/** udi-label-name | user-friendly-name | patient-reported-name | manufacturer-name | model-name | other */
+export declare enum DeviceDefinitionType {
+    ManufacturerName = "manufacturer-name",
+    ModelName = "model-name",
+    Other = "other",
+    PatientReportedName = "patient-reported-name",
+    UdiLabelName = "udi-label-name",
+    UserFriendlyName = "user-friendly-name"
+}
 /** A name given to the device to identify it */
 export interface DeviceDefinitionDeviceName extends BackboneElement {
     /** The name of the device */
     name: string;
     _name?: Element;
     /** udi-label-name | user-friendly-name | patient-reported-name | manufacturer-name | model-name | other */
-    type: code;
+    type: `${DeviceDefinitionType}`;
     _type?: Element;
 }
 /** The actual configuration settings of a device as it actually operates, e.g., regulation status, time properties */

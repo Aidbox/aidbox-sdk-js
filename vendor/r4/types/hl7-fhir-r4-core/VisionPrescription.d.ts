@@ -8,31 +8,50 @@ import { integer } from "./integer";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** An authorization for the provision of glasses and/or contact lenses to a patient. */
 export interface VisionPrescription extends DomainResource {
+    resourceType: 'VisionPrescription';
     _created?: Element;
     /** Who prescription is for */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     /** Created during encounter / admission / stay */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     _status?: Element;
     /** Response creation date */
     created: dateTime;
     /** active | cancelled | draft | entered-in-error */
-    status: code;
+    status: `${VisionPrescriptionStatus}`;
     /** Business Identifier for vision prescription */
     identifier?: Array<Identifier>;
     /** Who authorized the vision prescription */
-    prescriber: Reference<"PractitionerRole" | "Practitioner">;
+    prescriber: Reference<'PractitionerRole' | 'Practitioner'>;
     /** When prescription was authorized */
     dateWritten: dateTime;
     _dateWritten?: Element;
     /** Vision lens authorization */
     lensSpecification: Array<VisionPrescriptionLensSpecification>;
+}
+/** active | cancelled | draft | entered-in-error */
+export declare enum VisionPrescriptionStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    Draft = "draft",
+    EnteredInError = "entered-in-error"
+}
+/** right | left */
+export declare enum VisionPrescriptionEye {
+    Left = "left",
+    Right = "right"
+}
+/** up | down | in | out */
+export declare enum VisionPrescriptionBase {
+    Down = "down",
+    In = "in",
+    Out = "out",
+    Up = "up"
 }
 /** Eye alignment compensation */
 export interface VisionPrescriptionPrism extends BackboneElement {
@@ -40,7 +59,7 @@ export interface VisionPrescriptionPrism extends BackboneElement {
     amount: decimal;
     _amount?: Element;
     /** up | down | in | out */
-    base: code;
+    base: `${VisionPrescriptionBase}`;
     _base?: Element;
 }
 /** Vision lens authorization */
@@ -52,7 +71,7 @@ export interface VisionPrescriptionLensSpecification extends BackboneElement {
     /** Color required */
     color?: string;
     /** right | left */
-    eye: code;
+    eye: `${VisionPrescriptionEye}`;
     _add?: Element;
     /** Contact lens diameter */
     diameter?: decimal;

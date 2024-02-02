@@ -9,11 +9,11 @@ import { DomainResource } from "./DomainResource";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A process where a researcher or organization plans and then executes a series of steps intended to increase the field of healthcare-related knowledge.  This includes studies of safety, efficacy, comparative effectiveness and other information about medications, devices, therapies and other interventional and investigative techniques.  A ResearchStudy involves the gathering of information about human or animal subjects. */
 export interface ResearchStudy extends DomainResource {
+    resourceType: 'ResearchStudy';
     /** What this is study doing */
     description?: markdown;
     /** Classifications for the study */
@@ -27,7 +27,7 @@ export interface ResearchStudy extends DomainResource {
     /** Steps followed in executing study */
     protocol?: Array<Reference>;
     /** Researcher who oversees multiple aspects of the study */
-    principalInvestigator?: Reference<"PractitionerRole" | "Practitioner">;
+    principalInvestigator?: Reference<'PractitionerRole' | 'Practitioner'>;
     _status?: Element;
     /** n-a | early-phase-1 | phase-1 | phase-1-phase-2 | phase-2 | phase-2-phase-3 | phase-3 | phase-4 */
     phase?: CodeableConcept;
@@ -41,7 +41,7 @@ export interface ResearchStudy extends DomainResource {
     /** Used to search for the study */
     keyword?: Array<CodeableConcept>;
     /** active | administratively-completed | approved | closed-to-accrual | closed-to-accrual-and-intervention | completed | disapproved | in-review | temporarily-closed-to-accrual | temporarily-closed-to-accrual-and-intervention | withdrawn */
-    status: code;
+    status: `${ResearchStudyStatus}`;
     /** Condition being studied */
     condition?: Array<CodeableConcept>;
     /** Business Identifier for study */
@@ -64,7 +64,7 @@ export interface ResearchStudy extends DomainResource {
     /** Contact details for the study */
     contact?: Array<ContactDetail>;
     /** Organization that initiates and is legally responsible for the study */
-    sponsor?: Reference<"Organization">;
+    sponsor?: Reference<'Organization'>;
 }
 /** Defined path through the study for a subject */
 export interface ResearchStudyArm extends BackboneElement {
@@ -76,6 +76,20 @@ export interface ResearchStudyArm extends BackboneElement {
     /** Short explanation of study path */
     description?: string;
     _description?: Element;
+}
+/** active | administratively-completed | approved | closed-to-accrual | closed-to-accrual-and-intervention | completed | disapproved | in-review | temporarily-closed-to-accrual | temporarily-closed-to-accrual-and-intervention | withdrawn */
+export declare enum ResearchStudyStatus {
+    Active = "active",
+    ClosedToAccrual = "closed-to-accrual",
+    Approved = "approved",
+    AdministrativelyCompleted = "administratively-completed",
+    Withdrawn = "withdrawn",
+    TemporarilyClosedToAccrualAndIntervention = "temporarily-closed-to-accrual-and-intervention",
+    TemporarilyClosedToAccrual = "temporarily-closed-to-accrual",
+    Disapproved = "disapproved",
+    Completed = "completed",
+    ClosedToAccrualAndIntervention = "closed-to-accrual-and-intervention",
+    InReview = "in-review"
 }
 /** A goal for the study */
 export interface ResearchStudyObjective extends BackboneElement {

@@ -3,13 +3,12 @@ DON'T MODIFY MANUALLY */
 import { positiveInt } from "./positiveInt";
 import { Period } from "./Period";
 import { Element } from "./Element";
-import { code } from "./code";
 /** Base StructureDefinition for ContactPoint Type: Details for all kinds of technology mediated contact points for a person or organization, including telephone, email, etc. */
 export interface ContactPoint extends Element {
     /** phone | fax | email | pager | url | sms | other */
-    system?: code;
+    system?: `${ContactPointSystem}`;
     /** home | work | temp | old | mobile - purpose of this contact point */
-    use?: code;
+    use?: `${ContactPointUse}`;
     /** The actual contact point details */
     value?: string;
     /** Specify preferred order of use (1 = highest) */
@@ -20,4 +19,22 @@ export interface ContactPoint extends Element {
     _system?: Element;
     _use?: Element;
     _rank?: Element;
+}
+/** phone | fax | email | pager | url | sms | other */
+export declare enum ContactPointSystem {
+    Email = "email",
+    Fax = "fax",
+    Other = "other",
+    Pager = "pager",
+    Phone = "phone",
+    Sms = "sms",
+    Url = "url"
+}
+/** home | work | temp | old | mobile - purpose of this contact point */
+export declare enum ContactPointUse {
+    Home = "home",
+    Mobile = "mobile",
+    Old = "old",
+    Temp = "temp",
+    Work = "work"
 }

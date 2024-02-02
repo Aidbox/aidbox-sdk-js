@@ -14,6 +14,7 @@ import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** A formal computable definition of an operation (on the RESTful interface) or a named query (using the search interaction). */
 export interface OperationDefinition extends DomainResource {
+    resourceType: 'OperationDefinition';
     _base?: Element;
     /** Natural language description of the operation definition */
     description?: markdown;
@@ -55,13 +56,13 @@ export interface OperationDefinition extends DomainResource {
     _purpose?: Element;
     _resource?: Array<Element>;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${OperationDefinitionStatus}`;
     /** Types this operation applies to */
     resource?: Array<code>;
     /** Whether content is changed by the operation */
     affectsState?: boolean;
     /** operation | query */
-    kind: code;
+    kind: `${OperationDefinitionKind}`;
     /** Additional information about use */
     comment?: markdown;
     _name?: Element;
@@ -87,15 +88,6 @@ export interface OperationDefinition extends DomainResource {
     parameter?: Array<OperationDefinitionParameter>;
     _url?: Element;
 }
-/** Define overloaded variants for when  generating code */
-export interface OperationDefinitionOverload extends BackboneElement {
-    /** Name of parameter to include in overload */
-    parameterName?: Array<string>;
-    _parameterName?: Array<Element>;
-    /** Comments to go on overload */
-    comment?: string;
-    _comment?: Element;
-}
 /** References to this parameter */
 export interface OperationDefinitionParameterReferencedFrom extends BackboneElement {
     /** Referencing parameter */
@@ -108,11 +100,232 @@ export interface OperationDefinitionParameterReferencedFrom extends BackboneElem
 /** ValueSet details if this is coded */
 export interface OperationDefinitionParameterBinding extends BackboneElement {
     /** required | extensible | preferred | example */
-    strength: code;
+    strength: `${OperationDefinitionParameterStrength}`;
     _strength?: Element;
     /** Source of value set */
     valueSet: canonical;
     _valueSet?: Element;
+}
+/** What type this parameter has */
+export declare enum OperationDefinitionParameterType {
+    ImmunizationEvaluation = "ImmunizationEvaluation",
+    Appointment = "Appointment",
+    StructureMap = "StructureMap",
+    Address = "Address",
+    CareTeam = "CareTeam",
+    UsageContext = "UsageContext",
+    Linkage = "Linkage",
+    Annotation = "Annotation",
+    Age = "Age",
+    Attachment = "Attachment",
+    Communication = "Communication",
+    MedicationDispense = "MedicationDispense",
+    ImagingStudy = "ImagingStudy",
+    ChargeItem = "ChargeItem",
+    Period = "Period",
+    AdverseEvent = "AdverseEvent",
+    ContactDetail = "ContactDetail",
+    DataRequirement = "DataRequirement",
+    Media = "Media",
+    CodeableConcept = "CodeableConcept",
+    Uri = "uri",
+    SubstancePolymer = "SubstancePolymer",
+    QuestionnaireResponse = "QuestionnaireResponse",
+    Coverage = "Coverage",
+    Procedure = "Procedure",
+    AuditEvent = "AuditEvent",
+    PaymentReconciliation = "PaymentReconciliation",
+    MedicinalProductManufactured = "MedicinalProductManufactured",
+    CompartmentDefinition = "CompartmentDefinition",
+    Type = "Type",
+    Organization = "Organization",
+    ExplanationOfBenefit = "ExplanationOfBenefit",
+    Composition = "Composition",
+    SimpleQuantity = "SimpleQuantity",
+    CoverageEligibilityResponse = "CoverageEligibilityResponse",
+    DocumentReference = "DocumentReference",
+    EventDefinition = "EventDefinition",
+    SubstanceProtein = "SubstanceProtein",
+    TerminologyCapabilities = "TerminologyCapabilities",
+    Encounter = "Encounter",
+    ImplementationGuide = "ImplementationGuide",
+    EvidenceVariable = "EvidenceVariable",
+    ObservationDefinition = "ObservationDefinition",
+    DiagnosticReport = "DiagnosticReport",
+    ExampleScenario = "ExampleScenario",
+    ResearchDefinition = "ResearchDefinition",
+    Parameters = "Parameters",
+    Instant = "instant",
+    SearchParameter = "SearchParameter",
+    MedicinalProductInteraction = "MedicinalProductInteraction",
+    CodeSystem = "CodeSystem",
+    MessageDefinition = "MessageDefinition",
+    NutritionOrder = "NutritionOrder",
+    VerificationResult = "VerificationResult",
+    MedicationAdministration = "MedicationAdministration",
+    CatalogEntry = "CatalogEntry",
+    Flag = "Flag",
+    DeviceUseStatement = "DeviceUseStatement",
+    TriggerDefinition = "TriggerDefinition",
+    Contract = "Contract",
+    Invoice = "Invoice",
+    MarketingStatus = "MarketingStatus",
+    Count = "Count",
+    PaymentNotice = "PaymentNotice",
+    Location = "Location",
+    Claim = "Claim",
+    Specimen = "Specimen",
+    MedicationStatement = "MedicationStatement",
+    EnrollmentResponse = "EnrollmentResponse",
+    Uuid = "uuid",
+    Evidence = "Evidence",
+    Bundle = "Bundle",
+    ResearchElementDefinition = "ResearchElementDefinition",
+    Expression = "Expression",
+    Coding = "Coding",
+    BodyStructure = "BodyStructure",
+    MedicinalProduct = "MedicinalProduct",
+    Canonical = "canonical",
+    ResearchStudy = "ResearchStudy",
+    Dosage = "Dosage",
+    AppointmentResponse = "AppointmentResponse",
+    MedicinalProductIndication = "MedicinalProductIndication",
+    Measure = "Measure",
+    Person = "Person",
+    InsurancePlan = "InsurancePlan",
+    Date = "date",
+    Patient = "Patient",
+    EffectEvidenceSynthesis = "EffectEvidenceSynthesis",
+    ResearchSubject = "ResearchSubject",
+    Medication = "Medication",
+    Range = "Range",
+    ConceptMap = "ConceptMap",
+    CoverageEligibilityRequest = "CoverageEligibilityRequest",
+    Population = "Population",
+    SubstanceSourceMaterial = "SubstanceSourceMaterial",
+    VisionPrescription = "VisionPrescription",
+    MolecularSequence = "MolecularSequence",
+    MedicinalProductUndesirableEffect = "MedicinalProductUndesirableEffect",
+    OperationOutcome = "OperationOutcome",
+    MessageHeader = "MessageHeader",
+    ContactPoint = "ContactPoint",
+    Signature = "Signature",
+    Decimal = "decimal",
+    Any = "Any",
+    AllergyIntolerance = "AllergyIntolerance",
+    SubstanceReferenceInformation = "SubstanceReferenceInformation",
+    SupplyDelivery = "SupplyDelivery",
+    EpisodeOfCare = "EpisodeOfCare",
+    PractitionerRole = "PractitionerRole",
+    Library = "Library",
+    Practitioner = "Practitioner",
+    Markdown = "markdown",
+    MedicationRequest = "MedicationRequest",
+    ImmunizationRecommendation = "ImmunizationRecommendation",
+    RelatedArtifact = "RelatedArtifact",
+    Timing = "Timing",
+    Immunization = "Immunization",
+    GraphDefinition = "GraphDefinition",
+    Account = "Account",
+    Url = "url",
+    MedicinalProductIngredient = "MedicinalProductIngredient",
+    ProdCharacteristic = "ProdCharacteristic",
+    Meta = "Meta",
+    Quantity = "Quantity",
+    MeasureReport = "MeasureReport",
+    Distance = "Distance",
+    HumanName = "HumanName",
+    DeviceMetric = "DeviceMetric",
+    Duration = "Duration",
+    SubstanceAmount = "SubstanceAmount",
+    Goal = "Goal",
+    MedicationKnowledge = "MedicationKnowledge",
+    Integer = "integer",
+    String = "string",
+    ClaimResponse = "ClaimResponse",
+    DeviceDefinition = "DeviceDefinition",
+    Slot = "Slot",
+    ValueSet = "ValueSet",
+    MedicinalProductAuthorization = "MedicinalProductAuthorization",
+    StructureDefinition = "StructureDefinition",
+    Base64Binary = "base64Binary",
+    MedicinalProductContraindication = "MedicinalProductContraindication",
+    ElementDefinition = "ElementDefinition",
+    DeviceRequest = "DeviceRequest",
+    List = "List",
+    Questionnaire = "Questionnaire",
+    DomainResource = "DomainResource",
+    Endpoint = "Endpoint",
+    NamingSystem = "NamingSystem",
+    MedicinalProductPackaged = "MedicinalProductPackaged",
+    Basic = "Basic",
+    Money = "Money",
+    Binary = "Binary",
+    PlanDefinition = "PlanDefinition",
+    Subscription = "Subscription",
+    SampledData = "SampledData",
+    ProductShelfLife = "ProductShelfLife",
+    RelatedPerson = "RelatedPerson",
+    SubstanceSpecification = "SubstanceSpecification",
+    Ratio = "Ratio",
+    SubstanceNucleicAcid = "SubstanceNucleicAcid",
+    GuidanceResponse = "GuidanceResponse",
+    ClinicalImpression = "ClinicalImpression",
+    OrganizationAffiliation = "OrganizationAffiliation",
+    Resource = "Resource",
+    UnsignedInt = "unsignedInt",
+    Condition = "Condition",
+    Extension = "Extension",
+    CapabilityStatement = "CapabilityStatement",
+    HealthcareService = "HealthcareService",
+    SpecimenDefinition = "SpecimenDefinition",
+    ParameterDefinition = "ParameterDefinition",
+    RiskAssessment = "RiskAssessment",
+    Xhtml = "xhtml",
+    OperationDefinition = "OperationDefinition",
+    ActivityDefinition = "ActivityDefinition",
+    Schedule = "Schedule",
+    BiologicallyDerivedProduct = "BiologicallyDerivedProduct",
+    PositiveInt = "positiveInt",
+    Code = "code",
+    Group = "Group",
+    MedicinalProductPharmaceutical = "MedicinalProductPharmaceutical",
+    FamilyMemberHistory = "FamilyMemberHistory",
+    ServiceRequest = "ServiceRequest",
+    DetectedIssue = "DetectedIssue",
+    Device = "Device",
+    Oid = "oid",
+    RequestGroup = "RequestGroup",
+    TestScript = "TestScript",
+    RiskEvidenceSynthesis = "RiskEvidenceSynthesis",
+    SupplyRequest = "SupplyRequest",
+    Element = "Element",
+    Reference = "Reference",
+    Task = "Task",
+    Identifier = "Identifier",
+    CommunicationRequest = "CommunicationRequest",
+    EnrollmentRequest = "EnrollmentRequest",
+    ChargeItemDefinition = "ChargeItemDefinition",
+    Substance = "Substance",
+    Id = "id",
+    Provenance = "Provenance",
+    Time = "time",
+    Consent = "Consent",
+    BackboneElement = "BackboneElement",
+    CarePlan = "CarePlan",
+    Narrative = "Narrative",
+    MoneyQuantity = "MoneyQuantity",
+    TestReport = "TestReport",
+    Observation = "Observation",
+    DateTime = "dateTime",
+    Boolean = "boolean",
+    DocumentManifest = "DocumentManifest",
+    Contributor = "Contributor"
+}
+/** operation | query */
+export declare enum OperationDefinitionKind {
+    Operation = "operation",
+    Query = "query"
 }
 /** Parameters for the operation/query */
 export interface OperationDefinitionParameter extends BackboneElement {
@@ -121,16 +334,16 @@ export interface OperationDefinitionParameter extends BackboneElement {
     _documentation?: Element;
     _searchType?: Element;
     /** number | date | string | token | reference | composite | quantity | uri | special */
-    searchType?: code;
+    searchType?: `${OperationDefinitionParameterSearchType}`;
     /** in | out */
-    use: code;
+    use: `${OperationDefinitionParameterUse}`;
     /** Name in Parameters.parameter.name or in URL */
     name: code;
     /** Parts of a nested Parameter */
     part?: Array<OperationDefinitionParameter>;
     _type?: Element;
     /** What type this parameter has */
-    type?: code;
+    type?: `${OperationDefinitionParameterType}`;
     /** References to this parameter */
     referencedFrom?: Array<OperationDefinitionParameterReferencedFrom>;
     /** Description of meaning/use */
@@ -146,4 +359,44 @@ export interface OperationDefinitionParameter extends BackboneElement {
     _max?: Element;
     _targetProfile?: Array<Element>;
     _use?: Element;
+}
+/** number | date | string | token | reference | composite | quantity | uri | special */
+export declare enum OperationDefinitionParameterSearchType {
+    Uri = "uri",
+    Number = "number",
+    Date = "date",
+    Special = "special",
+    Quantity = "quantity",
+    String = "string",
+    Composite = "composite",
+    Token = "token",
+    Reference = "reference"
+}
+/** Define overloaded variants for when  generating code */
+export interface OperationDefinitionOverload extends BackboneElement {
+    /** Name of parameter to include in overload */
+    parameterName?: Array<string>;
+    _parameterName?: Array<Element>;
+    /** Comments to go on overload */
+    comment?: string;
+    _comment?: Element;
+}
+/** required | extensible | preferred | example */
+export declare enum OperationDefinitionParameterStrength {
+    Example = "example",
+    Extensible = "extensible",
+    Preferred = "preferred",
+    Required = "required"
+}
+/** draft | active | retired | unknown */
+export declare enum OperationDefinitionStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
+/** in | out */
+export declare enum OperationDefinitionParameterUse {
+    In = "in",
+    Out = "out"
 }

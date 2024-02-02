@@ -7,6 +7,7 @@ import { DomainResource } from "./DomainResource";
 import { Reference } from "./Reference";
 /** The manufactured item as contained in the packaged medicinal product. */
 export interface MedicinalProductManufactured extends DomainResource {
+    resourceType: 'MedicinalProductManufactured';
     /** Dose form as manufactured and before any transformation into the pharmaceutical product */
     manufacturedDoseForm: CodeableConcept;
     /** The “real world” units in which the quantity of the manufactured item is described */

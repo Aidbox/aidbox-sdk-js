@@ -20,11 +20,11 @@ import { date } from "./date";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** This resource allows for the definition of some activity to be performed, independent of a particular patient, practitioner, or other performance context. */
 export interface ActivityDefinition extends DomainResource {
+    resourceType: 'ActivityDefinition';
     /** What observations must be produced by this action */
     observationResultRequirement?: Array<Reference>;
     timingRange?: Range;
@@ -57,7 +57,7 @@ export interface ActivityDefinition extends DomainResource {
     productCodeableConcept?: CodeableConcept;
     /** Name for this activity definition (computer friendly) */
     name?: string;
-    productReference?: Reference<"Medication" | "Substance">;
+    productReference?: Reference<'Medication' | 'Substance'>;
     timingPeriod?: Period;
     _priority?: Element;
     _status?: Element;
@@ -90,14 +90,14 @@ export interface ActivityDefinition extends DomainResource {
     timingDuration?: Duration;
     _lastReviewDate?: Element;
     /** routine | urgent | asap | stat */
-    priority?: code;
+    priority?: `${ActivityDefinitionPriority}`;
     _transform?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${ActivityDefinitionStatus}`;
     /** Subordinate title of the activity definition */
     subtitle?: string;
     /** Kind of resource */
-    kind?: code;
+    kind?: `${ActivityDefinitionKind}`;
     _name?: Element;
     /** Dynamic aspects of the definition */
     dynamicValue?: Array<ActivityDefinitionDynamicValue>;
@@ -118,7 +118,7 @@ export interface ActivityDefinition extends DomainResource {
     bodySite?: Array<CodeableConcept>;
     timingAge?: Age;
     /** proposal | plan | directive | order | original-order | reflex-order | filler-order | instance-order | option */
-    intent?: code;
+    intent?: `${ActivityDefinitionIntent}`;
     _library?: Array<Element>;
     _copyright?: Element;
     _timingDateTime?: Element;
@@ -135,23 +135,62 @@ export interface ActivityDefinition extends DomainResource {
     /** Additional documentation, citations, etc. */
     relatedArtifact?: Array<RelatedArtifact>;
     /** Where it should happen */
-    location?: Reference<"Location">;
+    location?: Reference<'Location'>;
     /** Contact details for the publisher */
     contact?: Array<ContactDetail>;
-    subjectReference?: Reference<"Group">;
+    subjectReference?: Reference<'Group'>;
     _url?: Element;
     /** What profile the resource needs to conform to */
     profile?: canonical;
     /** When the activity definition is expected to be used */
     effectivePeriod?: Period;
 }
+/** patient | practitioner | related-person | device */
+export declare enum ActivityDefinitionType {
+    Device = "device",
+    Patient = "patient",
+    Practitioner = "practitioner",
+    RelatedPerson = "related-person"
+}
 /** Who should participate in the action */
 export interface ActivityDefinitionParticipant extends BackboneElement {
     /** patient | practitioner | related-person | device */
-    type: code;
+    type: `${ActivityDefinitionType}`;
     _type?: Element;
     /** E.g. Nurse, Surgeon, Parent, etc. */
     role?: CodeableConcept;
+}
+/** routine | urgent | asap | stat */
+export declare enum ActivityDefinitionPriority {
+    Asap = "asap",
+    Routine = "routine",
+    Stat = "stat",
+    Urgent = "urgent"
+}
+/** draft | active | retired | unknown */
+export declare enum ActivityDefinitionStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
+/** Kind of resource */
+export declare enum ActivityDefinitionKind {
+    Appointment = "Appointment",
+    NutritionOrder = "NutritionOrder",
+    Contract = "Contract",
+    Claim = "Claim",
+    AppointmentResponse = "AppointmentResponse",
+    VisionPrescription = "VisionPrescription",
+    MedicationRequest = "MedicationRequest",
+    ImmunizationRecommendation = "ImmunizationRecommendation",
+    DeviceRequest = "DeviceRequest",
+    ServiceRequest = "ServiceRequest",
+    SupplyRequest = "SupplyRequest",
+    Task = "Task",
+    CommunicationRequest = "CommunicationRequest",
+    EnrollmentRequest = "EnrollmentRequest",
+    CarePlan = "CarePlan"
 }
 /** Dynamic aspects of the definition */
 export interface ActivityDefinitionDynamicValue extends BackboneElement {
@@ -160,4 +199,16 @@ export interface ActivityDefinitionDynamicValue extends BackboneElement {
     _path?: Element;
     /** An expression that provides the dynamic value for the customization */
     expression: Expression;
+}
+/** proposal | plan | directive | order | original-order | reflex-order | filler-order | instance-order | option */
+export declare enum ActivityDefinitionIntent {
+    Order = "order",
+    FillerOrder = "filler-order",
+    Option = "option",
+    Directive = "directive",
+    Proposal = "proposal",
+    ReflexOrder = "reflex-order",
+    Plan = "plan",
+    InstanceOrder = "instance-order",
+    OriginalOrder = "original-order"
 }

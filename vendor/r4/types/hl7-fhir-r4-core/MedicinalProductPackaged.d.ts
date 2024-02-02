@@ -12,13 +12,14 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A medicinal product in a container or package. */
 export interface MedicinalProductPackaged extends DomainResource {
+    resourceType: 'MedicinalProductPackaged';
     /** Textual description */
     description?: string;
     _description?: Element;
     /** Marketing information */
     marketingStatus?: Array<MarketingStatus>;
     /** Manufacturer of this Package Item */
-    marketingAuthorization?: Reference<"MedicinalProductAuthorization">;
+    marketingAuthorization?: Reference<'MedicinalProductAuthorization'>;
     /** Unique identifier */
     identifier?: Array<Identifier>;
     /** Manufacturer of this Package Item */

@@ -14,25 +14,26 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Risk of harmful or undesirable, physiological response which is unique to an individual and associated with exposure to a substance. */
 export interface AllergyIntolerance extends DomainResource {
+    resourceType: 'AllergyIntolerance';
     /** Who the sensitivity is for */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     /** food | medication | environment | biologic */
     category?: Array<code>;
     _onsetString?: Element;
     /** low | high | unable-to-assess */
-    criticality?: code;
+    criticality?: `${AllergyIntoleranceCriticality}`;
     /** active | inactive | resolved */
-    clinicalStatus?: CodeableConcept;
+    clinicalStatus?: `${AllergyIntoleranceClinicalStatus}`;
     onsetRange?: Range;
     onsetAge?: Age;
     /** Encounter when the allergy or intolerance was asserted */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     _type?: Element;
     onsetPeriod?: Period;
     /** allergy | intolerance - Underlying mechanism (if known) */
-    type?: code;
+    type?: `${AllergyIntoleranceType}`;
     /** Source of the information about the allergy */
-    asserter?: Reference<"Patient" | "PractitionerRole" | "Practitioner" | "RelatedPerson">;
+    asserter?: Reference<'Patient' | 'PractitionerRole' | 'Practitioner' | 'RelatedPerson'>;
     /** Additional text not captured in other fields */
     note?: Array<Annotation>;
     /** Date first version of the resource instance was recorded */
@@ -40,7 +41,7 @@ export interface AllergyIntolerance extends DomainResource {
     _recordedDate?: Element;
     onsetString?: string;
     /** Who recorded the sensitivity */
-    recorder?: Reference<"Patient" | "PractitionerRole" | "Practitioner" | "RelatedPerson">;
+    recorder?: Reference<'Patient' | 'PractitionerRole' | 'Practitioner' | 'RelatedPerson'>;
     /** Code that identifies the allergy or intolerance */
     code?: CodeableConcept;
     /** External ids for this item */
@@ -52,10 +53,41 @@ export interface AllergyIntolerance extends DomainResource {
     lastOccurrence?: dateTime;
     _onsetDateTime?: Element;
     /** unconfirmed | confirmed | refuted | entered-in-error */
-    verificationStatus?: CodeableConcept;
+    verificationStatus?: `${AllergyIntoleranceVerificationStatus}`;
     /** Adverse Reaction Events linked to exposure to substance */
     reaction?: Array<AllergyIntoleranceReaction>;
     _lastOccurrence?: Element;
+}
+/** low | high | unable-to-assess */
+export declare enum AllergyIntoleranceCriticality {
+    High = "high",
+    Low = "low",
+    UnableToAssess = "unable-to-assess"
+}
+/** active | inactive | resolved */
+export declare enum AllergyIntoleranceClinicalStatus {
+    Active = "active",
+    Inactive = "inactive",
+    Resolved = "resolved"
+}
+/** allergy | intolerance - Underlying mechanism (if known) */
+export declare enum AllergyIntoleranceType {
+    Allergy = "allergy",
+    Intolerance = "intolerance"
+}
+/** unconfirmed | confirmed | refuted | entered-in-error */
+export declare enum AllergyIntoleranceVerificationStatus {
+    Confirmed = "confirmed",
+    EnteredInError = "entered-in-error",
+    Presumed = "presumed",
+    Refuted = "refuted",
+    Unconfirmed = "unconfirmed"
+}
+/** mild | moderate | severe (of event as a whole) */
+export declare enum AllergyIntoleranceSeverity {
+    Mild = "mild",
+    Moderate = "moderate",
+    Severe = "severe"
 }
 /** Adverse Reaction Events linked to exposure to substance */
 export interface AllergyIntoleranceReaction extends BackboneElement {
@@ -74,6 +106,6 @@ export interface AllergyIntoleranceReaction extends BackboneElement {
     /** Specific substance or pharmaceutical product considered to be responsible for event */
     substance?: CodeableConcept;
     /** mild | moderate | severe (of event as a whole) */
-    severity?: code;
+    severity?: `${AllergyIntoleranceSeverity}`;
     _severity?: Element;
 }

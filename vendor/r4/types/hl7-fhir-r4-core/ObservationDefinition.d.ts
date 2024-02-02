@@ -12,6 +12,7 @@ import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** Set of definitional characteristics for a kind of observation or measurement produced or consumed by an orderable health care service. */
 export interface ObservationDefinition extends DomainResource {
+    resourceType: 'ObservationDefinition';
     /** Characteristics of quantitative results */
     quantitativeDetails?: ObservationDefinitionQuantitativeDetails;
     /** Category of observation */
@@ -20,12 +21,12 @@ export interface ObservationDefinition extends DomainResource {
     method?: CodeableConcept;
     _multipleResultsAllowed?: Element;
     /** Value set of valid coded values for the observations conforming to this ObservationDefinition */
-    validCodedValueSet?: Reference<"ValueSet">;
+    validCodedValueSet?: Reference<'ValueSet'>;
     _preferredReportName?: Element;
     /** Qualified range for continuous and ordinal observation results */
     qualifiedInterval?: Array<ObservationDefinitionQualifiedInterval>;
     /** Value set of abnormal coded values for the observations conforming to this ObservationDefinition */
-    abnormalCodedValueSet?: Reference<"ValueSet">;
+    abnormalCodedValueSet?: Reference<'ValueSet'>;
     /** Type of observation (code / type) */
     code: CodeableConcept;
     /** Business identifier for this ObservationDefinition instance */
@@ -35,12 +36,12 @@ export interface ObservationDefinition extends DomainResource {
     /** Multiple results allowed */
     multipleResultsAllowed?: boolean;
     /** Value set of normal coded values for the observations conforming to this ObservationDefinition */
-    normalCodedValueSet?: Reference<"ValueSet">;
+    normalCodedValueSet?: Reference<'ValueSet'>;
     _permittedDataType?: Array<Element>;
     /** Preferred report name */
     preferredReportName?: string;
     /** Value set of critical coded values for the observations conforming to this ObservationDefinition */
-    criticalCodedValueSet?: Reference<"ValueSet">;
+    criticalCodedValueSet?: Reference<'ValueSet'>;
 }
 /** Characteristics of quantitative results */
 export interface ObservationDefinitionQuantitativeDetails extends BackboneElement {
@@ -55,10 +56,23 @@ export interface ObservationDefinitionQuantitativeDetails extends BackboneElemen
     decimalPrecision?: integer;
     _decimalPrecision?: Element;
 }
+/** reference | critical | absolute */
+export declare enum ObservationDefinitionCategory {
+    Absolute = "absolute",
+    Critical = "critical",
+    Reference = "reference"
+}
+/** male | female | other | unknown */
+export declare enum ObservationDefinitionGender {
+    Female = "female",
+    Male = "male",
+    Other = "other",
+    Unknown = "unknown"
+}
 /** Qualified range for continuous and ordinal observation results */
 export interface ObservationDefinitionQualifiedInterval extends BackboneElement {
     /** reference | critical | absolute */
-    category?: code;
+    category?: `${ObservationDefinitionCategory}`;
     /** Applicable age range, if relevant */
     age?: Range;
     /** Targetted population of the range */
@@ -72,7 +86,7 @@ export interface ObservationDefinitionQualifiedInterval extends BackboneElement 
     /** Applicable gestational age range, if relevant */
     gestationalAge?: Range;
     /** male | female | other | unknown */
-    gender?: code;
+    gender?: `${ObservationDefinitionGender}`;
     _category?: Element;
     /** The interval itself, for continuous or ordinal observations */
     range?: Range;

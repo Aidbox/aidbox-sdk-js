@@ -15,10 +15,10 @@ import { markdown } from "./markdown";
 import { ParameterDefinition } from "./ParameterDefinition";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** The Library resource is a general-purpose container for knowledge asset definitions. It can be used to describe and expose existing knowledge assets such as logic libraries and information model descriptions, as well as to describe a collection of knowledge assets. */
 export interface Library extends DomainResource {
+    resourceType: 'Library';
     /** Natural language description of the library */
     description?: markdown;
     _usage?: Element;
@@ -66,7 +66,7 @@ export interface Library extends DomainResource {
     usage?: string;
     _lastReviewDate?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${LibraryStatus}`;
     /** Subordinate title of the library */
     subtitle?: string;
     _name?: Element;
@@ -90,10 +90,17 @@ export interface Library extends DomainResource {
     relatedArtifact?: Array<RelatedArtifact>;
     /** Contact details for the publisher */
     contact?: Array<ContactDetail>;
-    subjectReference?: Reference<"Group">;
+    subjectReference?: Reference<'Group'>;
     /** Parameters defined by the library */
     parameter?: Array<ParameterDefinition>;
     _url?: Element;
     /** When the library is expected to be used */
     effectivePeriod?: Period;
+}
+/** draft | active | retired | unknown */
+export declare enum LibraryStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }

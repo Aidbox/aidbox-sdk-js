@@ -3,22 +3,28 @@ DON'T MODIFY MANUALLY */
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** Identifies two or more records (resource instances) that refer to the same real-world "occurrence". */
 export interface Linkage extends DomainResource {
+    resourceType: 'Linkage';
     /** Whether this linkage assertion is active or not */
     active?: boolean;
     _active?: Element;
     /** Who is responsible for linkages */
-    author?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    author?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Item to be linked */
     item: Array<LinkageItem>;
+}
+/** source | alternate | historical */
+export declare enum LinkageType {
+    Alternate = "alternate",
+    Historical = "historical",
+    Source = "source"
 }
 /** Item to be linked */
 export interface LinkageItem extends BackboneElement {
     /** source | alternate | historical */
-    type: code;
+    type: `${LinkageType}`;
     _type?: Element;
     /** Resource being linked */
     resource: Reference;

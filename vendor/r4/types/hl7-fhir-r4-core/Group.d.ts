@@ -8,18 +8,18 @@ import { Quantity } from "./Quantity";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Represents a defined collection of entities that may be discussed or acted upon collectively but which are not expected to act collectively, and are not formally or legally recognized; i.e. a collection of entities that isn't an Organization. */
 export interface Group extends DomainResource {
+    resourceType: 'Group';
     _active?: Element;
     _quantity?: Element;
     /** Label for Group */
     name?: string;
     _type?: Element;
     /** person | animal | practitioner | device | medication | substance */
-    type: code;
+    type: `${GroupType}`;
     /** Who or what is in group */
     member?: Array<GroupMember>;
     /** Include / Exclude group members by Trait */
@@ -35,14 +35,23 @@ export interface Group extends DomainResource {
     /** Number of members */
     quantity?: unsignedInt;
     /** Entity that is the custodian of the Group's definition */
-    managingEntity?: Reference<"PractitionerRole" | "Organization" | "Practitioner" | "RelatedPerson">;
+    managingEntity?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner' | 'RelatedPerson'>;
     /** Descriptive or actual */
     actual: boolean;
+}
+/** person | animal | practitioner | device | medication | substance */
+export declare enum GroupType {
+    Animal = "animal",
+    Device = "device",
+    Medication = "medication",
+    Person = "person",
+    Practitioner = "practitioner",
+    Substance = "substance"
 }
 /** Who or what is in group */
 export interface GroupMember extends BackboneElement {
     /** Reference to the group member */
-    entity: Reference<"Patient" | "PractitionerRole" | "Medication" | "Device" | "Substance" | "Practitioner" | "Group">;
+    entity: Reference<'Patient' | 'PractitionerRole' | 'Medication' | 'Device' | 'Substance' | 'Practitioner' | 'Group'>;
     /** Period member belonged to the group */
     period?: Period;
     /** If member is no longer in group */

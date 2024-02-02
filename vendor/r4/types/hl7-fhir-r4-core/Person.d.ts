@@ -8,16 +8,16 @@ import { DomainResource } from "./DomainResource";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Demographics and administrative information about a person independent of a specific health-related context. */
 export interface Person extends DomainResource {
+    resourceType: 'Person';
     _active?: Element;
     /** One or more addresses for the person */
     address?: Array<Address>;
     /** The organization that is the custodian of the person record */
-    managingOrganization?: Reference<"Organization">;
+    managingOrganization?: Reference<'Organization'>;
     /** A name associated with the person */
     name?: Array<HumanName>;
     _gender?: Element;
@@ -35,13 +35,27 @@ export interface Person extends DomainResource {
     /** A contact detail for the person */
     telecom?: Array<ContactPoint>;
     /** male | female | other | unknown */
-    gender?: code;
+    gender?: `${PersonGender}`;
+}
+/** level1 | level2 | level3 | level4 */
+export declare enum PersonAssurance {
+    Level1 = "level1",
+    Level2 = "level2",
+    Level3 = "level3",
+    Level4 = "level4"
 }
 /** Link to a resource that concerns the same actual person */
 export interface PersonLink extends BackboneElement {
     /** The resource to which this actual person is associated */
-    target: Reference<"Patient" | "Person" | "Practitioner" | "RelatedPerson">;
+    target: Reference<'Patient' | 'Person' | 'Practitioner' | 'RelatedPerson'>;
     /** level1 | level2 | level3 | level4 */
-    assurance?: code;
+    assurance?: `${PersonAssurance}`;
     _assurance?: Element;
+}
+/** male | female | other | unknown */
+export declare enum PersonGender {
+    Female = "female",
+    Male = "male",
+    Other = "other",
+    Unknown = "unknown"
 }

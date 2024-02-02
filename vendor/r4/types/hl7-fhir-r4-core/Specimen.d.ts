@@ -9,11 +9,11 @@ import { Duration } from "./Duration";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A sample to be used for analysis. */
 export interface Specimen extends DomainResource {
+    resourceType: 'Specimen';
     /** Why the specimen was collected */
     request?: Array<Reference>;
     /** The time when specimen was received for processing */
@@ -28,7 +28,7 @@ export interface Specimen extends DomainResource {
     /** Comments */
     note?: Array<Annotation>;
     /** available | unavailable | unsatisfactory | entered-in-error */
-    status?: code;
+    status?: `${SpecimenStatus}`;
     /** State of the specimen */
     condition?: Array<CodeableConcept>;
     /** Direct container of specimen (tube/slide, etc.) */
@@ -41,7 +41,7 @@ export interface Specimen extends DomainResource {
     /** Collection details */
     collection?: SpecimenCollection;
     /** Where the specimen came from. This may be from patient(s), from a location (e.g., the source of an environmental sample), or a sampling of a substance or a device */
-    subject?: Reference<"Patient" | "Device" | "Location" | "Substance" | "Group">;
+    subject?: Reference<'Patient' | 'Device' | 'Location' | 'Substance' | 'Group'>;
 }
 /** Processing and processing step details */
 export interface SpecimenProcessing extends BackboneElement {
@@ -55,6 +55,13 @@ export interface SpecimenProcessing extends BackboneElement {
     timeDateTime?: dateTime;
     _timeDateTime?: Element;
     timePeriod?: Period;
+}
+/** available | unavailable | unsatisfactory | entered-in-error */
+export declare enum SpecimenStatus {
+    Available = "available",
+    EnteredInError = "entered-in-error",
+    Unavailable = "unavailable",
+    Unsatisfactory = "unsatisfactory"
 }
 /** Direct container of specimen (tube/slide, etc.) */
 export interface SpecimenContainer extends BackboneElement {
@@ -70,7 +77,7 @@ export interface SpecimenContainer extends BackboneElement {
     additiveCodeableConcept?: CodeableConcept;
     /** Id for the container */
     identifier?: Array<Identifier>;
-    additiveReference?: Reference<"Substance">;
+    additiveReference?: Reference<'Substance'>;
 }
 /** Collection details */
 export interface SpecimenCollection extends BackboneElement {
@@ -82,7 +89,7 @@ export interface SpecimenCollection extends BackboneElement {
     /** How long it took to collect specimen */
     duration?: Duration;
     /** Who collected the specimen */
-    collector?: Reference<"PractitionerRole" | "Practitioner">;
+    collector?: Reference<'PractitionerRole' | 'Practitioner'>;
     _collectedDateTime?: Element;
     /** Anatomical collection site */
     bodySite?: CodeableConcept;

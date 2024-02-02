@@ -14,11 +14,11 @@ import { date } from "./date";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** The Measure resource provides the definition of a quality measure. */
 export interface Measure extends DomainResource {
+    resourceType: 'Measure';
     /** Natural language description of the measure */
     description?: markdown;
     _riskAdjustment?: Element;
@@ -82,7 +82,7 @@ export interface Measure extends DomainResource {
     rationale?: markdown;
     _lastReviewDate?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${MeasureStatus}`;
     _rationale?: Element;
     /** Subordinate title of the measure */
     subtitle?: string;
@@ -112,9 +112,9 @@ export interface Measure extends DomainResource {
     relatedArtifact?: Array<RelatedArtifact>;
     /** Contact details for the publisher */
     contact?: Array<ContactDetail>;
-    subjectReference?: Reference<"Group">;
+    subjectReference?: Reference<'Group'>;
     /** increase | decrease */
-    improvementNotation?: CodeableConcept;
+    improvementNotation?: `${MeasureImprovementNotation}`;
     _url?: Element;
     _disclaimer?: Element;
     /** How is rate aggregation performed for this measure */
@@ -180,4 +180,16 @@ export interface MeasureSupplementalData extends BackboneElement {
     _description?: Element;
     /** Expression describing additional data to be reported */
     criteria: Expression;
+}
+/** draft | active | retired | unknown */
+export declare enum MeasureStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
+/** increase | decrease */
+export declare enum MeasureImprovementNotation {
+    Decrease = "decrease",
+    Increase = "increase"
 }

@@ -8,24 +8,24 @@ import { Timing } from "./Timing";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Record of delivery of what is supplied. */
 export interface SupplyDelivery extends DomainResource {
+    resourceType: 'SupplyDelivery';
     /** Patient for whom the item is supplied */
-    patient?: Reference<"Patient">;
+    patient?: Reference<'Patient'>;
     /** Dispenser */
-    supplier?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    supplier?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** The item that is delivered or supplied */
     suppliedItem?: SupplyDeliverySuppliedItem;
     _status?: Element;
     /** Category of dispense event */
-    type?: CodeableConcept;
+    type?: `${SupplyDeliveryType}`;
     occurrenceTiming?: Timing;
     occurrencePeriod?: Period;
     /** in-progress | completed | abandoned | entered-in-error */
-    status?: code;
+    status?: `${SupplyDeliveryStatus}`;
     /** External identifier */
     identifier?: Array<Identifier>;
     /** Fulfills plan, proposal or order */
@@ -36,7 +36,7 @@ export interface SupplyDelivery extends DomainResource {
     /** Who collected the Supply */
     receiver?: Array<Reference>;
     /** Where the Supply was sent */
-    destination?: Reference<"Location">;
+    destination?: Reference<'Location'>;
     _occurrenceDateTime?: Element;
 }
 /** The item that is delivered or supplied */
@@ -44,5 +44,17 @@ export interface SupplyDeliverySuppliedItem extends BackboneElement {
     /** Amount dispensed */
     quantity?: SimpleQuantity;
     itemCodeableConcept?: CodeableConcept;
-    itemReference?: Reference<"Medication" | "Device" | "Substance">;
+    itemReference?: Reference<'Medication' | 'Device' | 'Substance'>;
+}
+/** Category of dispense event */
+export declare enum SupplyDeliveryType {
+    Device = "device",
+    Medication = "medication"
+}
+/** in-progress | completed | abandoned | entered-in-error */
+export declare enum SupplyDeliveryStatus {
+    Abandoned = "abandoned",
+    Completed = "completed",
+    EnteredInError = "entered-in-error",
+    InProgress = "in-progress"
 }

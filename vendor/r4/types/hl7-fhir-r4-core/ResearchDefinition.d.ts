@@ -13,15 +13,15 @@ import { date } from "./date";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** The ResearchDefinition resource describes the conditional state (population and any exposures being compared within the population) and outcome (if specified) that the knowledge (evidence, assertion, recommendation) is about. */
 export interface ResearchDefinition extends DomainResource {
+    resourceType: 'ResearchDefinition';
     /** Natural language description of the research definition */
     description?: markdown;
     _usage?: Element;
     /** What alternative exposure state? */
-    exposureAlternative?: Reference<"ResearchElementDefinition">;
+    exposureAlternative?: Reference<'ResearchElementDefinition'>;
     /** Date last changed */
     date?: dateTime;
     /** Who endorsed the content */
@@ -49,7 +49,7 @@ export interface ResearchDefinition extends DomainResource {
     /** For testing purposes, not real usage */
     experimental?: boolean;
     /** What outcome? */
-    outcome?: Reference<"ResearchElementDefinition">;
+    outcome?: Reference<'ResearchElementDefinition'>;
     /** The category of the ResearchDefinition, such as Education, Treatment, Assessment, etc. */
     topic?: Array<CodeableConcept>;
     /** Name for this research definition (human friendly) */
@@ -64,11 +64,11 @@ export interface ResearchDefinition extends DomainResource {
     usage?: string;
     _lastReviewDate?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${ResearchDefinitionStatus}`;
     /** Subordinate title of the ResearchDefinition */
     subtitle?: string;
     /** What population? */
-    population: Reference<"ResearchElementDefinition">;
+    population: Reference<'ResearchElementDefinition'>;
     /** Used for footnotes or explanatory notes */
     comment?: Array<string>;
     _name?: Element;
@@ -90,7 +90,7 @@ export interface ResearchDefinition extends DomainResource {
     /** Title for use in informal contexts */
     shortTitle?: string;
     /** What exposure? */
-    exposure?: Reference<"ResearchElementDefinition">;
+    exposure?: Reference<'ResearchElementDefinition'>;
     /** Business version of the research definition */
     version?: string;
     _version?: Element;
@@ -98,9 +98,16 @@ export interface ResearchDefinition extends DomainResource {
     relatedArtifact?: Array<RelatedArtifact>;
     /** Contact details for the publisher */
     contact?: Array<ContactDetail>;
-    subjectReference?: Reference<"Group">;
+    subjectReference?: Reference<'Group'>;
     _comment?: Array<Element>;
     _url?: Element;
     /** When the research definition is expected to be used */
     effectivePeriod?: Period;
+}
+/** draft | active | retired | unknown */
+export declare enum ResearchDefinitionStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }

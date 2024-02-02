@@ -13,11 +13,11 @@ import { DomainResource } from "./DomainResource";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A structured set of tests against a FHIR server or client implementation to determine compliance against the FHIR specification. */
 export interface TestScript extends DomainResource {
+    resourceType: 'TestScript';
     /** Natural language description of the test script */
     description?: markdown;
     /** Date last changed */
@@ -49,7 +49,7 @@ export interface TestScript extends DomainResource {
     setup?: TestScriptSetup;
     _purpose?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${TestScriptStatus}`;
     _name?: Element;
     /** Canonical identifier for this test script, represented as a URI (globally unique) */
     url: uri;
@@ -112,6 +112,13 @@ export interface TestScriptVariable extends BackboneElement {
     /** Default, hard-coded, or user-defined value for this variable */
     defaultValue?: string;
 }
+/** Mime type of the request payload contents, with charset etc. */
+export declare enum TestScriptSetupActionOperationContentType {
+    "Application/hl7Cda+xml" = "application/hl7-cda+xml",
+    "Application/sparqlResults+xml" = "application/sparql-results+xml",
+    "Application/sql" = "application/sql",
+    "Application/xquery" = "application/xquery"
+}
 /** An abstract server representing a client or sender in a message exchange */
 export interface TestScriptOrigin extends BackboneElement {
     /** The index of the abstract origin server starting at 1 */
@@ -130,7 +137,7 @@ export interface TestScriptSetupActionOperation extends BackboneElement {
     _encodeRequestUrl?: Element;
     _targetId?: Element;
     /** delete | get | options | patch | post | put | head */
-    method?: code;
+    method?: `${TestScriptSetupActionOperationMethod}`;
     /** Id of fixture used for extracting the [id],  [type], and [vid] for GET requests */
     targetId?: id;
     _contentType?: Element;
@@ -152,13 +159,13 @@ export interface TestScriptSetupActionOperation extends BackboneElement {
     /** Tracking/logging operation label */
     label?: string;
     /** Resource type */
-    resource?: code;
+    resource?: `${TestScriptSetupActionOperationResource}`;
     /** Request URL */
     url?: string;
     /** Server initiating the request */
     origin?: integer;
     /** Mime type of the request payload contents, with charset etc. */
-    contentType?: code;
+    contentType?: `${TestScriptSetupActionOperationContentType}`;
     _responseId?: Element;
     /** Fixture Id of body for PUT and POST requests */
     sourceId?: id;
@@ -170,12 +177,248 @@ export interface TestScriptSetupActionOperation extends BackboneElement {
     destination?: integer;
     _url?: Element;
     /** Mime type to accept in the payload of the response, with charset etc. */
-    accept?: code;
+    accept?: `${TestScriptSetupActionOperationAccept}`;
+}
+/** Resource type */
+export declare enum TestScriptSetupActionOperationResource {
+    ImmunizationEvaluation = "ImmunizationEvaluation",
+    Appointment = "Appointment",
+    StructureMap = "StructureMap",
+    Address = "Address",
+    CareTeam = "CareTeam",
+    UsageContext = "UsageContext",
+    Linkage = "Linkage",
+    Annotation = "Annotation",
+    Age = "Age",
+    Attachment = "Attachment",
+    Communication = "Communication",
+    MedicationDispense = "MedicationDispense",
+    ImagingStudy = "ImagingStudy",
+    ChargeItem = "ChargeItem",
+    Period = "Period",
+    AdverseEvent = "AdverseEvent",
+    ContactDetail = "ContactDetail",
+    DataRequirement = "DataRequirement",
+    Media = "Media",
+    CodeableConcept = "CodeableConcept",
+    Uri = "uri",
+    SubstancePolymer = "SubstancePolymer",
+    QuestionnaireResponse = "QuestionnaireResponse",
+    Coverage = "Coverage",
+    Procedure = "Procedure",
+    AuditEvent = "AuditEvent",
+    PaymentReconciliation = "PaymentReconciliation",
+    MedicinalProductManufactured = "MedicinalProductManufactured",
+    CompartmentDefinition = "CompartmentDefinition",
+    Organization = "Organization",
+    ExplanationOfBenefit = "ExplanationOfBenefit",
+    Composition = "Composition",
+    SimpleQuantity = "SimpleQuantity",
+    CoverageEligibilityResponse = "CoverageEligibilityResponse",
+    DocumentReference = "DocumentReference",
+    EventDefinition = "EventDefinition",
+    SubstanceProtein = "SubstanceProtein",
+    TerminologyCapabilities = "TerminologyCapabilities",
+    Encounter = "Encounter",
+    ImplementationGuide = "ImplementationGuide",
+    EvidenceVariable = "EvidenceVariable",
+    ObservationDefinition = "ObservationDefinition",
+    DiagnosticReport = "DiagnosticReport",
+    ExampleScenario = "ExampleScenario",
+    ResearchDefinition = "ResearchDefinition",
+    Parameters = "Parameters",
+    Instant = "instant",
+    SearchParameter = "SearchParameter",
+    MedicinalProductInteraction = "MedicinalProductInteraction",
+    CodeSystem = "CodeSystem",
+    MessageDefinition = "MessageDefinition",
+    NutritionOrder = "NutritionOrder",
+    VerificationResult = "VerificationResult",
+    MedicationAdministration = "MedicationAdministration",
+    CatalogEntry = "CatalogEntry",
+    Flag = "Flag",
+    DeviceUseStatement = "DeviceUseStatement",
+    TriggerDefinition = "TriggerDefinition",
+    Contract = "Contract",
+    Invoice = "Invoice",
+    MarketingStatus = "MarketingStatus",
+    Count = "Count",
+    PaymentNotice = "PaymentNotice",
+    Location = "Location",
+    Claim = "Claim",
+    Specimen = "Specimen",
+    MedicationStatement = "MedicationStatement",
+    EnrollmentResponse = "EnrollmentResponse",
+    Uuid = "uuid",
+    Evidence = "Evidence",
+    Bundle = "Bundle",
+    ResearchElementDefinition = "ResearchElementDefinition",
+    Expression = "Expression",
+    Coding = "Coding",
+    BodyStructure = "BodyStructure",
+    MedicinalProduct = "MedicinalProduct",
+    Canonical = "canonical",
+    ResearchStudy = "ResearchStudy",
+    Dosage = "Dosage",
+    AppointmentResponse = "AppointmentResponse",
+    MedicinalProductIndication = "MedicinalProductIndication",
+    Measure = "Measure",
+    Person = "Person",
+    InsurancePlan = "InsurancePlan",
+    Date = "date",
+    Patient = "Patient",
+    EffectEvidenceSynthesis = "EffectEvidenceSynthesis",
+    ResearchSubject = "ResearchSubject",
+    Medication = "Medication",
+    Range = "Range",
+    ConceptMap = "ConceptMap",
+    CoverageEligibilityRequest = "CoverageEligibilityRequest",
+    Population = "Population",
+    SubstanceSourceMaterial = "SubstanceSourceMaterial",
+    VisionPrescription = "VisionPrescription",
+    MolecularSequence = "MolecularSequence",
+    MedicinalProductUndesirableEffect = "MedicinalProductUndesirableEffect",
+    OperationOutcome = "OperationOutcome",
+    MessageHeader = "MessageHeader",
+    ContactPoint = "ContactPoint",
+    Signature = "Signature",
+    Decimal = "decimal",
+    AllergyIntolerance = "AllergyIntolerance",
+    SubstanceReferenceInformation = "SubstanceReferenceInformation",
+    SupplyDelivery = "SupplyDelivery",
+    EpisodeOfCare = "EpisodeOfCare",
+    PractitionerRole = "PractitionerRole",
+    Library = "Library",
+    Practitioner = "Practitioner",
+    Markdown = "markdown",
+    MedicationRequest = "MedicationRequest",
+    ImmunizationRecommendation = "ImmunizationRecommendation",
+    RelatedArtifact = "RelatedArtifact",
+    Timing = "Timing",
+    Immunization = "Immunization",
+    GraphDefinition = "GraphDefinition",
+    Account = "Account",
+    Url = "url",
+    MedicinalProductIngredient = "MedicinalProductIngredient",
+    ProdCharacteristic = "ProdCharacteristic",
+    Meta = "Meta",
+    Quantity = "Quantity",
+    MeasureReport = "MeasureReport",
+    Distance = "Distance",
+    HumanName = "HumanName",
+    DeviceMetric = "DeviceMetric",
+    Duration = "Duration",
+    SubstanceAmount = "SubstanceAmount",
+    Goal = "Goal",
+    MedicationKnowledge = "MedicationKnowledge",
+    Integer = "integer",
+    String = "string",
+    ClaimResponse = "ClaimResponse",
+    DeviceDefinition = "DeviceDefinition",
+    Slot = "Slot",
+    ValueSet = "ValueSet",
+    MedicinalProductAuthorization = "MedicinalProductAuthorization",
+    StructureDefinition = "StructureDefinition",
+    Base64Binary = "base64Binary",
+    MedicinalProductContraindication = "MedicinalProductContraindication",
+    ElementDefinition = "ElementDefinition",
+    DeviceRequest = "DeviceRequest",
+    List = "List",
+    Questionnaire = "Questionnaire",
+    DomainResource = "DomainResource",
+    Endpoint = "Endpoint",
+    NamingSystem = "NamingSystem",
+    MedicinalProductPackaged = "MedicinalProductPackaged",
+    Basic = "Basic",
+    Money = "Money",
+    Binary = "Binary",
+    PlanDefinition = "PlanDefinition",
+    Subscription = "Subscription",
+    SampledData = "SampledData",
+    ProductShelfLife = "ProductShelfLife",
+    RelatedPerson = "RelatedPerson",
+    SubstanceSpecification = "SubstanceSpecification",
+    Ratio = "Ratio",
+    SubstanceNucleicAcid = "SubstanceNucleicAcid",
+    GuidanceResponse = "GuidanceResponse",
+    ClinicalImpression = "ClinicalImpression",
+    OrganizationAffiliation = "OrganizationAffiliation",
+    Resource = "Resource",
+    UnsignedInt = "unsignedInt",
+    Condition = "Condition",
+    Extension = "Extension",
+    CapabilityStatement = "CapabilityStatement",
+    HealthcareService = "HealthcareService",
+    SpecimenDefinition = "SpecimenDefinition",
+    ParameterDefinition = "ParameterDefinition",
+    RiskAssessment = "RiskAssessment",
+    Xhtml = "xhtml",
+    OperationDefinition = "OperationDefinition",
+    ActivityDefinition = "ActivityDefinition",
+    Schedule = "Schedule",
+    BiologicallyDerivedProduct = "BiologicallyDerivedProduct",
+    PositiveInt = "positiveInt",
+    Code = "code",
+    Group = "Group",
+    MedicinalProductPharmaceutical = "MedicinalProductPharmaceutical",
+    FamilyMemberHistory = "FamilyMemberHistory",
+    ServiceRequest = "ServiceRequest",
+    DetectedIssue = "DetectedIssue",
+    Device = "Device",
+    Oid = "oid",
+    RequestGroup = "RequestGroup",
+    TestScript = "TestScript",
+    RiskEvidenceSynthesis = "RiskEvidenceSynthesis",
+    SupplyRequest = "SupplyRequest",
+    Element = "Element",
+    Reference = "Reference",
+    Task = "Task",
+    Identifier = "Identifier",
+    CommunicationRequest = "CommunicationRequest",
+    EnrollmentRequest = "EnrollmentRequest",
+    ChargeItemDefinition = "ChargeItemDefinition",
+    Substance = "Substance",
+    Id = "id",
+    Provenance = "Provenance",
+    Time = "time",
+    Consent = "Consent",
+    BackboneElement = "BackboneElement",
+    CarePlan = "CarePlan",
+    Narrative = "Narrative",
+    MoneyQuantity = "MoneyQuantity",
+    TestReport = "TestReport",
+    Observation = "Observation",
+    DateTime = "dateTime",
+    Boolean = "boolean",
+    DocumentManifest = "DocumentManifest",
+    Contributor = "Contributor"
+}
+/** okay | created | noContent | notModified | bad | forbidden | notFound | methodNotAllowed | conflict | gone | preconditionFailed | unprocessable */
+export declare enum TestScriptSetupActionAssertResponse {
+    Unprocessable = "unprocessable",
+    Created = "created",
+    NotFound = "notFound",
+    MethodNotAllowed = "methodNotAllowed",
+    Conflict = "conflict",
+    Gone = "gone",
+    Bad = "bad",
+    PreconditionFailed = "preconditionFailed",
+    Okay = "okay",
+    NoContent = "noContent",
+    Forbidden = "forbidden",
+    NotModified = "notModified"
+}
+/** Mime type to compare against the 'Content-Type' header */
+export declare enum TestScriptSetupActionAssertContentType {
+    "Application/hl7Cda+xml" = "application/hl7-cda+xml",
+    "Application/sparqlResults+xml" = "application/sparql-results+xml",
+    "Application/sql" = "application/sql",
+    "Application/xquery" = "application/xquery"
 }
 /** The assertion to perform */
 export interface TestScriptSetupActionAssert extends BackboneElement {
     /** okay | created | noContent | notModified | bad | forbidden | notFound | methodNotAllowed | conflict | gone | preconditionFailed | unprocessable */
-    response?: code;
+    response?: `${TestScriptSetupActionAssertResponse}`;
     /** Tracking/reporting assertion description */
     description?: string;
     /** XPath or JSONPath expression */
@@ -212,15 +455,15 @@ export interface TestScriptSetupActionAssert extends BackboneElement {
     /** Tracking/logging assertion label */
     label?: string;
     /** Resource type */
-    resource?: code;
+    resource?: `${TestScriptSetupActionAssertResource}`;
     /** HTTP response code to test */
     responseCode?: string;
     /** Fixture Id of minimum content resource */
     minimumId?: string;
     /** equals | notEquals | in | notIn | greaterThan | lessThan | empty | notEmpty | contains | notContains | eval */
-    operator?: code;
+    operator?: `${TestScriptSetupActionAssertOperator}`;
     /** Mime type to compare against the 'Content-Type' header */
-    contentType?: code;
+    contentType?: `${TestScriptSetupActionAssertContentType}`;
     /** XPath or JSONPath expression to evaluate against the source fixture */
     compareToSourcePath?: string;
     /** Profile Id of validation profile reference */
@@ -231,13 +474,13 @@ export interface TestScriptSetupActionAssert extends BackboneElement {
     _warningOnly?: Element;
     _sourceId?: Element;
     /** delete | get | options | patch | post | put | head */
-    requestMethod?: code;
+    requestMethod?: `${TestScriptSetupActionAssertRequestMethod}`;
     _compareToSourcePath?: Element;
     _minimumId?: Element;
     /** Request URL comparison value */
     requestURL?: string;
     /** response | request */
-    direction?: code;
+    direction?: `${TestScriptSetupActionAssertDirection}`;
     /** Perform validation on navigation links? */
     navigationLinks?: boolean;
 }
@@ -251,6 +494,16 @@ export interface TestScriptTest extends BackboneElement {
     _description?: Element;
     /** A test operation or assert to perform */
     action: Array<TestScriptAction>;
+}
+/** delete | get | options | patch | post | put | head */
+export declare enum TestScriptSetupActionAssertRequestMethod {
+    Delete = "delete",
+    Get = "get",
+    Head = "head",
+    Options = "options",
+    Patch = "patch",
+    Post = "post",
+    Put = "put"
 }
 /** Capabilities  that are assumed to function correctly on the FHIR server being tested */
 export interface TestScriptCapability extends BackboneElement {
@@ -276,10 +529,39 @@ export interface TestScriptCapability extends BackboneElement {
     /** Are the capabilities required? */
     required: boolean;
 }
+/** response | request */
+export declare enum TestScriptSetupActionAssertDirection {
+    Request = "request",
+    Response = "response"
+}
+/** equals | notEquals | in | notIn | greaterThan | lessThan | empty | notEmpty | contains | notContains | eval */
+export declare enum TestScriptSetupActionAssertOperator {
+    Empty = "empty",
+    NotEmpty = "notEmpty",
+    Contains = "contains",
+    NotEquals = "notEquals",
+    In = "in",
+    LessThan = "lessThan",
+    GreaterThan = "greaterThan",
+    Eval = "eval",
+    Equals = "equals",
+    NotIn = "notIn",
+    NotContains = "notContains"
+}
 /** A series of required setup operations before tests are executed */
 export interface TestScriptSetup extends BackboneElement {
     /** A setup operation or assert to perform */
     action: Array<TestScriptAction>;
+}
+/** delete | get | options | patch | post | put | head */
+export declare enum TestScriptSetupActionOperationMethod {
+    Delete = "delete",
+    Get = "get",
+    Head = "head",
+    Options = "options",
+    Patch = "patch",
+    Post = "post",
+    Put = "put"
 }
 /** A setup operation or assert to perform */
 export interface TestScriptAction extends BackboneElement {
@@ -294,6 +576,13 @@ export interface TestScriptSetupActionOperationRequestHeader extends BackboneEle
     /** HTTP headerfield value */
     value: string;
     _value?: Element;
+}
+/** draft | active | retired | unknown */
+export declare enum TestScriptStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }
 /** Links to the FHIR specification */
 export interface TestScriptLink extends BackboneElement {
@@ -320,6 +609,220 @@ export interface TestScriptTeardown extends BackboneElement {
     /** One or more teardown operations to perform */
     action: Array<TestScriptAction>;
 }
+/** Resource type */
+export declare enum TestScriptSetupActionAssertResource {
+    ImmunizationEvaluation = "ImmunizationEvaluation",
+    Appointment = "Appointment",
+    StructureMap = "StructureMap",
+    Address = "Address",
+    CareTeam = "CareTeam",
+    UsageContext = "UsageContext",
+    Linkage = "Linkage",
+    Annotation = "Annotation",
+    Age = "Age",
+    Attachment = "Attachment",
+    Communication = "Communication",
+    MedicationDispense = "MedicationDispense",
+    ImagingStudy = "ImagingStudy",
+    ChargeItem = "ChargeItem",
+    Period = "Period",
+    AdverseEvent = "AdverseEvent",
+    ContactDetail = "ContactDetail",
+    DataRequirement = "DataRequirement",
+    Media = "Media",
+    CodeableConcept = "CodeableConcept",
+    Uri = "uri",
+    SubstancePolymer = "SubstancePolymer",
+    QuestionnaireResponse = "QuestionnaireResponse",
+    Coverage = "Coverage",
+    Procedure = "Procedure",
+    AuditEvent = "AuditEvent",
+    PaymentReconciliation = "PaymentReconciliation",
+    MedicinalProductManufactured = "MedicinalProductManufactured",
+    CompartmentDefinition = "CompartmentDefinition",
+    Organization = "Organization",
+    ExplanationOfBenefit = "ExplanationOfBenefit",
+    Composition = "Composition",
+    SimpleQuantity = "SimpleQuantity",
+    CoverageEligibilityResponse = "CoverageEligibilityResponse",
+    DocumentReference = "DocumentReference",
+    EventDefinition = "EventDefinition",
+    SubstanceProtein = "SubstanceProtein",
+    TerminologyCapabilities = "TerminologyCapabilities",
+    Encounter = "Encounter",
+    ImplementationGuide = "ImplementationGuide",
+    EvidenceVariable = "EvidenceVariable",
+    ObservationDefinition = "ObservationDefinition",
+    DiagnosticReport = "DiagnosticReport",
+    ExampleScenario = "ExampleScenario",
+    ResearchDefinition = "ResearchDefinition",
+    Parameters = "Parameters",
+    Instant = "instant",
+    SearchParameter = "SearchParameter",
+    MedicinalProductInteraction = "MedicinalProductInteraction",
+    CodeSystem = "CodeSystem",
+    MessageDefinition = "MessageDefinition",
+    NutritionOrder = "NutritionOrder",
+    VerificationResult = "VerificationResult",
+    MedicationAdministration = "MedicationAdministration",
+    CatalogEntry = "CatalogEntry",
+    Flag = "Flag",
+    DeviceUseStatement = "DeviceUseStatement",
+    TriggerDefinition = "TriggerDefinition",
+    Contract = "Contract",
+    Invoice = "Invoice",
+    MarketingStatus = "MarketingStatus",
+    Count = "Count",
+    PaymentNotice = "PaymentNotice",
+    Location = "Location",
+    Claim = "Claim",
+    Specimen = "Specimen",
+    MedicationStatement = "MedicationStatement",
+    EnrollmentResponse = "EnrollmentResponse",
+    Uuid = "uuid",
+    Evidence = "Evidence",
+    Bundle = "Bundle",
+    ResearchElementDefinition = "ResearchElementDefinition",
+    Expression = "Expression",
+    Coding = "Coding",
+    BodyStructure = "BodyStructure",
+    MedicinalProduct = "MedicinalProduct",
+    Canonical = "canonical",
+    ResearchStudy = "ResearchStudy",
+    Dosage = "Dosage",
+    AppointmentResponse = "AppointmentResponse",
+    MedicinalProductIndication = "MedicinalProductIndication",
+    Measure = "Measure",
+    Person = "Person",
+    InsurancePlan = "InsurancePlan",
+    Date = "date",
+    Patient = "Patient",
+    EffectEvidenceSynthesis = "EffectEvidenceSynthesis",
+    ResearchSubject = "ResearchSubject",
+    Medication = "Medication",
+    Range = "Range",
+    ConceptMap = "ConceptMap",
+    CoverageEligibilityRequest = "CoverageEligibilityRequest",
+    Population = "Population",
+    SubstanceSourceMaterial = "SubstanceSourceMaterial",
+    VisionPrescription = "VisionPrescription",
+    MolecularSequence = "MolecularSequence",
+    MedicinalProductUndesirableEffect = "MedicinalProductUndesirableEffect",
+    OperationOutcome = "OperationOutcome",
+    MessageHeader = "MessageHeader",
+    ContactPoint = "ContactPoint",
+    Signature = "Signature",
+    Decimal = "decimal",
+    AllergyIntolerance = "AllergyIntolerance",
+    SubstanceReferenceInformation = "SubstanceReferenceInformation",
+    SupplyDelivery = "SupplyDelivery",
+    EpisodeOfCare = "EpisodeOfCare",
+    PractitionerRole = "PractitionerRole",
+    Library = "Library",
+    Practitioner = "Practitioner",
+    Markdown = "markdown",
+    MedicationRequest = "MedicationRequest",
+    ImmunizationRecommendation = "ImmunizationRecommendation",
+    RelatedArtifact = "RelatedArtifact",
+    Timing = "Timing",
+    Immunization = "Immunization",
+    GraphDefinition = "GraphDefinition",
+    Account = "Account",
+    Url = "url",
+    MedicinalProductIngredient = "MedicinalProductIngredient",
+    ProdCharacteristic = "ProdCharacteristic",
+    Meta = "Meta",
+    Quantity = "Quantity",
+    MeasureReport = "MeasureReport",
+    Distance = "Distance",
+    HumanName = "HumanName",
+    DeviceMetric = "DeviceMetric",
+    Duration = "Duration",
+    SubstanceAmount = "SubstanceAmount",
+    Goal = "Goal",
+    MedicationKnowledge = "MedicationKnowledge",
+    Integer = "integer",
+    String = "string",
+    ClaimResponse = "ClaimResponse",
+    DeviceDefinition = "DeviceDefinition",
+    Slot = "Slot",
+    ValueSet = "ValueSet",
+    MedicinalProductAuthorization = "MedicinalProductAuthorization",
+    StructureDefinition = "StructureDefinition",
+    Base64Binary = "base64Binary",
+    MedicinalProductContraindication = "MedicinalProductContraindication",
+    ElementDefinition = "ElementDefinition",
+    DeviceRequest = "DeviceRequest",
+    List = "List",
+    Questionnaire = "Questionnaire",
+    DomainResource = "DomainResource",
+    Endpoint = "Endpoint",
+    NamingSystem = "NamingSystem",
+    MedicinalProductPackaged = "MedicinalProductPackaged",
+    Basic = "Basic",
+    Money = "Money",
+    Binary = "Binary",
+    PlanDefinition = "PlanDefinition",
+    Subscription = "Subscription",
+    SampledData = "SampledData",
+    ProductShelfLife = "ProductShelfLife",
+    RelatedPerson = "RelatedPerson",
+    SubstanceSpecification = "SubstanceSpecification",
+    Ratio = "Ratio",
+    SubstanceNucleicAcid = "SubstanceNucleicAcid",
+    GuidanceResponse = "GuidanceResponse",
+    ClinicalImpression = "ClinicalImpression",
+    OrganizationAffiliation = "OrganizationAffiliation",
+    Resource = "Resource",
+    UnsignedInt = "unsignedInt",
+    Condition = "Condition",
+    Extension = "Extension",
+    CapabilityStatement = "CapabilityStatement",
+    HealthcareService = "HealthcareService",
+    SpecimenDefinition = "SpecimenDefinition",
+    ParameterDefinition = "ParameterDefinition",
+    RiskAssessment = "RiskAssessment",
+    Xhtml = "xhtml",
+    OperationDefinition = "OperationDefinition",
+    ActivityDefinition = "ActivityDefinition",
+    Schedule = "Schedule",
+    BiologicallyDerivedProduct = "BiologicallyDerivedProduct",
+    PositiveInt = "positiveInt",
+    Code = "code",
+    Group = "Group",
+    MedicinalProductPharmaceutical = "MedicinalProductPharmaceutical",
+    FamilyMemberHistory = "FamilyMemberHistory",
+    ServiceRequest = "ServiceRequest",
+    DetectedIssue = "DetectedIssue",
+    Device = "Device",
+    Oid = "oid",
+    RequestGroup = "RequestGroup",
+    TestScript = "TestScript",
+    RiskEvidenceSynthesis = "RiskEvidenceSynthesis",
+    SupplyRequest = "SupplyRequest",
+    Element = "Element",
+    Reference = "Reference",
+    Task = "Task",
+    Identifier = "Identifier",
+    CommunicationRequest = "CommunicationRequest",
+    EnrollmentRequest = "EnrollmentRequest",
+    ChargeItemDefinition = "ChargeItemDefinition",
+    Substance = "Substance",
+    Id = "id",
+    Provenance = "Provenance",
+    Time = "time",
+    Consent = "Consent",
+    BackboneElement = "BackboneElement",
+    CarePlan = "CarePlan",
+    Narrative = "Narrative",
+    MoneyQuantity = "MoneyQuantity",
+    TestReport = "TestReport",
+    Observation = "Observation",
+    DateTime = "dateTime",
+    Boolean = "boolean",
+    DocumentManifest = "DocumentManifest",
+    Contributor = "Contributor"
+}
 /** An abstract server representing a destination or receiver in a message exchange */
 export interface TestScriptDestination extends BackboneElement {
     /** The index of the abstract destination server starting at 1 */
@@ -327,4 +830,11 @@ export interface TestScriptDestination extends BackboneElement {
     _index?: Element;
     /** FHIR-Server | FHIR-SDC-FormManager | FHIR-SDC-FormReceiver | FHIR-SDC-FormProcessor */
     profile: Coding;
+}
+/** Mime type to accept in the payload of the response, with charset etc. */
+export declare enum TestScriptSetupActionOperationAccept {
+    "Application/hl7Cda+xml" = "application/hl7-cda+xml",
+    "Application/sparqlResults+xml" = "application/sparql-results+xml",
+    "Application/sql" = "application/sql",
+    "Application/xquery" = "application/xquery"
 }

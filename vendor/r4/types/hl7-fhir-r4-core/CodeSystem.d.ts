@@ -18,6 +18,7 @@ import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** The CodeSystem resource is used to declare the existence of and describe a code system or code system supplement and its key properties, and optionally define a part or all of its content. */
 export interface CodeSystem extends DomainResource {
+    resourceType: 'CodeSystem';
     _supplements?: Element;
     /** Natural language description of the code system */
     description?: markdown;
@@ -37,7 +38,7 @@ export interface CodeSystem extends DomainResource {
     /** Why this code system is defined */
     purpose?: markdown;
     /** not-present | example | fragment | complete | supplement */
-    content: code;
+    content: `${CodeSystemContent}`;
     _date?: Element;
     /** Additional information supplied about each concept */
     property?: Array<CodeSystemProperty>;
@@ -63,9 +64,9 @@ export interface CodeSystem extends DomainResource {
     /** If code system defines a compositional grammar */
     compositional?: boolean;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${CodeSystemStatus}`;
     /** grouped-by | is-a | part-of | classified-with */
-    hierarchyMeaning?: code;
+    hierarchyMeaning?: `${CodeSystemHierarchyMeaning}`;
     /** Canonical reference to the value set with entire code system */
     valueSet?: canonical;
     _name?: Element;
@@ -89,21 +90,6 @@ export interface CodeSystem extends DomainResource {
     contact?: Array<ContactDetail>;
     _url?: Element;
 }
-/** Additional information supplied about each concept */
-export interface CodeSystemProperty extends BackboneElement {
-    /** Identifies the property on the concepts, and when referred to in operations */
-    code: code;
-    _code?: Element;
-    /** Formal identifier for the property */
-    uri?: uri;
-    _uri?: Element;
-    /** Why the property is defined, and/or what it conveys */
-    description?: string;
-    _description?: Element;
-    /** code | Coding | string | integer | boolean | dateTime | decimal */
-    type: code;
-    _type?: Element;
-}
 /** Filter that can be used in a value set */
 export interface CodeSystemFilter extends BackboneElement {
     /** Code that identifies the filter */
@@ -118,6 +104,82 @@ export interface CodeSystemFilter extends BackboneElement {
     /** What to use for the value */
     value: string;
     _value?: Element;
+}
+/** grouped-by | is-a | part-of | classified-with */
+export declare enum CodeSystemHierarchyMeaning {
+    ClassifiedWith = "classified-with",
+    GroupedBy = "grouped-by",
+    IsA = "is-a",
+    PartOf = "part-of"
+}
+/** Additional representations for the concept */
+export interface CodeSystemConceptDesignation extends BackboneElement {
+    /** Human language of the designation */
+    language?: code;
+    _language?: Element;
+    /** Details how this designation would be used */
+    use?: Coding;
+    /** The text value for this designation */
+    value: string;
+    _value?: Element;
+}
+/** code | Coding | string | integer | boolean | dateTime | decimal */
+export declare enum CodeSystemType {
+    Coding = "Coding",
+    Boolean = "boolean",
+    Code = "code",
+    DateTime = "dateTime",
+    Decimal = "decimal",
+    Integer = "integer",
+    String = "string"
+}
+/** Additional information supplied about each concept */
+export interface CodeSystemProperty extends BackboneElement {
+    /** Identifies the property on the concepts, and when referred to in operations */
+    code: code;
+    _code?: Element;
+    /** Formal identifier for the property */
+    uri?: uri;
+    _uri?: Element;
+    /** Why the property is defined, and/or what it conveys */
+    description?: string;
+    _description?: Element;
+    /** code | Coding | string | integer | boolean | dateTime | decimal */
+    type: `${CodeSystemType}`;
+    _type?: Element;
+}
+/** Concepts in the code system */
+export interface CodeSystemConcept extends BackboneElement {
+    _code?: Element;
+    /** Formal definition */
+    definition?: string;
+    /** Property value for the concept */
+    property?: Array<CodeSystemConceptProperty>;
+    _definition?: Element;
+    /** Code that identifies concept */
+    code: code;
+    /** Child Concepts (is-a/contains/categorizes) */
+    concept?: Array<CodeSystemConcept>;
+    /** Text to display to the user */
+    display?: string;
+    /** Additional representations for the concept */
+    designation?: Array<CodeSystemConceptDesignation>;
+    _display?: Element;
+}
+/** not-present | example | fragment | complete | supplement */
+export declare enum CodeSystemContent {
+    Complete = "complete",
+    Example = "example",
+    Fragment = "fragment",
+    NotPresent = "not-present",
+    Supplement = "supplement"
+}
+/** draft | active | retired | unknown */
+export declare enum CodeSystemStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }
 /** Property value for the concept */
 export interface CodeSystemConceptProperty extends BackboneElement {
@@ -137,33 +199,4 @@ export interface CodeSystemConceptProperty extends BackboneElement {
     valueInteger: integer;
     _valueCode: Element;
     _valueInteger: Element;
-}
-/** Additional representations for the concept */
-export interface CodeSystemConceptDesignation extends BackboneElement {
-    /** Human language of the designation */
-    language?: code;
-    _language?: Element;
-    /** Details how this designation would be used */
-    use?: Coding;
-    /** The text value for this designation */
-    value: string;
-    _value?: Element;
-}
-/** Concepts in the code system */
-export interface CodeSystemConcept extends BackboneElement {
-    _code?: Element;
-    /** Formal definition */
-    definition?: string;
-    /** Property value for the concept */
-    property?: Array<CodeSystemConceptProperty>;
-    _definition?: Element;
-    /** Code that identifies concept */
-    code: code;
-    /** Child Concepts (is-a/contains/categorizes) */
-    concept?: Array<CodeSystemConcept>;
-    /** Text to display to the user */
-    display?: string;
-    /** Additional representations for the concept */
-    designation?: Array<CodeSystemConceptDesignation>;
-    _display?: Element;
 }

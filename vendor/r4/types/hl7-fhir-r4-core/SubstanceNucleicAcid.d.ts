@@ -9,6 +9,7 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Nucleic acids are defined by three distinct elements: the base, sugar and linkage. Individual substance/moiety IDs will be created for each of these elements. The nucleotide sequence will be always entered in the 5’-3’ direction. */
 export interface SubstanceNucleicAcid extends DomainResource {
+    resourceType: 'SubstanceNucleicAcid';
     /** The type of the sequence shall be specified based on a controlled vocabulary */
     sequenceType?: CodeableConcept;
     /** The number of linear sequences of nucleotides linked through phosphodiester bonds shall be described. Subunits would be strands of nucleic acids that are tightly associated typically through Watson-Crick base pairing. NOTE: If not specified in the reference source, the assumption is that there is 1 subunit */

@@ -7,6 +7,7 @@ import { Reference } from "./Reference";
 import { BackboneElement } from "./BackboneElement";
 /** The interactions of the medicinal product with other medicinal products, or other forms of interactions. */
 export interface MedicinalProductInteraction extends DomainResource {
+    resourceType: 'MedicinalProductInteraction';
     /** The medication for which this is a described interaction */
     subject?: Array<Reference>;
     /** The interaction described */
@@ -25,6 +26,6 @@ export interface MedicinalProductInteraction extends DomainResource {
 }
 /** The specific medication, food or laboratory test that interacts */
 export interface MedicinalProductInteractionInteractant extends BackboneElement {
-    itemReference: Reference<"Medication" | "Substance" | "MedicinalProduct" | "ObservationDefinition">;
+    itemReference: Reference<'Medication' | 'Substance' | 'MedicinalProduct' | 'ObservationDefinition'>;
     itemCodeableConcept: CodeableConcept;
 }

@@ -391,31 +391,16 @@ export interface ElementDefinitionConstraint extends Element {
     _expression?: Element;
     _human?: Element;
     /** error | warning */
-    severity: code;
+    severity: `${ElementDefinitionSeverity}`;
     _severity?: Element;
     _source?: Element;
     _xpath?: Element;
     _key?: Element;
 }
-/** Map element to another set of definitions */
-export interface ElementDefinitionMapping extends Element {
-    /** Reference to mapping declaration */
-    identity: id;
-    _identity?: Element;
-    /** Computable language of mapping */
-    language?: code;
-    _language?: Element;
-    /** Details of the mapping */
-    map: string;
-    _map?: Element;
-    /** Comments about the mapping or its use */
-    comment?: string;
-    _comment?: Element;
-}
 /** Element values that are used to distinguish the slices */
 export interface ElementDefinitionDiscriminator extends Element {
     /** value | exists | pattern | type | profile */
-    type: code;
+    type: `${ElementDefinitionType}`;
     _type?: Element;
     /** Path to element value */
     path: string;
@@ -432,31 +417,13 @@ export interface ElementDefinitionSlicing extends Element {
     ordered?: boolean;
     _ordered?: Element;
     /** closed | open | openAtEnd */
-    rules: code;
+    rules: `${ElementDefinitionRules}`;
     _rules?: Element;
-}
-/** Data type and Profile for this element */
-export interface ElementDefinitionType extends Element {
-    _code?: Element;
-    _aggregation?: Array<Element>;
-    _profile?: Array<Element>;
-    /** Data type or Resource (reference to definition) */
-    code: uri;
-    /** Profile (StructureDefinition or IG) on the Reference/canonical target - one must apply */
-    targetProfile?: Array<canonical>;
-    /** contained | referenced | bundled - how aggregated */
-    aggregation?: Array<code>;
-    /** either | independent | specific */
-    versioning?: code;
-    _targetProfile?: Array<Element>;
-    /** Profiles (StructureDefinition or IG) - one must apply */
-    profile?: Array<canonical>;
-    _versioning?: Element;
 }
 /** ValueSet details if this is coded */
 export interface ElementDefinitionBinding extends Element {
     /** required | extensible | preferred | example */
-    strength: code;
+    strength: `${ElementDefinitionStrength}`;
     _strength?: Element;
     /** Human explanation of the value set */
     description?: string;
@@ -464,6 +431,66 @@ export interface ElementDefinitionBinding extends Element {
     /** Source of value set */
     valueSet?: canonical;
     _valueSet?: Element;
+}
+/** Map element to another set of definitions */
+export interface ElementDefinitionMapping extends Element {
+    /** Reference to mapping declaration */
+    identity: id;
+    _identity?: Element;
+    /** Computable language of mapping */
+    language?: `${ElementDefinitionLanguage}`;
+    _language?: Element;
+    /** Details of the mapping */
+    map: string;
+    _map?: Element;
+    /** Comments about the mapping or its use */
+    comment?: string;
+    _comment?: Element;
+}
+/** value | exists | pattern | type | profile */
+export declare enum ElementDefinitionType {
+    Exists = "exists",
+    Pattern = "pattern",
+    Profile = "profile",
+    Type = "type",
+    Value = "value"
+}
+/** either | independent | specific */
+export declare enum ElementDefinitionVersioning {
+    Either = "either",
+    Independent = "independent",
+    Specific = "specific"
+}
+/** error | warning */
+export declare enum ElementDefinitionSeverity {
+    Error = "error",
+    Warning = "warning"
+}
+/** Base definition information for tools */
+export interface ElementDefinitionBase extends Element {
+    /** Path that identifies the base element */
+    path: string;
+    _path?: Element;
+    /** Min cardinality of the base element */
+    min: unsignedInt;
+    _min?: Element;
+    /** Max cardinality of the base element */
+    max: string;
+    _max?: Element;
+}
+/** Computable language of mapping */
+export declare enum ElementDefinitionLanguage {
+    "Application/hl7Cda+xml" = "application/hl7-cda+xml",
+    "Application/sparqlResults+xml" = "application/sparql-results+xml",
+    "Application/sql" = "application/sql",
+    "Application/xquery" = "application/xquery"
+}
+/** required | extensible | preferred | example */
+export declare enum ElementDefinitionStrength {
+    Example = "example",
+    Extensible = "extensible",
+    Preferred = "preferred",
+    Required = "required"
 }
 /** Example value (as defined for type) */
 export interface ElementDefinitionExample extends Element {
@@ -540,15 +567,9 @@ export interface ElementDefinitionExample extends Element {
     valueUrl: url;
     _valueInteger: Element;
 }
-/** Base definition information for tools */
-export interface ElementDefinitionBase extends Element {
-    /** Path that identifies the base element */
-    path: string;
-    _path?: Element;
-    /** Min cardinality of the base element */
-    min: unsignedInt;
-    _min?: Element;
-    /** Max cardinality of the base element */
-    max: string;
-    _max?: Element;
+/** closed | open | openAtEnd */
+export declare enum ElementDefinitionRules {
+    Closed = "closed",
+    Open = "open",
+    OpenAtEnd = "openAtEnd"
 }

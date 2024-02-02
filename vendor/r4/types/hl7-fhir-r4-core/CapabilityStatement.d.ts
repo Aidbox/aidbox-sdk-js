@@ -17,6 +17,7 @@ import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** A Capability Statement documents a set of capabilities (behaviors) of a FHIR Server for a particular version of FHIR that may be used as a statement of actual server functionality or a statement of required or desired server implementation. */
 export interface CapabilityStatement extends DomainResource {
+    resourceType: 'CapabilityStatement';
     /** Natural language description of the capability statement */
     description?: markdown;
     _kind?: Element;
@@ -32,7 +33,7 @@ export interface CapabilityStatement extends DomainResource {
     /** Patch formats supported */
     patchFormat?: Array<code>;
     /** FHIR Version the system supports */
-    fhirVersion: code;
+    fhirVersion: `${CapabilityStatementFhirVersion}`;
     /** Intended jurisdiction for capability statement (if applicable) */
     jurisdiction?: Array<CodeableConcept>;
     _publisher?: Element;
@@ -62,11 +63,11 @@ export interface CapabilityStatement extends DomainResource {
     document?: Array<CapabilityStatementDocument>;
     _purpose?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${CapabilityStatementStatus}`;
     /** If messaging is supported */
     messaging?: Array<CapabilityStatementMessaging>;
     /** instance | capability | requirements */
-    kind: code;
+    kind: `${CapabilityStatementKind}`;
     _name?: Element;
     /** Implementation guides supported */
     implementationGuide?: Array<canonical>;
@@ -97,11 +98,17 @@ export interface CapabilityStatementRestResourceSearchParam extends BackboneElem
     definition?: canonical;
     _definition?: Element;
     /** number | date | string | token | reference | composite | quantity | uri | special */
-    type: code;
+    type: `${CapabilityStatementRestResourceSearchParamType}`;
     _type?: Element;
     /** Server-specific usage */
     documentation?: markdown;
     _documentation?: Element;
+}
+/** not-supported | single | multiple - how conditional delete is supported */
+export declare enum CapabilityStatementConditionalDelete {
+    Multiple = "multiple",
+    NotSupported = "not-supported",
+    Single = "single"
 }
 /** Where messages should be sent */
 export interface CapabilityStatementEndpoint extends BackboneElement {
@@ -111,14 +118,39 @@ export interface CapabilityStatementEndpoint extends BackboneElement {
     address: url;
     _address?: Element;
 }
+/** no-version | versioned | versioned-update */
+export declare enum CapabilityStatementVersioning {
+    NoVersion = "no-version",
+    Versioned = "versioned",
+    VersionedUpdate = "versioned-update"
+}
 /** What operations are supported? */
 export interface CapabilityStatementInteraction extends BackboneElement {
     /** transaction | batch | search-system | history-system */
-    code: code;
+    code: `${CapabilityStatementCode}`;
     _code?: Element;
     /** Anything special about operation behavior */
     documentation?: markdown;
     _documentation?: Element;
+}
+/** not-supported | modified-since | not-match | full-support */
+export declare enum CapabilityStatementConditionalRead {
+    FullSupport = "full-support",
+    ModifiedSince = "modified-since",
+    NotMatch = "not-match",
+    NotSupported = "not-supported"
+}
+/** read | vread | update | patch | delete | history-instance | history-type | create | search-type */
+export declare enum CapabilityStatementCode {
+    SearchType = "search-type",
+    HistoryType = "history-type",
+    Delete = "delete",
+    Update = "update",
+    Read = "read",
+    Create = "create",
+    Vread = "vread",
+    HistoryInstance = "history-instance",
+    Patch = "patch"
 }
 /** If this describes a specific instance */
 export interface CapabilityStatementImplementation extends BackboneElement {
@@ -129,12 +161,12 @@ export interface CapabilityStatementImplementation extends BackboneElement {
     url?: url;
     _url?: Element;
     /** Organization that manages the data */
-    custodian?: Reference<"Organization">;
+    custodian?: Reference<'Organization'>;
 }
 /** Messages supported by this system */
 export interface CapabilityStatementSupportedMessage extends BackboneElement {
     /** sender | receiver */
-    mode: code;
+    mode: `${CapabilityStatementMode}`;
     _mode?: Element;
     /** Message supported by this system */
     definition: canonical;
@@ -151,10 +183,27 @@ export interface CapabilityStatementSecurity extends BackboneElement {
     description?: markdown;
     _description?: Element;
 }
+/** number | date | string | token | reference | composite | quantity | uri | special */
+export declare enum CapabilityStatementRestResourceSearchParamType {
+    Uri = "uri",
+    Number = "number",
+    Date = "date",
+    Special = "special",
+    Quantity = "quantity",
+    String = "string",
+    Composite = "composite",
+    Token = "token",
+    Reference = "reference"
+}
+/** client | server */
+export declare enum CapabilityStatementMode {
+    Client = "client",
+    Server = "server"
+}
 /** Document definition */
 export interface CapabilityStatementDocument extends BackboneElement {
     /** producer | consumer */
-    mode: code;
+    mode: `${CapabilityStatementMode}`;
     _mode?: Element;
     /** Description of document support */
     documentation?: markdown;
@@ -173,7 +222,7 @@ export interface CapabilityStatementRest extends BackboneElement {
     /** Definition of a system level operation */
     operation?: Array<CapabilityStatementRestResourceOperation>;
     /** client | server */
-    mode: code;
+    mode: `${CapabilityStatementMode}`;
     _compartment?: Array<Element>;
     /** What operations are supported? */
     interaction?: Array<CapabilityStatementInteraction>;
@@ -196,6 +245,182 @@ export interface CapabilityStatementRestResourceOperation extends BackboneElemen
     /** Specific details about operation behavior */
     documentation?: markdown;
     _documentation?: Element;
+}
+/** FHIR Version the system supports */
+export declare enum CapabilityStatementFhirVersion {
+    "Num1.8.0" = "1.8.0",
+    "Num0.05" = "0.05",
+    "Num0.01" = "0.01",
+    "Num3.0.1" = "3.0.1",
+    "Num1.0.0" = "1.0.0",
+    "Num3.3.0" = "3.3.0",
+    "Num0.0.82" = "0.0.82",
+    "Num1.6.0" = "1.6.0",
+    "Num1.4.0" = "1.4.0",
+    "Num3.0.0" = "3.0.0",
+    "Num0.0.80" = "0.0.80",
+    "Num4.0.0" = "4.0.0",
+    "Num0.11" = "0.11",
+    "Num0.06" = "0.06",
+    "Num1.0.2" = "1.0.2",
+    "Num1.0.1" = "1.0.1",
+    "Num0.4.0" = "0.4.0",
+    "Num4.0.1" = "4.0.1",
+    "Num3.5.0" = "3.5.0",
+    "Num0.5.0" = "0.5.0",
+    "Num1.1.0" = "1.1.0",
+    "Num0.0.81" = "0.0.81"
+}
+/** A resource type that is supported */
+export declare enum CapabilityStatementType {
+    ImmunizationEvaluation = "ImmunizationEvaluation",
+    Appointment = "Appointment",
+    StructureMap = "StructureMap",
+    CareTeam = "CareTeam",
+    Linkage = "Linkage",
+    Communication = "Communication",
+    MedicationDispense = "MedicationDispense",
+    ImagingStudy = "ImagingStudy",
+    ChargeItem = "ChargeItem",
+    AdverseEvent = "AdverseEvent",
+    Media = "Media",
+    SubstancePolymer = "SubstancePolymer",
+    QuestionnaireResponse = "QuestionnaireResponse",
+    Coverage = "Coverage",
+    Procedure = "Procedure",
+    AuditEvent = "AuditEvent",
+    PaymentReconciliation = "PaymentReconciliation",
+    MedicinalProductManufactured = "MedicinalProductManufactured",
+    CompartmentDefinition = "CompartmentDefinition",
+    Organization = "Organization",
+    ExplanationOfBenefit = "ExplanationOfBenefit",
+    Composition = "Composition",
+    CoverageEligibilityResponse = "CoverageEligibilityResponse",
+    DocumentReference = "DocumentReference",
+    EventDefinition = "EventDefinition",
+    SubstanceProtein = "SubstanceProtein",
+    TerminologyCapabilities = "TerminologyCapabilities",
+    Encounter = "Encounter",
+    ImplementationGuide = "ImplementationGuide",
+    EvidenceVariable = "EvidenceVariable",
+    ObservationDefinition = "ObservationDefinition",
+    DiagnosticReport = "DiagnosticReport",
+    ExampleScenario = "ExampleScenario",
+    ResearchDefinition = "ResearchDefinition",
+    Parameters = "Parameters",
+    SearchParameter = "SearchParameter",
+    MedicinalProductInteraction = "MedicinalProductInteraction",
+    CodeSystem = "CodeSystem",
+    MessageDefinition = "MessageDefinition",
+    NutritionOrder = "NutritionOrder",
+    VerificationResult = "VerificationResult",
+    MedicationAdministration = "MedicationAdministration",
+    CatalogEntry = "CatalogEntry",
+    Flag = "Flag",
+    DeviceUseStatement = "DeviceUseStatement",
+    Contract = "Contract",
+    Invoice = "Invoice",
+    PaymentNotice = "PaymentNotice",
+    Location = "Location",
+    Claim = "Claim",
+    Specimen = "Specimen",
+    MedicationStatement = "MedicationStatement",
+    EnrollmentResponse = "EnrollmentResponse",
+    Evidence = "Evidence",
+    Bundle = "Bundle",
+    ResearchElementDefinition = "ResearchElementDefinition",
+    BodyStructure = "BodyStructure",
+    MedicinalProduct = "MedicinalProduct",
+    ResearchStudy = "ResearchStudy",
+    AppointmentResponse = "AppointmentResponse",
+    MedicinalProductIndication = "MedicinalProductIndication",
+    Measure = "Measure",
+    Person = "Person",
+    InsurancePlan = "InsurancePlan",
+    Patient = "Patient",
+    EffectEvidenceSynthesis = "EffectEvidenceSynthesis",
+    ResearchSubject = "ResearchSubject",
+    Medication = "Medication",
+    ConceptMap = "ConceptMap",
+    CoverageEligibilityRequest = "CoverageEligibilityRequest",
+    SubstanceSourceMaterial = "SubstanceSourceMaterial",
+    VisionPrescription = "VisionPrescription",
+    MolecularSequence = "MolecularSequence",
+    MedicinalProductUndesirableEffect = "MedicinalProductUndesirableEffect",
+    OperationOutcome = "OperationOutcome",
+    MessageHeader = "MessageHeader",
+    AllergyIntolerance = "AllergyIntolerance",
+    SubstanceReferenceInformation = "SubstanceReferenceInformation",
+    SupplyDelivery = "SupplyDelivery",
+    EpisodeOfCare = "EpisodeOfCare",
+    PractitionerRole = "PractitionerRole",
+    Library = "Library",
+    Practitioner = "Practitioner",
+    MedicationRequest = "MedicationRequest",
+    ImmunizationRecommendation = "ImmunizationRecommendation",
+    Immunization = "Immunization",
+    GraphDefinition = "GraphDefinition",
+    Account = "Account",
+    MedicinalProductIngredient = "MedicinalProductIngredient",
+    MeasureReport = "MeasureReport",
+    DeviceMetric = "DeviceMetric",
+    Goal = "Goal",
+    MedicationKnowledge = "MedicationKnowledge",
+    ClaimResponse = "ClaimResponse",
+    DeviceDefinition = "DeviceDefinition",
+    Slot = "Slot",
+    ValueSet = "ValueSet",
+    MedicinalProductAuthorization = "MedicinalProductAuthorization",
+    StructureDefinition = "StructureDefinition",
+    MedicinalProductContraindication = "MedicinalProductContraindication",
+    DeviceRequest = "DeviceRequest",
+    List = "List",
+    Questionnaire = "Questionnaire",
+    DomainResource = "DomainResource",
+    Endpoint = "Endpoint",
+    NamingSystem = "NamingSystem",
+    MedicinalProductPackaged = "MedicinalProductPackaged",
+    Basic = "Basic",
+    Binary = "Binary",
+    PlanDefinition = "PlanDefinition",
+    Subscription = "Subscription",
+    RelatedPerson = "RelatedPerson",
+    SubstanceSpecification = "SubstanceSpecification",
+    SubstanceNucleicAcid = "SubstanceNucleicAcid",
+    GuidanceResponse = "GuidanceResponse",
+    ClinicalImpression = "ClinicalImpression",
+    OrganizationAffiliation = "OrganizationAffiliation",
+    Resource = "Resource",
+    Condition = "Condition",
+    CapabilityStatement = "CapabilityStatement",
+    HealthcareService = "HealthcareService",
+    SpecimenDefinition = "SpecimenDefinition",
+    RiskAssessment = "RiskAssessment",
+    OperationDefinition = "OperationDefinition",
+    ActivityDefinition = "ActivityDefinition",
+    Schedule = "Schedule",
+    BiologicallyDerivedProduct = "BiologicallyDerivedProduct",
+    Group = "Group",
+    MedicinalProductPharmaceutical = "MedicinalProductPharmaceutical",
+    FamilyMemberHistory = "FamilyMemberHistory",
+    ServiceRequest = "ServiceRequest",
+    DetectedIssue = "DetectedIssue",
+    Device = "Device",
+    RequestGroup = "RequestGroup",
+    TestScript = "TestScript",
+    RiskEvidenceSynthesis = "RiskEvidenceSynthesis",
+    SupplyRequest = "SupplyRequest",
+    Task = "Task",
+    CommunicationRequest = "CommunicationRequest",
+    EnrollmentRequest = "EnrollmentRequest",
+    ChargeItemDefinition = "ChargeItemDefinition",
+    Substance = "Substance",
+    Provenance = "Provenance",
+    Consent = "Consent",
+    CarePlan = "CarePlan",
+    TestReport = "TestReport",
+    Observation = "Observation",
+    DocumentManifest = "DocumentManifest"
 }
 /** If messaging is supported */
 export interface CapabilityStatementMessaging extends BackboneElement {
@@ -223,7 +448,7 @@ export interface CapabilityStatementResource extends BackboneElement {
     _updateCreate?: Element;
     _conditionalCreate?: Element;
     /** not-supported | modified-since | not-match | full-support */
-    conditionalRead?: code;
+    conditionalRead?: `${CapabilityStatementConditionalRead}`;
     _type?: Element;
     operation?: Array<CapabilityStatementRestResourceOperation>;
     _conditionalUpdate?: Element;
@@ -232,7 +457,7 @@ export interface CapabilityStatementResource extends BackboneElement {
     /** Whether vRead can return past versions */
     readHistory?: boolean;
     /** A resource type that is supported */
-    type: code;
+    type: `${CapabilityStatementType}`;
     /** What operations are supported? */
     interaction?: Array<CapabilityStatementInteraction>;
     _conditionalRead?: Element;
@@ -251,13 +476,26 @@ export interface CapabilityStatementResource extends BackboneElement {
     /** _include values supported by the server */
     searchInclude?: Array<string>;
     /** no-version | versioned | versioned-update */
-    versioning?: code;
+    versioning?: `${CapabilityStatementVersioning}`;
     /** Base System profile for all uses of resource */
     profile?: canonical;
     _versioning?: Element;
     _supportedProfile?: Array<Element>;
     /** not-supported | single | multiple - how conditional delete is supported */
-    conditionalDelete?: code;
+    conditionalDelete?: `${CapabilityStatementConditionalDelete}`;
+}
+/** draft | active | retired | unknown */
+export declare enum CapabilityStatementStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
+/** instance | capability | requirements */
+export declare enum CapabilityStatementKind {
+    Capability = "capability",
+    Instance = "instance",
+    Requirements = "requirements"
 }
 /** Software that is covered by this capability statement */
 export interface CapabilityStatementSoftware extends BackboneElement {

@@ -9,20 +9,20 @@ import { canonical } from "./canonical";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** A guidance response is the formal response to a guidance request, including any output parameters returned by the evaluation, as well as the description of any proposed actions to be taken. */
 export interface GuidanceResponse extends DomainResource {
+    resourceType: 'GuidanceResponse';
     /** Additional required data */
     dataRequirement?: Array<DataRequirement>;
     moduleCanonical: canonical;
     /** Encounter during which the response was returned */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     _status?: Element;
     /** Why guidance is needed */
     reasonCode?: Array<CodeableConcept>;
     /** The output parameters of the evaluation, if any */
-    outputParameters?: Reference<"Parameters">;
+    outputParameters?: Reference<'Parameters'>;
     /** Messages resulting from the evaluation of the artifact or artifacts */
     evaluationMessage?: Array<Reference>;
     /** The identifier of the request associated with this response, if any */
@@ -32,9 +32,9 @@ export interface GuidanceResponse extends DomainResource {
     note?: Array<Annotation>;
     _moduleCanonical: Element;
     /** success | data-requested | data-required | in-progress | failure | entered-in-error */
-    status: code;
+    status: `${GuidanceResponseStatus}`;
     /** Proposed actions, if any */
-    result?: Reference<"RequestGroup" | "CarePlan">;
+    result?: Reference<'RequestGroup' | 'CarePlan'>;
     /** Business identifier */
     identifier?: Array<Identifier>;
     moduleCodeableConcept: CodeableConcept;
@@ -42,10 +42,19 @@ export interface GuidanceResponse extends DomainResource {
     /** When the guidance response was processed */
     occurrenceDateTime?: dateTime;
     /** Patient the request was performed for */
-    subject?: Reference<"Patient" | "Group">;
+    subject?: Reference<'Patient' | 'Group'>;
     /** Device returning the guidance */
-    performer?: Reference<"Device">;
+    performer?: Reference<'Device'>;
     /** Why guidance is needed */
     reasonReference?: Array<Reference>;
     _occurrenceDateTime?: Element;
+}
+/** success | data-requested | data-required | in-progress | failure | entered-in-error */
+export declare enum GuidanceResponseStatus {
+    DataRequested = "data-requested",
+    DataRequired = "data-required",
+    EnteredInError = "entered-in-error",
+    Failure = "failure",
+    InProgress = "in-progress",
+    Success = "success"
 }

@@ -11,11 +11,11 @@ import { date } from "./date";
 import { Ratio } from "./Ratio";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Describes the intended objective(s) for a patient, group or organization care, for example, weight loss, restoring an activity of daily living, obtaining herd immunity via immunization, meeting a process improvement objective, etc. */
 export interface Goal extends DomainResource {
+    resourceType: 'Goal';
     /** Code or text describing goal */
     description: CodeableConcept;
     /** E.g. Treatment, dietary, behavioral, etc. */
@@ -23,7 +23,7 @@ export interface Goal extends DomainResource {
     /** Issues addressed by this goal */
     addresses?: Array<Reference>;
     /** Who's responsible for creating Goal? */
-    expressedBy?: Reference<"Patient" | "PractitionerRole" | "Practitioner" | "RelatedPerson">;
+    expressedBy?: Reference<'Patient' | 'PractitionerRole' | 'Practitioner' | 'RelatedPerson'>;
     startDate?: date;
     /** in-progress | improving | worsening | no-change | achieved | sustaining | not-achieved | no-progress | not-attainable */
     achievementStatus?: CodeableConcept;
@@ -47,10 +47,10 @@ export interface Goal extends DomainResource {
     /** Observation that resulted from goal */
     outcomeReference?: Array<Reference>;
     /** Who this goal is intended for */
-    subject: Reference<"Patient" | "Organization" | "Group">;
+    subject: Reference<'Patient' | 'Organization' | 'Group'>;
     _statusReason?: Element;
     /** proposed | planned | accepted | active | on-hold | completed | cancelled | entered-in-error | rejected */
-    lifecycleStatus: code;
+    lifecycleStatus: `${GoalLifecycleStatus}`;
     _statusDate?: Element;
 }
 /** Target outcome for the goal */
@@ -70,4 +70,16 @@ export interface GoalTarget extends BackboneElement {
     detailBoolean?: boolean;
     _dueDate?: Element;
     dueDuration?: Duration;
+}
+/** proposed | planned | accepted | active | on-hold | completed | cancelled | entered-in-error | rejected */
+export declare enum GoalLifecycleStatus {
+    Active = "active",
+    Proposed = "proposed",
+    Cancelled = "cancelled",
+    Rejected = "rejected",
+    Planned = "planned",
+    EnteredInError = "entered-in-error",
+    Completed = "completed",
+    Accepted = "accepted",
+    OnHold = "on-hold"
 }

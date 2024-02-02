@@ -8,11 +8,11 @@ import { DomainResource } from "./DomainResource";
 import { instant } from "./instant";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A reference to a document of any kind for any purpose. Provides metadata about the document so that the document can be discovered and managed. The scope of a document is any seralized object with a mime-type, so includes formal patient centric documents (CDA), cliical notes, scanned paper, and non-patient specific documents like policy text. */
 export interface DocumentReference extends DomainResource {
+    resourceType: 'DocumentReference';
     /** Human-readable description */
     description?: string;
     /** Categorization of document */
@@ -20,7 +20,7 @@ export interface DocumentReference extends DomainResource {
     /** When this document reference was created */
     date?: instant;
     /** preliminary | final | amended | entered-in-error */
-    docStatus?: code;
+    docStatus?: `${DocumentReferenceDocStatus}`;
     /** Document referenced */
     content: Array<DocumentReferenceContent>;
     _date?: Element;
@@ -33,9 +33,9 @@ export interface DocumentReference extends DomainResource {
     /** Master Version Specific Identifier */
     masterIdentifier?: Identifier;
     /** Organization which maintains the document */
-    custodian?: Reference<"Organization">;
+    custodian?: Reference<'Organization'>;
     /** current | superseded | entered-in-error */
-    status: code;
+    status: `${DocumentReferenceStatus}`;
     /** Other identifiers for the document */
     identifier?: Array<Identifier>;
     /** Relationships to other documents */
@@ -46,9 +46,16 @@ export interface DocumentReference extends DomainResource {
     securityLabel?: Array<CodeableConcept>;
     _docStatus?: Element;
     /** Who/what is the subject of the document */
-    subject?: Reference<"Patient" | "Device" | "Practitioner" | "Group">;
+    subject?: Reference<'Patient' | 'Device' | 'Practitioner' | 'Group'>;
     /** Who/what authenticated the document */
-    authenticator?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    authenticator?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
+}
+/** preliminary | final | amended | entered-in-error */
+export declare enum DocumentReferenceDocStatus {
+    Amended = "amended",
+    EnteredInError = "entered-in-error",
+    Final = "final",
+    Preliminary = "preliminary"
 }
 /** Document referenced */
 export interface DocumentReferenceContent extends BackboneElement {
@@ -57,13 +64,26 @@ export interface DocumentReferenceContent extends BackboneElement {
     /** Format/content rules for the document */
     format?: Coding;
 }
+/** current | superseded | entered-in-error */
+export declare enum DocumentReferenceStatus {
+    Current = "current",
+    EnteredInError = "entered-in-error",
+    Superseded = "superseded"
+}
+/** replaces | transforms | signs | appends */
+export declare enum DocumentReferenceCode {
+    Appends = "appends",
+    Replaces = "replaces",
+    Signs = "signs",
+    Transforms = "transforms"
+}
 /** Relationships to other documents */
 export interface DocumentReferenceRelatesTo extends BackboneElement {
     /** replaces | transforms | signs | appends */
-    code: code;
+    code: `${DocumentReferenceCode}`;
     _code?: Element;
     /** Target of the relationship */
-    target: Reference<"DocumentReference">;
+    target: Reference<'DocumentReference'>;
 }
 /** Clinical context of document */
 export interface DocumentReferenceContext extends BackboneElement {
@@ -78,7 +98,7 @@ export interface DocumentReferenceContext extends BackboneElement {
     /** Additional details about where the content was created (e.g. clinical specialty) */
     practiceSetting?: CodeableConcept;
     /** Patient demographics from source */
-    sourcePatientInfo?: Reference<"Patient">;
+    sourcePatientInfo?: Reference<'Patient'>;
     /** Related identifiers or resources */
     related?: Array<Reference>;
 }

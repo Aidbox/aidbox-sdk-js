@@ -10,19 +10,19 @@ import { DomainResource } from "./DomainResource";
 import { base64Binary } from "./base64Binary";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A type of a manufactured item that is used in the provision of healthcare without being substantially changed through that activity. The device may be a medical or non-medical device. */
 export interface Device extends DomainResource {
+    resourceType: 'Device';
     /** Patient to whom Device is affixed */
-    patient?: Reference<"Patient">;
+    patient?: Reference<'Patient'>;
     /** The reference to the definition for the device */
-    definition?: Reference<"DeviceDefinition">;
+    definition?: Reference<'DeviceDefinition'>;
     /** Serial number assigned by the manufacturer */
     serialNumber?: string;
     /** The parent device */
-    parent?: Reference<"Device">;
+    parent?: Reference<'Device'>;
     /** The name of the device as given by the manufacturer */
     deviceName?: Array<DeviceDeviceName>;
     _partNumber?: Element;
@@ -47,7 +47,7 @@ export interface Device extends DomainResource {
     /** Device notes and comments */
     note?: Array<Annotation>;
     /** active | inactive | entered-in-error | unknown */
-    status?: code;
+    status?: `${DeviceStatus}`;
     /** Safety Characteristics of Device */
     safety?: Array<CodeableConcept>;
     /** Lot number of manufacture */
@@ -65,18 +65,27 @@ export interface Device extends DomainResource {
     version?: Array<DeviceVersion>;
     _lotNumber?: Element;
     /** Where the device is found */
-    location?: Reference<"Location">;
+    location?: Reference<'Location'>;
     /** Details for human/organization for support */
     contact?: Array<ContactPoint>;
     /** Date when the device was made */
     manufactureDate?: dateTime;
     /** Organization responsible for device */
-    owner?: Reference<"Organization">;
+    owner?: Reference<'Organization'>;
     _url?: Element;
     /** Date and time of expiry of this device (if applicable) */
     expirationDate?: dateTime;
     /** Unique Device Identifier (UDI) Barcode string */
     udiCarrier?: Array<DeviceUdiCarrier>;
+}
+/** udi-label-name | user-friendly-name | patient-reported-name | manufacturer-name | model-name | other */
+export declare enum DeviceType {
+    ManufacturerName = "manufacturer-name",
+    ModelName = "model-name",
+    Other = "other",
+    PatientReportedName = "patient-reported-name",
+    UdiLabelName = "udi-label-name",
+    UserFriendlyName = "user-friendly-name"
 }
 /** The name of the device as given by the manufacturer */
 export interface DeviceDeviceName extends BackboneElement {
@@ -84,7 +93,7 @@ export interface DeviceDeviceName extends BackboneElement {
     name: string;
     _name?: Element;
     /** udi-label-name | user-friendly-name | patient-reported-name | manufacturer-name | model-name | other */
-    type: code;
+    type: `${DeviceType}`;
     _type?: Element;
 }
 /** The actual configuration settings of a device as it actually operates, e.g., regulation status, time properties */
@@ -104,6 +113,13 @@ export interface DeviceSpecialization extends BackboneElement {
     version?: string;
     _version?: Element;
 }
+/** active | inactive | entered-in-error | unknown */
+export declare enum DeviceStatus {
+    Active = "active",
+    EnteredInError = "entered-in-error",
+    Inactive = "inactive",
+    Unknown = "unknown"
+}
 /** The actual design of the device or software version running on the device */
 export interface DeviceVersion extends BackboneElement {
     /** The type of the device version */
@@ -114,6 +130,15 @@ export interface DeviceVersion extends BackboneElement {
     value: string;
     _value?: Element;
 }
+/** barcode | rfid | manual + */
+export declare enum DeviceEntryType {
+    Barcode = "barcode",
+    Card = "card",
+    Manual = "manual",
+    Rfid = "rfid",
+    SelfReported = "self-reported",
+    Unknown = "unknown"
+}
 /** Unique Device Identifier (UDI) Barcode string */
 export interface DeviceUdiCarrier extends BackboneElement {
     _jurisdiction?: Element;
@@ -123,7 +148,7 @@ export interface DeviceUdiCarrier extends BackboneElement {
     /** Regional UDI authority */
     jurisdiction?: uri;
     /** barcode | rfid | manual + */
-    entryType?: code;
+    entryType?: `${DeviceEntryType}`;
     /** UDI Issuing Organization */
     issuer?: uri;
     _deviceIdentifier?: Element;

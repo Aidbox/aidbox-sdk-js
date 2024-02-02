@@ -13,10 +13,10 @@ import { date } from "./date";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** The EventDefinition resource provides a reusable description of when a particular event can occur. */
 export interface EventDefinition extends DomainResource {
+    resourceType: 'EventDefinition';
     /** Natural language description of the event definition */
     description?: markdown;
     _usage?: Element;
@@ -58,7 +58,7 @@ export interface EventDefinition extends DomainResource {
     usage?: string;
     _lastReviewDate?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${EventDefinitionStatus}`;
     /** Subordinate title of the event definition */
     subtitle?: string;
     _name?: Element;
@@ -84,8 +84,15 @@ export interface EventDefinition extends DomainResource {
     relatedArtifact?: Array<RelatedArtifact>;
     /** Contact details for the publisher */
     contact?: Array<ContactDetail>;
-    subjectReference?: Reference<"Group">;
+    subjectReference?: Reference<'Group'>;
     _url?: Element;
     /** When the event definition is expected to be used */
     effectivePeriod?: Period;
+}
+/** draft | active | retired | unknown */
+export declare enum EventDefinitionStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }

@@ -9,11 +9,11 @@ import { integer } from "./integer";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** The MeasureReport resource contains the results of the calculation of a measure; and optionally a reference to the resources involved in that calculation. */
 export interface MeasureReport extends DomainResource {
+    resourceType: 'MeasureReport';
     /** What data was used to calculate the measure score */
     evaluatedResource?: Array<Reference>;
     _measure?: Element;
@@ -25,21 +25,21 @@ export interface MeasureReport extends DomainResource {
     _type?: Element;
     _status?: Element;
     /** individual | subject-list | summary | data-collection */
-    type: code;
+    type: `${MeasureReportType}`;
     /** What measure was calculated */
     measure: canonical;
     /** Who is reporting the data */
-    reporter?: Reference<"PractitionerRole" | "Organization" | "Location" | "Practitioner">;
+    reporter?: Reference<'PractitionerRole' | 'Organization' | 'Location' | 'Practitioner'>;
     /** complete | pending | error */
-    status: code;
+    status: `${MeasureReportStatus}`;
     /** Additional identifier for the MeasureReport */
     identifier?: Array<Identifier>;
     /** What period the report covers */
     period: Period;
     /** increase | decrease */
-    improvementNotation?: CodeableConcept;
+    improvementNotation?: `${MeasureReportImprovementNotation}`;
     /** What individual(s) the report is for */
-    subject?: Reference<"Patient" | "PractitionerRole" | "Device" | "Location" | "Practitioner" | "RelatedPerson" | "Group">;
+    subject?: Reference<'Patient' | 'PractitionerRole' | 'Device' | 'Location' | 'Practitioner' | 'RelatedPerson' | 'Group'>;
 }
 /** The populations in the group */
 export interface MeasureReportPopulation extends BackboneElement {
@@ -49,7 +49,7 @@ export interface MeasureReportPopulation extends BackboneElement {
     count?: integer;
     _count?: Element;
     /** For subject-list reports, the subject results in this population */
-    subjectResults?: Reference<"List">;
+    subjectResults?: Reference<'List'>;
 }
 /** Stratifier component values */
 export interface MeasureReportComponent extends BackboneElement {
@@ -86,4 +86,22 @@ export interface MeasureReportGroup extends BackboneElement {
     measureScore?: Quantity;
     /** Stratification results */
     stratifier?: Array<MeasureReportStratifier>;
+}
+/** individual | subject-list | summary | data-collection */
+export declare enum MeasureReportType {
+    DataCollection = "data-collection",
+    Individual = "individual",
+    SubjectList = "subject-list",
+    Summary = "summary"
+}
+/** complete | pending | error */
+export declare enum MeasureReportStatus {
+    Complete = "complete",
+    Error = "error",
+    Pending = "pending"
+}
+/** increase | decrease */
+export declare enum MeasureReportImprovementNotation {
+    Decrease = "decrease",
+    Increase = "increase"
 }

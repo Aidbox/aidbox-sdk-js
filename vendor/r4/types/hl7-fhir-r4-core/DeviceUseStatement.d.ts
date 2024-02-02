@@ -8,10 +8,10 @@ import { Timing } from "./Timing";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** A record of a device being used by a patient where the record is the result of a report from the patient or another clinician. */
 export interface DeviceUseStatement extends DomainResource {
+    resourceType: 'DeviceUseStatement';
     _recordedOn?: Element;
     /** Supporting information */
     derivedFrom?: Array<Reference>;
@@ -20,13 +20,13 @@ export interface DeviceUseStatement extends DomainResource {
     /** Why device was used */
     reasonCode?: Array<CodeableConcept>;
     /** Who made the statement */
-    source?: Reference<"Patient" | "PractitionerRole" | "Practitioner" | "RelatedPerson">;
+    source?: Reference<'Patient' | 'PractitionerRole' | 'Practitioner' | 'RelatedPerson'>;
     /** Addition details (comments, instructions) */
     note?: Array<Annotation>;
     timingDateTime?: dateTime;
     timingTiming?: Timing;
     /** active | completed | entered-in-error + */
-    status: code;
+    status: `${DeviceUseStatementStatus}`;
     /** When statement was recorded */
     recordedOn?: dateTime;
     /** External identifier for this record */
@@ -35,11 +35,20 @@ export interface DeviceUseStatement extends DomainResource {
     bodySite?: CodeableConcept;
     _timingDateTime?: Element;
     /** Reference to device used */
-    device: Reference<"Device">;
+    device: Reference<'Device'>;
     /** Fulfills plan, proposal or order */
     basedOn?: Array<Reference>;
     /** Patient using device */
-    subject: Reference<"Patient" | "Group">;
+    subject: Reference<'Patient' | 'Group'>;
     /** Why was DeviceUseStatement performed? */
     reasonReference?: Array<Reference>;
+}
+/** active | completed | entered-in-error + */
+export declare enum DeviceUseStatementStatus {
+    Active = "active",
+    Completed = "completed",
+    EnteredInError = "entered-in-error",
+    Intended = "intended",
+    OnHold = "on-hold",
+    Stopped = "stopped"
 }

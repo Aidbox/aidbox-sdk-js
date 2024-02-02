@@ -10,11 +10,11 @@ import { DomainResource } from "./DomainResource";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A person who is directly or indirectly involved in the provisioning of healthcare. */
 export interface Practitioner extends DomainResource {
+    resourceType: 'Practitioner';
     _active?: Element;
     /** Address(es) of the practitioner that are not role specific (typically home address) */
     address?: Array<Address>;
@@ -37,7 +37,7 @@ export interface Practitioner extends DomainResource {
     /** A contact detail for the practitioner (that apply to all roles) */
     telecom?: Array<ContactPoint>;
     /** male | female | other | unknown */
-    gender?: code;
+    gender?: `${PractitionerGender}`;
 }
 /** Certification, licenses, or training pertaining to the provision of care */
 export interface PractitionerQualification extends BackboneElement {
@@ -48,5 +48,12 @@ export interface PractitionerQualification extends BackboneElement {
     /** Period during which the qualification is valid */
     period?: Period;
     /** Organization that regulates and issues the qualification */
-    issuer?: Reference<"Organization">;
+    issuer?: Reference<'Organization'>;
+}
+/** male | female | other | unknown */
+export declare enum PractitionerGender {
+    Female = "female",
+    Male = "male",
+    Other = "other",
+    Unknown = "unknown"
 }

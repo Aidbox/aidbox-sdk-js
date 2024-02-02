@@ -13,10 +13,10 @@ import { DomainResource } from "./DomainResource";
 import { Ratio } from "./Ratio";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** A record of a request for service such as diagnostic investigations, treatments, or operations to be performed. */
 export interface ServiceRequest extends DomainResource {
+    resourceType: 'ServiceRequest';
     /** Performer role */
     performerType?: CodeableConcept;
     /** Classification of service */
@@ -34,7 +34,7 @@ export interface ServiceRequest extends DomainResource {
     /** Additional clinical information */
     supportingInfo?: Array<Reference>;
     /** Encounter in which the request was created */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     /** Patient or consumer-oriented instructions */
     patientInstruction?: string;
     _doNotPerform?: Element;
@@ -57,12 +57,12 @@ export interface ServiceRequest extends DomainResource {
     /** Requested location */
     locationReference?: Array<Reference>;
     /** Who/what is requesting service */
-    requester?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    requester?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** routine | urgent | asap | stat */
-    priority?: code;
+    priority?: `${ServiceRequestPriority}`;
     occurrencePeriod?: Period;
     /** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
-    status: code;
+    status: `${ServiceRequestStatus}`;
     quantityRatio?: Ratio;
     /** What is being requested/ordered */
     code?: CodeableConcept;
@@ -73,7 +73,7 @@ export interface ServiceRequest extends DomainResource {
     /** Location on Body */
     bodySite?: Array<CodeableConcept>;
     /** proposal | plan | directive | order | original-order | reflex-order | filler-order | instance-order | option */
-    intent: code;
+    intent: `${ServiceRequestIntent}`;
     quantityRange?: Range;
     quantityQuantity?: Quantity;
     /** What request replaces */
@@ -87,7 +87,7 @@ export interface ServiceRequest extends DomainResource {
     occurrenceDateTime?: dateTime;
     _instantiatesCanonical?: Array<Element>;
     /** Individual or Entity the service is ordered for */
-    subject: Reference<"Patient" | "Device" | "Location" | "Group">;
+    subject: Reference<'Patient' | 'Device' | 'Location' | 'Group'>;
     asNeededCodeableConcept?: CodeableConcept;
     /** Requested performer */
     performer?: Array<Reference>;
@@ -95,4 +95,33 @@ export interface ServiceRequest extends DomainResource {
     reasonReference?: Array<Reference>;
     _instantiatesUri?: Array<Element>;
     _occurrenceDateTime?: Element;
+}
+/** routine | urgent | asap | stat */
+export declare enum ServiceRequestPriority {
+    Asap = "asap",
+    Routine = "routine",
+    Stat = "stat",
+    Urgent = "urgent"
+}
+/** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
+export declare enum ServiceRequestStatus {
+    Active = "active",
+    Completed = "completed",
+    Draft = "draft",
+    EnteredInError = "entered-in-error",
+    OnHold = "on-hold",
+    Revoked = "revoked",
+    Unknown = "unknown"
+}
+/** proposal | plan | directive | order | original-order | reflex-order | filler-order | instance-order | option */
+export declare enum ServiceRequestIntent {
+    Order = "order",
+    FillerOrder = "filler-order",
+    Option = "option",
+    Directive = "directive",
+    Proposal = "proposal",
+    ReflexOrder = "reflex-order",
+    Plan = "plan",
+    InstanceOrder = "instance-order",
+    OriginalOrder = "original-order"
 }

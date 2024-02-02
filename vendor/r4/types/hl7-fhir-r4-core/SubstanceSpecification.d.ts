@@ -13,13 +13,14 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** The detailed description of a substance, typically at a level beyond what is used for prescribing. */
 export interface SubstanceSpecification extends DomainResource {
+    resourceType: 'SubstanceSpecification';
     /** Textual description of the substance */
     description?: string;
     /** General specifications for this substance, including how it is related to other substances */
     property?: Array<SubstanceSpecificationProperty>;
     name?: Array<SubstanceSpecificationName>;
     /** General information detailing this substance */
-    referenceInformation?: Reference<"SubstanceReferenceInformation">;
+    referenceInformation?: Reference<'SubstanceReferenceInformation'>;
     /** A link between this substance and another, with details of the relationship */
     relationship?: Array<SubstanceSpecificationRelationship>;
     /** High level categorization, e.g. polymer or nucleic acid */
@@ -30,7 +31,7 @@ export interface SubstanceSpecification extends DomainResource {
     source?: Array<Reference>;
     _description?: Element;
     /** Data items specific to nucleic acids */
-    nucleicAcid?: Reference<"SubstanceNucleicAcid">;
+    nucleicAcid?: Reference<'SubstanceNucleicAcid'>;
     /** Structural information */
     structure?: SubstanceSpecificationStructure;
     /** Status of substance within the catalogue e.g. approved */
@@ -44,13 +45,13 @@ export interface SubstanceSpecification extends DomainResource {
     /** The molecular weight or weight range (for proteins, polymers or nucleic acids) */
     molecularWeight?: Array<SubstanceSpecificationStructureIsotopeMolecularWeight>;
     /** Data items specific to polymers */
-    polymer?: Reference<"SubstancePolymer">;
+    polymer?: Reference<'SubstancePolymer'>;
     /** Data items specific to proteins */
-    protein?: Reference<"SubstanceProtein">;
+    protein?: Reference<'SubstanceProtein'>;
     /** If the substance applies to only human or veterinary use */
     domain?: CodeableConcept;
     /** Material or taxonomic/anatomical source for the substance */
-    sourceMaterial?: Reference<"SubstanceSourceMaterial">;
+    sourceMaterial?: Reference<'SubstanceSourceMaterial'>;
     _comment?: Element;
 }
 /** Structural information */
@@ -151,7 +152,7 @@ export interface SubstanceSpecificationProperty extends BackboneElement {
     category?: CodeableConcept;
     _amountString?: Element;
     definingSubstanceCodeableConcept?: CodeableConcept;
-    definingSubstanceReference?: Reference<"SubstanceSpecification" | "Substance">;
+    definingSubstanceReference?: Reference<'SubstanceSpecification' | 'Substance'>;
     amountQuantity?: Quantity;
     amountString?: string;
     /** Property type e.g. viscosity, pH, isoelectric point */
@@ -182,7 +183,7 @@ export interface SubstanceSpecificationRelationship extends BackboneElement {
     relationship?: CodeableConcept;
     /** Supporting literature */
     source?: Array<Reference>;
-    substanceReference?: Reference<"SubstanceSpecification">;
+    substanceReference?: Reference<'SubstanceSpecification'>;
     amountRatio?: Ratio;
     amountQuantity?: Quantity;
     amountString?: string;

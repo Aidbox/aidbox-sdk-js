@@ -10,6 +10,7 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Todo. */
 export interface SubstanceReferenceInformation extends DomainResource {
+    resourceType: 'SubstanceReferenceInformation';
     /** Todo */
     comment?: string;
     _comment?: Element;

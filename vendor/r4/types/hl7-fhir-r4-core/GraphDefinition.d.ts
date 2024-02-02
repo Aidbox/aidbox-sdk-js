@@ -10,10 +10,10 @@ import { integer } from "./integer";
 import { DomainResource } from "./DomainResource";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
-import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** A formal computable definition of a graph of resources - that is, a coherent set of resources that form a graph by following references. The Graph Definition resource defines a set and makes rules about the set. */
 export interface GraphDefinition extends DomainResource {
+    resourceType: 'GraphDefinition';
     /** Natural language description of the graph definition */
     description?: markdown;
     /** Date last changed */
@@ -30,7 +30,7 @@ export interface GraphDefinition extends DomainResource {
     name: string;
     _status?: Element;
     /** Type of resource at which the graph starts */
-    start: code;
+    start: `${GraphDefinitionStart}`;
     _experimental?: Element;
     /** The context that the content is intended to support */
     useContext?: Array<UsageContext>;
@@ -40,7 +40,7 @@ export interface GraphDefinition extends DomainResource {
     _profile?: Element;
     _purpose?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${GraphDefinitionStatus}`;
     link?: Array<GraphDefinitionLink>;
     _name?: Element;
     /** Canonical identifier for this graph definition, represented as a URI (globally unique) */
@@ -54,40 +54,6 @@ export interface GraphDefinition extends DomainResource {
     _url?: Element;
     /** Profile on base resource */
     profile?: canonical;
-}
-/** Compartment Consistency Rules */
-export interface GraphDefinitionLinkCompartment extends BackboneElement {
-    /** Documentation for FHIRPath expression */
-    description?: string;
-    _code?: Element;
-    /** Custom rule, as a FHIRPath expression */
-    expression?: string;
-    /** condition | requirement */
-    use: code;
-    /** identical | matching | different | custom */
-    rule: code;
-    _expression?: Element;
-    _description?: Element;
-    /** Patient | Encounter | RelatedPerson | Practitioner | Device */
-    code: code;
-    _rule?: Element;
-    _use?: Element;
-}
-/** Potential target for the link */
-export interface GraphDefinitionLinkTarget extends BackboneElement {
-    /** Type of resource this link refers to */
-    type: code;
-    _type?: Element;
-    /** Criteria for reverse lookup */
-    params?: string;
-    _params?: Element;
-    /** Profile for the target resource */
-    profile?: canonical;
-    _profile?: Element;
-    /** Compartment Consistency Rules */
-    compartment?: Array<GraphDefinitionLinkCompartment>;
-    /** Additional links from target resource */
-    link?: Array<GraphDefinitionLink>;
 }
 /** Links this graph makes rules about */
 export interface GraphDefinitionLink extends BackboneElement {
@@ -108,4 +74,367 @@ export interface GraphDefinitionLink extends BackboneElement {
     _max?: Element;
     /** Potential target for the link */
     target?: Array<GraphDefinitionLinkTarget>;
+}
+/** Compartment Consistency Rules */
+export interface GraphDefinitionLinkCompartment extends BackboneElement {
+    /** Documentation for FHIRPath expression */
+    description?: string;
+    _code?: Element;
+    /** Custom rule, as a FHIRPath expression */
+    expression?: string;
+    /** condition | requirement */
+    use: `${GraphDefinitionLinkUse}`;
+    /** identical | matching | different | custom */
+    rule: `${GraphDefinitionLinkRule}`;
+    _expression?: Element;
+    _description?: Element;
+    /** Patient | Encounter | RelatedPerson | Practitioner | Device */
+    code: `${GraphDefinitionLinkCode}`;
+    _rule?: Element;
+    _use?: Element;
+}
+/** draft | active | retired | unknown */
+export declare enum GraphDefinitionStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
+/** condition | requirement */
+export declare enum GraphDefinitionLinkUse {
+    Condition = "condition",
+    Requirement = "requirement"
+}
+/** Potential target for the link */
+export interface GraphDefinitionLinkTarget extends BackboneElement {
+    /** Type of resource this link refers to */
+    type: `${GraphDefinitionLinkType}`;
+    _type?: Element;
+    /** Criteria for reverse lookup */
+    params?: string;
+    _params?: Element;
+    /** Profile for the target resource */
+    profile?: canonical;
+    _profile?: Element;
+    /** Compartment Consistency Rules */
+    compartment?: Array<GraphDefinitionLinkCompartment>;
+    /** Additional links from target resource */
+    link?: Array<GraphDefinitionLink>;
+}
+/** identical | matching | different | custom */
+export declare enum GraphDefinitionLinkRule {
+    Custom = "custom",
+    Different = "different",
+    Identical = "identical",
+    Matching = "matching"
+}
+/** Type of resource at which the graph starts */
+export declare enum GraphDefinitionStart {
+    ImmunizationEvaluation = "ImmunizationEvaluation",
+    Appointment = "Appointment",
+    StructureMap = "StructureMap",
+    CareTeam = "CareTeam",
+    Linkage = "Linkage",
+    Communication = "Communication",
+    MedicationDispense = "MedicationDispense",
+    ImagingStudy = "ImagingStudy",
+    ChargeItem = "ChargeItem",
+    AdverseEvent = "AdverseEvent",
+    Media = "Media",
+    SubstancePolymer = "SubstancePolymer",
+    QuestionnaireResponse = "QuestionnaireResponse",
+    Coverage = "Coverage",
+    Procedure = "Procedure",
+    AuditEvent = "AuditEvent",
+    PaymentReconciliation = "PaymentReconciliation",
+    MedicinalProductManufactured = "MedicinalProductManufactured",
+    CompartmentDefinition = "CompartmentDefinition",
+    Organization = "Organization",
+    ExplanationOfBenefit = "ExplanationOfBenefit",
+    Composition = "Composition",
+    CoverageEligibilityResponse = "CoverageEligibilityResponse",
+    DocumentReference = "DocumentReference",
+    EventDefinition = "EventDefinition",
+    SubstanceProtein = "SubstanceProtein",
+    TerminologyCapabilities = "TerminologyCapabilities",
+    Encounter = "Encounter",
+    ImplementationGuide = "ImplementationGuide",
+    EvidenceVariable = "EvidenceVariable",
+    ObservationDefinition = "ObservationDefinition",
+    DiagnosticReport = "DiagnosticReport",
+    ExampleScenario = "ExampleScenario",
+    ResearchDefinition = "ResearchDefinition",
+    Parameters = "Parameters",
+    SearchParameter = "SearchParameter",
+    MedicinalProductInteraction = "MedicinalProductInteraction",
+    CodeSystem = "CodeSystem",
+    MessageDefinition = "MessageDefinition",
+    NutritionOrder = "NutritionOrder",
+    VerificationResult = "VerificationResult",
+    MedicationAdministration = "MedicationAdministration",
+    CatalogEntry = "CatalogEntry",
+    Flag = "Flag",
+    DeviceUseStatement = "DeviceUseStatement",
+    Contract = "Contract",
+    Invoice = "Invoice",
+    PaymentNotice = "PaymentNotice",
+    Location = "Location",
+    Claim = "Claim",
+    Specimen = "Specimen",
+    MedicationStatement = "MedicationStatement",
+    EnrollmentResponse = "EnrollmentResponse",
+    Evidence = "Evidence",
+    Bundle = "Bundle",
+    ResearchElementDefinition = "ResearchElementDefinition",
+    BodyStructure = "BodyStructure",
+    MedicinalProduct = "MedicinalProduct",
+    ResearchStudy = "ResearchStudy",
+    AppointmentResponse = "AppointmentResponse",
+    MedicinalProductIndication = "MedicinalProductIndication",
+    Measure = "Measure",
+    Person = "Person",
+    InsurancePlan = "InsurancePlan",
+    Patient = "Patient",
+    EffectEvidenceSynthesis = "EffectEvidenceSynthesis",
+    ResearchSubject = "ResearchSubject",
+    Medication = "Medication",
+    ConceptMap = "ConceptMap",
+    CoverageEligibilityRequest = "CoverageEligibilityRequest",
+    SubstanceSourceMaterial = "SubstanceSourceMaterial",
+    VisionPrescription = "VisionPrescription",
+    MolecularSequence = "MolecularSequence",
+    MedicinalProductUndesirableEffect = "MedicinalProductUndesirableEffect",
+    OperationOutcome = "OperationOutcome",
+    MessageHeader = "MessageHeader",
+    AllergyIntolerance = "AllergyIntolerance",
+    SubstanceReferenceInformation = "SubstanceReferenceInformation",
+    SupplyDelivery = "SupplyDelivery",
+    EpisodeOfCare = "EpisodeOfCare",
+    PractitionerRole = "PractitionerRole",
+    Library = "Library",
+    Practitioner = "Practitioner",
+    MedicationRequest = "MedicationRequest",
+    ImmunizationRecommendation = "ImmunizationRecommendation",
+    Immunization = "Immunization",
+    GraphDefinition = "GraphDefinition",
+    Account = "Account",
+    MedicinalProductIngredient = "MedicinalProductIngredient",
+    MeasureReport = "MeasureReport",
+    DeviceMetric = "DeviceMetric",
+    Goal = "Goal",
+    MedicationKnowledge = "MedicationKnowledge",
+    ClaimResponse = "ClaimResponse",
+    DeviceDefinition = "DeviceDefinition",
+    Slot = "Slot",
+    ValueSet = "ValueSet",
+    MedicinalProductAuthorization = "MedicinalProductAuthorization",
+    StructureDefinition = "StructureDefinition",
+    MedicinalProductContraindication = "MedicinalProductContraindication",
+    DeviceRequest = "DeviceRequest",
+    List = "List",
+    Questionnaire = "Questionnaire",
+    DomainResource = "DomainResource",
+    Endpoint = "Endpoint",
+    NamingSystem = "NamingSystem",
+    MedicinalProductPackaged = "MedicinalProductPackaged",
+    Basic = "Basic",
+    Binary = "Binary",
+    PlanDefinition = "PlanDefinition",
+    Subscription = "Subscription",
+    RelatedPerson = "RelatedPerson",
+    SubstanceSpecification = "SubstanceSpecification",
+    SubstanceNucleicAcid = "SubstanceNucleicAcid",
+    GuidanceResponse = "GuidanceResponse",
+    ClinicalImpression = "ClinicalImpression",
+    OrganizationAffiliation = "OrganizationAffiliation",
+    Resource = "Resource",
+    Condition = "Condition",
+    CapabilityStatement = "CapabilityStatement",
+    HealthcareService = "HealthcareService",
+    SpecimenDefinition = "SpecimenDefinition",
+    RiskAssessment = "RiskAssessment",
+    OperationDefinition = "OperationDefinition",
+    ActivityDefinition = "ActivityDefinition",
+    Schedule = "Schedule",
+    BiologicallyDerivedProduct = "BiologicallyDerivedProduct",
+    Group = "Group",
+    MedicinalProductPharmaceutical = "MedicinalProductPharmaceutical",
+    FamilyMemberHistory = "FamilyMemberHistory",
+    ServiceRequest = "ServiceRequest",
+    DetectedIssue = "DetectedIssue",
+    Device = "Device",
+    RequestGroup = "RequestGroup",
+    TestScript = "TestScript",
+    RiskEvidenceSynthesis = "RiskEvidenceSynthesis",
+    SupplyRequest = "SupplyRequest",
+    Task = "Task",
+    CommunicationRequest = "CommunicationRequest",
+    EnrollmentRequest = "EnrollmentRequest",
+    ChargeItemDefinition = "ChargeItemDefinition",
+    Substance = "Substance",
+    Provenance = "Provenance",
+    Consent = "Consent",
+    CarePlan = "CarePlan",
+    TestReport = "TestReport",
+    Observation = "Observation",
+    DocumentManifest = "DocumentManifest"
+}
+/** Patient | Encounter | RelatedPerson | Practitioner | Device */
+export declare enum GraphDefinitionLinkCode {
+    Device = "Device",
+    Encounter = "Encounter",
+    Patient = "Patient",
+    Practitioner = "Practitioner",
+    RelatedPerson = "RelatedPerson"
+}
+/** Type of resource this link refers to */
+export declare enum GraphDefinitionLinkType {
+    ImmunizationEvaluation = "ImmunizationEvaluation",
+    Appointment = "Appointment",
+    StructureMap = "StructureMap",
+    CareTeam = "CareTeam",
+    Linkage = "Linkage",
+    Communication = "Communication",
+    MedicationDispense = "MedicationDispense",
+    ImagingStudy = "ImagingStudy",
+    ChargeItem = "ChargeItem",
+    AdverseEvent = "AdverseEvent",
+    Media = "Media",
+    SubstancePolymer = "SubstancePolymer",
+    QuestionnaireResponse = "QuestionnaireResponse",
+    Coverage = "Coverage",
+    Procedure = "Procedure",
+    AuditEvent = "AuditEvent",
+    PaymentReconciliation = "PaymentReconciliation",
+    MedicinalProductManufactured = "MedicinalProductManufactured",
+    CompartmentDefinition = "CompartmentDefinition",
+    Organization = "Organization",
+    ExplanationOfBenefit = "ExplanationOfBenefit",
+    Composition = "Composition",
+    CoverageEligibilityResponse = "CoverageEligibilityResponse",
+    DocumentReference = "DocumentReference",
+    EventDefinition = "EventDefinition",
+    SubstanceProtein = "SubstanceProtein",
+    TerminologyCapabilities = "TerminologyCapabilities",
+    Encounter = "Encounter",
+    ImplementationGuide = "ImplementationGuide",
+    EvidenceVariable = "EvidenceVariable",
+    ObservationDefinition = "ObservationDefinition",
+    DiagnosticReport = "DiagnosticReport",
+    ExampleScenario = "ExampleScenario",
+    ResearchDefinition = "ResearchDefinition",
+    Parameters = "Parameters",
+    SearchParameter = "SearchParameter",
+    MedicinalProductInteraction = "MedicinalProductInteraction",
+    CodeSystem = "CodeSystem",
+    MessageDefinition = "MessageDefinition",
+    NutritionOrder = "NutritionOrder",
+    VerificationResult = "VerificationResult",
+    MedicationAdministration = "MedicationAdministration",
+    CatalogEntry = "CatalogEntry",
+    Flag = "Flag",
+    DeviceUseStatement = "DeviceUseStatement",
+    Contract = "Contract",
+    Invoice = "Invoice",
+    PaymentNotice = "PaymentNotice",
+    Location = "Location",
+    Claim = "Claim",
+    Specimen = "Specimen",
+    MedicationStatement = "MedicationStatement",
+    EnrollmentResponse = "EnrollmentResponse",
+    Evidence = "Evidence",
+    Bundle = "Bundle",
+    ResearchElementDefinition = "ResearchElementDefinition",
+    BodyStructure = "BodyStructure",
+    MedicinalProduct = "MedicinalProduct",
+    ResearchStudy = "ResearchStudy",
+    AppointmentResponse = "AppointmentResponse",
+    MedicinalProductIndication = "MedicinalProductIndication",
+    Measure = "Measure",
+    Person = "Person",
+    InsurancePlan = "InsurancePlan",
+    Patient = "Patient",
+    EffectEvidenceSynthesis = "EffectEvidenceSynthesis",
+    ResearchSubject = "ResearchSubject",
+    Medication = "Medication",
+    ConceptMap = "ConceptMap",
+    CoverageEligibilityRequest = "CoverageEligibilityRequest",
+    SubstanceSourceMaterial = "SubstanceSourceMaterial",
+    VisionPrescription = "VisionPrescription",
+    MolecularSequence = "MolecularSequence",
+    MedicinalProductUndesirableEffect = "MedicinalProductUndesirableEffect",
+    OperationOutcome = "OperationOutcome",
+    MessageHeader = "MessageHeader",
+    AllergyIntolerance = "AllergyIntolerance",
+    SubstanceReferenceInformation = "SubstanceReferenceInformation",
+    SupplyDelivery = "SupplyDelivery",
+    EpisodeOfCare = "EpisodeOfCare",
+    PractitionerRole = "PractitionerRole",
+    Library = "Library",
+    Practitioner = "Practitioner",
+    MedicationRequest = "MedicationRequest",
+    ImmunizationRecommendation = "ImmunizationRecommendation",
+    Immunization = "Immunization",
+    GraphDefinition = "GraphDefinition",
+    Account = "Account",
+    MedicinalProductIngredient = "MedicinalProductIngredient",
+    MeasureReport = "MeasureReport",
+    DeviceMetric = "DeviceMetric",
+    Goal = "Goal",
+    MedicationKnowledge = "MedicationKnowledge",
+    ClaimResponse = "ClaimResponse",
+    DeviceDefinition = "DeviceDefinition",
+    Slot = "Slot",
+    ValueSet = "ValueSet",
+    MedicinalProductAuthorization = "MedicinalProductAuthorization",
+    StructureDefinition = "StructureDefinition",
+    MedicinalProductContraindication = "MedicinalProductContraindication",
+    DeviceRequest = "DeviceRequest",
+    List = "List",
+    Questionnaire = "Questionnaire",
+    DomainResource = "DomainResource",
+    Endpoint = "Endpoint",
+    NamingSystem = "NamingSystem",
+    MedicinalProductPackaged = "MedicinalProductPackaged",
+    Basic = "Basic",
+    Binary = "Binary",
+    PlanDefinition = "PlanDefinition",
+    Subscription = "Subscription",
+    RelatedPerson = "RelatedPerson",
+    SubstanceSpecification = "SubstanceSpecification",
+    SubstanceNucleicAcid = "SubstanceNucleicAcid",
+    GuidanceResponse = "GuidanceResponse",
+    ClinicalImpression = "ClinicalImpression",
+    OrganizationAffiliation = "OrganizationAffiliation",
+    Resource = "Resource",
+    Condition = "Condition",
+    CapabilityStatement = "CapabilityStatement",
+    HealthcareService = "HealthcareService",
+    SpecimenDefinition = "SpecimenDefinition",
+    RiskAssessment = "RiskAssessment",
+    OperationDefinition = "OperationDefinition",
+    ActivityDefinition = "ActivityDefinition",
+    Schedule = "Schedule",
+    BiologicallyDerivedProduct = "BiologicallyDerivedProduct",
+    Group = "Group",
+    MedicinalProductPharmaceutical = "MedicinalProductPharmaceutical",
+    FamilyMemberHistory = "FamilyMemberHistory",
+    ServiceRequest = "ServiceRequest",
+    DetectedIssue = "DetectedIssue",
+    Device = "Device",
+    RequestGroup = "RequestGroup",
+    TestScript = "TestScript",
+    RiskEvidenceSynthesis = "RiskEvidenceSynthesis",
+    SupplyRequest = "SupplyRequest",
+    Task = "Task",
+    CommunicationRequest = "CommunicationRequest",
+    EnrollmentRequest = "EnrollmentRequest",
+    ChargeItemDefinition = "ChargeItemDefinition",
+    Substance = "Substance",
+    Provenance = "Provenance",
+    Consent = "Consent",
+    CarePlan = "CarePlan",
+    TestReport = "TestReport",
+    Observation = "Observation",
+    DocumentManifest = "DocumentManifest"
 }

@@ -10,13 +10,13 @@ import { DomainResource } from "./DomainResource";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Describes the event of a patient being administered a vaccine or a record of an immunization as reported by a patient, a clinician or another party. */
 export interface Immunization extends DomainResource {
+    resourceType: 'Immunization';
     /** Who was immunized */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     /** Dose potency */
     isSubpotent?: boolean;
     /** Indicates the source of a secondarily reported record */
@@ -27,7 +27,7 @@ export interface Immunization extends DomainResource {
     site?: CodeableConcept;
     _isSubpotent?: Element;
     /** Encounter immunization was part of */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     /** Vaccine product administered */
     vaccineCode: CodeableConcept;
     /** Amount of vaccine administered */
@@ -49,13 +49,13 @@ export interface Immunization extends DomainResource {
     /** Indicates context the data was recorded in */
     primarySource?: boolean;
     /** completed | entered-in-error | not-done */
-    status: code;
+    status: `${ImmunizationStatus}`;
     /** Vaccine lot number */
     lotNumber?: string;
     /** Business identifier */
     identifier?: Array<Identifier>;
     /** Vaccine manufacturer */
-    manufacturer?: Reference<"Organization">;
+    manufacturer?: Reference<'Organization'>;
     /** Educational material presented to patient */
     education?: Array<ImmunizationEducation>;
     _primarySource?: Element;
@@ -65,7 +65,7 @@ export interface Immunization extends DomainResource {
     /** Details of a reaction that follows immunization */
     reaction?: Array<ImmunizationReaction>;
     /** Where immunization occurred */
-    location?: Reference<"Location">;
+    location?: Reference<'Location'>;
     occurrenceDateTime: dateTime;
     _occurrenceString: Element;
     /** Funding source for the vaccine */
@@ -88,7 +88,7 @@ export interface ImmunizationProtocolApplied extends BackboneElement {
     /** Name of vaccine series */
     series?: string;
     /** Who is responsible for publishing the recommendations */
-    authority?: Reference<"Organization">;
+    authority?: Reference<'Organization'>;
     _doseNumberPositiveInt: Element;
     doseNumberString: string;
     seriesDosesString?: string;
@@ -97,6 +97,12 @@ export interface ImmunizationProtocolApplied extends BackboneElement {
     targetDisease?: Array<CodeableConcept>;
     _series?: Element;
     _seriesDosesPositiveInt?: Element;
+}
+/** completed | entered-in-error | not-done */
+export declare enum ImmunizationStatus {
+    Completed = "completed",
+    EnteredInError = "entered-in-error",
+    NotDone = "not-done"
 }
 /** Educational material presented to patient */
 export interface ImmunizationEducation extends BackboneElement {
@@ -119,7 +125,7 @@ export interface ImmunizationReaction extends BackboneElement {
     date?: dateTime;
     _date?: Element;
     /** Additional information on reaction */
-    detail?: Reference<"Observation">;
+    detail?: Reference<'Observation'>;
     /** Indicates self-reported reaction */
     reported?: boolean;
     _reported?: Element;
@@ -129,5 +135,5 @@ export interface ImmunizationPerformer extends BackboneElement {
     /** What type of performance was done */
     function?: CodeableConcept;
     /** Individual or organization who was performing */
-    actor: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    actor: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
 }

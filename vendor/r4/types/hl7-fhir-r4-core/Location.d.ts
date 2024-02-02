@@ -14,24 +14,25 @@ import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** Details and position information for a physical place where services are provided and resources and participants may be stored, found, contained, or accommodated. */
 export interface Location extends DomainResource {
+    resourceType: 'Location';
     /** Additional details about the location that could be displayed as further information to identify the location beyond its name */
     description?: string;
     /** Physical location */
     address?: Address;
     /** Organization responsible for provisioning and upkeep */
-    managingOrganization?: Reference<"Organization">;
+    managingOrganization?: Reference<'Organization'>;
     /** Name of the location as used by humans */
     name?: string;
     _status?: Element;
     /** instance | kind */
-    mode?: code;
+    mode?: `${LocationMode}`;
     /** Type of function performed */
     type?: Array<CodeableConcept>;
     _description?: Element;
     /** A list of alternate names that the location is known as, or was known as, in the past */
     alias?: Array<string>;
     /** active | suspended | inactive */
-    status?: code;
+    status?: `${LocationStatus}`;
     _name?: Element;
     _availabilityExceptions?: Element;
     /** Unique code or number identifying the location to its users */
@@ -47,13 +48,24 @@ export interface Location extends DomainResource {
     /** The operational status of the location (typically only for a bed/room) */
     operationalStatus?: Coding;
     /** Another Location this one is physically a part of */
-    partOf?: Reference<"Location">;
+    partOf?: Reference<'Location'>;
     _alias?: Array<Element>;
     _mode?: Element;
     /** Physical form of the location */
     physicalType?: CodeableConcept;
     /** Technical endpoints providing access to services operated for the location */
     endpoint?: Array<Reference>;
+}
+/** instance | kind */
+export declare enum LocationMode {
+    Instance = "instance",
+    Kind = "kind"
+}
+/** active | suspended | inactive */
+export declare enum LocationStatus {
+    Active = "active",
+    Inactive = "inactive",
+    Suspended = "suspended"
 }
 /** What days/times during a week is this location usually open */
 export interface LocationHoursOfOperation extends BackboneElement {

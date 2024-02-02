@@ -11,11 +11,11 @@ import { DomainResource } from "./DomainResource";
 import { Money } from "./Money";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Details of a Health Insurance product/plan provided by an organization. */
 export interface InsurancePlan extends DomainResource {
+    resourceType: 'InsurancePlan';
     /** Where product applies */
     coverageArea?: Array<Reference>;
     /** Official name */
@@ -28,14 +28,14 @@ export interface InsurancePlan extends DomainResource {
     /** Alternate names */
     alias?: Array<string>;
     /** draft | active | retired | unknown */
-    status?: code;
+    status?: `${InsurancePlanStatus}`;
     _name?: Element;
     /** Business Identifier for Product */
     identifier?: Array<Identifier>;
     /** Product administrator */
-    administeredBy?: Reference<"Organization">;
+    administeredBy?: Reference<'Organization'>;
     /** Plan issuer */
-    ownedBy?: Reference<"Organization">;
+    ownedBy?: Reference<'Organization'>;
     /** What networks are Included */
     network?: Array<Reference>;
     /** When the product is available */
@@ -48,22 +48,12 @@ export interface InsurancePlan extends DomainResource {
     /** Contact for the product */
     contact?: Array<InsurancePlanContact>;
 }
-/** Benefit limits */
-export interface InsurancePlanLimit extends BackboneElement {
-    /** Maximum value allowed */
-    value?: Quantity;
-    /** Benefit limit details */
-    code?: CodeableConcept;
-}
-/** List of benefits */
-export interface InsurancePlanBenefit extends BackboneElement {
-    /** Type of benefit */
-    type: CodeableConcept;
-    /** Referral requirements */
-    requirement?: string;
-    _requirement?: Element;
-    /** Benefit limits */
-    limit?: Array<InsurancePlanLimit>;
+/** Specific costs */
+export interface InsurancePlanSpecificCost extends BackboneElement {
+    /** General category of benefit */
+    category: CodeableConcept;
+    /** Benefits list */
+    benefit?: Array<InsurancePlanBenefit>;
 }
 /** Coverage details */
 export interface InsurancePlanCoverage extends BackboneElement {
@@ -87,23 +77,25 @@ export interface InsurancePlanGeneralCost extends BackboneElement {
     comment?: string;
     _comment?: Element;
 }
-/** List of the costs */
-export interface InsurancePlanCost extends BackboneElement {
-    /** Type of cost */
-    type: CodeableConcept;
-    /** in-network | out-of-network | other */
-    applicability?: CodeableConcept;
-    /** Additional information about the cost */
-    qualifiers?: Array<CodeableConcept>;
-    /** The actual cost value */
-    value?: Quantity;
+/** in-network | out-of-network | other */
+export declare enum InsurancePlanApplicability {
+    InNetwork = "in-network",
+    Other = "other",
+    OutOfNetwork = "out-of-network"
 }
-/** Specific costs */
-export interface InsurancePlanSpecificCost extends BackboneElement {
-    /** General category of benefit */
-    category: CodeableConcept;
-    /** Benefits list */
-    benefit?: Array<InsurancePlanBenefit>;
+/** Benefit limits */
+export interface InsurancePlanLimit extends BackboneElement {
+    /** Maximum value allowed */
+    value?: Quantity;
+    /** Benefit limit details */
+    code?: CodeableConcept;
+}
+/** draft | active | retired | unknown */
+export declare enum InsurancePlanStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }
 /** Plan details */
 export interface InsurancePlanPlan extends BackboneElement {
@@ -119,6 +111,27 @@ export interface InsurancePlanPlan extends BackboneElement {
     generalCost?: Array<InsurancePlanGeneralCost>;
     /** Specific costs */
     specificCost?: Array<InsurancePlanSpecificCost>;
+}
+/** List of benefits */
+export interface InsurancePlanBenefit extends BackboneElement {
+    /** Type of benefit */
+    type: CodeableConcept;
+    /** Referral requirements */
+    requirement?: string;
+    _requirement?: Element;
+    /** Benefit limits */
+    limit?: Array<InsurancePlanLimit>;
+}
+/** List of the costs */
+export interface InsurancePlanCost extends BackboneElement {
+    /** Type of cost */
+    type: CodeableConcept;
+    /** in-network | out-of-network | other */
+    applicability?: `${InsurancePlanApplicability}`;
+    /** Additional information about the cost */
+    qualifiers?: Array<CodeableConcept>;
+    /** The actual cost value */
+    value?: Quantity;
 }
 /** Contact for the product */
 export interface InsurancePlanContact extends BackboneElement {

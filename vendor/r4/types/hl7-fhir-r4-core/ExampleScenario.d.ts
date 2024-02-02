@@ -9,11 +9,11 @@ import { canonical } from "./canonical";
 import { DomainResource } from "./DomainResource";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Example of workflow instance. */
 export interface ExampleScenario extends DomainResource {
+    resourceType: 'ExampleScenario';
     /** Date last changed */
     date?: dateTime;
     /** Name of the publisher (organization or individual) */
@@ -42,7 +42,7 @@ export interface ExampleScenario extends DomainResource {
     /** Another nested workflow */
     workflow?: Array<canonical>;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${ExampleScenarioStatus}`;
     _name?: Element;
     /** Canonical identifier for this example scenario, represented as a URI (globally unique) */
     url?: uri;
@@ -58,6 +58,21 @@ export interface ExampleScenario extends DomainResource {
     /** Actor participating in the resource */
     actor?: Array<ExampleScenarioActor>;
 }
+/** Actor participating in the resource */
+export interface ExampleScenarioActor extends BackboneElement {
+    /** ID or acronym of the actor */
+    actorId: string;
+    _actorId?: Element;
+    /** person | entity */
+    type: `${ExampleScenarioType}`;
+    _type?: Element;
+    /** The name of the actor as shown in the page */
+    name?: string;
+    _name?: Element;
+    /** The description of the actor */
+    description?: markdown;
+    _description?: Element;
+}
 /** A specific version of the resource */
 export interface ExampleScenarioVersion extends BackboneElement {
     /** The identifier of a specific version of a resource */
@@ -66,6 +81,17 @@ export interface ExampleScenarioVersion extends BackboneElement {
     /** The description of the resource version */
     description: markdown;
     _description?: Element;
+}
+/** Alternate non-typical step action */
+export interface ExampleScenarioProcessStepAlternative extends BackboneElement {
+    /** Label for alternative */
+    title: string;
+    _title?: Element;
+    /** A human-readable description of each option */
+    description?: markdown;
+    _description?: Element;
+    /** What happens in each alternative option */
+    step?: Array<ExampleScenarioProcessStep>;
 }
 /** Each resource and each version that is present in the workflow */
 export interface ExampleScenarioInstance extends BackboneElement {
@@ -76,7 +102,7 @@ export interface ExampleScenarioInstance extends BackboneElement {
     name?: string;
     _resourceId?: Element;
     /** The type of the resource */
-    resourceType: code;
+    resourceType: `${ExampleScenarioResourceType}`;
     _resourceType?: Element;
     _description?: Element;
     /** The id of the resource for referencing */
@@ -85,20 +111,10 @@ export interface ExampleScenarioInstance extends BackboneElement {
     /** A specific version of the resource */
     version?: Array<ExampleScenarioVersion>;
 }
-/** Actor participating in the resource */
-export interface ExampleScenarioActor extends BackboneElement {
-    /** ID or acronym of the actor */
-    actorId: string;
-    _actorId?: Element;
-    /** person | entity */
-    type: code;
-    _type?: Element;
-    /** The name of the actor as shown in the page */
-    name?: string;
-    _name?: Element;
-    /** The description of the actor */
-    description?: markdown;
-    _description?: Element;
+/** person | entity */
+export declare enum ExampleScenarioType {
+    Entity = "entity",
+    Person = "person"
 }
 /** Each major process - a group of operations */
 export interface ExampleScenarioProcess extends BackboneElement {
@@ -115,15 +131,6 @@ export interface ExampleScenarioProcess extends BackboneElement {
     _description?: Element;
     _title?: Element;
     step?: Array<ExampleScenarioProcessStep>;
-}
-/** Resources contained in the instance */
-export interface ExampleScenarioInstanceContainedInstance extends BackboneElement {
-    /** Each resource contained in the instance */
-    resourceId: string;
-    _resourceId?: Element;
-    /** A specific version of a resource contained in the instance */
-    versionId?: string;
-    _versionId?: Element;
 }
 /** Each interaction or action */
 export interface ExampleScenarioProcessStepOperation extends BackboneElement {
@@ -156,16 +163,163 @@ export interface ExampleScenarioProcessStepOperation extends BackboneElement {
     /** Who receives the transaction */
     receiver?: string;
 }
-/** Alternate non-typical step action */
-export interface ExampleScenarioProcessStepAlternative extends BackboneElement {
-    /** Label for alternative */
-    title: string;
-    _title?: Element;
-    /** A human-readable description of each option */
-    description?: markdown;
-    _description?: Element;
-    /** What happens in each alternative option */
-    step?: Array<ExampleScenarioProcessStep>;
+/** The type of the resource */
+export declare enum ExampleScenarioResourceType {
+    ImmunizationEvaluation = "ImmunizationEvaluation",
+    Appointment = "Appointment",
+    StructureMap = "StructureMap",
+    CareTeam = "CareTeam",
+    Linkage = "Linkage",
+    Communication = "Communication",
+    MedicationDispense = "MedicationDispense",
+    ImagingStudy = "ImagingStudy",
+    ChargeItem = "ChargeItem",
+    AdverseEvent = "AdverseEvent",
+    Media = "Media",
+    SubstancePolymer = "SubstancePolymer",
+    QuestionnaireResponse = "QuestionnaireResponse",
+    Coverage = "Coverage",
+    Procedure = "Procedure",
+    AuditEvent = "AuditEvent",
+    PaymentReconciliation = "PaymentReconciliation",
+    MedicinalProductManufactured = "MedicinalProductManufactured",
+    CompartmentDefinition = "CompartmentDefinition",
+    Organization = "Organization",
+    ExplanationOfBenefit = "ExplanationOfBenefit",
+    Composition = "Composition",
+    CoverageEligibilityResponse = "CoverageEligibilityResponse",
+    DocumentReference = "DocumentReference",
+    EventDefinition = "EventDefinition",
+    SubstanceProtein = "SubstanceProtein",
+    TerminologyCapabilities = "TerminologyCapabilities",
+    Encounter = "Encounter",
+    ImplementationGuide = "ImplementationGuide",
+    EvidenceVariable = "EvidenceVariable",
+    ObservationDefinition = "ObservationDefinition",
+    DiagnosticReport = "DiagnosticReport",
+    ExampleScenario = "ExampleScenario",
+    ResearchDefinition = "ResearchDefinition",
+    Parameters = "Parameters",
+    SearchParameter = "SearchParameter",
+    MedicinalProductInteraction = "MedicinalProductInteraction",
+    CodeSystem = "CodeSystem",
+    MessageDefinition = "MessageDefinition",
+    NutritionOrder = "NutritionOrder",
+    VerificationResult = "VerificationResult",
+    MedicationAdministration = "MedicationAdministration",
+    CatalogEntry = "CatalogEntry",
+    Flag = "Flag",
+    DeviceUseStatement = "DeviceUseStatement",
+    Contract = "Contract",
+    Invoice = "Invoice",
+    PaymentNotice = "PaymentNotice",
+    Location = "Location",
+    Claim = "Claim",
+    Specimen = "Specimen",
+    MedicationStatement = "MedicationStatement",
+    EnrollmentResponse = "EnrollmentResponse",
+    Evidence = "Evidence",
+    Bundle = "Bundle",
+    ResearchElementDefinition = "ResearchElementDefinition",
+    BodyStructure = "BodyStructure",
+    MedicinalProduct = "MedicinalProduct",
+    ResearchStudy = "ResearchStudy",
+    AppointmentResponse = "AppointmentResponse",
+    MedicinalProductIndication = "MedicinalProductIndication",
+    Measure = "Measure",
+    Person = "Person",
+    InsurancePlan = "InsurancePlan",
+    Patient = "Patient",
+    EffectEvidenceSynthesis = "EffectEvidenceSynthesis",
+    ResearchSubject = "ResearchSubject",
+    Medication = "Medication",
+    ConceptMap = "ConceptMap",
+    CoverageEligibilityRequest = "CoverageEligibilityRequest",
+    SubstanceSourceMaterial = "SubstanceSourceMaterial",
+    VisionPrescription = "VisionPrescription",
+    MolecularSequence = "MolecularSequence",
+    MedicinalProductUndesirableEffect = "MedicinalProductUndesirableEffect",
+    OperationOutcome = "OperationOutcome",
+    MessageHeader = "MessageHeader",
+    AllergyIntolerance = "AllergyIntolerance",
+    SubstanceReferenceInformation = "SubstanceReferenceInformation",
+    SupplyDelivery = "SupplyDelivery",
+    EpisodeOfCare = "EpisodeOfCare",
+    PractitionerRole = "PractitionerRole",
+    Library = "Library",
+    Practitioner = "Practitioner",
+    MedicationRequest = "MedicationRequest",
+    ImmunizationRecommendation = "ImmunizationRecommendation",
+    Immunization = "Immunization",
+    GraphDefinition = "GraphDefinition",
+    Account = "Account",
+    MedicinalProductIngredient = "MedicinalProductIngredient",
+    MeasureReport = "MeasureReport",
+    DeviceMetric = "DeviceMetric",
+    Goal = "Goal",
+    MedicationKnowledge = "MedicationKnowledge",
+    ClaimResponse = "ClaimResponse",
+    DeviceDefinition = "DeviceDefinition",
+    Slot = "Slot",
+    ValueSet = "ValueSet",
+    MedicinalProductAuthorization = "MedicinalProductAuthorization",
+    StructureDefinition = "StructureDefinition",
+    MedicinalProductContraindication = "MedicinalProductContraindication",
+    DeviceRequest = "DeviceRequest",
+    List = "List",
+    Questionnaire = "Questionnaire",
+    DomainResource = "DomainResource",
+    Endpoint = "Endpoint",
+    NamingSystem = "NamingSystem",
+    MedicinalProductPackaged = "MedicinalProductPackaged",
+    Basic = "Basic",
+    Binary = "Binary",
+    PlanDefinition = "PlanDefinition",
+    Subscription = "Subscription",
+    RelatedPerson = "RelatedPerson",
+    SubstanceSpecification = "SubstanceSpecification",
+    SubstanceNucleicAcid = "SubstanceNucleicAcid",
+    GuidanceResponse = "GuidanceResponse",
+    ClinicalImpression = "ClinicalImpression",
+    OrganizationAffiliation = "OrganizationAffiliation",
+    Resource = "Resource",
+    Condition = "Condition",
+    CapabilityStatement = "CapabilityStatement",
+    HealthcareService = "HealthcareService",
+    SpecimenDefinition = "SpecimenDefinition",
+    RiskAssessment = "RiskAssessment",
+    OperationDefinition = "OperationDefinition",
+    ActivityDefinition = "ActivityDefinition",
+    Schedule = "Schedule",
+    BiologicallyDerivedProduct = "BiologicallyDerivedProduct",
+    Group = "Group",
+    MedicinalProductPharmaceutical = "MedicinalProductPharmaceutical",
+    FamilyMemberHistory = "FamilyMemberHistory",
+    ServiceRequest = "ServiceRequest",
+    DetectedIssue = "DetectedIssue",
+    Device = "Device",
+    RequestGroup = "RequestGroup",
+    TestScript = "TestScript",
+    RiskEvidenceSynthesis = "RiskEvidenceSynthesis",
+    SupplyRequest = "SupplyRequest",
+    Task = "Task",
+    CommunicationRequest = "CommunicationRequest",
+    EnrollmentRequest = "EnrollmentRequest",
+    ChargeItemDefinition = "ChargeItemDefinition",
+    Substance = "Substance",
+    Provenance = "Provenance",
+    Consent = "Consent",
+    CarePlan = "CarePlan",
+    TestReport = "TestReport",
+    Observation = "Observation",
+    DocumentManifest = "DocumentManifest"
+}
+/** draft | active | retired | unknown */
+export declare enum ExampleScenarioStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }
 /** Each step of the process */
 export interface ExampleScenarioProcessStep extends BackboneElement {
@@ -178,4 +332,13 @@ export interface ExampleScenarioProcessStep extends BackboneElement {
     operation?: ExampleScenarioProcessStepOperation;
     /** Alternate non-typical step action */
     alternative?: Array<ExampleScenarioProcessStepAlternative>;
+}
+/** Resources contained in the instance */
+export interface ExampleScenarioInstanceContainedInstance extends BackboneElement {
+    /** Each resource contained in the instance */
+    resourceId: string;
+    _resourceId?: Element;
+    /** A specific version of a resource contained in the instance */
+    versionId?: string;
+    _versionId?: Element;
 }

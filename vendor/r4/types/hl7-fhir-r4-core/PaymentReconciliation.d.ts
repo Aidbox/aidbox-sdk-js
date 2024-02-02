@@ -8,16 +8,16 @@ import { Money } from "./Money";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** This resource provides the details including amount of a payment and allocates the payment items being paid. */
 export interface PaymentReconciliation extends DomainResource {
+    resourceType: 'PaymentReconciliation';
     _created?: Element;
     /** Responsible practitioner */
-    requestor?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    requestor?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Reference to requesting resource */
-    request?: Reference<"Task">;
+    request?: Reference<'Task'>;
     /** Total amount of Payment */
     paymentAmount: Money;
     /** Note concerning processing */
@@ -27,14 +27,14 @@ export interface PaymentReconciliation extends DomainResource {
     /** Creation date */
     created: dateTime;
     /** queued | complete | error | partial */
-    outcome?: code;
+    outcome?: `${PaymentReconciliationOutcome}`;
     _outcome?: Element;
     /** Disposition message */
     disposition?: string;
     /** Business identifier for the payment */
     paymentIdentifier?: Identifier;
     /** active | cancelled | draft | entered-in-error */
-    status: code;
+    status: `${PaymentReconciliationStatus}`;
     /** When payment issued */
     paymentDate: date;
     /** Business Identifier for a payment reconciliation */
@@ -43,20 +43,40 @@ export interface PaymentReconciliation extends DomainResource {
     /** Period covered */
     period?: Period;
     /** Party generating payment */
-    paymentIssuer?: Reference<"Organization">;
+    paymentIssuer?: Reference<'Organization'>;
     /** Printed form identifier */
     formCode?: CodeableConcept;
     /** Settlement particulars */
     detail?: Array<PaymentReconciliationDetail>;
 }
+/** display | print | printoper */
+export declare enum PaymentReconciliationType {
+    Display = "display",
+    Print = "print",
+    Printoper = "printoper"
+}
 /** Note concerning processing */
 export interface PaymentReconciliationProcessNote extends BackboneElement {
     /** display | print | printoper */
-    type?: code;
+    type?: `${PaymentReconciliationType}`;
     _type?: Element;
     /** Note explanatory text */
     text?: string;
     _text?: Element;
+}
+/** queued | complete | error | partial */
+export declare enum PaymentReconciliationOutcome {
+    Complete = "complete",
+    Error = "error",
+    Partial = "partial",
+    Queued = "queued"
+}
+/** active | cancelled | draft | entered-in-error */
+export declare enum PaymentReconciliationStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    Draft = "draft",
+    EnteredInError = "entered-in-error"
 }
 /** Settlement particulars */
 export interface PaymentReconciliationDetail extends BackboneElement {
@@ -72,13 +92,13 @@ export interface PaymentReconciliationDetail extends BackboneElement {
     /** Category of payment */
     type: CodeableConcept;
     /** Contact for the response */
-    responsible?: Reference<"PractitionerRole">;
+    responsible?: Reference<'PractitionerRole'>;
     /** Recipient of the payment */
-    payee?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    payee?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Business identifier of the prior payment detail */
     predecessor?: Identifier;
     /** Business identifier of the payment detail */
     identifier?: Identifier;
     /** Submitter of the request */
-    submitter?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    submitter?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
 }

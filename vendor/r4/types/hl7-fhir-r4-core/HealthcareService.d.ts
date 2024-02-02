@@ -14,6 +14,7 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** The details of a healthcare service available at a location. */
 export interface HealthcareService extends DomainResource {
+    resourceType: 'HealthcareService';
     /** Location(s) service is intended for/available to */
     coverageArea?: Array<Reference>;
     _active?: Element;
@@ -29,7 +30,7 @@ export interface HealthcareService extends DomainResource {
     /** Not available during this time due to provided reason */
     notAvailable?: Array<HealthcareServiceNotAvailable>;
     /** Organization that provides this service */
-    providedBy?: Reference<"Organization">;
+    providedBy?: Reference<'Organization'>;
     /** Type of service that may be delivered or performed */
     type?: Array<CodeableConcept>;
     /** Specific eligibility requirements required to use the service */

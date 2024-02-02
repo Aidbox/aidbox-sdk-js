@@ -11,11 +11,11 @@ import { canonical } from "./canonical";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition or set of conditions. */
 export interface CarePlan extends DomainResource {
+    resourceType: 'CarePlan';
     _created?: Element;
     /** Summary of nature of plan */
     description?: string;
@@ -30,7 +30,7 @@ export interface CarePlan extends DomainResource {
     /** Information considered as part of plan */
     supportingInfo?: Array<Reference>;
     /** Encounter created as part of */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     _status?: Element;
     /** Desired outcome of plan */
     goal?: Array<Reference>;
@@ -42,18 +42,18 @@ export interface CarePlan extends DomainResource {
     /** Comments about the plan */
     note?: Array<Annotation>;
     /** Who is the designated responsible party */
-    author?: Reference<"CareTeam" | "Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    author?: Reference<'CareTeam' | 'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     _intent?: Element;
     /** Action to occur as part of plan */
     activity?: Array<CarePlanActivity>;
     /** Who provided the content of the care plan */
     contributor?: Array<Reference>;
     /** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
-    status: code;
+    status: `${CarePlanStatus}`;
     /** External Ids for this plan */
     identifier?: Array<Identifier>;
     /** proposal | plan | order | option */
-    intent: code;
+    intent: `${CarePlanIntent}`;
     _title?: Element;
     /** CarePlan replaced by this CarePlan */
     replaces?: Array<Reference>;
@@ -65,10 +65,31 @@ export interface CarePlan extends DomainResource {
     partOf?: Array<Reference>;
     _instantiatesCanonical?: Array<Element>;
     /** Who the care plan is for */
-    subject: Reference<"Patient" | "Group">;
+    subject: Reference<'Patient' | 'Group'>;
     /** Who's involved in plan? */
     careTeam?: Array<Reference>;
     _instantiatesUri?: Array<Element>;
+}
+/** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
+export declare enum CarePlanStatus {
+    Active = "active",
+    Completed = "completed",
+    Draft = "draft",
+    EnteredInError = "entered-in-error",
+    OnHold = "on-hold",
+    Revoked = "revoked",
+    Unknown = "unknown"
+}
+/** Appointment | CommunicationRequest | DeviceRequest | MedicationRequest | NutritionOrder | Task | ServiceRequest | VisionPrescription */
+export declare enum CarePlanKind {
+    Appointment = "Appointment",
+    NutritionOrder = "NutritionOrder",
+    VisionPrescription = "VisionPrescription",
+    MedicationRequest = "MedicationRequest",
+    DeviceRequest = "DeviceRequest",
+    ServiceRequest = "ServiceRequest",
+    Task = "Task",
+    CommunicationRequest = "CommunicationRequest"
 }
 /** In-line definition of activity */
 export interface CarePlanDetail extends BackboneElement {
@@ -81,7 +102,7 @@ export interface CarePlanDetail extends BackboneElement {
     instantiatesUri?: Array<uri>;
     _doNotPerform?: Element;
     productCodeableConcept?: CodeableConcept;
-    productReference?: Reference<"Medication" | "Substance">;
+    productReference?: Reference<'Medication' | 'Substance'>;
     scheduledPeriod?: Period;
     _status?: Element;
     /** Goals this activity relates to */
@@ -97,9 +118,9 @@ export interface CarePlanDetail extends BackboneElement {
     _description?: Element;
     scheduledString?: string;
     /** not-started | scheduled | in-progress | on-hold | completed | cancelled | stopped | unknown | entered-in-error */
-    status: code;
+    status: `${CarePlanStatus}`;
     /** Appointment | CommunicationRequest | DeviceRequest | MedicationRequest | NutritionOrder | Task | ServiceRequest | VisionPrescription */
-    kind?: code;
+    kind?: `${CarePlanKind}`;
     /** Detail type of activity */
     code?: CodeableConcept;
     /** If true, activity is prohibiting action */
@@ -107,7 +128,7 @@ export interface CarePlanDetail extends BackboneElement {
     /** How much to administer/supply/consume */
     quantity?: SimpleQuantity;
     /** Where it should happen */
-    location?: Reference<"Location">;
+    location?: Reference<'Location'>;
     _instantiatesCanonical?: Array<Element>;
     /** Who will be responsible? */
     performer?: Array<Reference>;
@@ -124,7 +145,14 @@ export interface CarePlanActivity extends BackboneElement {
     /** Comments about the activity status/progress */
     progress?: Array<Annotation>;
     /** Activity details defined in specific resource */
-    reference?: Reference<"RequestGroup" | "NutritionOrder" | "ServiceRequest" | "CommunicationRequest" | "VisionPrescription" | "DeviceRequest" | "Task" | "MedicationRequest" | "Appointment">;
+    reference?: Reference<'RequestGroup' | 'NutritionOrder' | 'ServiceRequest' | 'CommunicationRequest' | 'VisionPrescription' | 'DeviceRequest' | 'Task' | 'MedicationRequest' | 'Appointment'>;
     /** In-line definition of activity */
     detail?: CarePlanDetail;
+}
+/** proposal | plan | order | option */
+export declare enum CarePlanIntent {
+    Option = "option",
+    Order = "order",
+    Proposal = "proposal",
+    Plan = "plan"
 }

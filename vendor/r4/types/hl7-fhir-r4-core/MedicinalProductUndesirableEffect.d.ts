@@ -6,6 +6,7 @@ import { DomainResource } from "./DomainResource";
 import { Reference } from "./Reference";
 /** Describe the undesirable effects of the medicinal product. */
 export interface MedicinalProductUndesirableEffect extends DomainResource {
+    resourceType: 'MedicinalProductUndesirableEffect';
     /** The medication for which this is an indication */
     subject?: Array<Reference>;
     /** The symptom, condition or undesirable effect */

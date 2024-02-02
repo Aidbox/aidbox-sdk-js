@@ -12,6 +12,7 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A specific set of Roles/Locations/specialties/services that a practitioner may perform at an organization for a period of time. */
 export interface PractitionerRole extends DomainResource {
+    resourceType: 'PractitionerRole';
     _active?: Element;
     /** Times the Service Site is available */
     availableTime?: Array<PractitionerRoleAvailableTime>;
@@ -20,7 +21,7 @@ export interface PractitionerRole extends DomainResource {
     /** Not available during this time due to provided reason */
     notAvailable?: Array<PractitionerRoleNotAvailable>;
     /** Organization where the roles are available */
-    organization?: Reference<"Organization">;
+    organization?: Reference<'Organization'>;
     /** Whether this practitioner role record is in active use */
     active?: boolean;
     _availabilityExceptions?: Element;
@@ -31,7 +32,7 @@ export interface PractitionerRole extends DomainResource {
     /** Description of availability exceptions */
     availabilityExceptions?: string;
     /** Practitioner that is able to provide the defined services for the organization */
-    practitioner?: Reference<"Practitioner">;
+    practitioner?: Reference<'Practitioner'>;
     /** Contact details that are specific to the role/location/service */
     telecom?: Array<ContactPoint>;
     /** The period during which the practitioner is authorized to perform in these role(s) */

@@ -7,13 +7,13 @@ import { integer } from "./integer";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** A material substance originating from a biological entity intended to be transplanted or infused
 into another (possibly the same) biological entity. */
 export interface BiologicallyDerivedProduct extends DomainResource {
+    resourceType: 'BiologicallyDerivedProduct';
     _quantity?: Element;
     /** Procedure request */
     request?: Array<Reference>;
@@ -24,7 +24,7 @@ export interface BiologicallyDerivedProduct extends DomainResource {
     parent?: Array<Reference>;
     _status?: Element;
     /** available | unavailable */
-    status?: code;
+    status?: `${BiologicallyDerivedProductStatus}`;
     /** External ids for this item */
     identifier?: Array<Identifier>;
     /** What this biologically derived product is */
@@ -34,7 +34,7 @@ export interface BiologicallyDerivedProduct extends DomainResource {
     /** The amount of this biologically derived product */
     quantity?: integer;
     /** organ | tissue | fluid | cells | biologicalAgent */
-    productCategory?: code;
+    productCategory?: `${BiologicallyDerivedProductProductCategory}`;
     /** Any manipulation of product post-collection */
     manipulation?: BiologicallyDerivedProductManipulation;
     /** How this product was collected */
@@ -48,10 +48,21 @@ export interface BiologicallyDerivedProductProcessing extends BackboneElement {
     /** Procesing code */
     procedure?: CodeableConcept;
     /** Substance added during processing */
-    additive?: Reference<"Substance">;
+    additive?: Reference<'Substance'>;
     timeDateTime?: dateTime;
     _timeDateTime?: Element;
     timePeriod?: Period;
+}
+/** available | unavailable */
+export declare enum BiologicallyDerivedProductStatus {
+    Available = "available",
+    Unavailable = "unavailable"
+}
+/** farenheit | celsius | kelvin */
+export declare enum BiologicallyDerivedProductScale {
+    Celsius = "celsius",
+    Farenheit = "farenheit",
+    Kelvin = "kelvin"
 }
 /** Product storage */
 export interface BiologicallyDerivedProductStorage extends BackboneElement {
@@ -62,10 +73,18 @@ export interface BiologicallyDerivedProductStorage extends BackboneElement {
     temperature?: decimal;
     _temperature?: Element;
     /** farenheit | celsius | kelvin */
-    scale?: code;
+    scale?: `${BiologicallyDerivedProductScale}`;
     _scale?: Element;
     /** Storage timeperiod */
     duration?: Period;
+}
+/** organ | tissue | fluid | cells | biologicalAgent */
+export declare enum BiologicallyDerivedProductProductCategory {
+    BiologicalAgent = "biologicalAgent",
+    Cells = "cells",
+    Fluid = "fluid",
+    Organ = "organ",
+    Tissue = "tissue"
 }
 /** Any manipulation of product post-collection */
 export interface BiologicallyDerivedProductManipulation extends BackboneElement {
@@ -79,9 +98,9 @@ export interface BiologicallyDerivedProductManipulation extends BackboneElement 
 /** How this product was collected */
 export interface BiologicallyDerivedProductCollection extends BackboneElement {
     /** Individual performing collection */
-    collector?: Reference<"PractitionerRole" | "Practitioner">;
+    collector?: Reference<'PractitionerRole' | 'Practitioner'>;
     /** Who is product from */
-    source?: Reference<"Patient" | "Organization">;
+    source?: Reference<'Patient' | 'Organization'>;
     collectedDateTime?: dateTime;
     _collectedDateTime?: Element;
     collectedPeriod?: Period;

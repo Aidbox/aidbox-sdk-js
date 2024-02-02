@@ -9,13 +9,14 @@ import { Reference } from "./Reference";
 import { Identifier } from "./Identifier";
 /** Defines an affiliation/assotiation/relationship between 2 distinct oganizations, that is not a part-of relationship/sub-division relationship. */
 export interface OrganizationAffiliation extends DomainResource {
+    resourceType: 'OrganizationAffiliation';
     _active?: Element;
     /** Specific specialty of the participatingOrganization in the context of the role */
     specialty?: Array<CodeableConcept>;
     /** Organization where the role is available */
-    organization?: Reference<"Organization">;
+    organization?: Reference<'Organization'>;
     /** Organization that provides/performs the role (e.g. providing services or is a member of) */
-    participatingOrganization?: Reference<"Organization">;
+    participatingOrganization?: Reference<'Organization'>;
     /** Whether this organization affiliation record is in active use */
     active?: boolean;
     /** Definition of the role the participatingOrganization plays */

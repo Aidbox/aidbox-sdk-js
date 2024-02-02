@@ -6,11 +6,11 @@ import { DomainResource } from "./DomainResource";
 import { Ratio } from "./Ratio";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** This resource is primarily used for the identification and definition of a medication for the purposes of prescribing, dispensing, and administering a medication as well as for making statements about medication use. */
 export interface Medication extends DomainResource {
+    resourceType: 'Medication';
     /** Amount of drug in package */
     amount?: Ratio;
     _status?: Element;
@@ -19,13 +19,13 @@ export interface Medication extends DomainResource {
     /** Active or inactive ingredient */
     ingredient?: Array<MedicationIngredient>;
     /** active | inactive | entered-in-error */
-    status?: code;
+    status?: `${MedicationStatus}`;
     /** Codes that identify this medication */
     code?: CodeableConcept;
     /** Business identifier for this medication */
     identifier?: Array<Identifier>;
     /** Manufacturer of the item */
-    manufacturer?: Reference<"Organization">;
+    manufacturer?: Reference<'Organization'>;
     /** powder | tablets | capsule + */
     form?: CodeableConcept;
 }
@@ -41,10 +41,16 @@ export interface MedicationBatch extends BackboneElement {
 /** Active or inactive ingredient */
 export interface MedicationIngredient extends BackboneElement {
     itemCodeableConcept: CodeableConcept;
-    itemReference: Reference<"Medication" | "Substance">;
+    itemReference: Reference<'Medication' | 'Substance'>;
     /** Active ingredient indicator */
     isActive?: boolean;
     _isActive?: Element;
     /** Quantity of ingredient present */
     strength?: Ratio;
+}
+/** active | inactive | entered-in-error */
+export declare enum MedicationStatus {
+    Active = "active",
+    EnteredInError = "entered-in-error",
+    Inactive = "inactive"
 }

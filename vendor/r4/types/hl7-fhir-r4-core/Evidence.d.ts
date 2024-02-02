@@ -13,10 +13,10 @@ import { date } from "./date";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** The Evidence resource describes the conditional state (population and any exposures being compared within the population) and outcome (if specified) that the knowledge (evidence, assertion, recommendation) is about. */
 export interface Evidence extends DomainResource {
+    resourceType: 'Evidence';
     /** Natural language description of the evidence */
     description?: markdown;
     /** Date last changed */
@@ -52,7 +52,7 @@ export interface Evidence extends DomainResource {
     author?: Array<ContactDetail>;
     _lastReviewDate?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${EvidenceStatus}`;
     /** Subordinate title of the Evidence */
     subtitle?: string;
     _name?: Element;
@@ -80,10 +80,17 @@ export interface Evidence extends DomainResource {
     /** Contact details for the publisher */
     contact?: Array<ContactDetail>;
     /** What population? */
-    exposureBackground: Reference<"EvidenceVariable">;
+    exposureBackground: Reference<'EvidenceVariable'>;
     _url?: Element;
     /** When the evidence is expected to be used */
     effectivePeriod?: Period;
     /** What exposure? */
     exposureVariant?: Array<Reference>;
+}
+/** draft | active | retired | unknown */
+export declare enum EvidenceStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }

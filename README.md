@@ -255,11 +255,11 @@ Aidbox subscription is a way to subscribe and get notifications about updating r
 our [subscription sample](https://github.com/Aidbox/aidbox-sdk-js/tree/main/subscription-sample) for more details.
 
 ```javascript
-await client.createSubscription({
+await client.subsSubscription.create({
   id: 'patient-created',
   status: 'active',
   trigger: { Patient: { event: ['create'] } },
-  channel: { endpoint: `${process.env.NODE_APP_URL}/patient-created` },
+  channel: { endpoint: 'https://aidbox/patient-created' },
 });
 ```
 

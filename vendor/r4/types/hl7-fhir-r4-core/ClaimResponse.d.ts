@@ -12,23 +12,23 @@ import { Money } from "./Money";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** This resource provides the adjudication details from the processing of a Claim resource. */
 export interface ClaimResponse extends DomainResource {
+    resourceType: 'ClaimResponse';
     _created?: Element;
     /** The recipient of the products and services */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     /** Party responsible for the claim */
-    requestor?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    requestor?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Party to be paid any benefits payable */
     payeeType?: CodeableConcept;
     /** Patient insurance information */
     insurance?: Array<ClaimResponseInsurance>;
     /** Id of resource triggering adjudication */
-    request?: Reference<"Claim">;
+    request?: Reference<'Claim'>;
     /** Note concerning adjudication */
     processNote?: Array<ClaimResponseProcessNote>;
     /** Preauthorization reference */
@@ -37,7 +37,7 @@ export interface ClaimResponse extends DomainResource {
     adjudication?: Array<ClaimResponseItemAdjudication>;
     _disposition?: Element;
     /** claim | preauthorization | predetermination */
-    use: code;
+    use: `${ClaimResponseUse}`;
     /** Payment Details */
     payment?: ClaimResponsePayment;
     /** Adjudication for claim line items */
@@ -50,7 +50,7 @@ export interface ClaimResponse extends DomainResource {
     /** Preauthorization reference effective period */
     preAuthPeriod?: Period;
     /** queued | complete | error | partial */
-    outcome: code;
+    outcome: `${ClaimResponseOutcome}`;
     _outcome?: Element;
     /** Disposition Message */
     disposition?: string;
@@ -59,11 +59,11 @@ export interface ClaimResponse extends DomainResource {
     /** Adjudication totals */
     total?: Array<ClaimResponseTotal>;
     /** Party responsible for reimbursement */
-    insurer: Reference<"Organization">;
+    insurer: Reference<'Organization'>;
     /** Funds reserved status */
     fundsReserve?: CodeableConcept;
     /** active | cancelled | draft | entered-in-error */
-    status: code;
+    status: `${ClaimResponseStatus}`;
     /** Business Identifier for a claim response */
     identifier?: Array<Identifier>;
     /** Processing errors */
@@ -78,6 +78,12 @@ export interface ClaimResponse extends DomainResource {
     /** Insurer added line items */
     addItem?: Array<ClaimResponseAddItem>;
     _use?: Element;
+}
+/** claim | preauthorization | predetermination */
+export declare enum ClaimResponseUse {
+    Claim = "claim",
+    Preauthorization = "preauthorization",
+    Predetermination = "predetermination"
 }
 /** Adjudication for claim line items */
 export interface ClaimResponseItem extends BackboneElement {
@@ -97,6 +103,12 @@ export interface ClaimResponseTotal extends BackboneElement {
     category: CodeableConcept;
     /** Financial total for the category */
     amount: Money;
+}
+/** display | print | printoper */
+export declare enum ClaimResponseType {
+    Display = "display",
+    Print = "print",
+    Printoper = "printoper"
 }
 /** Payment Details */
 export interface ClaimResponsePayment extends BackboneElement {
@@ -128,6 +140,13 @@ export interface ClaimResponseError extends BackboneElement {
     /** Error code detailing processing issues */
     code: CodeableConcept;
 }
+/** active | cancelled | draft | entered-in-error */
+export declare enum ClaimResponseStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    Draft = "draft",
+    EnteredInError = "entered-in-error"
+}
 /** Adjudication for claim details */
 export interface ClaimResponseDetail extends BackboneElement {
     /** Claim detail instance identifier */
@@ -141,13 +160,20 @@ export interface ClaimResponseDetail extends BackboneElement {
     /** Adjudication for claim sub-details */
     subDetail?: Array<ClaimResponseSubDetail>;
 }
+/** queued | complete | error | partial */
+export declare enum ClaimResponseOutcome {
+    Complete = "complete",
+    Error = "error",
+    Partial = "partial",
+    Queued = "queued"
+}
 /** Note concerning adjudication */
 export interface ClaimResponseProcessNote extends BackboneElement {
     /** Note instance identifier */
     number?: positiveInt;
     _number?: Element;
     /** display | print | printoper */
-    type?: code;
+    type?: `${ClaimResponseType}`;
     _type?: Element;
     /** Note explanatory text */
     text: string;
@@ -178,7 +204,7 @@ export interface ClaimResponseAddItem extends BackboneElement {
     subSite?: Array<CodeableConcept>;
     /** Billing, service, product, or drug code */
     productOrService: CodeableConcept;
-    locationReference?: Reference<"Location">;
+    locationReference?: Reference<'Location'>;
     _detailSequence?: Array<Element>;
     _itemSequence?: Array<Element>;
     /** Program the product or service is provided under */
@@ -210,12 +236,12 @@ export interface ClaimResponseInsurance extends BackboneElement {
     focal: boolean;
     _focal?: Element;
     /** Insurance information */
-    coverage: Reference<"Coverage">;
+    coverage: Reference<'Coverage'>;
     /** Additional provider contract number */
     businessArrangement?: string;
     _businessArrangement?: Element;
     /** Adjudication results */
-    claimResponse?: Reference<"ClaimResponse">;
+    claimResponse?: Reference<'ClaimResponse'>;
 }
 /** Adjudication for claim sub-details */
 export interface ClaimResponseSubDetail extends BackboneElement {

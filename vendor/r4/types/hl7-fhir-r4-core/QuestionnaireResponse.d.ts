@@ -12,25 +12,25 @@ import { DomainResource } from "./DomainResource";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** A structured set of questions and their answers. The questions are ordered and grouped into coherent subsets, corresponding to the structure of the grouping of the questionnaire being responded to. */
 export interface QuestionnaireResponse extends DomainResource {
+    resourceType: 'QuestionnaireResponse';
     /** Form being answered */
     questionnaire?: canonical;
     /** Encounter created as part of */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     item?: Array<QuestionnaireResponseItem>;
     _status?: Element;
     _authored?: Element;
     /** The person who answered the questions */
-    source?: Reference<"Patient" | "PractitionerRole" | "Practitioner" | "RelatedPerson">;
+    source?: Reference<'Patient' | 'PractitionerRole' | 'Practitioner' | 'RelatedPerson'>;
     /** Person who received and recorded the answers */
-    author?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    author?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** in-progress | completed | amended | entered-in-error | stopped */
-    status: code;
+    status: `${QuestionnaireResponseStatus}`;
     /** Unique id for this set of answers */
     identifier?: Identifier;
     /** Request fulfilled by this QuestionnaireResponse */
@@ -42,6 +42,14 @@ export interface QuestionnaireResponse extends DomainResource {
     /** The subject of the questions */
     subject?: Reference;
     _questionnaire?: Element;
+}
+/** in-progress | completed | amended | entered-in-error | stopped */
+export declare enum QuestionnaireResponseStatus {
+    Amended = "amended",
+    Completed = "completed",
+    EnteredInError = "entered-in-error",
+    InProgress = "in-progress",
+    Stopped = "stopped"
 }
 /** The response(s) to the question */
 export interface QuestionnaireResponseItemAnswer extends BackboneElement {

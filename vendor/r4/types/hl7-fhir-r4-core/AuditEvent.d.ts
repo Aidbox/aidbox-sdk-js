@@ -9,17 +9,17 @@ import { base64Binary } from "./base64Binary";
 import { instant } from "./instant";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** A record of an event made for purposes of maintaining a security log. Typical uses include detection of intrusion attempts and monitoring for inappropriate usage. */
 export interface AuditEvent extends DomainResource {
+    resourceType: 'AuditEvent';
     /** Description of the event outcome */
     outcomeDesc?: string;
     _action?: Element;
     /** Type/identifier of event */
     type: Coding;
     /** Whether the event succeeded or failed */
-    outcome?: code;
+    outcome?: `${AuditEventOutcome}`;
     /** Audit Event Reporter */
     source: AuditEventSource;
     /** Time when the event was recorded */
@@ -30,7 +30,7 @@ export interface AuditEvent extends DomainResource {
     /** The purposeOfUse of the event */
     purposeOfEvent?: Array<CodeableConcept>;
     /** Type of action performed during the event */
-    action?: code;
+    action?: `${AuditEventAction}`;
     _outcomeDesc?: Element;
     /** When the activity occurred */
     period?: Period;
@@ -40,15 +40,30 @@ export interface AuditEvent extends DomainResource {
     /** More specific type/id for the event */
     subtype?: Array<Coding>;
 }
+/** Whether the event succeeded or failed */
+export declare enum AuditEventOutcome {
+    Num0 = "0",
+    Num12 = "12",
+    Num4 = "4",
+    Num8 = "8"
+}
 /** Audit Event Reporter */
 export interface AuditEventSource extends BackboneElement {
     /** Logical source location within the enterprise */
     site?: string;
     _site?: Element;
     /** The identity of source detecting the event */
-    observer: Reference<"Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    observer: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** The type of source where event originated */
     type?: Array<Coding>;
+}
+/** The type of network access point */
+export declare enum AuditEventType {
+    Num1 = "1",
+    Num2 = "2",
+    Num3 = "3",
+    Num4 = "4",
+    Num5 = "5"
 }
 /** Logical network location for application activity */
 export interface AuditEventNetwork extends BackboneElement {
@@ -56,7 +71,7 @@ export interface AuditEventNetwork extends BackboneElement {
     address?: string;
     _address?: Element;
     /** The type of network access point */
-    type?: code;
+    type?: `${AuditEventType}`;
     _type?: Element;
 }
 /** Actor involved in the event */
@@ -66,7 +81,7 @@ export interface AuditEventAgent extends BackboneElement {
     /** Whether user is initiator */
     requestor: boolean;
     /** Identifier of who */
-    who?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    who?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** Alternative User identity */
     altId?: string;
     /** Human friendly name for the agent */
@@ -83,10 +98,18 @@ export interface AuditEventAgent extends BackboneElement {
     /** Logical network location for application activity */
     network?: AuditEventNetwork;
     /** Where */
-    location?: Reference<"Location">;
+    location?: Reference<'Location'>;
     /** Type of media */
     media?: Coding;
     _requestor?: Element;
+}
+/** Type of action performed during the event */
+export declare enum AuditEventAction {
+    C = "C",
+    D = "D",
+    E = "E",
+    R = "R",
+    U = "U"
 }
 /** Additional Information about the entity */
 export interface AuditEventDetail extends BackboneElement {

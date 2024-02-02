@@ -8,6 +8,7 @@ import { Reference } from "./Reference";
 import { BackboneElement } from "./BackboneElement";
 /** Indication for the Medicinal Product. */
 export interface MedicinalProductIndication extends DomainResource {
+    resourceType: 'MedicinalProductIndication';
     /** The disease, symptom or procedure that is the indication for treatment */
     diseaseSymptomProcedure?: CodeableConcept;
     /** Describe the undesirable effects of the medicinal product */
@@ -32,5 +33,5 @@ export interface MedicinalProductIndicationOtherTherapy extends BackboneElement 
     /** The type of relationship between the medicinal product indication or contraindication and another therapy */
     therapyRelationshipType: CodeableConcept;
     medicationCodeableConcept: CodeableConcept;
-    medicationReference: Reference<"Medication" | "SubstanceSpecification" | "Substance" | "MedicinalProduct">;
+    medicationReference: Reference<'Medication' | 'SubstanceSpecification' | 'Substance' | 'MedicinalProduct'>;
 }

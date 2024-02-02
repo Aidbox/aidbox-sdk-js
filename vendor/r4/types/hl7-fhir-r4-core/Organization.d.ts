@@ -11,6 +11,7 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A formally or informally recognized grouping of people or organizations formed for the purpose of achieving some form of collective action.  Includes companies, institutions, corporations, departments, community groups, healthcare practice groups, payer/insurer, etc. */
 export interface Organization extends DomainResource {
+    resourceType: 'Organization';
     _active?: Element;
     /** An address for the organization */
     address?: Array<Address>;
@@ -28,7 +29,7 @@ export interface Organization extends DomainResource {
     /** A contact detail for the organization */
     telecom?: Array<ContactPoint>;
     /** The organization of which this organization forms a part */
-    partOf?: Reference<"Organization">;
+    partOf?: Reference<'Organization'>;
     _alias?: Array<Element>;
     /** Technical endpoints providing access to services operated for the organization */
     endpoint?: Array<Reference>;

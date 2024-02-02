@@ -8,11 +8,11 @@ import { dateTime } from "./dateTime";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A record of a clinical assessment performed to determine what problem(s) may affect the patient and before planning the treatments or management strategies that are best to manage a patient's condition. Assessments are often 1:1 with a clinical consultation / encounter,  but this varies greatly depending on the clinical workflow. This resource is called "ClinicalImpression" rather than "ClinicalAssessment" to avoid confusion with the recording of assessment tools such as Apgar score. */
 export interface ClinicalImpression extends DomainResource {
+    resourceType: 'ClinicalImpression';
     /** Why/how the assessment was performed */
     description?: string;
     /** When the assessment was documented */
@@ -23,11 +23,11 @@ export interface ClinicalImpression extends DomainResource {
     /** Clinical Protocol followed */
     protocol?: Array<uri>;
     /** The clinician performing the assessment */
-    assessor?: Reference<"PractitionerRole" | "Practitioner">;
+    assessor?: Reference<'PractitionerRole' | 'Practitioner'>;
     /** Information supporting the clinical impression */
     supportingInfo?: Array<Reference>;
     /** Encounter created as part of */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     _date?: Element;
     _status?: Element;
     /** Relevant impressions of patient state */
@@ -44,9 +44,9 @@ export interface ClinicalImpression extends DomainResource {
     /** Estimate of likely outcome */
     prognosisCodeableConcept?: Array<CodeableConcept>;
     /** in-progress | completed | entered-in-error */
-    status: code;
+    status: `${ClinicalImpressionStatus}`;
     /** Reference to last assessment */
-    previous?: Reference<"ClinicalImpression">;
+    previous?: Reference<'ClinicalImpression'>;
     /** Kind of assessment performed */
     code?: CodeableConcept;
     /** Business identifier */
@@ -57,7 +57,7 @@ export interface ClinicalImpression extends DomainResource {
     /** RiskAssessment expressing likely outcome */
     prognosisReference?: Array<Reference>;
     /** Patient or group assessed */
-    subject: Reference<"Patient" | "Group">;
+    subject: Reference<'Patient' | 'Group'>;
     effectivePeriod?: Period;
 }
 /** One or more sets of investigations (signs, symptoms, etc.) */
@@ -67,12 +67,18 @@ export interface ClinicalImpressionInvestigation extends BackboneElement {
     /** Record of a specific investigation */
     item?: Array<Reference>;
 }
+/** in-progress | completed | entered-in-error */
+export declare enum ClinicalImpressionStatus {
+    Completed = "completed",
+    EnteredInError = "entered-in-error",
+    InProgress = "in-progress"
+}
 /** Possible or likely findings and diagnoses */
 export interface ClinicalImpressionFinding extends BackboneElement {
     /** What was found */
     itemCodeableConcept?: CodeableConcept;
     /** What was found */
-    itemReference?: Reference<"Media" | "Observation" | "Condition">;
+    itemReference?: Reference<'Media' | 'Observation' | 'Condition'>;
     /** Which investigations support finding */
     basis?: string;
     _basis?: Element;

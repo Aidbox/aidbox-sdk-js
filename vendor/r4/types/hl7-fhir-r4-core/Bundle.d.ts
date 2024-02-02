@@ -6,18 +6,18 @@ import { Signature } from "./Signature";
 import { Resource } from "./Resource";
 import { instant } from "./instant";
 import { Element } from "./Element";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** A container for a collection of resources. */
 export interface Bundle extends Resource {
+    resourceType: 'Bundle';
     _timestamp?: Element;
     /** Digital Signature */
     signature?: Signature;
     _type?: Element;
     /** document | message | transaction | transaction-response | batch | batch-response | history | searchset | collection */
-    type: code;
+    type: `${BundleType}`;
     /** If search, the total number of matches */
     total?: unsignedInt;
     link?: Array<BundleLink>;
@@ -29,14 +29,41 @@ export interface Bundle extends Resource {
     timestamp?: instant;
     _total?: Element;
 }
+/** document | message | transaction | transaction-response | batch | batch-response | history | searchset | collection */
+export declare enum BundleType {
+    History = "history",
+    Batch = "batch",
+    TransactionResponse = "transaction-response",
+    Message = "message",
+    BatchResponse = "batch-response",
+    Searchset = "searchset",
+    Document = "document",
+    Transaction = "transaction",
+    Collection = "collection"
+}
+/** match | include | outcome - why this is in the result set */
+export declare enum BundleMode {
+    Include = "include",
+    Match = "match",
+    Outcome = "outcome"
+}
 /** Search related information */
 export interface BundleSearch extends BackboneElement {
     /** match | include | outcome - why this is in the result set */
-    mode?: code;
+    mode?: `${BundleMode}`;
     _mode?: Element;
     /** Search ranking (between 0 and 1) */
     score?: decimal;
     _score?: Element;
+}
+/** GET | HEAD | POST | PUT | DELETE | PATCH */
+export declare enum BundleMethod {
+    DELETE = "DELETE",
+    GET = "GET",
+    HEAD = "HEAD",
+    PATCH = "PATCH",
+    POST = "POST",
+    PUT = "PUT"
 }
 /** Additional execution information (transaction/batch/history) */
 export interface BundleRequest extends BackboneElement {
@@ -45,7 +72,7 @@ export interface BundleRequest extends BackboneElement {
     _ifNoneMatch?: Element;
     _ifNoneExist?: Element;
     /** GET | HEAD | POST | PUT | DELETE | PATCH */
-    method: code;
+    method: `${BundleMethod}`;
     /** For managing cache currency */
     ifModifiedSince?: instant;
     _ifMatch?: Element;

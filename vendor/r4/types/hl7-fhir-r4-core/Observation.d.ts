@@ -16,11 +16,11 @@ import { Ratio } from "./Ratio";
 import { instant } from "./instant";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Measurements and simple assertions made about a patient, device or other subject. */
 export interface Observation extends DomainResource {
+    resourceType: 'Observation';
     /** Classification of  type of observation */
     category?: Array<CodeableConcept>;
     _issued?: Element;
@@ -34,12 +34,12 @@ export interface Observation extends DomainResource {
     /** High, low, normal, etc. */
     interpretation?: Array<CodeableConcept>;
     /** Healthcare event during which this observation is made */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     /** How it was done */
     method?: CodeableConcept;
     valueTime?: time;
     /** Specimen used for this observation */
-    specimen?: Reference<"Specimen">;
+    specimen?: Reference<'Specimen'>;
     _valueString?: Element;
     valueQuantity?: Quantity;
     valueString?: string;
@@ -55,7 +55,7 @@ export interface Observation extends DomainResource {
     valueSampledData?: SampledData;
     effectiveDateTime?: dateTime;
     /** registered | preliminary | final | amended + */
-    status: code;
+    status: `${ObservationStatus}`;
     _valueTime?: Element;
     /** Type of observation (code / type) */
     code: CodeableConcept;
@@ -72,7 +72,7 @@ export interface Observation extends DomainResource {
     issued?: instant;
     valuePeriod?: Period;
     /** (Measurement) Device */
-    device?: Reference<"Device" | "DeviceMetric">;
+    device?: Reference<'Device' | 'DeviceMetric'>;
     effectiveInstant?: instant;
     /** Fulfills plan, proposal or order */
     basedOn?: Array<Reference>;
@@ -81,7 +81,7 @@ export interface Observation extends DomainResource {
     partOf?: Array<Reference>;
     valueInteger?: integer;
     /** Who and/or what the observation is about */
-    subject?: Reference<"Patient" | "Device" | "Location" | "Group">;
+    subject?: Reference<'Patient' | 'Device' | 'Location' | 'Group'>;
     /** Who is responsible for the observation */
     performer?: Array<Reference>;
     /** Why the result is missing */
@@ -115,6 +115,17 @@ export interface ObservationComponent extends BackboneElement {
     /** Why the component result is missing */
     dataAbsentReason?: CodeableConcept;
     _valueInteger?: Element;
+}
+/** registered | preliminary | final | amended + */
+export declare enum ObservationStatus {
+    Amended = "amended",
+    Cancelled = "cancelled",
+    Corrected = "corrected",
+    EnteredInError = "entered-in-error",
+    Final = "final",
+    Preliminary = "preliminary",
+    Registered = "registered",
+    Unknown = "unknown"
 }
 /** Provides guide for interpretation */
 export interface ObservationReferenceRange extends BackboneElement {

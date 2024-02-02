@@ -5,12 +5,12 @@ import { DomainResource } from "./DomainResource";
 import { instant } from "./instant";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** A slot of time on a schedule that may be available for booking appointments. */
 export interface Slot extends DomainResource {
+    resourceType: 'Slot';
     /** The schedule resource that this slot defines an interval of status information */
-    schedule: Reference<"Schedule">;
+    schedule: Reference<'Schedule'>;
     /** A broad categorization of the service that is to be performed during this appointment */
     serviceCategory?: Array<CodeableConcept>;
     /** The specialty of a practitioner that would be required to perform the service requested in this appointment */
@@ -24,7 +24,7 @@ export interface Slot extends DomainResource {
     /** The style of appointment or patient that may be booked in the slot (not service type) */
     appointmentType?: CodeableConcept;
     /** busy | free | busy-unavailable | busy-tentative | entered-in-error */
-    status: code;
+    status: `${SlotStatus}`;
     /** Comments on the slot to describe any extended information. Such as custom constraints on the slot */
     comment?: string;
     /** External Ids for this item */
@@ -36,4 +36,12 @@ export interface Slot extends DomainResource {
     _comment?: Element;
     /** This slot has already been overbooked, appointments are unlikely to be accepted for this time */
     overbooked?: boolean;
+}
+/** busy | free | busy-unavailable | busy-tentative | entered-in-error */
+export declare enum SlotStatus {
+    Busy = "busy",
+    BusyTentative = "busy-tentative",
+    BusyUnavailable = "busy-unavailable",
+    EnteredInError = "entered-in-error",
+    Free = "free"
 }

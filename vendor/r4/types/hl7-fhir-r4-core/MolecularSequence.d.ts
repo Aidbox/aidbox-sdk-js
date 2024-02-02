@@ -7,14 +7,14 @@ import { integer } from "./integer";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** Raw data describing a biological sequence. */
 export interface MolecularSequence extends DomainResource {
+    resourceType: 'MolecularSequence';
     /** Who and/or what this is about */
-    patient?: Reference<"Patient">;
+    patient?: Reference<'Patient'>;
     /** Structural variant */
     structureVariant?: Array<MolecularSequenceStructureVariant>;
     /** External repository which contains detailed report related with observedSeq in this resource */
@@ -22,10 +22,10 @@ export interface MolecularSequence extends DomainResource {
     /** Variant in sequence */
     variant?: Array<MolecularSequenceVariant>;
     /** Specimen used for sequencing */
-    specimen?: Reference<"Specimen">;
+    specimen?: Reference<'Specimen'>;
     _type?: Element;
     /** aa | dna | rna */
-    type?: code;
+    type?: `${MolecularSequenceType}`;
     _coordinateSystem?: Element;
     _observedSeq?: Element;
     _readCoverage?: Element;
@@ -38,7 +38,7 @@ export interface MolecularSequence extends DomainResource {
     /** An set of value as quality of sequence */
     quality?: Array<MolecularSequenceQuality>;
     /** The method for sequencing */
-    device?: Reference<"Device">;
+    device?: Reference<'Device'>;
     /** The number of copies of the sequence of interest.  (RNASeq) */
     quantity?: Quantity;
     /** Base number of coordinate system (0 for 0-based numbering or coordinates, inclusive start, exclusive end, 1 for 1-based numbering, inclusive start, inclusive end) */
@@ -46,27 +46,36 @@ export interface MolecularSequence extends DomainResource {
     /** A sequence used as reference */
     referenceSeq?: MolecularSequenceReferenceSeq;
     /** Who should be responsible for test result */
-    performer?: Reference<"Organization">;
+    performer?: Reference<'Organization'>;
     /** Average number of reads representing a given nucleotide in the reconstructed sequence */
     readCoverage?: integer;
 }
-/** Structural variant outer */
-export interface MolecularSequenceOuter extends BackboneElement {
-    /** Structural variant outer start */
-    start?: integer;
-    _start?: Element;
-    /** Structural variant outer end */
-    end?: integer;
-    _end?: Element;
+/** External repository which contains detailed report related with observedSeq in this resource */
+export interface MolecularSequenceRepository extends BackboneElement {
+    /** Id of the read */
+    readsetId?: string;
+    /** Repository's name */
+    name?: string;
+    _type?: Element;
+    /** directlink | openapi | login | oauth | other */
+    type: `${MolecularSequenceType}`;
+    _datasetId?: Element;
+    /** Id of the dataset that used to call for dataset in repository */
+    datasetId?: string;
+    _variantsetId?: Element;
+    /** Id of the variantset that used to call for variantset in repository */
+    variantsetId?: string;
+    _name?: Element;
+    /** URI of the repository */
+    url?: uri;
+    _readsetId?: Element;
+    _url?: Element;
 }
-/** Structural variant inner */
-export interface MolecularSequenceInner extends BackboneElement {
-    /** Structural variant inner start */
-    start?: integer;
-    _start?: Element;
-    /** Structural variant inner end */
-    end?: integer;
-    _end?: Element;
+/** indel | snp | unknown */
+export declare enum MolecularSequenceType {
+    Indel = "indel",
+    Snp = "snp",
+    Unknown = "unknown"
 }
 /** Structural variant */
 export interface MolecularSequenceStructureVariant extends BackboneElement {
@@ -83,46 +92,24 @@ export interface MolecularSequenceStructureVariant extends BackboneElement {
     /** Structural variant inner */
     inner?: MolecularSequenceInner;
 }
-/** External repository which contains detailed report related with observedSeq in this resource */
-export interface MolecularSequenceRepository extends BackboneElement {
-    /** Id of the read */
-    readsetId?: string;
-    /** Repository's name */
-    name?: string;
-    _type?: Element;
-    /** directlink | openapi | login | oauth | other */
-    type: code;
-    _datasetId?: Element;
-    /** Id of the dataset that used to call for dataset in repository */
-    datasetId?: string;
-    _variantsetId?: Element;
-    /** Id of the variantset that used to call for variantset in repository */
-    variantsetId?: string;
-    _name?: Element;
-    /** URI of the repository */
-    url?: uri;
-    _readsetId?: Element;
-    _url?: Element;
-}
-/** Variant in sequence */
-export interface MolecularSequenceVariant extends BackboneElement {
-    /** Pointer to observed variant information */
-    variantPointer?: Reference<"Observation">;
-    /** Allele in the reference sequence */
-    referenceAllele?: string;
-    _end?: Element;
-    /** Start position of the variant on the  reference sequence */
+/** Structural variant outer */
+export interface MolecularSequenceOuter extends BackboneElement {
+    /** Structural variant outer start */
     start?: integer;
-    _observedAllele?: Element;
-    _referenceAllele?: Element;
-    /** Allele that was observed */
-    observedAllele?: string;
-    _cigar?: Element;
-    /** End position of the variant on the reference sequence */
-    end?: integer;
     _start?: Element;
-    /** Extended CIGAR string for aligning the sequence with reference bases */
-    cigar?: string;
+    /** Structural variant outer end */
+    end?: integer;
+    _end?: Element;
+}
+/** watson | crick */
+export declare enum MolecularSequenceStrand {
+    Crick = "crick",
+    Watson = "watson"
+}
+/** sense | antisense */
+export declare enum MolecularSequenceOrientation {
+    Antisense = "antisense",
+    Sense = "sense"
 }
 /** Receiver Operator Characteristic (ROC) Curve */
 export interface MolecularSequenceRoc extends BackboneElement {
@@ -148,6 +135,33 @@ export interface MolecularSequenceRoc extends BackboneElement {
     /** Roc score true positive numbers */
     numTP?: Array<integer>;
 }
+/** A sequence used as reference */
+export interface MolecularSequenceReferenceSeq extends BackboneElement {
+    /** Chromosome containing genetic finding */
+    chromosome?: CodeableConcept;
+    /** Reference identifier */
+    referenceSeqId?: CodeableConcept;
+    _referenceSeqString?: Element;
+    /** End position of the window on the reference sequence */
+    windowEnd?: integer;
+    _genomeBuild?: Element;
+    /** watson | crick */
+    strand?: `${MolecularSequenceStrand}`;
+    /** The Genome Build used for reference, following GRCh build versions e.g. 'GRCh 37' */
+    genomeBuild?: string;
+    /** sense | antisense */
+    orientation?: `${MolecularSequenceOrientation}`;
+    _strand?: Element;
+    /** A pointer to another MolecularSequence entity as reference sequence */
+    referenceSeqPointer?: Reference<'MolecularSequence'>;
+    _windowStart?: Element;
+    _orientation?: Element;
+    /** A string to represent reference sequence */
+    referenceSeqString?: string;
+    _windowEnd?: Element;
+    /** Start position of the window on the  reference sequence */
+    windowStart?: integer;
+}
 /** An set of value as quality of sequence */
 export interface MolecularSequenceQuality extends BackboneElement {
     /** True positives from the perspective of the truth data */
@@ -170,7 +184,7 @@ export interface MolecularSequenceQuality extends BackboneElement {
     /** True positives from the perspective of the query data */
     queryTP?: decimal;
     /** indel | snp | unknown */
-    type: code;
+    type: `${MolecularSequenceType}`;
     _truthFN?: Element;
     _gtFP?: Element;
     /** Recall of comparison */
@@ -192,30 +206,32 @@ export interface MolecularSequenceQuality extends BackboneElement {
     /** False positives where the non-REF alleles in the Truth and Query Call Sets match */
     gtFP?: decimal;
 }
-/** A sequence used as reference */
-export interface MolecularSequenceReferenceSeq extends BackboneElement {
-    /** Chromosome containing genetic finding */
-    chromosome?: CodeableConcept;
-    /** Reference identifier */
-    referenceSeqId?: CodeableConcept;
-    _referenceSeqString?: Element;
-    /** End position of the window on the reference sequence */
-    windowEnd?: integer;
-    _genomeBuild?: Element;
-    /** watson | crick */
-    strand?: code;
-    /** The Genome Build used for reference, following GRCh build versions e.g. 'GRCh 37' */
-    genomeBuild?: string;
-    /** sense | antisense */
-    orientation?: code;
-    _strand?: Element;
-    /** A pointer to another MolecularSequence entity as reference sequence */
-    referenceSeqPointer?: Reference<"MolecularSequence">;
-    _windowStart?: Element;
-    _orientation?: Element;
-    /** A string to represent reference sequence */
-    referenceSeqString?: string;
-    _windowEnd?: Element;
-    /** Start position of the window on the  reference sequence */
-    windowStart?: integer;
+/** Structural variant inner */
+export interface MolecularSequenceInner extends BackboneElement {
+    /** Structural variant inner start */
+    start?: integer;
+    _start?: Element;
+    /** Structural variant inner end */
+    end?: integer;
+    _end?: Element;
+}
+/** Variant in sequence */
+export interface MolecularSequenceVariant extends BackboneElement {
+    /** Pointer to observed variant information */
+    variantPointer?: Reference<'Observation'>;
+    /** Allele in the reference sequence */
+    referenceAllele?: string;
+    _end?: Element;
+    /** Start position of the variant on the  reference sequence */
+    start?: integer;
+    _observedAllele?: Element;
+    _referenceAllele?: Element;
+    /** Allele that was observed */
+    observedAllele?: string;
+    _cigar?: Element;
+    /** End position of the variant on the reference sequence */
+    end?: integer;
+    _start?: Element;
+    /** Extended CIGAR string for aligning the sequence with reference bases */
+    cigar?: string;
 }

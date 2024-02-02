@@ -8,13 +8,13 @@ import { Dosage } from "./Dosage";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Indicates that a medication product is to be or has been dispensed for a named person/patient.  This includes a description of the medication product (supply) provided and the instructions for administering the medication.  The medication dispense is the result of a pharmacy system responding to a medication order. */
 export interface MedicationDispense extends DomainResource {
+    resourceType: 'MedicationDispense';
     _whenPrepared?: Element;
-    statusReasonReference?: Reference<"DetectedIssue">;
+    statusReasonReference?: Reference<'DetectedIssue'>;
     /** Type of medication dispense */
     category?: CodeableConcept;
     /** When product was given out */
@@ -37,7 +37,7 @@ export interface MedicationDispense extends DomainResource {
     /** Information that supports the dispensing of the medication */
     supportingInformation?: Array<Reference>;
     /** preparation | in-progress | cancelled | on-hold | completed | entered-in-error | stopped | declined | unknown */
-    status: code;
+    status: `${MedicationDispenseStatus}`;
     /** How the medication is to be used by the patient or administered by the caregiver */
     dosageInstruction?: Array<Dosage>;
     /** Amount of medication expressed as a timing amount */
@@ -45,23 +45,23 @@ export interface MedicationDispense extends DomainResource {
     /** External identifier */
     identifier?: Array<Identifier>;
     /** Encounter / Episode associated with event */
-    context?: Reference<"EpisodeOfCare" | "Encounter">;
-    medicationReference: Reference<"Medication">;
+    context?: Reference<'EpisodeOfCare' | 'Encounter'>;
+    medicationReference: Reference<'Medication'>;
     /** Amount dispensed */
     quantity?: SimpleQuantity;
     /** Event that dispense is part of */
     partOf?: Array<Reference>;
     _whenHandedOver?: Element;
     /** Where the dispense occurred */
-    location?: Reference<"Location">;
+    location?: Reference<'Location'>;
     /** Medication order that authorizes the dispense */
     authorizingPrescription?: Array<Reference>;
     /** Who collected the medication */
     receiver?: Array<Reference>;
     /** Who the dispense is for */
-    subject?: Reference<"Patient" | "Group">;
+    subject?: Reference<'Patient' | 'Group'>;
     /** Where the medication was sent */
-    destination?: Reference<"Location">;
+    destination?: Reference<'Location'>;
     /** Who performed event */
     performer?: Array<MedicationDispensePerformer>;
 }
@@ -77,10 +77,22 @@ export interface MedicationDispenseSubstitution extends BackboneElement {
     /** Who is responsible for the substitution */
     responsibleParty?: Array<Reference>;
 }
+/** preparation | in-progress | cancelled | on-hold | completed | entered-in-error | stopped | declined | unknown */
+export declare enum MedicationDispenseStatus {
+    Cancelled = "cancelled",
+    Preparation = "preparation",
+    Unknown = "unknown",
+    InProgress = "in-progress",
+    EnteredInError = "entered-in-error",
+    Declined = "declined",
+    Stopped = "stopped",
+    Completed = "completed",
+    OnHold = "on-hold"
+}
 /** Who performed event */
 export interface MedicationDispensePerformer extends BackboneElement {
     /** Who performed the dispense and what they did */
     function?: CodeableConcept;
     /** Individual who was performing */
-    actor: Reference<"Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    actor: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
 }

@@ -2,15 +2,21 @@
 DON'T MODIFY MANUALLY */
 import { ContactDetail } from "./ContactDetail";
 import { Element } from "./Element";
-import { code } from "./code";
 /** Base StructureDefinition for Contributor Type: A contributor to the content of a knowledge asset, including authors, editors, reviewers, and endorsers. */
 export interface Contributor extends Element {
     /** author | editor | reviewer | endorser */
-    type: code;
+    type: `${ContributorType}`;
     _type?: Element;
     /** Who contributed the content */
     name: string;
     _name?: Element;
     /** Contact details of the contributor */
     contact?: Array<ContactDetail>;
+}
+/** author | editor | reviewer | endorser */
+export declare enum ContributorType {
+    Author = "author",
+    Editor = "editor",
+    Endorser = "endorser",
+    Reviewer = "reviewer"
 }

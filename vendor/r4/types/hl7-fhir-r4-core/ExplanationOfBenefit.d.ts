@@ -15,23 +15,23 @@ import { Money } from "./Money";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** This resource provides: the claim details; adjudication details from the processing of a Claim; and optionally account balance information, for informing the subscriber of the benefits provided. */
 export interface ExplanationOfBenefit extends DomainResource {
+    resourceType: 'ExplanationOfBenefit';
     _created?: Element;
     /** The recipient of the products and services */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     /** Claim response reference */
-    claimResponse?: Reference<"ClaimResponse">;
+    claimResponse?: Reference<'ClaimResponse'>;
     /** Patient insurance information */
     insurance: Array<ExplanationOfBenefitInsurance>;
     /** Balance by Benefit Category */
     benefitBalance?: Array<ExplanationOfBenefitBenefitBalance>;
     /** Servicing Facility */
-    facility?: Reference<"Location">;
+    facility?: Reference<'Location'>;
     /** Note concerning adjudication */
     processNote?: Array<ExplanationOfBenefitProcessNote>;
     /** Pertinent diagnosis information */
@@ -42,12 +42,12 @@ export interface ExplanationOfBenefit extends DomainResource {
     adjudication?: Array<ExplanationOfBenefitItemAdjudication>;
     _disposition?: Element;
     /** Author of the claim */
-    enterer?: Reference<"PractitionerRole" | "Practitioner">;
+    enterer?: Reference<'PractitionerRole' | 'Practitioner'>;
     /** Supporting information */
     supportingInfo?: Array<ExplanationOfBenefitSupportingInfo>;
     _precedence?: Element;
     /** claim | preauthorization | predetermination */
-    use: code;
+    use: `${ExplanationOfBenefitUse}`;
     /** Payment Details */
     payment?: ExplanationOfBenefitPayment;
     /** Product or service provided */
@@ -60,20 +60,20 @@ export interface ExplanationOfBenefit extends DomainResource {
     /** Clinical procedures performed */
     procedure?: Array<ExplanationOfBenefitProcedure>;
     /** queued | complete | error | partial */
-    outcome: code;
+    outcome: `${ExplanationOfBenefitOutcome}`;
     /** Prior or corollary claims */
     related?: Array<ExplanationOfBenefitRelated>;
     _outcome?: Element;
     /** Disposition Message */
     disposition?: string;
     /** Treatment Referral */
-    referral?: Reference<"ServiceRequest">;
+    referral?: Reference<'ServiceRequest'>;
     /** Preauthorization in-effect period */
     preAuthRefPeriod?: Array<Period>;
     /** Adjudication totals */
     total?: Array<ExplanationOfBenefitTotal>;
     /** Party responsible for reimbursement */
-    insurer: Reference<"Organization">;
+    insurer: Reference<'Organization'>;
     /** Funds reserved status */
     fundsReserve?: CodeableConcept;
     /** Desired processing urgency */
@@ -81,11 +81,11 @@ export interface ExplanationOfBenefit extends DomainResource {
     /** Details of the event */
     accident?: ExplanationOfBenefitAccident;
     /** active | cancelled | draft | entered-in-error */
-    status: code;
+    status: `${ExplanationOfBenefitStatus}`;
     /** Recipient of benefits payable */
     payee?: ExplanationOfBenefitPayee;
     /** Prescription authorizing services or products */
-    prescription?: Reference<"VisionPrescription" | "MedicationRequest">;
+    prescription?: Reference<'VisionPrescription' | 'MedicationRequest'>;
     /** Relevant time frame for the claim */
     billablePeriod?: Period;
     /** Business Identifier for the resource */
@@ -104,16 +104,16 @@ export interface ExplanationOfBenefit extends DomainResource {
     /** Printed form identifier */
     formCode?: CodeableConcept;
     /** Party responsible for the claim */
-    provider: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    provider: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Insurer added line items */
     addItem?: Array<ExplanationOfBenefitAddItem>;
     /** Original prescription if superceded by fulfiller */
-    originalPrescription?: Reference<"MedicationRequest">;
+    originalPrescription?: Reference<'MedicationRequest'>;
     _use?: Element;
     /** Care Team members */
     careTeam?: Array<ExplanationOfBenefitCareTeam>;
     /** Claim reference */
-    claim?: Reference<"Claim">;
+    claim?: Reference<'Claim'>;
 }
 /** Insurer added line items */
 export interface ExplanationOfBenefitAddItem extends BackboneElement {
@@ -135,7 +135,7 @@ export interface ExplanationOfBenefitAddItem extends BackboneElement {
     subSite?: Array<CodeableConcept>;
     /** Billing, service, product, or drug code */
     productOrService: CodeableConcept;
-    locationReference?: Reference<"Location">;
+    locationReference?: Reference<'Location'>;
     _detailSequence?: Array<Element>;
     _itemSequence?: Array<Element>;
     /** Program the product or service is provided under */
@@ -164,7 +164,7 @@ export interface ExplanationOfBenefitAddItem extends BackboneElement {
 /** Prior or corollary claims */
 export interface ExplanationOfBenefitRelated extends BackboneElement {
     /** Reference to the related claim */
-    claim?: Reference<"Claim">;
+    claim?: Reference<'Claim'>;
     /** How the reference claim is related */
     relationship?: CodeableConcept;
     /** File or case reference */
@@ -176,7 +176,7 @@ export interface ExplanationOfBenefitDiagnosis extends BackboneElement {
     sequence: positiveInt;
     _sequence?: Element;
     diagnosisCodeableConcept: CodeableConcept;
-    diagnosisReference: Reference<"Condition">;
+    diagnosisReference: Reference<'Condition'>;
     /** Timing or nature of the diagnosis */
     type?: Array<CodeableConcept>;
     /** Present on admission */
@@ -190,7 +190,7 @@ export interface ExplanationOfBenefitCareTeam extends BackboneElement {
     sequence: positiveInt;
     _sequence?: Element;
     /** Practitioner or organization */
-    provider: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    provider: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Indicator of the lead practitioner */
     responsible?: boolean;
     _responsible?: Element;
@@ -205,10 +205,24 @@ export interface ExplanationOfBenefitInsurance extends BackboneElement {
     focal: boolean;
     _focal?: Element;
     /** Insurance information */
-    coverage: Reference<"Coverage">;
+    coverage: Reference<'Coverage'>;
     /** Prior authorization reference number */
     preAuthRef?: Array<string>;
     _preAuthRef?: Array<Element>;
+}
+/** queued | complete | error | partial */
+export declare enum ExplanationOfBenefitOutcome {
+    Complete = "complete",
+    Error = "error",
+    Partial = "partial",
+    Queued = "queued"
+}
+/** active | cancelled | draft | entered-in-error */
+export declare enum ExplanationOfBenefitStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    Draft = "draft",
+    EnteredInError = "entered-in-error"
 }
 /** Balance by Benefit Category */
 export interface ExplanationOfBenefitBenefitBalance extends BackboneElement {
@@ -245,6 +259,12 @@ export interface ExplanationOfBenefitFinancial extends BackboneElement {
     allowedString?: string;
     usedMoney?: Money;
 }
+/** display | print | printoper */
+export declare enum ExplanationOfBenefitType {
+    Display = "display",
+    Print = "print",
+    Printoper = "printoper"
+}
 /** Adjudication details */
 export interface ExplanationOfBenefitItemAdjudication extends BackboneElement {
     /** Type of adjudication information */
@@ -263,7 +283,7 @@ export interface ExplanationOfBenefitProcessNote extends BackboneElement {
     number?: positiveInt;
     _number?: Element;
     /** display | print | printoper */
-    type?: code;
+    type?: `${ExplanationOfBenefitType}`;
     _type?: Element;
     /** Note explanatory text */
     text?: string;
@@ -302,7 +322,7 @@ export interface ExplanationOfBenefitItem extends BackboneElement {
     /** Billing, service, product, or drug code */
     productOrService: CodeableConcept;
     _informationSequence?: Array<Element>;
-    locationReference?: Reference<"Location">;
+    locationReference?: Reference<'Location'>;
     /** Unique device identifier */
     udi?: Array<Reference>;
     /** Applicable exception and supporting information */
@@ -336,7 +356,7 @@ export interface ExplanationOfBenefitAccident extends BackboneElement {
     /** The nature of the accident */
     type?: CodeableConcept;
     locationAddress?: Address;
-    locationReference?: Reference<"Location">;
+    locationReference?: Reference<'Location'>;
 }
 /** Additional items */
 export interface ExplanationOfBenefitDetail extends BackboneElement {
@@ -417,7 +437,7 @@ export interface ExplanationOfBenefitProcedure extends BackboneElement {
     /** When the procedure was performed */
     date?: dateTime;
     procedureCodeableConcept: CodeableConcept;
-    procedureReference: Reference<"Procedure">;
+    procedureReference: Reference<'Procedure'>;
     _date?: Element;
     /** Category of Procedure */
     type?: Array<CodeableConcept>;
@@ -431,7 +451,7 @@ export interface ExplanationOfBenefitPayee extends BackboneElement {
     /** Category of recipient */
     type?: CodeableConcept;
     /** Recipient reference */
-    party?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Practitioner" | "RelatedPerson">;
+    party?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Practitioner' | 'RelatedPerson'>;
 }
 /** Supporting information */
 export interface ExplanationOfBenefitSupportingInfo extends BackboneElement {
@@ -454,6 +474,12 @@ export interface ExplanationOfBenefitSupportingInfo extends BackboneElement {
     timingDate?: date;
     valueAttachment?: Attachment;
     _timingDate?: Element;
+}
+/** claim | preauthorization | predetermination */
+export declare enum ExplanationOfBenefitUse {
+    Claim = "claim",
+    Preauthorization = "preauthorization",
+    Predetermination = "predetermination"
 }
 /** Payment Details */
 export interface ExplanationOfBenefitPayment extends BackboneElement {

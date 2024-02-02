@@ -10,27 +10,27 @@ import { canonical } from "./canonical";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** The header for a message exchange that is either requesting or responding to an action.  The reference(s) that are the subject of the action as well as other information related to the action are typically transmitted in a bundle in which the MessageHeader resource instance is the first resource in the bundle. */
 export interface MessageHeader extends DomainResource {
+    resourceType: 'MessageHeader';
     /** If this is a reply to prior message */
     response?: MessageHeaderResponse;
     /** Link to the definition for this message */
     definition?: canonical;
     /** The source of the data entry */
-    enterer?: Reference<"PractitionerRole" | "Practitioner">;
+    enterer?: Reference<'PractitionerRole' | 'Practitioner'>;
     _definition?: Element;
     /** Message source application */
     source: MessageHeaderSource;
     /** The source of the decision */
-    author?: Reference<"PractitionerRole" | "Practitioner">;
+    author?: Reference<'PractitionerRole' | 'Practitioner'>;
     /** Cause of event */
     reason?: CodeableConcept;
     /** Final responsibility for event */
-    responsible?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    responsible?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Real world sender of the message */
-    sender?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    sender?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** The actual content of the message */
     focus?: Array<Reference>;
     _eventUri: Element;
@@ -39,16 +39,22 @@ export interface MessageHeader extends DomainResource {
     destination?: Array<MessageHeaderDestination>;
     eventCoding: Coding;
 }
+/** ok | transient-error | fatal-error */
+export declare enum MessageHeaderCode {
+    FatalError = "fatal-error",
+    Ok = "ok",
+    TransientError = "transient-error"
+}
 /** If this is a reply to prior message */
 export interface MessageHeaderResponse extends BackboneElement {
     /** Id of original message */
     identifier: id;
     _identifier?: Element;
     /** ok | transient-error | fatal-error */
-    code: code;
+    code: `${MessageHeaderCode}`;
     _code?: Element;
     /** Specific list of hints/warnings/errors */
-    details?: Reference<"OperationOutcome">;
+    details?: Reference<'OperationOutcome'>;
 }
 /** Message source application */
 export interface MessageHeaderSource extends BackboneElement {
@@ -73,10 +79,10 @@ export interface MessageHeaderDestination extends BackboneElement {
     name?: string;
     _name?: Element;
     /** Particular delivery destination within the destination */
-    target?: Reference<"Device">;
+    target?: Reference<'Device'>;
     /** Actual destination address or id */
     endpoint: url;
     _endpoint?: Element;
     /** Intended "real-world" recipient for the data */
-    receiver?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    receiver?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
 }

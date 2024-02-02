@@ -2,6 +2,6 @@
 DON'T MODIFY MANUALLY */
 import { integer } from "./integer";
 /** Base StructureDefinition for unsignedInt type: An integer with a value that is not negative (e.g. >= 0)
- * @minimum 0
+* @minimum 0
  */
 export type unsignedInt = integer;

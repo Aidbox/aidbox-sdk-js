@@ -7,11 +7,11 @@ import { DomainResource } from "./DomainResource";
 import { Ratio } from "./Ratio";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A homogeneous material with a definite composition. */
 export interface Substance extends DomainResource {
+    resourceType: 'Substance';
     /** Textual description of the substance, comments */
     description?: string;
     /** What class/type of substance this is */
@@ -23,7 +23,7 @@ export interface Substance extends DomainResource {
     /** Composition information about the substance */
     ingredient?: Array<SubstanceIngredient>;
     /** active | inactive | entered-in-error */
-    status?: code;
+    status?: `${SubstanceStatus}`;
     /** What substance this is */
     code: CodeableConcept;
     /** Unique identifier */
@@ -44,5 +44,11 @@ export interface SubstanceIngredient extends BackboneElement {
     /** Optional amount (concentration) */
     quantity?: Ratio;
     substanceCodeableConcept: CodeableConcept;
-    substanceReference: Reference<"Substance">;
+    substanceReference: Reference<'Substance'>;
+}
+/** active | inactive | entered-in-error */
+export declare enum SubstanceStatus {
+    Active = "active",
+    EnteredInError = "entered-in-error",
+    Inactive = "inactive"
 }

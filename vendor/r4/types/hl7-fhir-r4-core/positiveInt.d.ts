@@ -2,6 +2,6 @@
 DON'T MODIFY MANUALLY */
 import { integer } from "./integer";
 /** Base StructureDefinition for positiveInt type: An integer with a value that is positive (e.g. >0)
- * @minimum 1
+* @minimum 1
  */
 export type positiveInt = integer;

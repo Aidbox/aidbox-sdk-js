@@ -22,6 +22,26 @@ export interface Timing extends BackboneElement {
     /** BID | TID | QID | AM | PM | QD | QOD | + */
     code?: CodeableConcept;
 }
+/** s | min | h | d | wk | mo | a - unit of time (UCUM) */
+export declare enum TimingPeriodUnit {
+    D = "d",
+    Min = "min",
+    S = "s",
+    Mo = "mo",
+    Wk = "wk",
+    A = "a",
+    H = "h"
+}
+/** s | min | h | d | wk | mo | a - unit of time (UCUM) */
+export declare enum TimingDurationUnit {
+    D = "d",
+    Min = "min",
+    S = "s",
+    Mo = "mo",
+    Wk = "wk",
+    A = "a",
+    H = "h"
+}
 /** When the event is to occur */
 export interface TimingRepeat extends Element {
     _period?: Element;
@@ -41,7 +61,7 @@ export interface TimingRepeat extends Element {
     _duration?: Element;
     _frequency?: Element;
     /** s | min | h | d | wk | mo | a - unit of time (UCUM) */
-    periodUnit?: code;
+    periodUnit?: `${TimingPeriodUnit}`;
     _timeOfDay?: Array<Element>;
     _frequencyMax?: Element;
     /** Event occurs frequency times per period */
@@ -52,7 +72,7 @@ export interface TimingRepeat extends Element {
     duration?: decimal;
     boundsDuration?: Duration;
     /** s | min | h | d | wk | mo | a - unit of time (UCUM) */
-    durationUnit?: code;
+    durationUnit?: `${TimingDurationUnit}`;
     /** mon | tue | wed | thu | fri | sat | sun */
     dayOfWeek?: Array<code>;
     /** Number of times to repeat */

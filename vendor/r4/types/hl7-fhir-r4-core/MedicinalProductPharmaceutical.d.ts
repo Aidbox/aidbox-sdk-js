@@ -11,6 +11,7 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A pharmaceutical product described in terms of its composition and dose form. */
 export interface MedicinalProductPharmaceutical extends DomainResource {
+    resourceType: 'MedicinalProductPharmaceutical';
     /** An identifier for the pharmaceutical medicinal product */
     identifier?: Array<Identifier>;
     /** The administrable dose form, after necessary reconstitution */

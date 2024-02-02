@@ -12,11 +12,11 @@ import { DomainResource } from "./DomainResource";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Demographics and other administrative information about an individual or animal receiving care or other health-related services. */
 export interface Patient extends DomainResource {
+    resourceType: 'Patient';
     multipleBirthBoolean?: boolean;
     _active?: Element;
     /** An address for the individual */
@@ -24,7 +24,7 @@ export interface Patient extends DomainResource {
     deceasedDateTime?: dateTime;
     _deceasedDateTime?: Element;
     /** Organization that is the custodian of the patient record */
-    managingOrganization?: Reference<"Organization">;
+    managingOrganization?: Reference<'Organization'>;
     deceasedBoolean?: boolean;
     /** A name associated with the patient */
     name?: Array<HumanName>;
@@ -50,19 +50,26 @@ export interface Patient extends DomainResource {
     /** Patient's nominated primary care provider */
     generalPractitioner?: Array<Reference>;
     /** male | female | other | unknown */
-    gender?: code;
+    gender?: `${PatientGender}`;
     /** Marital (civil) status of a patient */
     maritalStatus?: CodeableConcept;
     /** A contact party (e.g. guardian, partner, friend) for the patient */
     contact?: Array<PatientContact>;
     _multipleBirthBoolean?: Element;
 }
+/** replaced-by | replaces | refer | seealso */
+export declare enum PatientType {
+    Refer = "refer",
+    ReplacedBy = "replaced-by",
+    Replaces = "replaces",
+    Seealso = "seealso"
+}
 /** Link to another patient resource that concerns the same actual person */
 export interface PatientLink extends BackboneElement {
     /** The other patient or related person resource that the link refers to */
-    other: Reference<"Patient" | "RelatedPerson">;
+    other: Reference<'Patient' | 'RelatedPerson'>;
     /** replaced-by | replaces | refer | seealso */
-    type: code;
+    type: `${PatientType}`;
     _type?: Element;
 }
 /** A language which may be used to communicate with the patient about his or her health */
@@ -72,6 +79,13 @@ export interface PatientCommunication extends BackboneElement {
     /** Language preference indicator */
     preferred?: boolean;
     _preferred?: Element;
+}
+/** male | female | other | unknown */
+export declare enum PatientGender {
+    Female = "female",
+    Male = "male",
+    Other = "other",
+    Unknown = "unknown"
 }
 /** A contact party (e.g. guardian, partner, friend) for the patient */
 export interface PatientContact extends BackboneElement {
@@ -84,10 +98,10 @@ export interface PatientContact extends BackboneElement {
     /** Address for the contact person */
     address?: Address;
     /** male | female | other | unknown */
-    gender?: code;
+    gender?: `${PatientGender}`;
     _gender?: Element;
     /** Organization that is associated with the contact */
-    organization?: Reference<"Organization">;
+    organization?: Reference<'Organization'>;
     /** The period during which this contact person or organization is valid to be contacted relating to this patient */
     period?: Period;
 }

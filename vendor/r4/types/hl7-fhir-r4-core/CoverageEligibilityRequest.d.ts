@@ -15,15 +15,16 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** The CoverageEligibilityRequest provides patient and insurance coverage information to an insurer for them to respond, in the form of an CoverageEligibilityResponse, with information regarding whether the stated coverage is valid and in-force and optionally to provide the insurance details of the policy. */
 export interface CoverageEligibilityRequest extends DomainResource {
+    resourceType: 'CoverageEligibilityRequest';
     _created?: Element;
     /** Intended recipient of products and services */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     /** Patient insurance information */
     insurance?: Array<CoverageEligibilityRequestInsurance>;
     /** Servicing facility */
-    facility?: Reference<"Location">;
+    facility?: Reference<'Location'>;
     /** Author */
-    enterer?: Reference<"PractitionerRole" | "Practitioner">;
+    enterer?: Reference<'PractitionerRole' | 'Practitioner'>;
     /** Supporting information */
     supportingInfo?: Array<CoverageEligibilityRequestSupportingInfo>;
     /** auth-requirements | benefits | discovery | validation */
@@ -35,17 +36,17 @@ export interface CoverageEligibilityRequest extends DomainResource {
     created: dateTime;
     _purpose?: Array<Element>;
     /** Coverage issuer */
-    insurer: Reference<"Organization">;
+    insurer: Reference<'Organization'>;
     /** Desired processing priority */
     priority?: CodeableConcept;
     /** active | cancelled | draft | entered-in-error */
-    status: code;
+    status: `${CoverageEligibilityRequestStatus}`;
     servicedDate?: date;
     /** Business Identifier for coverage eligiblity request */
     identifier?: Array<Identifier>;
     _servicedDate?: Element;
     /** Party responsible for the request */
-    provider?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    provider?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     servicedPeriod?: Period;
 }
 /** Patient insurance information */
@@ -54,7 +55,7 @@ export interface CoverageEligibilityRequestInsurance extends BackboneElement {
     focal?: boolean;
     _focal?: Element;
     /** Insurance information */
-    coverage: Reference<"Coverage">;
+    coverage: Reference<'Coverage'>;
     /** Additional provider contract number */
     businessArrangement?: string;
     _businessArrangement?: Element;
@@ -73,14 +74,14 @@ export interface CoverageEligibilityRequestSupportingInfo extends BackboneElemen
 /** Applicable diagnosis */
 export interface CoverageEligibilityRequestDiagnosis extends BackboneElement {
     diagnosisCodeableConcept?: CodeableConcept;
-    diagnosisReference?: Reference<"Condition">;
+    diagnosisReference?: Reference<'Condition'>;
 }
 /** Item to be evaluated for eligibiity */
 export interface CoverageEligibilityRequestItem extends BackboneElement {
     /** Benefit classification */
     category?: CodeableConcept;
     /** Servicing facility */
-    facility?: Reference<"Organization" | "Location">;
+    facility?: Reference<'Organization' | 'Location'>;
     /** Applicable diagnosis */
     diagnosis?: Array<CoverageEligibilityRequestDiagnosis>;
     /** Product or service billing modifiers */
@@ -91,11 +92,18 @@ export interface CoverageEligibilityRequestItem extends BackboneElement {
     /** Count of products or services */
     quantity?: SimpleQuantity;
     /** Perfoming practitioner */
-    provider?: Reference<"PractitionerRole" | "Practitioner">;
+    provider?: Reference<'PractitionerRole' | 'Practitioner'>;
     /** Applicable exception or supporting information */
     supportingInfoSequence?: Array<positiveInt>;
     /** Fee, charge or cost per item */
     unitPrice?: Money;
     /** Product or service details */
     detail?: Array<Reference>;
+}
+/** active | cancelled | draft | entered-in-error */
+export declare enum CoverageEligibilityRequestStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    Draft = "draft",
+    EnteredInError = "entered-in-error"
 }

@@ -8,10 +8,10 @@ import { DomainResource } from "./DomainResource";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** Describes validation requirements, source(s), status and dates for one or more elements. */
 export interface VerificationResult extends DomainResource {
+    resourceType: 'VerificationResult';
     /** fatal | warn | rec-only | none */
     failureAction?: CodeableConcept;
     /** nothing | primary | multiple */
@@ -33,7 +33,7 @@ export interface VerificationResult extends DomainResource {
     /** Information about the entity attesting to information */
     attestation?: VerificationResultAttestation;
     /** attested | validated | in-process | req-revalid | val-fail | reval-fail */
-    status: code;
+    status: `${VerificationResultStatus}`;
     /** The primary process by which the target is validated (edit check; value set; primary source; multiple sources; standalone; in context) */
     validationProcess?: Array<CodeableConcept>;
     /** When the validation status was updated */
@@ -49,7 +49,7 @@ export interface VerificationResult extends DomainResource {
 /** Information about the entity validating information */
 export interface VerificationResultValidator extends BackboneElement {
     /** Reference to the organization validating information */
-    organization: Reference<"Organization">;
+    organization: Reference<'Organization'>;
     /** A digital identity certificate associated with the validator */
     identityCertificate?: string;
     _identityCertificate?: Element;
@@ -59,7 +59,7 @@ export interface VerificationResultValidator extends BackboneElement {
 /** Information about the primary source(s) involved in validation */
 export interface VerificationResultPrimarySource extends BackboneElement {
     /** Reference to the primary source */
-    who?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    who?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Type of primary source (License Board; Primary Education; Continuing Education; Postal Service; Relationship owner; Registration Authority; legal source; issuing source; authoritative source) */
     type?: Array<CodeableConcept>;
     /** Method for exchanging information with the primary source */
@@ -77,7 +77,7 @@ export interface VerificationResultPrimarySource extends BackboneElement {
 /** Information about the entity attesting to information */
 export interface VerificationResultAttestation extends BackboneElement {
     /** The individual or organization attesting to information */
-    who?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    who?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** The date the information was attested to */
     date?: date;
     /** A digital identity certificate associated with the proxy entity submitting attested information on behalf of the attestation source */
@@ -85,7 +85,7 @@ export interface VerificationResultAttestation extends BackboneElement {
     /** Attester signature */
     sourceSignature?: Signature;
     /** When the who is asserting on behalf of another (organization or individual) */
-    onBehalfOf?: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    onBehalfOf?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     _proxyIdentityCertificate?: Element;
     _date?: Element;
     /** Proxy signature */
@@ -95,4 +95,13 @@ export interface VerificationResultAttestation extends BackboneElement {
     _sourceIdentityCertificate?: Element;
     /** A digital identity certificate associated with the attestation source */
     sourceIdentityCertificate?: string;
+}
+/** attested | validated | in-process | req-revalid | val-fail | reval-fail */
+export declare enum VerificationResultStatus {
+    Attested = "attested",
+    InProcess = "in-process",
+    ReqRevalid = "req-revalid",
+    RevalFail = "reval-fail",
+    ValFail = "val-fail",
+    Validated = "validated"
 }

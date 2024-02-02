@@ -14,6 +14,7 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A statement of relationships from one set of concepts to one or more other concepts - either concepts in code systems, or data element/data element concepts, or classes in class models. */
 export interface ConceptMap extends DomainResource {
+    resourceType: 'ConceptMap';
     /** Natural language description of the concept map */
     description?: markdown;
     sourceCanonical?: canonical;
@@ -49,7 +50,7 @@ export interface ConceptMap extends DomainResource {
     _purpose?: Element;
     targetCanonical?: canonical;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${ConceptMapStatus}`;
     sourceUri?: uri;
     _name?: Element;
     /** Canonical identifier for this concept map, represented as a URI (globally unique) */
@@ -66,10 +67,16 @@ export interface ConceptMap extends DomainResource {
     contact?: Array<ContactDetail>;
     _url?: Element;
 }
+/** provided | fixed | other-map */
+export declare enum ConceptMapMode {
+    Fixed = "fixed",
+    OtherMap = "other-map",
+    Provided = "provided"
+}
 /** What to do when there is no mapping for the source concept */
 export interface ConceptMapUnmapped extends BackboneElement {
     /** provided | fixed | other-map */
-    mode: code;
+    mode: `${ConceptMapMode}`;
     _mode?: Element;
     /** Fixed code when mode = fixed */
     code?: code;
@@ -80,6 +87,19 @@ export interface ConceptMapUnmapped extends BackboneElement {
     /** canonical reference to an additional ConceptMap to use for mapping if the source concept is unmapped */
     url?: canonical;
     _url?: Element;
+}
+/** relatedto | equivalent | equal | wider | subsumes | narrower | specializes | inexact | unmatched | disjoint */
+export declare enum ConceptMapEquivalence {
+    Disjoint = "disjoint",
+    Equal = "equal",
+    Specializes = "specializes",
+    Subsumes = "subsumes",
+    Inexact = "inexact",
+    Relatedto = "relatedto",
+    Wider = "wider",
+    Equivalent = "equivalent",
+    Unmatched = "unmatched",
+    Narrower = "narrower"
 }
 /** Concept in target system for element */
 export interface ConceptMapTarget extends BackboneElement {
@@ -95,7 +115,7 @@ export interface ConceptMapTarget extends BackboneElement {
     /** Display for the code */
     display?: string;
     /** relatedto | equivalent | equal | wider | subsumes | narrower | specializes | inexact | unmatched | disjoint */
-    equivalence: code;
+    equivalence: `${ConceptMapEquivalence}`;
     _comment?: Element;
     _display?: Element;
 }
@@ -128,6 +148,13 @@ export interface ConceptMapGroup extends BackboneElement {
     /** Target system that the concepts are to be mapped to */
     target?: uri;
     _source?: Element;
+}
+/** draft | active | retired | unknown */
+export declare enum ConceptMapStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
 }
 /** Other elements required for this mapping (from context) */
 export interface ConceptMapGroupElementTargetDependsOn extends BackboneElement {

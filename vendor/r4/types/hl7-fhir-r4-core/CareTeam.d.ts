@@ -7,17 +7,17 @@ import { ContactPoint } from "./ContactPoint";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** The Care Team includes all the people and organizations who plan to participate in the coordination and delivery of care for a patient. */
 export interface CareTeam extends DomainResource {
+    resourceType: 'CareTeam';
     /** Type of team */
     category?: Array<CodeableConcept>;
     /** Organization responsible for the care team */
     managingOrganization?: Array<Reference>;
     /** Encounter created as part of */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     /** Name of the team, such as crisis assessment team */
     name?: string;
     _status?: Element;
@@ -28,7 +28,7 @@ export interface CareTeam extends DomainResource {
     /** Comments made about the CareTeam */
     note?: Array<Annotation>;
     /** proposed | active | suspended | inactive | entered-in-error */
-    status?: code;
+    status?: `${CareTeamStatus}`;
     _name?: Element;
     /** External Ids for this team */
     identifier?: Array<Identifier>;
@@ -37,7 +37,7 @@ export interface CareTeam extends DomainResource {
     /** Time period team covers */
     period?: Period;
     /** Who care team is for */
-    subject?: Reference<"Patient" | "Group">;
+    subject?: Reference<'Patient' | 'Group'>;
     /** Why the care team exists */
     reasonReference?: Array<Reference>;
 }
@@ -46,9 +46,17 @@ export interface CareTeamParticipant extends BackboneElement {
     /** Type of involvement */
     role?: Array<CodeableConcept>;
     /** Who is involved */
-    member?: Reference<"CareTeam" | "Patient" | "PractitionerRole" | "Organization" | "Practitioner" | "RelatedPerson">;
+    member?: Reference<'CareTeam' | 'Patient' | 'PractitionerRole' | 'Organization' | 'Practitioner' | 'RelatedPerson'>;
     /** Organization of the practitioner */
-    onBehalfOf?: Reference<"Organization">;
+    onBehalfOf?: Reference<'Organization'>;
     /** Time period of participant */
     period?: Period;
+}
+/** proposed | active | suspended | inactive | entered-in-error */
+export declare enum CareTeamStatus {
+    Active = "active",
+    EnteredInError = "entered-in-error",
+    Inactive = "inactive",
+    Proposed = "proposed",
+    Suspended = "suspended"
 }

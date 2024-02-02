@@ -6,11 +6,11 @@ import { CodeableConcept } from "./CodeableConcept";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A financial tool for tracking value accrued for a particular purpose.  In the healthcare field, used to track charges for a patient, cost centers, etc. */
 export interface Account extends DomainResource {
+    resourceType: 'Account';
     /** Explanation of purpose/use */
     description?: string;
     /** Human-readable label */
@@ -26,21 +26,21 @@ export interface Account extends DomainResource {
     /** The parties ultimately responsible for balancing the Account */
     guarantor?: Array<AccountGuarantor>;
     /** active | inactive | entered-in-error | on-hold | unknown */
-    status: code;
+    status: `${AccountStatus}`;
     _name?: Element;
     /** Account number */
     identifier?: Array<Identifier>;
     /** Reference to a parent Account */
-    partOf?: Reference<"Account">;
+    partOf?: Reference<'Account'>;
     /** The entity that caused the expenses */
     subject?: Array<Reference>;
     /** Entity managing the Account */
-    owner?: Reference<"Organization">;
+    owner?: Reference<'Organization'>;
 }
 /** The party(s) that are responsible for covering the payment of this account, and what order should they be applied to the account */
 export interface AccountCoverage extends BackboneElement {
     /** The party(s), such as insurances, that may contribute to the payment of this account */
-    coverage: Reference<"Coverage">;
+    coverage: Reference<'Coverage'>;
     /** The priority of the coverage in the context of this account */
     priority?: positiveInt;
     _priority?: Element;
@@ -48,10 +48,18 @@ export interface AccountCoverage extends BackboneElement {
 /** The parties ultimately responsible for balancing the Account */
 export interface AccountGuarantor extends BackboneElement {
     /** Responsible entity */
-    party: Reference<"Patient" | "Organization" | "RelatedPerson">;
+    party: Reference<'Patient' | 'Organization' | 'RelatedPerson'>;
     /** Credit or other hold applied */
     onHold?: boolean;
     _onHold?: Element;
     /** Guarantee account during */
     period?: Period;
+}
+/** active | inactive | entered-in-error | on-hold | unknown */
+export declare enum AccountStatus {
+    Active = "active",
+    EnteredInError = "entered-in-error",
+    Inactive = "inactive",
+    OnHold = "on-hold",
+    Unknown = "unknown"
 }

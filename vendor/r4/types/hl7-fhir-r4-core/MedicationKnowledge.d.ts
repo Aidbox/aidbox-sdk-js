@@ -12,10 +12,10 @@ import { markdown } from "./markdown";
 import { base64Binary } from "./base64Binary";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** Information about a medication that is used to support knowledge. */
 export interface MedicationKnowledge extends DomainResource {
+    resourceType: 'MedicationKnowledge';
     /** The instructions for preparing the medication */
     preparationInstruction?: markdown;
     /** Amount of drug in package */
@@ -50,7 +50,7 @@ export interface MedicationKnowledge extends DomainResource {
     /** Potential clinical issue with or between medication(s) */
     contraindication?: Array<Reference>;
     /** active | inactive | entered-in-error */
-    status?: code;
+    status?: `${MedicationKnowledgeStatus}`;
     /** Category of the medication or product */
     productType?: Array<CodeableConcept>;
     /** Additional names for a medication */
@@ -60,7 +60,7 @@ export interface MedicationKnowledge extends DomainResource {
     /** Guidelines for administration of the medication */
     administrationGuidelines?: Array<MedicationKnowledgeAdministrationGuidelines>;
     /** Manufacturer of the item */
-    manufacturer?: Reference<"Organization">;
+    manufacturer?: Reference<'Organization'>;
     /** The pricing of the medication */
     cost?: Array<MedicationKnowledgeCost>;
 }
@@ -82,7 +82,7 @@ export interface MedicationKnowledgeSchedule extends BackboneElement {
 /** Active or inactive ingredient */
 export interface MedicationKnowledgeIngredient extends BackboneElement {
     itemCodeableConcept: CodeableConcept;
-    itemReference: Reference<"Substance">;
+    itemReference: Reference<'Substance'>;
     /** Active ingredient indicator */
     isActive?: boolean;
     _isActive?: Element;
@@ -113,7 +113,7 @@ export interface MedicationKnowledgeMonograph extends BackboneElement {
     /** The category of medication document */
     type?: CodeableConcept;
     /** Associated documentation about the medication */
-    source?: Reference<"Media" | "DocumentReference">;
+    source?: Reference<'Media' | 'DocumentReference'>;
 }
 /** Associated or related medication information */
 export interface MedicationKnowledgeRelatedMedicationKnowledge extends BackboneElement {
@@ -172,14 +172,14 @@ export interface MedicationKnowledgeAdministrationGuidelines extends BackboneEle
     /** Dosage for the medication for the specific guidelines */
     dosage?: Array<MedicationKnowledgeDosage>;
     indicationCodeableConcept?: CodeableConcept;
-    indicationReference?: Reference<"ObservationDefinition">;
+    indicationReference?: Reference<'ObservationDefinition'>;
     /** Characteristics of the patient that are relevant to the administration guidelines */
     patientCharacteristics?: Array<MedicationKnowledgePatientCharacteristics>;
 }
 /** Regulatory information about a medication */
 export interface MedicationKnowledgeRegulatory extends BackboneElement {
     /** Specifies the authority of the regulation */
-    regulatoryAuthority: Reference<"Organization">;
+    regulatoryAuthority: Reference<'Organization'>;
     /** Specifies if changes are allowed when dispensing a medication from a regulatory perspective */
     substitution?: Array<MedicationKnowledgeSubstitution>;
     /** Specifies the schedule of a medication in jurisdiction */
@@ -194,4 +194,10 @@ export interface MedicationKnowledgePatientCharacteristics extends BackboneEleme
     /** The specific characteristic */
     value?: Array<string>;
     _value?: Array<Element>;
+}
+/** active | inactive | entered-in-error */
+export declare enum MedicationKnowledgeStatus {
+    Active = "active",
+    EnteredInError = "entered-in-error",
+    Inactive = "inactive"
 }

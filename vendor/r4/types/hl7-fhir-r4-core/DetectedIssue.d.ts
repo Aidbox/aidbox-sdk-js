@@ -7,13 +7,13 @@ import { dateTime } from "./dateTime";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Indicates an actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient; e.g. Drug-drug interaction, Ineffective treatment frequency, Procedure-condition conflict, etc. */
 export interface DetectedIssue extends DomainResource {
+    resourceType: 'DetectedIssue';
     /** Associated patient */
-    patient?: Reference<"Patient">;
+    patient?: Reference<'Patient'>;
     _identifiedDateTime?: Element;
     _reference?: Element;
     /** Supporting evidence */
@@ -22,14 +22,14 @@ export interface DetectedIssue extends DomainResource {
     /** Step taken to address */
     mitigation?: Array<DetectedIssueMitigation>;
     /** The provider or device that identified the issue */
-    author?: Reference<"PractitionerRole" | "Device" | "Practitioner">;
+    author?: Reference<'PractitionerRole' | 'Device' | 'Practitioner'>;
     identifiedDateTime?: dateTime;
     /** Authority for issue */
     reference?: uri;
     /** registered | preliminary | final | amended + */
-    status: code;
+    status: `${DetectedIssueStatus}`;
     /** high | moderate | low */
-    severity?: code;
+    severity?: `${DetectedIssueSeverity}`;
     /** Issue Category, e.g. drug-drug, duplicate therapy, etc. */
     code?: CodeableConcept;
     /** Unique id for the detected issue */
@@ -57,5 +57,22 @@ export interface DetectedIssueMitigation extends BackboneElement {
     date?: dateTime;
     _date?: Element;
     /** Who is committing? */
-    author?: Reference<"PractitionerRole" | "Practitioner">;
+    author?: Reference<'PractitionerRole' | 'Practitioner'>;
+}
+/** registered | preliminary | final | amended + */
+export declare enum DetectedIssueStatus {
+    Amended = "amended",
+    Cancelled = "cancelled",
+    Corrected = "corrected",
+    EnteredInError = "entered-in-error",
+    Final = "final",
+    Preliminary = "preliminary",
+    Registered = "registered",
+    Unknown = "unknown"
+}
+/** high | moderate | low */
+export declare enum DetectedIssueSeverity {
+    High = "high",
+    Low = "low",
+    Moderate = "moderate"
 }

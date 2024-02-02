@@ -8,10 +8,10 @@ import { dateTime } from "./dateTime";
 import { DomainResource } from "./DomainResource";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
-import { code } from "./code";
 import { BackboneElement } from "./BackboneElement";
 /** A curated namespace that issues unique symbols within that namespace for the identification of concepts, people, devices, etc.  Represents a "System" used within the Identifier and Coding data types. */
 export interface NamingSystem extends DomainResource {
+    resourceType: 'NamingSystem';
     /** Natural language description of the naming system */
     description?: markdown;
     _usage?: Element;
@@ -38,14 +38,34 @@ export interface NamingSystem extends DomainResource {
     /** How/where is it used */
     usage?: string;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${NamingSystemStatus}`;
     /** codesystem | identifier | root */
-    kind: code;
+    kind: `${NamingSystemKind}`;
     _name?: Element;
     /** Unique identifiers used for system */
     uniqueId: Array<NamingSystemUniqueId>;
     /** Contact details for the publisher */
     contact?: Array<ContactDetail>;
+}
+/** draft | active | retired | unknown */
+export declare enum NamingSystemStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
+/** codesystem | identifier | root */
+export declare enum NamingSystemKind {
+    Codesystem = "codesystem",
+    Identifier = "identifier",
+    Root = "root"
+}
+/** oid | uuid | uri | other */
+export declare enum NamingSystemType {
+    Oid = "oid",
+    Other = "other",
+    Uri = "uri",
+    Uuid = "uuid"
 }
 /** Unique identifiers used for system */
 export interface NamingSystemUniqueId extends BackboneElement {
@@ -53,7 +73,7 @@ export interface NamingSystemUniqueId extends BackboneElement {
     value: string;
     _type?: Element;
     /** oid | uuid | uri | other */
-    type: code;
+    type: `${NamingSystemType}`;
     _value?: Element;
     /** Notes about identifier usage */
     comment?: string;

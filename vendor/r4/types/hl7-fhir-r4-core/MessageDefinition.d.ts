@@ -11,16 +11,16 @@ import { canonical } from "./canonical";
 import { DomainResource } from "./DomainResource";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Defines the characteristics of a message that can be shared between systems, including the type of event that initiates the message, the content to be transmitted and what response(s), if any, are permitted. */
 export interface MessageDefinition extends DomainResource {
+    resourceType: 'MessageDefinition';
     _base?: Element;
     /** Natural language description of the message definition */
     description?: markdown;
     /** consequence | currency | notification */
-    category?: code;
+    category?: `${MessageDefinitionCategory}`;
     /** Date last changed */
     date: dateTime;
     _graph?: Array<Element>;
@@ -51,7 +51,7 @@ export interface MessageDefinition extends DomainResource {
     _description?: Element;
     _purpose?: Element;
     /** draft | active | retired | unknown */
-    status: code;
+    status: `${MessageDefinitionStatus}`;
     /** Responses to this message */
     allowedResponse?: Array<MessageDefinitionAllowedResponse>;
     /** Canonical reference to a GraphDefinition */
@@ -69,7 +69,7 @@ export interface MessageDefinition extends DomainResource {
     /** Takes the place of */
     replaces?: Array<canonical>;
     /** always | on-error | never | on-success */
-    responseRequired?: code;
+    responseRequired?: `${MessageDefinitionResponseRequired}`;
     _category?: Element;
     /** Definition this one is based on */
     base?: canonical;
@@ -83,6 +83,19 @@ export interface MessageDefinition extends DomainResource {
     _url?: Element;
     eventCoding: Coding;
 }
+/** consequence | currency | notification */
+export declare enum MessageDefinitionCategory {
+    Consequence = "consequence",
+    Currency = "currency",
+    Notification = "notification"
+}
+/** draft | active | retired | unknown */
+export declare enum MessageDefinitionStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
 /** Responses to this message */
 export interface MessageDefinitionAllowedResponse extends BackboneElement {
     /** Reference to allowed message definition response */
@@ -92,10 +105,161 @@ export interface MessageDefinitionAllowedResponse extends BackboneElement {
     situation?: markdown;
     _situation?: Element;
 }
+/** Type of resource */
+export declare enum MessageDefinitionCode {
+    ImmunizationEvaluation = "ImmunizationEvaluation",
+    Appointment = "Appointment",
+    StructureMap = "StructureMap",
+    CareTeam = "CareTeam",
+    Linkage = "Linkage",
+    Communication = "Communication",
+    MedicationDispense = "MedicationDispense",
+    ImagingStudy = "ImagingStudy",
+    ChargeItem = "ChargeItem",
+    AdverseEvent = "AdverseEvent",
+    Media = "Media",
+    SubstancePolymer = "SubstancePolymer",
+    QuestionnaireResponse = "QuestionnaireResponse",
+    Coverage = "Coverage",
+    Procedure = "Procedure",
+    AuditEvent = "AuditEvent",
+    PaymentReconciliation = "PaymentReconciliation",
+    MedicinalProductManufactured = "MedicinalProductManufactured",
+    CompartmentDefinition = "CompartmentDefinition",
+    Organization = "Organization",
+    ExplanationOfBenefit = "ExplanationOfBenefit",
+    Composition = "Composition",
+    CoverageEligibilityResponse = "CoverageEligibilityResponse",
+    DocumentReference = "DocumentReference",
+    EventDefinition = "EventDefinition",
+    SubstanceProtein = "SubstanceProtein",
+    TerminologyCapabilities = "TerminologyCapabilities",
+    Encounter = "Encounter",
+    ImplementationGuide = "ImplementationGuide",
+    EvidenceVariable = "EvidenceVariable",
+    ObservationDefinition = "ObservationDefinition",
+    DiagnosticReport = "DiagnosticReport",
+    ExampleScenario = "ExampleScenario",
+    ResearchDefinition = "ResearchDefinition",
+    Parameters = "Parameters",
+    SearchParameter = "SearchParameter",
+    MedicinalProductInteraction = "MedicinalProductInteraction",
+    CodeSystem = "CodeSystem",
+    MessageDefinition = "MessageDefinition",
+    NutritionOrder = "NutritionOrder",
+    VerificationResult = "VerificationResult",
+    MedicationAdministration = "MedicationAdministration",
+    CatalogEntry = "CatalogEntry",
+    Flag = "Flag",
+    DeviceUseStatement = "DeviceUseStatement",
+    Contract = "Contract",
+    Invoice = "Invoice",
+    PaymentNotice = "PaymentNotice",
+    Location = "Location",
+    Claim = "Claim",
+    Specimen = "Specimen",
+    MedicationStatement = "MedicationStatement",
+    EnrollmentResponse = "EnrollmentResponse",
+    Evidence = "Evidence",
+    Bundle = "Bundle",
+    ResearchElementDefinition = "ResearchElementDefinition",
+    BodyStructure = "BodyStructure",
+    MedicinalProduct = "MedicinalProduct",
+    ResearchStudy = "ResearchStudy",
+    AppointmentResponse = "AppointmentResponse",
+    MedicinalProductIndication = "MedicinalProductIndication",
+    Measure = "Measure",
+    Person = "Person",
+    InsurancePlan = "InsurancePlan",
+    Patient = "Patient",
+    EffectEvidenceSynthesis = "EffectEvidenceSynthesis",
+    ResearchSubject = "ResearchSubject",
+    Medication = "Medication",
+    ConceptMap = "ConceptMap",
+    CoverageEligibilityRequest = "CoverageEligibilityRequest",
+    SubstanceSourceMaterial = "SubstanceSourceMaterial",
+    VisionPrescription = "VisionPrescription",
+    MolecularSequence = "MolecularSequence",
+    MedicinalProductUndesirableEffect = "MedicinalProductUndesirableEffect",
+    OperationOutcome = "OperationOutcome",
+    MessageHeader = "MessageHeader",
+    AllergyIntolerance = "AllergyIntolerance",
+    SubstanceReferenceInformation = "SubstanceReferenceInformation",
+    SupplyDelivery = "SupplyDelivery",
+    EpisodeOfCare = "EpisodeOfCare",
+    PractitionerRole = "PractitionerRole",
+    Library = "Library",
+    Practitioner = "Practitioner",
+    MedicationRequest = "MedicationRequest",
+    ImmunizationRecommendation = "ImmunizationRecommendation",
+    Immunization = "Immunization",
+    GraphDefinition = "GraphDefinition",
+    Account = "Account",
+    MedicinalProductIngredient = "MedicinalProductIngredient",
+    MeasureReport = "MeasureReport",
+    DeviceMetric = "DeviceMetric",
+    Goal = "Goal",
+    MedicationKnowledge = "MedicationKnowledge",
+    ClaimResponse = "ClaimResponse",
+    DeviceDefinition = "DeviceDefinition",
+    Slot = "Slot",
+    ValueSet = "ValueSet",
+    MedicinalProductAuthorization = "MedicinalProductAuthorization",
+    StructureDefinition = "StructureDefinition",
+    MedicinalProductContraindication = "MedicinalProductContraindication",
+    DeviceRequest = "DeviceRequest",
+    List = "List",
+    Questionnaire = "Questionnaire",
+    DomainResource = "DomainResource",
+    Endpoint = "Endpoint",
+    NamingSystem = "NamingSystem",
+    MedicinalProductPackaged = "MedicinalProductPackaged",
+    Basic = "Basic",
+    Binary = "Binary",
+    PlanDefinition = "PlanDefinition",
+    Subscription = "Subscription",
+    RelatedPerson = "RelatedPerson",
+    SubstanceSpecification = "SubstanceSpecification",
+    SubstanceNucleicAcid = "SubstanceNucleicAcid",
+    GuidanceResponse = "GuidanceResponse",
+    ClinicalImpression = "ClinicalImpression",
+    OrganizationAffiliation = "OrganizationAffiliation",
+    Resource = "Resource",
+    Condition = "Condition",
+    CapabilityStatement = "CapabilityStatement",
+    HealthcareService = "HealthcareService",
+    SpecimenDefinition = "SpecimenDefinition",
+    RiskAssessment = "RiskAssessment",
+    OperationDefinition = "OperationDefinition",
+    ActivityDefinition = "ActivityDefinition",
+    Schedule = "Schedule",
+    BiologicallyDerivedProduct = "BiologicallyDerivedProduct",
+    Group = "Group",
+    MedicinalProductPharmaceutical = "MedicinalProductPharmaceutical",
+    FamilyMemberHistory = "FamilyMemberHistory",
+    ServiceRequest = "ServiceRequest",
+    DetectedIssue = "DetectedIssue",
+    Device = "Device",
+    RequestGroup = "RequestGroup",
+    TestScript = "TestScript",
+    RiskEvidenceSynthesis = "RiskEvidenceSynthesis",
+    SupplyRequest = "SupplyRequest",
+    Task = "Task",
+    CommunicationRequest = "CommunicationRequest",
+    EnrollmentRequest = "EnrollmentRequest",
+    ChargeItemDefinition = "ChargeItemDefinition",
+    Substance = "Substance",
+    Provenance = "Provenance",
+    Consent = "Consent",
+    CarePlan = "CarePlan",
+    TestReport = "TestReport",
+    Observation = "Observation",
+    DocumentManifest = "DocumentManifest"
+}
 /** Resource(s) that are the subject of the event */
 export interface MessageDefinitionFocus extends BackboneElement {
     /** Type of resource */
-    code: code;
+    code: `${MessageDefinitionCode}`;
     _code?: Element;
     /** Profile that must be adhered to by focus */
     profile?: canonical;
@@ -106,4 +270,11 @@ export interface MessageDefinitionFocus extends BackboneElement {
     /** Maximum number of focuses of this type */
     max?: string;
     _max?: Element;
+}
+/** always | on-error | never | on-success */
+export declare enum MessageDefinitionResponseRequired {
+    Always = "always",
+    Never = "never",
+    OnError = "on-error",
+    OnSuccess = "on-success"
 }

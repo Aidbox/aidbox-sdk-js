@@ -6,7 +6,7 @@ import { Element } from "./Element";
 import { Reference } from "./Reference";
 /** Base StructureDefinition for Annotation Type: A  text note which also  contains information about who made the statement and when. */
 export interface Annotation extends Element {
-    authorReference?: Reference<"Patient" | "Organization" | "Practitioner" | "RelatedPerson">;
+    authorReference?: Reference<'Patient' | 'Organization' | 'Practitioner' | 'RelatedPerson'>;
     authorString?: string;
     _authorString?: Element;
     /** When the annotation was made */

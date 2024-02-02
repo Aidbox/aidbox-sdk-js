@@ -5,12 +5,11 @@ import { url } from "./url";
 import { canonical } from "./canonical";
 import { markdown } from "./markdown";
 import { Element } from "./Element";
-import { code } from "./code";
 /** Base StructureDefinition for RelatedArtifact Type: Related artifacts such as additional documentation, justification, or bibliographic references. */
 export interface RelatedArtifact extends Element {
     _type?: Element;
     /** documentation | justification | citation | predecessor | successor | derived-from | depends-on | composed-of */
-    type: code;
+    type: `${RelatedArtifactType}`;
     /** What document is being referenced */
     document?: Attachment;
     /** Bibliographic citation for the artifact */
@@ -28,4 +27,15 @@ export interface RelatedArtifact extends Element {
     _citation?: Element;
     _url?: Element;
     _display?: Element;
+}
+/** documentation | justification | citation | predecessor | successor | derived-from | depends-on | composed-of */
+export declare enum RelatedArtifactType {
+    Citation = "citation",
+    ComposedOf = "composed-of",
+    DependsOn = "depends-on",
+    DerivedFrom = "derived-from",
+    Documentation = "documentation",
+    Justification = "justification",
+    Predecessor = "predecessor",
+    Successor = "successor"
 }

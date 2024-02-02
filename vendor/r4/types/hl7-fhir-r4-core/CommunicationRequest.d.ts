@@ -8,18 +8,18 @@ import { dateTime } from "./dateTime";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A request to convey information; e.g. the CDS system proposes that an alert be sent to a responsible provider, the CDS system proposes that the public health agency be notified about a reportable condition. */
 export interface CommunicationRequest extends DomainResource {
+    resourceType: 'CommunicationRequest';
     /** Message category */
     category?: Array<CodeableConcept>;
     /** Message payload */
     payload?: Array<CommunicationRequestPayload>;
     _authoredOn?: Element;
     /** Encounter created as part of */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     /** A channel of communication */
     medium?: Array<CodeableConcept>;
     _doNotPerform?: Element;
@@ -36,16 +36,16 @@ export interface CommunicationRequest extends DomainResource {
     /** Comments made about communication request */
     note?: Array<Annotation>;
     /** Who/what is requesting service */
-    requester?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    requester?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** routine | urgent | asap | stat */
-    priority?: code;
+    priority?: `${CommunicationRequestPriority}`;
     occurrencePeriod?: Period;
     /** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
-    status: code;
+    status: `${CommunicationRequestStatus}`;
     /** Composite request this is part of */
     groupIdentifier?: Identifier;
     /** Message sender */
-    sender?: Reference<"Patient" | "PractitionerRole" | "HealthcareService" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    sender?: Reference<'Patient' | 'PractitionerRole' | 'HealthcareService' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** Unique identifier */
     identifier?: Array<Identifier>;
     /** True if request is prohibiting action */
@@ -56,7 +56,7 @@ export interface CommunicationRequest extends DomainResource {
     basedOn?: Array<Reference>;
     occurrenceDateTime?: dateTime;
     /** Focus of message */
-    subject?: Reference<"Patient" | "Group">;
+    subject?: Reference<'Patient' | 'Group'>;
     /** Resources that pertain to this communication request */
     about?: Array<Reference>;
     /** Why is communication needed? */
@@ -69,4 +69,21 @@ export interface CommunicationRequestPayload extends BackboneElement {
     _contentString: Element;
     contentAttachment: Attachment;
     contentReference: Reference;
+}
+/** routine | urgent | asap | stat */
+export declare enum CommunicationRequestPriority {
+    Asap = "asap",
+    Routine = "routine",
+    Stat = "stat",
+    Urgent = "urgent"
+}
+/** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
+export declare enum CommunicationRequestStatus {
+    Active = "active",
+    Completed = "completed",
+    Draft = "draft",
+    EnteredInError = "entered-in-error",
+    OnHold = "on-hold",
+    Revoked = "revoked",
+    Unknown = "unknown"
 }

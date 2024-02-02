@@ -8,16 +8,16 @@ import { DomainResource } from "./DomainResource";
 import { Money } from "./Money";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Financial instrument which may be used to reimburse or pay for health care products and services. Includes both insurance and self-payment. */
 export interface Coverage extends DomainResource {
+    resourceType: 'Coverage';
     _order?: Element;
     /** Owner of the policy */
-    policyHolder?: Reference<"Patient" | "Organization" | "RelatedPerson">;
+    policyHolder?: Reference<'Patient' | 'Organization' | 'RelatedPerson'>;
     /** Plan beneficiary */
-    beneficiary: Reference<"Patient">;
+    beneficiary: Reference<'Patient'>;
     /** Contract details */
     contract?: Array<Reference>;
     _status?: Element;
@@ -30,11 +30,11 @@ export interface Coverage extends DomainResource {
     /** Reimbursement to insurer */
     subrogation?: boolean;
     /** Subscriber to the policy */
-    subscriber?: Reference<"Patient" | "RelatedPerson">;
+    subscriber?: Reference<'Patient' | 'RelatedPerson'>;
     /** Issuer of the policy */
     payor: Array<Reference>;
     /** active | cancelled | draft | entered-in-error */
-    status: code;
+    status: `${CoverageStatus}`;
     /** Additional coverage classifications */
     class?: Array<CoverageClass>;
     /** Business Identifier for the coverage */
@@ -69,6 +69,13 @@ export interface CoverageCostToBeneficiary extends BackboneElement {
     valueMoney: Money;
     /** Exceptions for patient payments */
     exception?: Array<CoverageException>;
+}
+/** active | cancelled | draft | entered-in-error */
+export declare enum CoverageStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    Draft = "draft",
+    EnteredInError = "entered-in-error"
 }
 /** Additional coverage classifications */
 export interface CoverageClass extends BackboneElement {

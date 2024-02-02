@@ -10,13 +10,13 @@ import { DomainResource } from "./DomainResource";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Information about a person that is involved in the care for a patient, but who is not the target of healthcare, nor has a formal responsibility in the care process. */
 export interface RelatedPerson extends DomainResource {
+    resourceType: 'RelatedPerson';
     /** The patient this person is related to */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     _active?: Element;
     /** Address where the related person can be contacted or visited */
     address?: Array<Address>;
@@ -39,7 +39,7 @@ export interface RelatedPerson extends DomainResource {
     /** A contact detail for the person */
     telecom?: Array<ContactPoint>;
     /** male | female | other | unknown */
-    gender?: code;
+    gender?: `${RelatedPersonGender}`;
     /** Period of time that this relationship is considered valid */
     period?: Period;
 }
@@ -50,4 +50,11 @@ export interface RelatedPersonCommunication extends BackboneElement {
     /** Language preference indicator */
     preferred?: boolean;
     _preferred?: Element;
+}
+/** male | female | other | unknown */
+export declare enum RelatedPersonGender {
+    Female = "female",
+    Male = "male",
+    Other = "other",
+    Unknown = "unknown"
 }

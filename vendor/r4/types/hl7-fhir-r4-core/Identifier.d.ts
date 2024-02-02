@@ -5,15 +5,14 @@ import { CodeableConcept } from "./CodeableConcept";
 import { uri } from "./uri";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 /** Base StructureDefinition for Identifier Type: An identifier - identifies some entity uniquely and unambiguously. Typically this is used for business identifiers. */
 export interface Identifier extends Element {
     /** Organization that issued id (may be just text) */
-    assigner?: Reference<"Organization">;
+    assigner?: Reference<'Organization'>;
     /** The namespace for the identifier value */
     system?: uri;
     /** usual | official | temp | secondary | old (If known) */
-    use?: code;
+    use?: `${IdentifierUse}`;
     /** The value that is unique */
     value?: string;
     /** Description of identifier */
@@ -23,4 +22,12 @@ export interface Identifier extends Element {
     period?: Period;
     _system?: Element;
     _use?: Element;
+}
+/** usual | official | temp | secondary | old (If known) */
+export declare enum IdentifierUse {
+    Official = "official",
+    Old = "old",
+    Secondary = "secondary",
+    Temp = "temp",
+    Usual = "usual"
 }

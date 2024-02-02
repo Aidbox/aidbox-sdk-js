@@ -13,5 +13,5 @@ export interface UsageContext extends Element {
     valueCodeableConcept: CodeableConcept;
     valueQuantity: Quantity;
     valueRange: Range;
-    valueReference: Reference<"InsurancePlan" | "HealthcareService" | "Organization" | "ResearchStudy" | "Location" | "PlanDefinition" | "Group">;
+    valueReference: Reference<'InsurancePlan' | 'HealthcareService' | 'Organization' | 'ResearchStudy' | 'Location' | 'PlanDefinition' | 'Group'>;
 }

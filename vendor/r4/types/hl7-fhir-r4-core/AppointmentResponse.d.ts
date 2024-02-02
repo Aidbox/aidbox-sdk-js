@@ -5,17 +5,17 @@ import { DomainResource } from "./DomainResource";
 import { instant } from "./instant";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** A reply to an appointment request for a patient and/or practitioner(s), such as a confirmation or rejection. */
 export interface AppointmentResponse extends DomainResource {
+    resourceType: 'AppointmentResponse';
     /** Appointment this response relates to */
-    appointment: Reference<"Appointment">;
+    appointment: Reference<'Appointment'>;
     _end?: Element;
     /** Time from appointment, or requested new start time */
     start?: instant;
     /** accepted | declined | tentative | needs-action */
-    participantStatus: code;
+    participantStatus: `${AppointmentResponseParticipantStatus}`;
     /** Role of participant in the appointment */
     participantType?: Array<CodeableConcept>;
     /** Additional comments */
@@ -28,5 +28,12 @@ export interface AppointmentResponse extends DomainResource {
     _start?: Element;
     _comment?: Element;
     /** Person, Location, HealthcareService, or Device */
-    actor?: Reference<"Patient" | "PractitionerRole" | "HealthcareService" | "Device" | "Location" | "Practitioner" | "RelatedPerson">;
+    actor?: Reference<'Patient' | 'PractitionerRole' | 'HealthcareService' | 'Device' | 'Location' | 'Practitioner' | 'RelatedPerson'>;
+}
+/** accepted | declined | tentative | needs-action */
+export declare enum AppointmentResponseParticipantStatus {
+    Accepted = "accepted",
+    Declined = "declined",
+    NeedsAction = "needs-action",
+    Tentative = "tentative"
 }

@@ -12,13 +12,14 @@ import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** The technical details of an endpoint that can be used for electronic services, such as for web services providing XDS.b or a REST endpoint for another FHIR server. This may include any security context information. */
 export interface Endpoint extends DomainResource {
+    resourceType: 'Endpoint';
     _address?: Element;
     /** Protocol/Profile/Standard to be used with this endpoint connection */
     connectionType: Coding;
     /** The technical base address for connecting to this endpoint */
     address: url;
     /** Organization that manages this endpoint (might not be the organization that exposes the endpoint) */
-    managingOrganization?: Reference<"Organization">;
+    managingOrganization?: Reference<'Organization'>;
     /** A name that this endpoint can be identified by */
     name?: string;
     /** Mimetype to send. If not specified, the content could be anything (including no payload, if the connectionType defined this) */
@@ -30,7 +31,7 @@ export interface Endpoint extends DomainResource {
     /** Usage depends on the channel type */
     header?: Array<string>;
     /** active | suspended | error | off | entered-in-error | test */
-    status: code;
+    status: `${EndpointStatus}`;
     _name?: Element;
     /** Identifies this endpoint across multiple systems */
     identifier?: Array<Identifier>;
@@ -39,4 +40,13 @@ export interface Endpoint extends DomainResource {
     /** Contact details for source (e.g. troubleshooting) */
     contact?: Array<ContactPoint>;
     _payloadMimeType?: Array<Element>;
+}
+/** active | suspended | error | off | entered-in-error | test */
+export declare enum EndpointStatus {
+    Active = "active",
+    EnteredInError = "entered-in-error",
+    Error = "error",
+    Off = "off",
+    Suspended = "suspended",
+    Test = "test"
 }

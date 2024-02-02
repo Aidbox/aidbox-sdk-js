@@ -18,7 +18,14 @@ export interface Quantity extends Element {
     /** Coded form of the unit */
     code?: code;
     /** < | <= | >= | > - how to understand the value */
-    comparator?: code;
+    comparator?: `${QuantityComparator}`;
     _system?: Element;
     _unit?: Element;
+}
+/** < | <= | >= | > - how to understand the value */
+export declare enum QuantityComparator {
+    "<" = "<",
+    "<=" = "<=",
+    ">" = ">",
+    ">=" = ">="
 }

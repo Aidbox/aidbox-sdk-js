@@ -9,6 +9,7 @@ import { Element } from "./Element";
 import { BackboneElement } from "./BackboneElement";
 /** Todo. */
 export interface SubstancePolymer extends DomainResource {
+    resourceType: 'SubstancePolymer';
     /** Todo */
     class?: CodeableConcept;
     /** Todo */

@@ -8,11 +8,11 @@ import { Duration } from "./Duration";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A kind of specimen with associated set of requirements. */
 export interface SpecimenDefinition extends DomainResource {
+    resourceType: 'SpecimenDefinition';
     /** Business identifier of a kind of specimen */
     identifier?: Identifier;
     /** Kind of material to collect */
@@ -26,6 +26,11 @@ export interface SpecimenDefinition extends DomainResource {
     collection?: Array<CodeableConcept>;
     /** Specimen in container intended for testing by lab */
     typeTested?: Array<SpecimenDefinitionTypeTested>;
+}
+/** preferred | alternate */
+export declare enum SpecimenDefinitionPreference {
+    Alternate = "alternate",
+    Preferred = "preferred"
 }
 /** Specimen handling before testing */
 export interface SpecimenDefinitionHandling extends BackboneElement {
@@ -42,7 +47,7 @@ export interface SpecimenDefinitionHandling extends BackboneElement {
 /** Additive associated with container */
 export interface SpecimenDefinitionAdditive extends BackboneElement {
     additiveCodeableConcept: CodeableConcept;
-    additiveReference: Reference<"Substance">;
+    additiveReference: Reference<'Substance'>;
 }
 /** The specimen's container */
 export interface SpecimenDefinitionContainer extends BackboneElement {
@@ -81,7 +86,7 @@ export interface SpecimenDefinitionTypeTested extends BackboneElement {
     /** Rejection criterion */
     rejectionCriterion?: Array<CodeableConcept>;
     /** preferred | alternate */
-    preference: code;
+    preference: `${SpecimenDefinitionPreference}`;
     /** Specimen handling before testing */
     handling?: Array<SpecimenDefinitionHandling>;
     /** The specimen's container */

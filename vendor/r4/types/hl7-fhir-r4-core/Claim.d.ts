@@ -13,27 +13,27 @@ import { Money } from "./Money";
 import { date } from "./date";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 import { decimal } from "./decimal";
 /** A provider issued list of professional services and products which have been provided, or are to be provided, to a patient which is sent to an insurer for reimbursement. */
 export interface Claim extends DomainResource {
+    resourceType: 'Claim';
     _created?: Element;
     /** The recipient of the products and services */
-    patient: Reference<"Patient">;
+    patient: Reference<'Patient'>;
     /** Patient insurance information */
     insurance: Array<ClaimInsurance>;
     /** Servicing facility */
-    facility?: Reference<"Location">;
+    facility?: Reference<'Location'>;
     /** Pertinent diagnosis information */
     diagnosis?: Array<ClaimDiagnosis>;
     /** Author of the claim */
-    enterer?: Reference<"PractitionerRole" | "Practitioner">;
+    enterer?: Reference<'PractitionerRole' | 'Practitioner'>;
     /** Supporting information */
     supportingInfo?: Array<ClaimSupportingInfo>;
     /** claim | preauthorization | predetermination */
-    use: code;
+    use: `${ClaimUse}`;
     /** Product or service provided */
     item?: Array<ClaimItem>;
     _status?: Element;
@@ -46,11 +46,11 @@ export interface Claim extends DomainResource {
     /** Prior or corollary claims */
     related?: Array<ClaimRelated>;
     /** Treatment referral */
-    referral?: Reference<"ServiceRequest">;
+    referral?: Reference<'ServiceRequest'>;
     /** Total claim cost */
     total?: Money;
     /** Target */
-    insurer?: Reference<"Organization">;
+    insurer?: Reference<'Organization'>;
     /** For whom to reserve funds */
     fundsReserve?: CodeableConcept;
     /** Desired processing ugency */
@@ -58,11 +58,11 @@ export interface Claim extends DomainResource {
     /** Details of the event */
     accident?: ClaimAccident;
     /** active | cancelled | draft | entered-in-error */
-    status: code;
+    status: `${ClaimStatus}`;
     /** Recipient of benefits payable */
     payee?: ClaimPayee;
     /** Prescription authorizing services and products */
-    prescription?: Reference<"VisionPrescription" | "DeviceRequest" | "MedicationRequest">;
+    prescription?: Reference<'VisionPrescription' | 'DeviceRequest' | 'MedicationRequest'>;
     /** Relevant time frame for the claim */
     billablePeriod?: Period;
     /** Business Identifier for claim */
@@ -70,9 +70,9 @@ export interface Claim extends DomainResource {
     /** More granular claim type */
     subType?: CodeableConcept;
     /** Party responsible for the claim */
-    provider: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    provider: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Original prescription if superseded by fulfiller */
-    originalPrescription?: Reference<"VisionPrescription" | "DeviceRequest" | "MedicationRequest">;
+    originalPrescription?: Reference<'VisionPrescription' | 'DeviceRequest' | 'MedicationRequest'>;
     _use?: Element;
     /** Members of the care team */
     careTeam?: Array<ClaimCareTeam>;
@@ -85,7 +85,7 @@ export interface ClaimAccident extends BackboneElement {
     /** The nature of the accident */
     type?: CodeableConcept;
     locationAddress?: Address;
-    locationReference?: Reference<"Location">;
+    locationReference?: Reference<'Location'>;
 }
 /** Pertinent diagnosis information */
 export interface ClaimDiagnosis extends BackboneElement {
@@ -93,7 +93,7 @@ export interface ClaimDiagnosis extends BackboneElement {
     sequence: positiveInt;
     _sequence?: Element;
     diagnosisCodeableConcept: CodeableConcept;
-    diagnosisReference: Reference<"Condition">;
+    diagnosisReference: Reference<'Condition'>;
     /** Timing or nature of the diagnosis */
     type?: Array<CodeableConcept>;
     /** Present on admission */
@@ -101,10 +101,16 @@ export interface ClaimDiagnosis extends BackboneElement {
     /** Package billing code */
     packageCode?: CodeableConcept;
 }
+/** claim | preauthorization | predetermination */
+export declare enum ClaimUse {
+    Claim = "claim",
+    Preauthorization = "preauthorization",
+    Predetermination = "predetermination"
+}
 /** Patient insurance information */
 export interface ClaimInsurance extends BackboneElement {
     /** Adjudication results */
-    claimResponse?: Reference<"ClaimResponse">;
+    claimResponse?: Reference<'ClaimResponse'>;
     _sequence?: Element;
     _focal?: Element;
     /** Prior authorization reference number */
@@ -114,7 +120,7 @@ export interface ClaimInsurance extends BackboneElement {
     /** Additional provider contract number */
     businessArrangement?: string;
     /** Insurance information */
-    coverage: Reference<"Coverage">;
+    coverage: Reference<'Coverage'>;
     /** Insurance instance identifier */
     sequence: positiveInt;
     /** Pre-assigned Claim number */
@@ -128,7 +134,7 @@ export interface ClaimProcedure extends BackboneElement {
     /** When the procedure was performed */
     date?: dateTime;
     procedureCodeableConcept: CodeableConcept;
-    procedureReference: Reference<"Procedure">;
+    procedureReference: Reference<'Procedure'>;
     _date?: Element;
     /** Category of Procedure */
     type?: Array<CodeableConcept>;
@@ -143,7 +149,7 @@ export interface ClaimCareTeam extends BackboneElement {
     sequence: positiveInt;
     _sequence?: Element;
     /** Practitioner or organization */
-    provider: Reference<"PractitionerRole" | "Organization" | "Practitioner">;
+    provider: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
     /** Indicator of the lead practitioner */
     responsible?: boolean;
     _responsible?: Element;
@@ -155,7 +161,7 @@ export interface ClaimCareTeam extends BackboneElement {
 /** Prior or corollary claims */
 export interface ClaimRelated extends BackboneElement {
     /** Reference to the related claim */
-    claim?: Reference<"Claim">;
+    claim?: Reference<'Claim'>;
     /** How the reference claim is related */
     relationship?: CodeableConcept;
     /** File or case reference */
@@ -209,6 +215,13 @@ export interface ClaimSubDetail extends BackboneElement {
     quantity?: SimpleQuantity;
     /** Fee, charge or cost per item */
     unitPrice?: Money;
+}
+/** active | cancelled | draft | entered-in-error */
+export declare enum ClaimStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    Draft = "draft",
+    EnteredInError = "entered-in-error"
 }
 /** Product or service provided */
 export interface ClaimDetail extends BackboneElement {
@@ -268,7 +281,7 @@ export interface ClaimItem extends BackboneElement {
     /** Billing, service, product, or drug code */
     productOrService: CodeableConcept;
     _informationSequence?: Array<Element>;
-    locationReference?: Reference<"Location">;
+    locationReference?: Reference<'Location'>;
     /** Unique device identifier */
     udi?: Array<Reference>;
     /** Applicable exception and supporting information */
@@ -297,5 +310,5 @@ export interface ClaimPayee extends BackboneElement {
     /** Category of recipient */
     type: CodeableConcept;
     /** Recipient reference */
-    party?: Reference<"Patient" | "PractitionerRole" | "Organization" | "Practitioner" | "RelatedPerson">;
+    party?: Reference<'Patient' | 'PractitionerRole' | 'Organization' | 'Practitioner' | 'RelatedPerson'>;
 }

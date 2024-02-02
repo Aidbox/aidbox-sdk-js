@@ -12,11 +12,11 @@ import { canonical } from "./canonical";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** Represents a request for a patient to employ a medical device. The device may be an implantable device, or an external assistive device, such as a walker. */
 export interface DeviceRequest extends DomainResource {
+    resourceType: 'DeviceRequest';
     /** Filler role */
     performerType?: CodeableConcept;
     /** Associated insurance coverage */
@@ -31,7 +31,7 @@ export interface DeviceRequest extends DomainResource {
     /** Additional clinical information */
     supportingInfo?: Array<Reference>;
     /** Encounter motivating request */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     /** What request replaces */
     priorRequest?: Array<Reference>;
     _priority?: Element;
@@ -43,36 +43,65 @@ export interface DeviceRequest extends DomainResource {
     occurrenceTiming?: Timing;
     /** Notes or comments */
     note?: Array<Annotation>;
-    codeReference: Reference<"Device">;
+    codeReference: Reference<'Device'>;
     _intent?: Element;
     /** Who/what is requesting diagnostics */
-    requester?: Reference<"PractitionerRole" | "Organization" | "Device" | "Practitioner">;
+    requester?: Reference<'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner'>;
     /** routine | urgent | asap | stat */
-    priority?: code;
+    priority?: `${DeviceRequestPriority}`;
     occurrencePeriod?: Period;
     /** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
-    status?: code;
+    status?: `${DeviceRequestStatus}`;
     codeCodeableConcept: CodeableConcept;
     /** Identifier of composite request */
     groupIdentifier?: Identifier;
     /** External Request identifier */
     identifier?: Array<Identifier>;
     /** proposal | plan | directive | order | original-order | reflex-order | filler-order | instance-order | option */
-    intent: code;
+    intent: `${DeviceRequestIntent}`;
     /** What request fulfills */
     basedOn?: Array<Reference>;
     occurrenceDateTime?: dateTime;
     _instantiatesCanonical?: Array<Element>;
     /** Focus of request */
-    subject: Reference<"Patient" | "Device" | "Location" | "Group">;
+    subject: Reference<'Patient' | 'Device' | 'Location' | 'Group'>;
     /** Device details */
     parameter?: Array<DeviceRequestParameter>;
     /** Requested Filler */
-    performer?: Reference<"CareTeam" | "Patient" | "PractitionerRole" | "HealthcareService" | "Organization" | "Device" | "Practitioner" | "RelatedPerson">;
+    performer?: Reference<'CareTeam' | 'Patient' | 'PractitionerRole' | 'HealthcareService' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson'>;
     /** Linked Reason for request */
     reasonReference?: Array<Reference>;
     _instantiatesUri?: Array<Element>;
     _occurrenceDateTime?: Element;
+}
+/** routine | urgent | asap | stat */
+export declare enum DeviceRequestPriority {
+    Asap = "asap",
+    Routine = "routine",
+    Stat = "stat",
+    Urgent = "urgent"
+}
+/** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
+export declare enum DeviceRequestStatus {
+    Active = "active",
+    Completed = "completed",
+    Draft = "draft",
+    EnteredInError = "entered-in-error",
+    OnHold = "on-hold",
+    Revoked = "revoked",
+    Unknown = "unknown"
+}
+/** proposal | plan | directive | order | original-order | reflex-order | filler-order | instance-order | option */
+export declare enum DeviceRequestIntent {
+    Order = "order",
+    FillerOrder = "filler-order",
+    Option = "option",
+    Directive = "directive",
+    Proposal = "proposal",
+    ReflexOrder = "reflex-order",
+    Plan = "plan",
+    InstanceOrder = "instance-order",
+    OriginalOrder = "original-order"
 }
 /** Device details */
 export interface DeviceRequestParameter extends BackboneElement {

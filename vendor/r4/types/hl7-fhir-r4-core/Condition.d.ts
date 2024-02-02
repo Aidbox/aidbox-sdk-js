@@ -13,11 +13,12 @@ import { Identifier } from "./Identifier";
 import { BackboneElement } from "./BackboneElement";
 /** A clinical condition, problem, diagnosis, or other event, situation, issue, or clinical concept that has risen to a level of concern. */
 export interface Condition extends DomainResource {
+    resourceType: 'Condition';
     /** problem-list-item | encounter-diagnosis */
     category?: Array<CodeableConcept>;
     _onsetString?: Element;
     /** active | recurrence | relapse | inactive | remission | resolved */
-    clinicalStatus?: CodeableConcept;
+    clinicalStatus?: `${ConditionClinicalStatus}`;
     abatementAge?: Age;
     onsetRange?: Range;
     onsetAge?: Age;
@@ -25,13 +26,13 @@ export interface Condition extends DomainResource {
     stage?: Array<ConditionStage>;
     _abatementString?: Element;
     /** Encounter created as part of */
-    encounter?: Reference<"Encounter">;
+    encounter?: Reference<'Encounter'>;
     /** Supporting evidence */
     evidence?: Array<ConditionEvidence>;
     onsetPeriod?: Period;
     abatementPeriod?: Period;
     /** Person who asserts this condition */
-    asserter?: Reference<"Patient" | "PractitionerRole" | "Practitioner" | "RelatedPerson">;
+    asserter?: Reference<'Patient' | 'PractitionerRole' | 'Practitioner' | 'RelatedPerson'>;
     /** Additional information about the Condition */
     note?: Array<Annotation>;
     abatementString?: string;
@@ -42,7 +43,7 @@ export interface Condition extends DomainResource {
     _recordedDate?: Element;
     onsetString?: string;
     /** Who recorded the condition */
-    recorder?: Reference<"Patient" | "PractitionerRole" | "Practitioner" | "RelatedPerson">;
+    recorder?: Reference<'Patient' | 'PractitionerRole' | 'Practitioner' | 'RelatedPerson'>;
     /** Subjective severity of condition */
     severity?: CodeableConcept;
     /** Identification of the condition, problem or diagnosis */
@@ -55,9 +56,19 @@ export interface Condition extends DomainResource {
     abatementDateTime?: dateTime;
     _onsetDateTime?: Element;
     /** unconfirmed | provisional | differential | confirmed | refuted | entered-in-error */
-    verificationStatus?: CodeableConcept;
+    verificationStatus?: `${ConditionVerificationStatus}`;
     /** Who has the condition? */
-    subject: Reference<"Patient" | "Group">;
+    subject: Reference<'Patient' | 'Group'>;
+}
+/** active | recurrence | relapse | inactive | remission | resolved */
+export declare enum ConditionClinicalStatus {
+    Active = "active",
+    Inactive = "inactive",
+    Recurrence = "recurrence",
+    Relapse = "relapse",
+    Remission = "remission",
+    Resolved = "resolved",
+    Unknown = "unknown"
 }
 /** Stage/grade, usually assessed formally */
 export interface ConditionStage extends BackboneElement {
@@ -74,4 +85,13 @@ export interface ConditionEvidence extends BackboneElement {
     code?: Array<CodeableConcept>;
     /** Supporting information found elsewhere */
     detail?: Array<Reference>;
+}
+/** unconfirmed | provisional | differential | confirmed | refuted | entered-in-error */
+export declare enum ConditionVerificationStatus {
+    Confirmed = "confirmed",
+    Differential = "differential",
+    EnteredInError = "entered-in-error",
+    Provisional = "provisional",
+    Refuted = "refuted",
+    Unconfirmed = "unconfirmed"
 }

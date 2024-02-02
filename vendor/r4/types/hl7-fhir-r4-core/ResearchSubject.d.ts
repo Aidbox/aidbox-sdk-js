@@ -4,27 +4,43 @@ import { Period } from "./Period";
 import { DomainResource } from "./DomainResource";
 import { Element } from "./Element";
 import { Reference } from "./Reference";
-import { code } from "./code";
 import { Identifier } from "./Identifier";
 /** A physical entity which is the primary unit of operational and/or administrative interest in a study. */
 export interface ResearchSubject extends DomainResource {
+    resourceType: 'ResearchSubject';
     /** Study subject is part of */
-    study: Reference<"ResearchStudy">;
+    study: Reference<'ResearchStudy'>;
     _status?: Element;
     _assignedArm?: Element;
     /** Agreement to participate in study */
-    consent?: Reference<"Consent">;
+    consent?: Reference<'Consent'>;
     /** What path should be followed */
     assignedArm?: string;
     /** candidate | eligible | follow-up | ineligible | not-registered | off-study | on-study | on-study-intervention | on-study-observation | pending-on-study | potential-candidate | screening | withdrawn */
-    status: code;
+    status: `${ResearchSubjectStatus}`;
     /** What path was followed */
     actualArm?: string;
     /** Business Identifier for research subject in a study */
     identifier?: Array<Identifier>;
     _actualArm?: Element;
     /** Who is part of study */
-    individual: Reference<"Patient">;
+    individual: Reference<'Patient'>;
     /** Start and end of participation */
     period?: Period;
+}
+/** candidate | eligible | follow-up | ineligible | not-registered | off-study | on-study | on-study-intervention | on-study-observation | pending-on-study | potential-candidate | screening | withdrawn */
+export declare enum ResearchSubjectStatus {
+    Candidate = "candidate",
+    NotRegistered = "not-registered",
+    Screening = "screening",
+    FollowUp = "follow-up",
+    OnStudyIntervention = "on-study-intervention",
+    Eligible = "eligible",
+    OffStudy = "off-study",
+    Withdrawn = "withdrawn",
+    OnStudyObservation = "on-study-observation",
+    PotentialCandidate = "potential-candidate",
+    PendingOnStudy = "pending-on-study",
+    OnStudy = "on-study",
+    Ineligible = "ineligible"
 }
