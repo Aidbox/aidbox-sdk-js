@@ -191,7 +191,9 @@
         (.write r "export interface SubsSubscription {\nid?:string;\nresourceType: 'SubsSubscription';\nstatus: 'active' | 'off';trigger: Partial<Record<ResourceType, { event: Array<'all' | 'create' | 'update' | 'delete'>; filter?: unknown }>>; channel: {\ntype: 'rest-hook';\nendpoint: string;\npayload?: { content: string; contentType: string; context: unknown };headers?: Record<string, string>;\ntimeout?: number;\n};\n}")
         (.write r "export type ResourceTypeMap = {\n SubsSubscription: SubsSubscription;\n User: Record<string,any>;\n")
         (mapv #(when-not (contains? #{"string" "boolean"} %) (.write r (format "  %s: %s;\n" % %)))
-              (keys (get @r/schema package)))
+              (map first 
+                  (filter #(not (nil? (get-in (last %) [:base :isResource]))) 
+                           (get @r/schema "hl7-fhir-r4-core"))))
         (.write r "}\n")
         (.write r "export type ResourceType = keyof ResourceTypeMap;\n")))
     (w/generate-types :typescript @r/schema {:target-path path})))
