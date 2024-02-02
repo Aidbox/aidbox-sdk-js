@@ -354,7 +354,7 @@
         (when (and (not= "string" vs) (not (:name vs)))
           (update-imports imports-path {:name vs :package package-name}))
         {:kind        "SimpleExtend"
-         :extends     {:name    (or (:name vs) vs)
+         :extends     {:name    (str "`${" (or (:name vs) vs) "}`")
                        :package package-name}
          :description (:zen/desc schema)})
       :else
