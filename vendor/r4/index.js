@@ -323,7 +323,7 @@ class Client {
         };
         this.subsSubscription = {
             create: async ({ id, status, trigger, channel }) => {
-                const response = await this.client.put(`/SubsSubscription/${id}`, {
+                const response = await this.client.put(`SubsSubscription/${id}`, {
                     json: {
                         status,
                         trigger,
