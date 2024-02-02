@@ -192,7 +192,7 @@
 
 (defn get-valueset-values [ztx value-set]
   (let [{uri :uri} (zen.core/get-symbol ztx value-set)
-        ftr-index (get-in @ztx [:zen.fhir/ftr-index :result "init"])
+        ftr-index (get-in @ztx [:zen.fhir/ftr-index "init"])
         result (->> (get-in ftr-index [:valuesets uri])
                     (filter #(not= "http://snomed.info/sct" %))
                     (map (fn [item]
