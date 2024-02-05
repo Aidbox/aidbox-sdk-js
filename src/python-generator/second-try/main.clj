@@ -153,26 +153,27 @@
        (str "from base import *\n")
        (str "from typing import Optional, List, Literal\n")
        (str "from pydantic import BaseModel\n")
-       (help/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/constraint" (str/join "_" (str/split (help/get-resource-name name) #"-")))))
+       (help/write-to-file "/Users/letzabelin/projects/health-samurai/aidbox-sdk-js/test_dir" (str/join "_" (str/split (help/get-resource-name name) #"-")))))
 
 (defn doallmap [elements] (doall (map save-to-file elements)))
 
 (defn flat-backbones [backbone-elements accumulator]
-  (reduce (fn [acc, item]
-            (if (contains? item :backbone-elements)
-              (concat (flat-backbones (:backbone-elements item) acc) [(dissoc item :backbone-elements)] acc) acc)) accumulator backbone-elements))
+  (reduce (fn [acc, item] (concat (flat-backbones (:backbone-elements item) acc) 
+                                  [(dissoc item :backbone-elements)]) ) 
+          accumulator 
+          backbone-elements))
 
 (defn main []
-  (let [schemas (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.r4.core#4.0.1_package.ndjson.gz")
+  (let [schemas (help/parse-ndjsonk -gz "/Users/letzabelin/projects/health-samurai/aidbox-sdk-js/test_dir/1.0.0_hl7.fhir.r4.core#4.0.1_package.ndjson (1).gz")
         base-schemas (->> schemas (filter #(or (= (:url %) "http://hl7.org/fhir/StructureDefinition/BackboneElement") (= (:url %) "http://hl7.org/fhir/StructureDefinition/Resource") (= (:derivation %) "specialization"))))
         constraint-schemas (->> schemas
                                 (filter #(= (:derivation %) "constraint"))
                                 (filter #(and (not (= (:type %) "Extension")) (not (= (:url %) "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris")))))
-        us-core (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.core#4.0.0_package.ndjson.gz")
+        us-core (->> (help/parse-ndjson-gz "/Users/letzabelin/projects/health-samurai/aidbox-sdk-js/test_dir/1.0.0_hl7.fhir.us.core#4.0.0_package.ndjson.gz")
                      (filter #(and (not (= (:type %) "Extension")) (= (:derivation %) "constraint"))))
-        mcode (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.mcode#2.1.0_package.ndjson.gz")
+        mcode (->> (help/parse-ndjson-gz "/Users/letzabelin/projects/health-samurai/aidbox-sdk-js/test_dir/1.0.0_hl7.fhir.us.mcode#2.1.0_package.ndjson.gz")
                    (filter #(and (not (= (:type %) "Extension")) (= (:derivation %) "constraint"))))
-        codex (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.codex-radiation-therapy#1.0.0_package.ndjson.gz")
+        codex (->> (help/parse-ndjson-gz "/Users/letzabelin/projects/health-samurai/aidbox-sdk-js/test_dir/1.0.0_hl7.fhir.us.codex-radiation-therapy#1.0.0_package.ndjson.gz")
                    (filter #(and (not (= (:type %) "Extension")) (= (:derivation %) "constraint")))
                    #_(filter #(= (:url %) "http://hl7.org/fhir/us/codex-radiation-therapy/StructureDefinition/codexrt-radiotherapy-adverse-event")))]
 
