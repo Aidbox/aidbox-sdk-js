@@ -100,7 +100,7 @@
               (if-let [pattern (some #(when (= (name (first %)) (:name item)) (last %)) patterns)]
                 (case (:value item)
                   "str" (assoc item :value (:pattern pattern) :literal true)
-                  "CodeableConcept" (conj item (hash-map :value (str (str/join (map help/uppercase-first-letter (str/split (help/get-resource-name constraint-name) #"-"))) (str/join (map help/uppercase-first-letter (str/split (:name item) #"-"))) " = " (str/join (map help/uppercase-first-letter (str/split (help/get-resource-name constraint-name) #"-"))) (str/join (map help/uppercase-first-letter (str/split (:name item) #"-"))) "()")))
+                  "CodeableConcept" (conj item (hash-map :value (str (str/join (map help/uppercase-first-letter (str/split (help/get-resource-name constraint-name) #"-"))) (str/join (map help/uppercase-first-letter (str/split (:name item) #"-")))) :codeable-concept-pattern true))
                   "Quantity" item item) item)) (:elements schema))
        (hash-map :elements)
        (conj schema)
@@ -138,7 +138,8 @@
                      ((if (:array item) (fn [s] (str "List[" s "]")) str))
                      ((if (:literal item) (fn [s] (str "Literal[\"" s "\"] = " "\"" s "\"")) str))
                      ((if (and (not (:required item)) (not (:literal item))) (fn [s] (str "Optional[" s "]")) str))
-                     ((if (and (not (:required item)) (not (:literal item))) help/append-default-none str))
+                     ((if (and (not (:required item)) (not (:literal item))) (fn [s] (str s " = None")) str))
+                     ((if (and (:required item) (:codeable-concept-pattern item)) (fn [s] (str s " = " (:value item) "()")) str))
                     ;;  ((if (and (not (:required item)) (:array item)) help/append-default-vector str))
                      (str "\t" (:name item) ": ")
                      (str "\n")))) elements)
