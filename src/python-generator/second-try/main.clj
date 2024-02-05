@@ -60,7 +60,7 @@
               (safe-conj (hash-map :base (get schema :base) :url (get schema :url))))) schemas))
 
 (defn combine-elements [schemas]
-  (map (fn [[name, schema]]
+  (map (fn [[_, schema]]
          (->> schema
               (mix-parents-elements-circular schemas)
               (mix-parents-backbones-circular schemas))) schemas))
@@ -93,8 +93,6 @@
   (case (help/get-resource-name (some #(when (= (name key) (:name %)) (:value %)) elements))
     "CodeableConcept" (pattern-codeable-concept (str (help/uppercase-first-letter (help/get-resource-name constraint-name)) (help/uppercase-first-letter (subs (str key) 1))) schema) ""))
 
-
-
 (defn apply-patterns [constraint-name patterns schema]
   (->> (map (fn [item]
               (if-let [pattern (some #(when (= (name (first %)) (:name item)) (last %)) patterns)]
@@ -103,9 +101,11 @@
                   "CodeableConcept" (conj item (hash-map :value (str (str/join (map help/uppercase-first-letter (str/split (help/get-resource-name constraint-name) #"-"))) (str/join (map help/uppercase-first-letter (str/split (:name item) #"-")))) :codeable-concept-pattern true))
                   "Quantity" item item) item)) (:elements schema))
        (hash-map :elements)
-       (conj schema)
-       (conj (hash-map :patterns (map (fn [item] (create-single-pattern constraint-name item (:elements schema))) patterns)))))
+       (conj schema (hash-map :patterns (concat (get schema :patterns []) (map (fn [item] (create-single-pattern constraint-name item (:elements schema))) patterns))))))
 
+(defn add-meta [constraint-name elements]
+  (->> (filter #(not (= (:name %) "meta")) elements)
+       (concat [{:name "meta" :required true :value (str "Meta = Meta(profile=[\"" constraint-name "\"])")}])))
 
 (defn apply-single-constraint [constraint parent-schema]
   (println (:url constraint) (reset! constraint-count (+ 1 (deref constraint-count))))
@@ -113,6 +113,7 @@
        (apply-required (:required constraint))
        (apply-excluded (:excluded constraint))
        (apply-choises (filter #(contains? (last %) :choices) (:elements constraint)))
+       (add-meta (:url constraint))
        (hash-map :elements)
        (conj parent-schema)
        (apply-patterns (:url constraint) (filter #(contains? (last %) :pattern) (:elements constraint)))))
@@ -131,7 +132,7 @@
 (defn get-class-name [profile-name]
   (str/join "" (map help/uppercase-first-letter (clojure.string/split (help/get-resource-name profile-name) #"-"))))
 
-(defn combine-single-class [name elements]
+(defn combine-single-class [name elements t]
   (->> (map (fn [item]
               (when (not (contains? item :choices))
                 (->> (:value item)
@@ -144,36 +145,36 @@
                      (str "\t" (:name item) ": ")
                      (str "\n")))) elements)
        (str/join "")
-       (str "\n\nclass " (get-class-name name) "(BaseModel):")))
+       (str "\n\nclass " (get-class-name name) "(" (case t "backbone" "BackboneElement" "BaseModel") "):")))
 
 (defn save-to-file [[name, definition]]
-  (->> (str (combine-single-class name (:elements definition)))
-       (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition))) (:backbone-elements definition))))
+  (->> (str (combine-single-class name (:elements definition) "default"))
+       (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "backbone")) (:backbone-elements definition))))
        (str (str/join (:patterns definition)))
        (str "from base import *\n")
        (str "from typing import Optional, List, Literal\n")
        (str "from pydantic import BaseModel\n")
-       (help/write-to-file "/Users/letzabelin/projects/health-samurai/aidbox-sdk-js/test_dir" (str/join "_" (str/split (help/get-resource-name name) #"-")))))
+       (help/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/constraint" (str/join "_" (str/split (help/get-resource-name name) #"-")))))
 
 (defn doallmap [elements] (doall (map save-to-file elements)))
 
 (defn flat-backbones [backbone-elements accumulator]
-  (reduce (fn [acc, item] (concat (flat-backbones (:backbone-elements item) acc) 
-                                  [(dissoc item :backbone-elements)]) ) 
-          accumulator 
+  (reduce (fn [acc, item] (concat (flat-backbones (:backbone-elements item) acc)
+                                  [(dissoc item :backbone-elements)]))
+          accumulator
           backbone-elements))
 
 (defn main []
-  (let [schemas (help/parse-ndjsonk -gz "/Users/letzabelin/projects/health-samurai/aidbox-sdk-js/test_dir/1.0.0_hl7.fhir.r4.core#4.0.1_package.ndjson (1).gz")
+  (let [schemas (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.r4.core#4.0.1_package.ndjson.gz")
         base-schemas (->> schemas (filter #(or (= (:url %) "http://hl7.org/fhir/StructureDefinition/BackboneElement") (= (:url %) "http://hl7.org/fhir/StructureDefinition/Resource") (= (:derivation %) "specialization"))))
         constraint-schemas (->> schemas
                                 (filter #(= (:derivation %) "constraint"))
                                 (filter #(and (not (= (:type %) "Extension")) (not (= (:url %) "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris")))))
-        us-core (->> (help/parse-ndjson-gz "/Users/letzabelin/projects/health-samurai/aidbox-sdk-js/test_dir/1.0.0_hl7.fhir.us.core#4.0.0_package.ndjson.gz")
+        us-core (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.core#4.0.0_package.ndjson.gz")
                      (filter #(and (not (= (:type %) "Extension")) (= (:derivation %) "constraint"))))
-        mcode (->> (help/parse-ndjson-gz "/Users/letzabelin/projects/health-samurai/aidbox-sdk-js/test_dir/1.0.0_hl7.fhir.us.mcode#2.1.0_package.ndjson.gz")
+        mcode (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.mcode#2.1.0_package.ndjson.gz")
                    (filter #(and (not (= (:type %) "Extension")) (= (:derivation %) "constraint"))))
-        codex (->> (help/parse-ndjson-gz "/Users/letzabelin/projects/health-samurai/aidbox-sdk-js/test_dir/1.0.0_hl7.fhir.us.codex-radiation-therapy#1.0.0_package.ndjson.gz")
+        codex (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.codex-radiation-therapy#1.0.0_package.ndjson.gz")
                    (filter #(and (not (= (:type %) "Extension")) (= (:derivation %) "constraint")))
                    #_(filter #(= (:url %) "http://hl7.org/fhir/us/codex-radiation-therapy/StructureDefinition/codexrt-radiotherapy-adverse-event")))]
 
