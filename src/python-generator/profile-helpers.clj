@@ -27,6 +27,9 @@
 (defn wrap-optional [string]
   (string-interpolation "Optional[", "]", string))
 
+(defn wrap-literal [string]
+  (string-interpolation "Literal[", "]", string))
+
 (defn get-resource-name [reference]
   (last (str/split (str reference) #"/")))
 

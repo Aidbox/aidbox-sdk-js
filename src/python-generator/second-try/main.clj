@@ -13,7 +13,7 @@
         backbone-elements (filter (fn [item] (> (count item) 0)) (:backbone-elements data))]
     (conj data (hash-map :backbone-elements (if (= (count backbone-elements) 0) [] (map (fn [[k, v]] (compile-backbone name k v)) backbone-elements))))))
 
-(defn test1 [name data]
+(defn clear-backbone-elements [name data]
   (->> (filter (fn [item] (> (count item) 0)) (:backbone-elements data))
        (map (fn [[k, v]] (compile-backbone name k v)))
        (hash-map :backbone-elements)
@@ -56,14 +56,14 @@
   (map (fn [schema]
          (->> (help/elements-to-vector schema)
               (help/get-typings-and-imports (:type schema) (or (:required schema) []))
-              (test1 (help/get-resource-name (:url schema)))
+              (clear-backbone-elements (help/get-resource-name (:url schema)))
               (safe-conj (hash-map :base (get schema :base) :url (get schema :url))))) schemas))
 
 (defn combine-elements [schemas]
   (map (fn [[name, schema]]
          (->> schema
               (mix-parents-elements-circular schemas)
-              #_(mix-parents-backbones-circular schemas))) schemas))
+              (mix-parents-backbones-circular schemas))) schemas))
 
 (defn apply-excluded [excluded schema]
   (filter (fn [field-schema]
@@ -81,31 +81,30 @@
           (filter #(not (contains? choises-to-exclude (:name %))) schema)))))
 
 (defn pattern-codeable-concept [name schema]
-  (->> (str "\tcoding: list[" (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-"))) (get-in schema [:pattern :coding] []))) "] = [" (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-")) "()") (get-in schema [:pattern :coding] []))) "]\n")
-       (str "class " name "(CodeableConcept):\n")
+  (->> (str "\tcoding: List[" (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-"))) (get-in schema [:pattern :coding] []))) "] = [" (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-")) "()") (get-in schema [:pattern :coding] []))) "]\n")
+       (str "class " (str/join (map help/uppercase-first-letter (str/split name #"-"))) "(CodeableConcept):\n")
        (str (when-let [coding (:coding (:pattern schema))]
               (str/join (map (fn [code] (->> (str (when (contains? code :code)  (str "\tcode: Literal[\"" (:code code) "\"] = \"" (:code code) "\"\n")))
                                              (str (when (contains? code :system) (str "\tsystem: Literal[\"" (:system code) "\"] = \"" (:system code) "\"\n")))
                                              (str (when (contains? code :display) (str "\tdisplay: Literal[\"" (:display code) "\"] = \"" (:display code) "\"\n")))
                                              (str "\nclass Coding" (str/join (str/split (:code code) #"-")) "(Coding):\n"))) coding))) "\n")))
 
-(defn create-single-pattern [constraint-name, [name, schema]]
-  (println constraint-name name schema)
-  ""
-  #_(case (help/get-resource-name (:type schema))
-      "CodeableConcept" (pattern-codeable-concept (str (help/uppercase-first-letter (help/get-resource-name constraint-name)) (help/uppercase-first-letter (subs (str name) 1))) schema)
-      "default" ""))
+(defn create-single-pattern [constraint-name, [key, schema], elements]
+  (case (help/get-resource-name (some #(when (= (name key) (:name %)) (:value %)) elements))
+    "CodeableConcept" (pattern-codeable-concept (str (help/uppercase-first-letter (help/get-resource-name constraint-name)) (help/uppercase-first-letter (subs (str key) 1))) schema) ""))
+
+
 
 (defn apply-patterns [constraint-name patterns schema]
   (->> (map (fn [item]
-              (if (some #(= (name (first %)) (:name item)) patterns)
+              (if-let [pattern (some #(when (= (name (first %)) (:name item)) (last %)) patterns)]
                 (case (:value item)
-                  "CodeableConcept" (conj item (hash-map :value (str (help/uppercase-first-letter (help/get-resource-name constraint-name)) (help/uppercase-first-letter (:name item)) " = " (str (help/uppercase-first-letter (help/get-resource-name constraint-name)) (help/uppercase-first-letter (:name item))) "()")))
-                  "Quantity" item
-                  "default" item) item)) (:elements schema))
+                  "str" (assoc item :value (:pattern pattern) :literal true)
+                  "CodeableConcept" (conj item (hash-map :value (str (str/join (map help/uppercase-first-letter (str/split (help/get-resource-name constraint-name) #"-"))) (str/join (map help/uppercase-first-letter (str/split (:name item) #"-"))) " = " (str/join (map help/uppercase-first-letter (str/split (help/get-resource-name constraint-name) #"-"))) (str/join (map help/uppercase-first-letter (str/split (:name item) #"-"))) "()")))
+                  "Quantity" item item) item)) (:elements schema))
        (hash-map :elements)
        (conj schema)
-       (conj (hash-map :patterns (map (fn [item] (create-single-pattern constraint-name item)) patterns)))))
+       (conj (hash-map :patterns (map (fn [item] (create-single-pattern constraint-name item (:elements schema))) patterns)))))
 
 
 (defn apply-single-constraint [constraint parent-schema]
@@ -116,13 +115,9 @@
        (apply-choises (filter #(contains? (last %) :choices) (:elements constraint)))
        (hash-map :elements)
        (conj parent-schema)
-       #_(apply-patterns (:url constraint) (filter #(contains? (last %) :pattern) (:elements constraint)))))
-
-#_(reduce (fn [_, constraint-schema]
-            (when (not (get result (:url constraint-schema))) (reduced true))) false constraint-schemas)
+       (apply-patterns (:url constraint) (filter #(contains? (last %) :pattern) (:elements constraint)))))
 
 (defn apply-constraints [constraint-schemas result base-schemas]
-  (println "run" (count result))
   (if (not (= (count constraint-schemas) (count result)))
     (apply-constraints
      constraint-schemas
@@ -140,10 +135,11 @@
   (->> (map (fn [item]
               (when (not (contains? item :choices))
                 (->> (:value item)
-                     ((if (:array item) help/wrap-vector str))
-                     ((if (and (not (:required item)) (not (:array item))) help/wrap-optional str))
-                     ((if (and (not (:required item)) (not (:array item))) help/append-default-none str))
-                     ((if (and (not (:required item)) (:array item)) help/append-default-vector str))
+                     ((if (:array item) (fn [s] (str "List[" s "]")) str))
+                     ((if (:literal item) (fn [s] (str "Literal[\"" s "\"] = " "\"" s "\"")) str))
+                     ((if (and (not (:required item)) (not (:literal item))) (fn [s] (str "Optional[" s "]")) str))
+                     ((if (and (not (:required item)) (not (:literal item))) help/append-default-none str))
+                    ;;  ((if (and (not (:required item)) (:array item)) help/append-default-vector str))
                      (str "\t" (:name item) ": ")
                      (str "\n")))) elements)
        (str/join "")
@@ -153,25 +149,31 @@
   (->> (str (combine-single-class name (:elements definition)))
        (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition))) (:backbone-elements definition))))
        (str (str/join (:patterns definition)))
-       (str "from ..base import *\n")
-       (str "from typing import Optional, Literal\n")
+       (str "from base import *\n")
+       (str "from typing import Optional, List, Literal\n")
        (str "from pydantic import BaseModel\n")
-       (help/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/constraint" (help/get-resource-name name))))
+       (help/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/constraint" (str/join "_" (str/split (help/get-resource-name name) #"-")))))
 
 (defn doallmap [elements] (doall (map save-to-file elements)))
 
+(defn flat-backbones [backbone-elements accumulator]
+  (reduce (fn [acc, item]
+            (if (contains? item :backbone-elements)
+              (concat (flat-backbones (:backbone-elements item) acc) [(dissoc item :backbone-elements)] acc) acc)) accumulator backbone-elements))
+
 (defn main []
   (let [schemas (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.r4.core#4.0.1_package.ndjson.gz")
-        base-schemas (->> schemas (filter #(or (= (:url %) "http://hl7.org/fhir/StructureDefinition/headcircum") (= (:derivation %) "specialization"))))
+        base-schemas (->> schemas (filter #(or (= (:url %) "http://hl7.org/fhir/StructureDefinition/BackboneElement") (= (:url %) "http://hl7.org/fhir/StructureDefinition/Resource") (= (:derivation %) "specialization"))))
         constraint-schemas (->> schemas
                                 (filter #(= (:derivation %) "constraint"))
-                                (filter #(not (= (:url %) "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris"))))
+                                (filter #(and (not (= (:type %) "Extension")) (not (= (:url %) "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris")))))
         us-core (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.core#4.0.0_package.ndjson.gz")
-                     (filter #(= (:derivation %) "constraint")))
+                     (filter #(and (not (= (:type %) "Extension")) (= (:derivation %) "constraint"))))
         mcode (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.mcode#2.1.0_package.ndjson.gz")
-                   (filter #(= (:derivation %) "constraint")))
+                   (filter #(and (not (= (:type %) "Extension")) (= (:derivation %) "constraint"))))
         codex (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.codex-radiation-therapy#1.0.0_package.ndjson.gz")
-                   (filter #(= (:derivation %) "constraint")))]
+                   (filter #(and (not (= (:type %) "Extension")) (= (:derivation %) "constraint")))
+                   #_(filter #(= (:url %) "http://hl7.org/fhir/us/codex-radiation-therapy/StructureDefinition/codexrt-radiotherapy-adverse-event")))]
 
     (->> base-schemas
          (compile-elements)
@@ -180,10 +182,11 @@
          (into {})
          (combine-elements)
          (filter #(not (nil? (:url %))))
+         (map (fn [schema] (conj schema (hash-map :backbone-elements (flat-backbones (:backbone-elements schema) [])))))
          (map (fn [item] (hash-map (:url item) item)))
          (into {})
          (apply-constraints (concat us-core constraint-schemas mcode codex) {})
          (doallmap))))
 
 (main)
-;; 479 -> 521
+
