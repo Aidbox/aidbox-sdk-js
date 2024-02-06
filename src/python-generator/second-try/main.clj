@@ -3,7 +3,8 @@
    [python-generator.profile-helpers :as help]
    [cheshire.core]
    [clojure.string :as str]
-   [clojure.set :as set]))
+   [clojure.set :as set]
+   [dotenv :as dotenv]))
 
 (def constraint-count (atom 0))
 
@@ -154,7 +155,7 @@
        (str "from base import *\n")
        (str "from typing import Optional, List, Literal\n")
        (str "from pydantic import BaseModel\n")
-       (help/write-to-file "/Users/gena.razmakhnin/Documents/aidbox-sdk-js/test_dir/constraint" (str/join "_" (str/split (help/get-resource-name name) #"-")))))
+       (help/write-to-file (dotenv/env :python-output-path) (str/join "_" (str/split (help/get-resource-name name) #"-")))))
 
 (defn doallmap [elements] (doall (map save-to-file elements)))
 
@@ -165,19 +166,38 @@
           backbone-elements))
 
 (defn main []
-  (let [schemas (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.r4.core#4.0.1_package.ndjson.gz")
-        base-schemas (->> schemas (filter #(or (= (:url %) "http://hl7.org/fhir/StructureDefinition/BackboneElement") (= (:url %) "http://hl7.org/fhir/StructureDefinition/Resource") (= (:derivation %) "specialization"))))
-        constraint-schemas (->> schemas
-                                (filter #(= (:derivation %) "constraint"))
-                                (filter #(and (not (= (:type %) "Extension")) (not (= (:url %) "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris")))))
-        us-core (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.core#4.0.0_package.ndjson.gz")
-                     (filter #(and (not (= (:type %) "Extension")) (= (:derivation %) "constraint"))))
-        mcode (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.mcode#2.1.0_package.ndjson.gz")
-                   (filter #(and (not (= (:type %) "Extension")) (= (:derivation %) "constraint"))))
-        codex (->> (help/parse-ndjson-gz "/Users/gena.razmakhnin/Documents/aidbox-python-tooklit/fhir-schema-2/1.0.0_hl7.fhir.us.codex-radiation-therapy#1.0.0_package.ndjson.gz")
-                   (filter #(and (not (= (:type %) "Extension")) (= (:derivation %) "constraint")))
-                   #_(filter #(= (:url %) "http://hl7.org/fhir/us/codex-radiation-therapy/StructureDefinition/codexrt-radiotherapy-adverse-event")))]
+  (let [packages
+        (->> (dotenv/env :source-path)
+             (help/get-directory-files)
+             (filter #(and (str/includes? (.getName %) "hl7.fhir")
+                           (not (.isDirectory %)))))
 
+        schemas
+        (->> packages
+             (filter #(str/includes? (.getName %) "fhir.r4.core"))
+             (first)
+             (help/parse-ndjson-gz))
+
+        base-schemas
+        (->> schemas
+             (filter #(or (= (:url %) "http://hl7.org/fhir/StructureDefinition/BackboneElement")
+                          (= (:url %) "http://hl7.org/fhir/StructureDefinition/Resource")
+                          (= (:derivation %) "specialization"))))
+
+        constraint-schemas
+        (->> schemas
+             (filter #(= (:derivation %) "constraint"))
+             (filter #(and (not (= (:type %) "Extension"))
+                           (not (= (:url %) "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris")))))
+
+        extra-constraint-schemas
+        (->> packages
+             (filter #(not (str/includes? (.getName %) "fhir.r4.core")))
+             (map help/parse-ndjson-gz)
+             (map (fn [constraint]
+                     (filter #(and (not (= (:type %) "Extension"))
+                                   (= (:derivation %) "constraint"))
+                             constraint))))]
     (->> base-schemas
          (compile-elements)
          (filter #(not (nil? (:url %))))
@@ -188,7 +208,7 @@
          (map (fn [schema] (conj schema (hash-map :backbone-elements (flat-backbones (:backbone-elements schema) [])))))
          (map (fn [item] (hash-map (:url item) item)))
          (into {})
-         (apply-constraints (concat us-core constraint-schemas mcode codex) {})
+         (apply-constraints (concat constraint-schemas (flatten extra-constraint-schemas)) {})
          (doallmap))))
 
 (main)

@@ -100,10 +100,13 @@
 (defn side-effect-map [method, list] (doall (map method list)))
 
 (defn create-on-missing [dir]
-  (when-not (.exists (io/file dir)) (.mkdir (io/file dir))))
+  (io/make-parents dir))
 
 (defn write-to-file [directory, filename, text]
-  (create-on-missing directory)
+  (create-on-missing (str directory "/" filename))
   (with-open [writer (io/writer (io/file directory (str filename ".py")))] (.write writer text)))
 
-;; (get-resource-name filename)
+(defn get-directory-files [filepath]
+  (let [directory (io/file filepath)
+        files (file-seq directory)]
+    files))
