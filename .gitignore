@@ -20,6 +20,7 @@ cache
 *.iml
 test_dir
 fhir-schema
+output
 
 # Added by cargo
 

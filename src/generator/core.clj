@@ -10,7 +10,8 @@
    [zen.core]
    [zen.package]
    [zen.store]
-   [zen.utils]))
+   [zen.utils]
+   [dotenv :as dotenv]))
 
 
 (defn deep-merge-with
@@ -280,7 +281,9 @@
       (shell/with-sh-dir  (io/file path "package" "lib")
         (apply shell/sh (if win? ["powershell" "npm" "pack"] ["npm" "pack"])))
       (with-open [in (io/input-stream  (io/file path "package" "lib" "aidbox-javascript-sdk-1.0.0.tgz"))]
-        (io/copy in (io/file path ".." "aidbox-javascript-sdk-1.0.0.tgz")))
+        (let [file (io/file (dotenv/env :typescript-output-path) "aidbox-javascript-sdk-1.0.0.tgz")]
+          (io/make-parents file)
+          (io/copy in file)))
       (println "[sdk] Cleanup folder")
       (rm-r (io/file path "package"))
       (println "[types] Generating done"))))
@@ -292,7 +295,7 @@
   (require ['zen.cli])
 
 
-  (-> (zen.cli/get-pwd {:pwd  "/Users/alexanderstreltsov/work/hs/aidbox-sdk-js/examples/zen-project"})
+  (-> (zen.cli/get-pwd {:pwd "zen-project"})
       sdk))
 
 
