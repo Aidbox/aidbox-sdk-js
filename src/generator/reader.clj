@@ -139,7 +139,10 @@
          (println k (:resource config))
          acc)
        (if (not-empty-values? v)
-         (let [schema (read-schema ztx v (assoc config :property k))]
+         (let [schema (read-schema ztx v (assoc config
+                                                :property k
+                                                :full-resource-name (str (:full-resource-name config)
+                                                                         (str/capitalize (name k)))))]
            (cond
              (vector? schema)
              (reduce (fn [ac [property target]]
@@ -204,8 +207,8 @@
                     seq)]
     result))
 
-(defn parse-value-set [ztx schema {:keys [resource property parent package-name] :as config}]
-  (let [enum-name (str resource (when property (capitalize-first (name property))))
+(defn parse-value-set [ztx schema {:keys [resource property parent package-name full-resource-name] :as config}]
+  (let [enum-name full-resource-name
         sym (get-in schema [:zen.fhir/value-set :symbol])
         result (get-valueset-values ztx sym)]
     (cond
@@ -405,6 +408,7 @@
                               {:base-path    base-path
                                :imports-path (conj base-path :imports)
                                :resource     (or sub-name main-name)
+                               :full-resource-name (or sub-name main-name)
                                :parent       (when (and sub-name (not (contains? wrong-main-names main-name))) main-name)
                                :package-name package-name})]
       (update-visited sym true)
