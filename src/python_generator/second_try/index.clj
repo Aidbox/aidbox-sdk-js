@@ -1,9 +1,9 @@
-(ns python-generator.index
+(ns python-generator.second-try.index
   (:require
    [cheshire.core]
    [clojure.string :as str]
    [python-generator.extractor :as extractors]
-   [python-generator.helpers :as helpers])
+   [python-generator.second-try.helpers :as helpers])
   (:gen-class))
 
 (defn save-to [directory, filename]
@@ -27,7 +27,7 @@
 
 (defn combine-file [definition, data]
   (->> (str (clojure.string/join "\n" (:elements data)) "\n\n")
-       (str "class " (helpers/get-resource-name (:type definition)) (helpers/get-parent (:base definition)) ":\n")
+       ((fn [s] (str "class " (helpers/get-resource-name (:type definition)) (helpers/get-parent (:base definition)) "{\n" s "}")))
        (str (test (helpers/get-resource-name (:type definition)) data))
        (str "from ..base import *\n\n")
        (str "from typing import Optional\n")))

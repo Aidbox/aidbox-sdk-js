@@ -1,4 +1,4 @@
-(ns python-generator.profile-helpers
+(ns python-generator.second-try.helpers
   (:require
    [python-generator.extractor]
    [cheshire.core]
@@ -27,9 +27,6 @@
 (defn wrap-optional [string]
   (string-interpolation "Optional[", "]", string))
 
-(defn wrap-literal [string]
-  (string-interpolation "Literal[", "]", string))
-
 (defn get-resource-name [reference]
   (last (str/split (str reference) #"/")))
 
@@ -57,30 +54,22 @@
 
 (defn elements-to-vector [definition]
   (->> (seq (:elements definition))
-       #_(filter (fn [[_, v]] (not (contains? v :choices))))))
+       (filter (fn [[_, v]] (not (contains? v :choices))))))
 
 (defn get-parent [base-reference]
   (->> (get-resource-name base-reference)
        (string-interpolation "(" ")")))
 
-
 (defn collect-types [parent_name, required, [k, v]]
-  (if (contains? v :choices)
-    (hash-map :name (escape-keyword (name k)) :choices (:choices v))
-    (hash-map :name (escape-keyword (name k))
-              :base parent_name
-              :array (boolean (:array v))
-              :required (.contains required (name k))
-              :value (transform-element (str (get-resource-name parent_name) "_" (uppercase-first-letter (name k))) v (.contains required (name k))))))
+  (str "\t" (escape-keyword (name k)) ": " (transform-element (str parent_name "_" (uppercase-first-letter (name k))) v (.contains required (name k)))))
 
 (defn resolve-backbone-elements [[k, v]]
   (if (= (get-resource-name (:type v)) "BackboneElement") (vector k, v) (vector)))
 
 (defn get-typings-and-imports [parent_name, required, data]
   (reduce (fn [acc, item]
-            (hash-map :elements (conj #_(hash-map :name parent_name) (:elements acc) (collect-types parent_name required item))
-                      :backbone-elements (conj (:backbone-elements acc) (resolve-backbone-elements item))
-                      :name parent_name))
+            (hash-map :elements (conj (:elements acc) (collect-types parent_name required item))
+                      :backbone-elements (conj (:backbone-elements acc) (resolve-backbone-elements item))))
           (hash-map :elements [] :backbone-elements []) data))
 
 (defn parse-ndjson-gz [path]
@@ -100,13 +89,10 @@
 (defn side-effect-map [method, list] (doall (map method list)))
 
 (defn create-on-missing [dir]
-  (io/make-parents dir))
+  (when-not (.exists (io/file dir)) (.mkdir (io/file dir))))
 
 (defn write-to-file [directory, filename, text]
-  (create-on-missing (str directory "/" filename))
-  (with-open [writer (io/writer (io/file directory filename))] (.write writer text)))
+  (create-on-missing directory)
+  (with-open [writer (io/writer (io/file directory (str filename ".cs")))] (.write writer text)))
 
-(defn get-directory-files [filepath]
-  (let [directory (io/file filepath)
-        files (file-seq directory)]
-    files))
+;; (get-resource-name filename)
