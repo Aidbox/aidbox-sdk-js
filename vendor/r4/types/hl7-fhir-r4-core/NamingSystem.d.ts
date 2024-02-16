@@ -61,7 +61,7 @@ export declare enum NamingSystemKind {
     Root = "root"
 }
 /** oid | uuid | uri | other */
-export declare enum NamingSystemType {
+export declare enum NamingSystemUniqueidType {
     Oid = "oid",
     Other = "other",
     Uri = "uri",
@@ -73,7 +73,7 @@ export interface NamingSystemUniqueId extends BackboneElement {
     value: string;
     _type?: Element;
     /** oid | uuid | uri | other */
-    type: `${NamingSystemType}`;
+    type: `${NamingSystemUniqueidType}`;
     _value?: Element;
     /** Notes about identifier usage */
     comment?: string;

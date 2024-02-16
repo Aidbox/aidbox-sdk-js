@@ -69,7 +69,7 @@ export interface MessageDefinition extends DomainResource {
     /** Takes the place of */
     replaces?: Array<canonical>;
     /** always | on-error | never | on-success */
-    responseRequired?: `${MessageDefinitionResponseRequired}`;
+    responseRequired?: `${MessageDefinitionResponserequired}`;
     _category?: Element;
     /** Definition this one is based on */
     base?: canonical;
@@ -106,7 +106,7 @@ export interface MessageDefinitionAllowedResponse extends BackboneElement {
     _situation?: Element;
 }
 /** Type of resource */
-export declare enum MessageDefinitionCode {
+export declare enum MessageDefinitionFocusCode {
     ImmunizationEvaluation = "ImmunizationEvaluation",
     Appointment = "Appointment",
     StructureMap = "StructureMap",
@@ -259,7 +259,7 @@ export declare enum MessageDefinitionCode {
 /** Resource(s) that are the subject of the event */
 export interface MessageDefinitionFocus extends BackboneElement {
     /** Type of resource */
-    code: `${MessageDefinitionCode}`;
+    code: `${MessageDefinitionFocusCode}`;
     _code?: Element;
     /** Profile that must be adhered to by focus */
     profile?: canonical;
@@ -272,7 +272,7 @@ export interface MessageDefinitionFocus extends BackboneElement {
     _max?: Element;
 }
 /** always | on-error | never | on-success */
-export declare enum MessageDefinitionResponseRequired {
+export declare enum MessageDefinitionResponserequired {
     Always = "always",
     Never = "never",
     OnError = "on-error",

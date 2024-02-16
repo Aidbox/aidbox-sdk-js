@@ -16,7 +16,7 @@ export interface Linkage extends DomainResource {
     item: Array<LinkageItem>;
 }
 /** source | alternate | historical */
-export declare enum LinkageType {
+export declare enum LinkageItemType {
     Alternate = "alternate",
     Historical = "historical",
     Source = "source"
@@ -24,7 +24,7 @@ export declare enum LinkageType {
 /** Item to be linked */
 export interface LinkageItem extends BackboneElement {
     /** source | alternate | historical */
-    type: `${LinkageType}`;
+    type: `${LinkageItemType}`;
     _type?: Element;
     /** Resource being linked */
     resource: Reference;

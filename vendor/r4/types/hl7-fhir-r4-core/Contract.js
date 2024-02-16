@@ -1,25 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ContractStatus = exports.ContractPublicationStatus = void 0;
+exports.ContractStatus = exports.ContractContentdefinitionPublicationstatus = void 0;
 /** amended | appended | cancelled | disputed | entered-in-error | executable | executed | negotiable | offered | policy | rejected | renewed | revoked | resolved | terminated */
-var ContractPublicationStatus;
-(function (ContractPublicationStatus) {
-    ContractPublicationStatus["Cancelled"] = "cancelled";
-    ContractPublicationStatus["Amended"] = "amended";
-    ContractPublicationStatus["Rejected"] = "rejected";
-    ContractPublicationStatus["Negotiable"] = "negotiable";
-    ContractPublicationStatus["Executed"] = "executed";
-    ContractPublicationStatus["Executable"] = "executable";
-    ContractPublicationStatus["Appended"] = "appended";
-    ContractPublicationStatus["Offered"] = "offered";
-    ContractPublicationStatus["Resolved"] = "resolved";
-    ContractPublicationStatus["EnteredInError"] = "entered-in-error";
-    ContractPublicationStatus["Policy"] = "policy";
-    ContractPublicationStatus["Terminated"] = "terminated";
-    ContractPublicationStatus["Revoked"] = "revoked";
-    ContractPublicationStatus["Renewed"] = "renewed";
-    ContractPublicationStatus["Disputed"] = "disputed";
-})(ContractPublicationStatus = exports.ContractPublicationStatus || (exports.ContractPublicationStatus = {}));
+var ContractContentdefinitionPublicationstatus;
+(function (ContractContentdefinitionPublicationstatus) {
+    ContractContentdefinitionPublicationstatus["Cancelled"] = "cancelled";
+    ContractContentdefinitionPublicationstatus["Amended"] = "amended";
+    ContractContentdefinitionPublicationstatus["Rejected"] = "rejected";
+    ContractContentdefinitionPublicationstatus["Negotiable"] = "negotiable";
+    ContractContentdefinitionPublicationstatus["Executed"] = "executed";
+    ContractContentdefinitionPublicationstatus["Executable"] = "executable";
+    ContractContentdefinitionPublicationstatus["Appended"] = "appended";
+    ContractContentdefinitionPublicationstatus["Offered"] = "offered";
+    ContractContentdefinitionPublicationstatus["Resolved"] = "resolved";
+    ContractContentdefinitionPublicationstatus["EnteredInError"] = "entered-in-error";
+    ContractContentdefinitionPublicationstatus["Policy"] = "policy";
+    ContractContentdefinitionPublicationstatus["Terminated"] = "terminated";
+    ContractContentdefinitionPublicationstatus["Revoked"] = "revoked";
+    ContractContentdefinitionPublicationstatus["Renewed"] = "renewed";
+    ContractContentdefinitionPublicationstatus["Disputed"] = "disputed";
+})(ContractContentdefinitionPublicationstatus = exports.ContractContentdefinitionPublicationstatus || (exports.ContractContentdefinitionPublicationstatus = {}));
 /** amended | appended | cancelled | disputed | entered-in-error | executable | executed | negotiable | offered | policy | rejected | renewed | revoked | resolved | terminated */
 var ContractStatus;
 (function (ContractStatus) {

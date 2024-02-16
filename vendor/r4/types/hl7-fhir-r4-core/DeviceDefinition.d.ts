@@ -66,7 +66,7 @@ export interface DeviceDefinition extends DomainResource {
     _manufacturerString?: Element;
 }
 /** udi-label-name | user-friendly-name | patient-reported-name | manufacturer-name | model-name | other */
-export declare enum DeviceDefinitionType {
+export declare enum DeviceDefinitionDevicenameType {
     ManufacturerName = "manufacturer-name",
     ModelName = "model-name",
     Other = "other",
@@ -80,7 +80,7 @@ export interface DeviceDefinitionDeviceName extends BackboneElement {
     name: string;
     _name?: Element;
     /** udi-label-name | user-friendly-name | patient-reported-name | manufacturer-name | model-name | other */
-    type: `${DeviceDefinitionType}`;
+    type: `${DeviceDefinitionDevicenameType}`;
     _type?: Element;
 }
 /** The actual configuration settings of a device as it actually operates, e.g., regulation status, time properties */

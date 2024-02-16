@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TestReportStatus = exports.TestReportResult = exports.TestReportType = exports.TestReportSetupActionOperationResult = exports.TestReportSetupActionAssertResult = void 0;
+exports.TestReportStatus = exports.TestReportResult = exports.TestReportParticipantType = exports.TestReportSetupActionOperationResult = exports.TestReportSetupActionAssertResult = void 0;
 /** pass | skip | fail | warning | error */
 var TestReportSetupActionAssertResult;
 (function (TestReportSetupActionAssertResult) {
@@ -20,12 +20,12 @@ var TestReportSetupActionOperationResult;
     TestReportSetupActionOperationResult["Warning"] = "warning";
 })(TestReportSetupActionOperationResult = exports.TestReportSetupActionOperationResult || (exports.TestReportSetupActionOperationResult = {}));
 /** test-engine | client | server */
-var TestReportType;
-(function (TestReportType) {
-    TestReportType["Client"] = "client";
-    TestReportType["Server"] = "server";
-    TestReportType["TestEngine"] = "test-engine";
-})(TestReportType = exports.TestReportType || (exports.TestReportType = {}));
+var TestReportParticipantType;
+(function (TestReportParticipantType) {
+    TestReportParticipantType["Client"] = "client";
+    TestReportParticipantType["Server"] = "server";
+    TestReportParticipantType["TestEngine"] = "test-engine";
+})(TestReportParticipantType = exports.TestReportParticipantType || (exports.TestReportParticipantType = {}));
 /** pass | fail | pending */
 var TestReportResult;
 (function (TestReportResult) {

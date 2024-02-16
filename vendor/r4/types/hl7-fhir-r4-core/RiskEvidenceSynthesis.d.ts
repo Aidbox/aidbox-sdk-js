@@ -146,7 +146,7 @@ export interface RiskEvidenceSynthesisPrecisionEstimate extends BackboneElement 
     _to?: Element;
 }
 /** What unit is the outcome described in? */
-export declare enum RiskEvidenceSynthesisUnitOfMeasure {
+export declare enum RiskEvidenceSynthesisRiskestimateUnitofmeasure {
     "Mo_j" = "mo_j",
     CSt = "cSt",
     "%{breakdown}" = "%{breakdown}",
@@ -1575,7 +1575,7 @@ export interface RiskEvidenceSynthesisRiskEstimate extends BackboneElement {
     denominatorCount?: integer;
     _description?: Element;
     /** What unit is the outcome described in? */
-    unitOfMeasure?: `${RiskEvidenceSynthesisUnitOfMeasure}`;
+    unitOfMeasure?: `${RiskEvidenceSynthesisRiskestimateUnitofmeasure}`;
     _numeratorCount?: Element;
     _denominatorCount?: Element;
 }

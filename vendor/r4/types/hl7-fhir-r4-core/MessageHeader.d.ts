@@ -40,7 +40,7 @@ export interface MessageHeader extends DomainResource {
     eventCoding: Coding;
 }
 /** ok | transient-error | fatal-error */
-export declare enum MessageHeaderCode {
+export declare enum MessageHeaderResponseCode {
     FatalError = "fatal-error",
     Ok = "ok",
     TransientError = "transient-error"
@@ -51,7 +51,7 @@ export interface MessageHeaderResponse extends BackboneElement {
     identifier: id;
     _identifier?: Element;
     /** ok | transient-error | fatal-error */
-    code: `${MessageHeaderCode}`;
+    code: `${MessageHeaderResponseCode}`;
     _code?: Element;
     /** Specific list of hints/warnings/errors */
     details?: Reference<'OperationOutcome'>;

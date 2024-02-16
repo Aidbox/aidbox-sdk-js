@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DocumentReferenceCode = exports.DocumentReferenceStatus = exports.DocumentReferenceDocStatus = void 0;
+exports.DocumentReferenceRelatestoCode = exports.DocumentReferenceStatus = exports.DocumentReferenceDocstatus = void 0;
 /** preliminary | final | amended | entered-in-error */
-var DocumentReferenceDocStatus;
-(function (DocumentReferenceDocStatus) {
-    DocumentReferenceDocStatus["Amended"] = "amended";
-    DocumentReferenceDocStatus["EnteredInError"] = "entered-in-error";
-    DocumentReferenceDocStatus["Final"] = "final";
-    DocumentReferenceDocStatus["Preliminary"] = "preliminary";
-})(DocumentReferenceDocStatus = exports.DocumentReferenceDocStatus || (exports.DocumentReferenceDocStatus = {}));
+var DocumentReferenceDocstatus;
+(function (DocumentReferenceDocstatus) {
+    DocumentReferenceDocstatus["Amended"] = "amended";
+    DocumentReferenceDocstatus["EnteredInError"] = "entered-in-error";
+    DocumentReferenceDocstatus["Final"] = "final";
+    DocumentReferenceDocstatus["Preliminary"] = "preliminary";
+})(DocumentReferenceDocstatus = exports.DocumentReferenceDocstatus || (exports.DocumentReferenceDocstatus = {}));
 /** current | superseded | entered-in-error */
 var DocumentReferenceStatus;
 (function (DocumentReferenceStatus) {
@@ -17,10 +17,10 @@ var DocumentReferenceStatus;
     DocumentReferenceStatus["Superseded"] = "superseded";
 })(DocumentReferenceStatus = exports.DocumentReferenceStatus || (exports.DocumentReferenceStatus = {}));
 /** replaces | transforms | signs | appends */
-var DocumentReferenceCode;
-(function (DocumentReferenceCode) {
-    DocumentReferenceCode["Appends"] = "appends";
-    DocumentReferenceCode["Replaces"] = "replaces";
-    DocumentReferenceCode["Signs"] = "signs";
-    DocumentReferenceCode["Transforms"] = "transforms";
-})(DocumentReferenceCode = exports.DocumentReferenceCode || (exports.DocumentReferenceCode = {}));
+var DocumentReferenceRelatestoCode;
+(function (DocumentReferenceRelatestoCode) {
+    DocumentReferenceRelatestoCode["Appends"] = "appends";
+    DocumentReferenceRelatestoCode["Replaces"] = "replaces";
+    DocumentReferenceRelatestoCode["Signs"] = "signs";
+    DocumentReferenceRelatestoCode["Transforms"] = "transforms";
+})(DocumentReferenceRelatestoCode = exports.DocumentReferenceRelatestoCode || (exports.DocumentReferenceRelatestoCode = {}));

@@ -64,7 +64,7 @@ export interface CompositionEvent extends BackboneElement {
 /** Attests to accuracy of composition */
 export interface CompositionAttester extends BackboneElement {
     /** personal | professional | legal | official */
-    mode: `${CompositionMode}`;
+    mode: `${CompositionAttesterMode}`;
     _mode?: Element;
     /** When the composition was attested */
     time?: dateTime;
@@ -82,7 +82,7 @@ export declare enum CompositionConfidentiality {
     N = "N"
 }
 /** personal | professional | legal | official */
-export declare enum CompositionMode {
+export declare enum CompositionAttesterMode {
     Legal = "legal",
     Official = "official",
     Personal = "personal",
@@ -91,17 +91,10 @@ export declare enum CompositionMode {
 /** Relationships to other compositions/documents */
 export interface CompositionRelatesTo extends BackboneElement {
     /** replaces | transforms | signs | appends */
-    code: `${CompositionCode}`;
+    code: `${CompositionRelatestoCode}`;
     _code?: Element;
     targetIdentifier: Identifier;
     targetReference: Reference<'Composition'>;
-}
-/** replaces | transforms | signs | appends */
-export declare enum CompositionCode {
-    Appends = "appends",
-    Replaces = "replaces",
-    Signs = "signs",
-    Transforms = "transforms"
 }
 /** preliminary | final | amended | entered-in-error */
 export declare enum CompositionStatus {
@@ -134,4 +127,11 @@ export interface CompositionSection extends BackboneElement {
     _mode?: Element;
     /** Text summary of the section, for human interpretation */
     text?: Narrative;
+}
+/** replaces | transforms | signs | appends */
+export declare enum CompositionRelatestoCode {
+    Appends = "appends",
+    Replaces = "replaces",
+    Signs = "signs",
+    Transforms = "transforms"
 }

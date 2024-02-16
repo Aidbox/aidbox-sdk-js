@@ -1,16 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeviceEntryType = exports.DeviceStatus = exports.DeviceType = void 0;
+exports.DeviceUdicarrierEntrytype = exports.DeviceStatus = exports.DeviceDevicenameType = void 0;
 /** udi-label-name | user-friendly-name | patient-reported-name | manufacturer-name | model-name | other */
-var DeviceType;
-(function (DeviceType) {
-    DeviceType["ManufacturerName"] = "manufacturer-name";
-    DeviceType["ModelName"] = "model-name";
-    DeviceType["Other"] = "other";
-    DeviceType["PatientReportedName"] = "patient-reported-name";
-    DeviceType["UdiLabelName"] = "udi-label-name";
-    DeviceType["UserFriendlyName"] = "user-friendly-name";
-})(DeviceType = exports.DeviceType || (exports.DeviceType = {}));
+var DeviceDevicenameType;
+(function (DeviceDevicenameType) {
+    DeviceDevicenameType["ManufacturerName"] = "manufacturer-name";
+    DeviceDevicenameType["ModelName"] = "model-name";
+    DeviceDevicenameType["Other"] = "other";
+    DeviceDevicenameType["PatientReportedName"] = "patient-reported-name";
+    DeviceDevicenameType["UdiLabelName"] = "udi-label-name";
+    DeviceDevicenameType["UserFriendlyName"] = "user-friendly-name";
+})(DeviceDevicenameType = exports.DeviceDevicenameType || (exports.DeviceDevicenameType = {}));
 /** active | inactive | entered-in-error | unknown */
 var DeviceStatus;
 (function (DeviceStatus) {
@@ -20,12 +20,12 @@ var DeviceStatus;
     DeviceStatus["Unknown"] = "unknown";
 })(DeviceStatus = exports.DeviceStatus || (exports.DeviceStatus = {}));
 /** barcode | rfid | manual + */
-var DeviceEntryType;
-(function (DeviceEntryType) {
-    DeviceEntryType["Barcode"] = "barcode";
-    DeviceEntryType["Card"] = "card";
-    DeviceEntryType["Manual"] = "manual";
-    DeviceEntryType["Rfid"] = "rfid";
-    DeviceEntryType["SelfReported"] = "self-reported";
-    DeviceEntryType["Unknown"] = "unknown";
-})(DeviceEntryType = exports.DeviceEntryType || (exports.DeviceEntryType = {}));
+var DeviceUdicarrierEntrytype;
+(function (DeviceUdicarrierEntrytype) {
+    DeviceUdicarrierEntrytype["Barcode"] = "barcode";
+    DeviceUdicarrierEntrytype["Card"] = "card";
+    DeviceUdicarrierEntrytype["Manual"] = "manual";
+    DeviceUdicarrierEntrytype["Rfid"] = "rfid";
+    DeviceUdicarrierEntrytype["SelfReported"] = "self-reported";
+    DeviceUdicarrierEntrytype["Unknown"] = "unknown";
+})(DeviceUdicarrierEntrytype = exports.DeviceUdicarrierEntrytype || (exports.DeviceUdicarrierEntrytype = {}));

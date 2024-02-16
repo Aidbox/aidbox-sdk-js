@@ -68,18 +68,6 @@ export interface ValueSet extends DomainResource {
     contact?: Array<ContactDetail>;
     _url?: Element;
 }
-/** = | is-a | descendent-of | is-not-a | regex | in | not-in | generalizes | exists */
-export declare enum ValueSetComposeIncludeOp {
-    Exists = "exists",
-    In = "in",
-    IsNotA = "is-not-a",
-    "=" = "=",
-    Generalizes = "generalizes",
-    DescendentOf = "descendent-of",
-    Regex = "regex",
-    IsA = "is-a",
-    NotIn = "not-in"
-}
 /** draft | active | retired | unknown */
 export declare enum ValueSetStatus {
     Active = "active",
@@ -123,7 +111,7 @@ export interface ValueSetComposeIncludeFilter extends BackboneElement {
     property: code;
     _property?: Element;
     /** = | is-a | descendent-of | is-not-a | regex | in | not-in | generalizes | exists */
-    op: `${ValueSetComposeIncludeOp}`;
+    op: `${ValueSetComposeIncludeFilterOp}`;
     _op?: Element;
     /** Code from the system, or regex criteria, or boolean value for exists */
     value: string;
@@ -210,4 +198,16 @@ export interface ValueSetComposeIncludeConceptDesignation extends BackboneElemen
     /** The text value for this designation */
     value: string;
     _value?: Element;
+}
+/** = | is-a | descendent-of | is-not-a | regex | in | not-in | generalizes | exists */
+export declare enum ValueSetComposeIncludeFilterOp {
+    Exists = "exists",
+    In = "in",
+    IsNotA = "is-not-a",
+    "=" = "=",
+    Generalizes = "generalizes",
+    DescendentOf = "descendent-of",
+    Regex = "regex",
+    IsA = "is-a",
+    NotIn = "not-in"
 }

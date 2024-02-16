@@ -1,5 +1,9 @@
 {:ns system
- import #{aidbox loinc trigger notification hl7-fhir-r4-core aidbox.forms awf.workflow awf.task}
+ import #{aidbox loinc trigger notification hl7-fhir-r4-core aidbox.forms awf.workflow awf.task aidbox.index.v1
+          aidbox.search-parameter.v1
+          aidbox.repository.v1
+          aidbox.mdm
+          zen.fhir}
 
  admin-user-seed
  {:zen/tags #{aidbox/service}
@@ -44,10 +48,48 @@
               "Organization.ndjson.gz"
               "Patient.ndjson.gz"]}
 
+ OurType
+ {:zen/tags #{zen/schema zen.fhir/base-schema}
+  :zen.fhir/type "OurType"
+  :zen.fhir/version "0.5.11"
+  :type zen/map
+  :require #{:name}
+  :confirms #{zen.fhir/Resource}
+  :keys {:resourceType {:const {:value "OurType"}
+                        :type zen/string}
+         :user {:confirms #{zenbox/Reference}
+                :zen.fhir/reference {:refers #{}}}
+         :name {:type  zen/vector
+                :every {:type zen/map
+                        :keys {:given {:type  zen/vector
+                                       :every {:type zen/string}}
+                               :family {:type zen/string}}}}}}
+
+ our-repository
+ {:zen/tags #{aidbox.repository.v1/repository}
+  :resourceType "OurType"
+  :base-profile OurType
+  :extra-parameter-sources :all}
+
+ repositories
+ {:zen/tags #{aidbox/service}
+  :engine aidbox.repository.v1/engine
+  :repositories #{our-repository}
+  :load-default true}
+
+ patient-mdm-model {:resource-type "Patient" :use-frequencies-for #{:city} :fields {:first_name [:name 0 :given 0] :surname [:name 0 :family] :dob [:birthDate] :city [:address 0 :city] :email [:telecom {:system "email"} :value] :cluster [:identifier 0 :value]} :zen/tags #{aidbox.mdm/model} :comparisons {:first_name [{:cond "\"first_name_l\" IS NULL OR \"first_name_r\" IS NULL" :m-prob 1.0 :u-prob 1.0} {:cond :else :m-prob 0.5028919782315124 :u-prob 0.9942064286024966} {:cond "\"first_name_l\" = \"first_name_r\"" :m-prob 0.4971080217684875 :u-prob 0.0057935713975033705}] :surname [{:cond "\"surname_l\" IS NULL OR \"surname_r\" IS NULL" :m-prob 1.0 :u-prob 1.0} {:cond :else :m-prob 0.2647071056028751 :u-prob 0.9877362517949315} {:cond "\"surname_l\" = \"surname_r\"" :m-prob 0.4375594107271276 :u-prob 0.004889975550122249} {:cond "levenshtein(\"surname_l\", \"surname_r\") <= 1" :m-prob 0.18566006785783215 :u-prob 0.002364383782476692} {:cond "levenshtein(\"surname_l\", \"surname_r\") <= 2" :m-prob 0.1120734158121651 :u-prob 0.005009388872469557}] :dob [{:cond "\"dob_l\" IS NULL OR \"dob_r\" IS NULL" :m-prob 1.0 :u-prob 1.0} {:cond :else :m-prob 0.46264317018738316 :u-prob 0.9966506506506506} {:cond "\"dob_l\" = \"dob_r\"" :m-prob 0.388880556975606 :u-prob 0.0017477477477477479} {:cond "levenshtein(\"dob_l\", \"dob_r\") <= 1" :m-prob 0.14847627283701093 :u-prob 0.0016016016016016017}] :city [{:cond "\"city_l\" IS NULL OR \"city_r\" IS NULL" :m-prob 1.0 :u-prob 1.0} {:cond :else :m-prob 0.43394583127229436 :u-prob 0.9448524288198547} {:cond "\"city_l\" = \"city_r\"" :m-prob 0.5660541687277056 :u-prob 0.0551475711801453 :use-frequencies true}] :email [{:cond "\"email_l\" IS NULL OR \"email_r\" IS NULL" :m-prob 1.0 :u-prob 1.0} {:cond :else :m-prob 0.1388267536128304 :u-prob 0.9964518474197885} {:cond "\"email_l\" = \"email_r\"" :m-prob 0.5600989005574617 :u-prob 0.0021938713143283602} {:cond "levenshtein(\"email_l\", \"email_r\") <= 1" :m-prob 0.17282498809234992 :u-prob 0.0007334349848487773} {:cond "levenshtein(\"email_l\", \"email_r\") <= 2" :m-prob 0.12824935773735796 :u-prob 0.000620846281034272}]} :random-match-prob 0.0033319033319033323 :blocking-conds ["l.first_name = r.first_name" "l.surname = r.surname"]}
+
+ patient-mdm
+ {:zen/tags #{aidbox/service}
+  :engine aidbox.mdm/splink-engine
+  :models #{patient-mdm-model}}
+
  box
  {:zen/tags #{aidbox/system}
   :services {:admin-user-seed admin-user-seed
+             :patient-mdm patient-mdm
              :data-seed  data-seed
+             :repositories repositories
              :preload seed
              :demo-client-seed demo-client-seed
              :task-service awf.task/task-service

@@ -11,14 +11,14 @@ export interface OperationOutcome extends DomainResource {
     issue: Array<OperationOutcomeIssue>;
 }
 /** fatal | error | warning | information */
-export declare enum OperationOutcomeSeverity {
+export declare enum OperationOutcomeIssueSeverity {
     Error = "error",
     Fatal = "fatal",
     Information = "information",
     Warning = "warning"
 }
 /** Error or warning code */
-export declare enum OperationOutcomeCode {
+export declare enum OperationOutcomeIssueCode {
     Transient = "transient",
     Suppressed = "suppressed",
     NotFound = "not-found",
@@ -63,9 +63,9 @@ export interface OperationOutcomeIssue extends BackboneElement {
     /** Additional details about the error */
     details?: CodeableConcept;
     /** fatal | error | warning | information */
-    severity: `${OperationOutcomeSeverity}`;
+    severity: `${OperationOutcomeIssueSeverity}`;
     /** Error or warning code */
-    code: `${OperationOutcomeCode}`;
+    code: `${OperationOutcomeIssueCode}`;
     _severity?: Element;
     /** Deprecated: Path of element(s) related to issue */
     location?: Array<string>;

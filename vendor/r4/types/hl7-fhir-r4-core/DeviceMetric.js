@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeviceMetricOperationalStatus = exports.DeviceMetricState = exports.DeviceMetricType = exports.DeviceMetricColor = exports.DeviceMetricCategory = void 0;
+exports.DeviceMetricOperationalstatus = exports.DeviceMetricCalibrationState = exports.DeviceMetricCalibrationType = exports.DeviceMetricColor = exports.DeviceMetricCategory = void 0;
 /** measurement | setting | calculation | unspecified */
 var DeviceMetricCategory;
 (function (DeviceMetricCategory) {
@@ -22,26 +22,26 @@ var DeviceMetricColor;
     DeviceMetricColor["Yellow"] = "yellow";
 })(DeviceMetricColor = exports.DeviceMetricColor || (exports.DeviceMetricColor = {}));
 /** unspecified | offset | gain | two-point */
-var DeviceMetricType;
-(function (DeviceMetricType) {
-    DeviceMetricType["Gain"] = "gain";
-    DeviceMetricType["Offset"] = "offset";
-    DeviceMetricType["TwoPoint"] = "two-point";
-    DeviceMetricType["Unspecified"] = "unspecified";
-})(DeviceMetricType = exports.DeviceMetricType || (exports.DeviceMetricType = {}));
+var DeviceMetricCalibrationType;
+(function (DeviceMetricCalibrationType) {
+    DeviceMetricCalibrationType["Gain"] = "gain";
+    DeviceMetricCalibrationType["Offset"] = "offset";
+    DeviceMetricCalibrationType["TwoPoint"] = "two-point";
+    DeviceMetricCalibrationType["Unspecified"] = "unspecified";
+})(DeviceMetricCalibrationType = exports.DeviceMetricCalibrationType || (exports.DeviceMetricCalibrationType = {}));
 /** not-calibrated | calibration-required | calibrated | unspecified */
-var DeviceMetricState;
-(function (DeviceMetricState) {
-    DeviceMetricState["Calibrated"] = "calibrated";
-    DeviceMetricState["CalibrationRequired"] = "calibration-required";
-    DeviceMetricState["NotCalibrated"] = "not-calibrated";
-    DeviceMetricState["Unspecified"] = "unspecified";
-})(DeviceMetricState = exports.DeviceMetricState || (exports.DeviceMetricState = {}));
+var DeviceMetricCalibrationState;
+(function (DeviceMetricCalibrationState) {
+    DeviceMetricCalibrationState["Calibrated"] = "calibrated";
+    DeviceMetricCalibrationState["CalibrationRequired"] = "calibration-required";
+    DeviceMetricCalibrationState["NotCalibrated"] = "not-calibrated";
+    DeviceMetricCalibrationState["Unspecified"] = "unspecified";
+})(DeviceMetricCalibrationState = exports.DeviceMetricCalibrationState || (exports.DeviceMetricCalibrationState = {}));
 /** on | off | standby | entered-in-error */
-var DeviceMetricOperationalStatus;
-(function (DeviceMetricOperationalStatus) {
-    DeviceMetricOperationalStatus["EnteredInError"] = "entered-in-error";
-    DeviceMetricOperationalStatus["Off"] = "off";
-    DeviceMetricOperationalStatus["On"] = "on";
-    DeviceMetricOperationalStatus["Standby"] = "standby";
-})(DeviceMetricOperationalStatus = exports.DeviceMetricOperationalStatus || (exports.DeviceMetricOperationalStatus = {}));
+var DeviceMetricOperationalstatus;
+(function (DeviceMetricOperationalstatus) {
+    DeviceMetricOperationalstatus["EnteredInError"] = "entered-in-error";
+    DeviceMetricOperationalstatus["Off"] = "off";
+    DeviceMetricOperationalstatus["On"] = "on";
+    DeviceMetricOperationalstatus["Standby"] = "standby";
+})(DeviceMetricOperationalstatus = exports.DeviceMetricOperationalstatus || (exports.DeviceMetricOperationalstatus = {}));

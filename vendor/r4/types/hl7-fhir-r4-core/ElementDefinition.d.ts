@@ -391,7 +391,7 @@ export interface ElementDefinitionConstraint extends Element {
     _expression?: Element;
     _human?: Element;
     /** error | warning */
-    severity: `${ElementDefinitionSeverity}`;
+    severity: `${ElementDefinitionConstraintSeverity}`;
     _severity?: Element;
     _source?: Element;
     _xpath?: Element;
@@ -400,7 +400,7 @@ export interface ElementDefinitionConstraint extends Element {
 /** Element values that are used to distinguish the slices */
 export interface ElementDefinitionDiscriminator extends Element {
     /** value | exists | pattern | type | profile */
-    type: `${ElementDefinitionType}`;
+    type: `${ElementDefinitionSlicingDiscriminatorType}`;
     _type?: Element;
     /** Path to element value */
     path: string;
@@ -417,13 +417,18 @@ export interface ElementDefinitionSlicing extends Element {
     ordered?: boolean;
     _ordered?: Element;
     /** closed | open | openAtEnd */
-    rules: `${ElementDefinitionRules}`;
+    rules: `${ElementDefinitionSlicingRules}`;
     _rules?: Element;
+}
+/** error | warning */
+export declare enum ElementDefinitionConstraintSeverity {
+    Error = "error",
+    Warning = "warning"
 }
 /** ValueSet details if this is coded */
 export interface ElementDefinitionBinding extends Element {
     /** required | extensible | preferred | example */
-    strength: `${ElementDefinitionStrength}`;
+    strength: `${ElementDefinitionBindingStrength}`;
     _strength?: Element;
     /** Human explanation of the value set */
     description?: string;
@@ -438,7 +443,7 @@ export interface ElementDefinitionMapping extends Element {
     identity: id;
     _identity?: Element;
     /** Computable language of mapping */
-    language?: `${ElementDefinitionLanguage}`;
+    language?: `${ElementDefinitionMappingLanguage}`;
     _language?: Element;
     /** Details of the mapping */
     map: string;
@@ -447,24 +452,37 @@ export interface ElementDefinitionMapping extends Element {
     comment?: string;
     _comment?: Element;
 }
+/** Data type and Profile for this element */
+export interface ElementDefinitionType extends Element {
+    _code?: Element;
+    _aggregation?: Array<Element>;
+    _profile?: Array<Element>;
+    /** Data type or Resource (reference to definition) */
+    code: uri;
+    /** Profile (StructureDefinition or IG) on the Reference/canonical target - one must apply */
+    targetProfile?: Array<canonical>;
+    /** contained | referenced | bundled - how aggregated */
+    aggregation?: Array<code>;
+    /** either | independent | specific */
+    versioning?: `${ElementDefinitionTypeVersioning}`;
+    _targetProfile?: Array<Element>;
+    /** Profiles (StructureDefinition or IG) - one must apply */
+    profile?: Array<canonical>;
+    _versioning?: Element;
+}
 /** value | exists | pattern | type | profile */
-export declare enum ElementDefinitionType {
+export declare enum ElementDefinitionSlicingDiscriminatorType {
     Exists = "exists",
     Pattern = "pattern",
     Profile = "profile",
     Type = "type",
     Value = "value"
 }
-/** either | independent | specific */
-export declare enum ElementDefinitionVersioning {
-    Either = "either",
-    Independent = "independent",
-    Specific = "specific"
-}
-/** error | warning */
-export declare enum ElementDefinitionSeverity {
-    Error = "error",
-    Warning = "warning"
+/** closed | open | openAtEnd */
+export declare enum ElementDefinitionSlicingRules {
+    Closed = "closed",
+    Open = "open",
+    OpenAtEnd = "openAtEnd"
 }
 /** Base definition information for tools */
 export interface ElementDefinitionBase extends Element {
@@ -478,19 +496,25 @@ export interface ElementDefinitionBase extends Element {
     max: string;
     _max?: Element;
 }
-/** Computable language of mapping */
-export declare enum ElementDefinitionLanguage {
-    "Application/hl7Cda+xml" = "application/hl7-cda+xml",
-    "Application/sparqlResults+xml" = "application/sparql-results+xml",
-    "Application/sql" = "application/sql",
-    "Application/xquery" = "application/xquery"
+/** either | independent | specific */
+export declare enum ElementDefinitionTypeVersioning {
+    Either = "either",
+    Independent = "independent",
+    Specific = "specific"
 }
 /** required | extensible | preferred | example */
-export declare enum ElementDefinitionStrength {
+export declare enum ElementDefinitionBindingStrength {
     Example = "example",
     Extensible = "extensible",
     Preferred = "preferred",
     Required = "required"
+}
+/** Computable language of mapping */
+export declare enum ElementDefinitionMappingLanguage {
+    "Application/hl7Cda+xml" = "application/hl7-cda+xml",
+    "Application/sparqlResults+xml" = "application/sparql-results+xml",
+    "Application/sql" = "application/sql",
+    "Application/xquery" = "application/xquery"
 }
 /** Example value (as defined for type) */
 export interface ElementDefinitionExample extends Element {
@@ -566,10 +590,4 @@ export interface ElementDefinitionExample extends Element {
     valueId: id;
     valueUrl: url;
     _valueInteger: Element;
-}
-/** closed | open | openAtEnd */
-export declare enum ElementDefinitionRules {
-    Closed = "closed",
-    Open = "open",
-    OpenAtEnd = "openAtEnd"
 }

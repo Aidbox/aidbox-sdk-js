@@ -57,10 +57,20 @@ export declare enum EpisodeOfCareStatus {
     Planned = "planned",
     Waitlist = "waitlist"
 }
+/** planned | waitlist | active | onhold | finished | cancelled | entered-in-error */
+export declare enum EpisodeOfCareStatushistoryStatus {
+    Active = "active",
+    Cancelled = "cancelled",
+    EnteredInError = "entered-in-error",
+    Finished = "finished",
+    Onhold = "onhold",
+    Planned = "planned",
+    Waitlist = "waitlist"
+}
 /** Past list of status codes (the current status may be included to cover the start date of the status) */
 export interface EpisodeOfCareStatusHistory extends BackboneElement {
     /** planned | waitlist | active | onhold | finished | cancelled | entered-in-error */
-    status: `${EpisodeOfCareStatus}`;
+    status: `${EpisodeOfCareStatushistoryStatus}`;
     _status?: Element;
     /** Duration the EpisodeOfCare was in the specified status */
     period: Period;

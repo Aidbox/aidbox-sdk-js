@@ -100,7 +100,7 @@ export declare enum EvidenceVariableType {
     Dichotomous = "dichotomous"
 }
 /** mean | median | mean-of-mean | mean-of-median | median-of-mean | median-of-median */
-export declare enum EvidenceVariableGroupMeasure {
+export declare enum EvidenceVariableCharacteristicGroupmeasure {
     Mean = "mean",
     MeanOfMean = "mean-of-mean",
     MeanOfMedian = "mean-of-median",
@@ -115,7 +115,7 @@ export interface EvidenceVariableCharacteristic extends BackboneElement {
     /** Whether the characteristic includes or excludes members */
     exclude?: boolean;
     /** mean | median | mean-of-mean | mean-of-median | median-of-mean | median-of-median */
-    groupMeasure?: `${EvidenceVariableGroupMeasure}`;
+    groupMeasure?: `${EvidenceVariableCharacteristicGroupmeasure}`;
     definitionExpression: Expression;
     /** Observation time from study start */
     timeFromStart?: Duration;

@@ -58,7 +58,7 @@ export interface Patient extends DomainResource {
     _multipleBirthBoolean?: Element;
 }
 /** replaced-by | replaces | refer | seealso */
-export declare enum PatientType {
+export declare enum PatientLinkType {
     Refer = "refer",
     ReplacedBy = "replaced-by",
     Replaces = "replaces",
@@ -69,7 +69,7 @@ export interface PatientLink extends BackboneElement {
     /** The other patient or related person resource that the link refers to */
     other: Reference<'Patient' | 'RelatedPerson'>;
     /** replaced-by | replaces | refer | seealso */
-    type: `${PatientType}`;
+    type: `${PatientLinkType}`;
     _type?: Element;
 }
 /** A language which may be used to communicate with the patient about his or her health */
@@ -87,6 +87,13 @@ export declare enum PatientGender {
     Other = "other",
     Unknown = "unknown"
 }
+/** male | female | other | unknown */
+export declare enum PatientContactGender {
+    Female = "female",
+    Male = "male",
+    Other = "other",
+    Unknown = "unknown"
+}
 /** A contact party (e.g. guardian, partner, friend) for the patient */
 export interface PatientContact extends BackboneElement {
     /** The kind of relationship */
@@ -98,7 +105,7 @@ export interface PatientContact extends BackboneElement {
     /** Address for the contact person */
     address?: Address;
     /** male | female | other | unknown */
-    gender?: `${PatientGender}`;
+    gender?: `${PatientContactGender}`;
     _gender?: Element;
     /** Organization that is associated with the contact */
     organization?: Reference<'Organization'>;

@@ -77,18 +77,18 @@ export interface InsurancePlanGeneralCost extends BackboneElement {
     comment?: string;
     _comment?: Element;
 }
-/** in-network | out-of-network | other */
-export declare enum InsurancePlanApplicability {
-    InNetwork = "in-network",
-    Other = "other",
-    OutOfNetwork = "out-of-network"
-}
 /** Benefit limits */
 export interface InsurancePlanLimit extends BackboneElement {
     /** Maximum value allowed */
     value?: Quantity;
     /** Benefit limit details */
     code?: CodeableConcept;
+}
+/** in-network | out-of-network | other */
+export declare enum InsurancePlanPlanSpecificcostBenefitCostApplicability {
+    InNetwork = "in-network",
+    Other = "other",
+    OutOfNetwork = "out-of-network"
 }
 /** draft | active | retired | unknown */
 export declare enum InsurancePlanStatus {
@@ -127,7 +127,7 @@ export interface InsurancePlanCost extends BackboneElement {
     /** Type of cost */
     type: CodeableConcept;
     /** in-network | out-of-network | other */
-    applicability?: `${InsurancePlanApplicability}`;
+    applicability?: `${InsurancePlanPlanSpecificcostBenefitCostApplicability}`;
     /** Additional information about the cost */
     qualifiers?: Array<CodeableConcept>;
     /** The actual cost value */

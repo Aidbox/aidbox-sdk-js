@@ -1,14 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TestScriptSetupActionOperationAccept = exports.TestScriptSetupActionAssertResource = exports.TestScriptStatus = exports.TestScriptSetupActionOperationMethod = exports.TestScriptSetupActionAssertOperator = exports.TestScriptSetupActionAssertDirection = exports.TestScriptSetupActionAssertRequestMethod = exports.TestScriptSetupActionAssertContentType = exports.TestScriptSetupActionAssertResponse = exports.TestScriptSetupActionOperationResource = exports.TestScriptSetupActionOperationContentType = void 0;
-/** Mime type of the request payload contents, with charset etc. */
-var TestScriptSetupActionOperationContentType;
-(function (TestScriptSetupActionOperationContentType) {
-    TestScriptSetupActionOperationContentType["Application/hl7Cda+xml"] = "application/hl7-cda+xml";
-    TestScriptSetupActionOperationContentType["Application/sparqlResults+xml"] = "application/sparql-results+xml";
-    TestScriptSetupActionOperationContentType["Application/sql"] = "application/sql";
-    TestScriptSetupActionOperationContentType["Application/xquery"] = "application/xquery";
-})(TestScriptSetupActionOperationContentType = exports.TestScriptSetupActionOperationContentType || (exports.TestScriptSetupActionOperationContentType = {}));
+exports.TestScriptSetupActionOperationAccept = exports.TestScriptSetupActionAssertResource = exports.TestScriptStatus = exports.TestScriptSetupActionAssertRequestmethod = exports.TestScriptSetupActionOperationMethod = exports.TestScriptSetupActionAssertContenttype = exports.TestScriptSetupActionAssertOperator = exports.TestScriptSetupActionAssertDirection = exports.TestScriptSetupActionOperationContenttype = exports.TestScriptSetupActionAssertResponse = exports.TestScriptSetupActionOperationResource = void 0;
 /** Resource type */
 var TestScriptSetupActionOperationResource;
 (function (TestScriptSetupActionOperationResource) {
@@ -240,25 +232,14 @@ var TestScriptSetupActionAssertResponse;
     TestScriptSetupActionAssertResponse["Forbidden"] = "forbidden";
     TestScriptSetupActionAssertResponse["NotModified"] = "notModified";
 })(TestScriptSetupActionAssertResponse = exports.TestScriptSetupActionAssertResponse || (exports.TestScriptSetupActionAssertResponse = {}));
-/** Mime type to compare against the 'Content-Type' header */
-var TestScriptSetupActionAssertContentType;
-(function (TestScriptSetupActionAssertContentType) {
-    TestScriptSetupActionAssertContentType["Application/hl7Cda+xml"] = "application/hl7-cda+xml";
-    TestScriptSetupActionAssertContentType["Application/sparqlResults+xml"] = "application/sparql-results+xml";
-    TestScriptSetupActionAssertContentType["Application/sql"] = "application/sql";
-    TestScriptSetupActionAssertContentType["Application/xquery"] = "application/xquery";
-})(TestScriptSetupActionAssertContentType = exports.TestScriptSetupActionAssertContentType || (exports.TestScriptSetupActionAssertContentType = {}));
-/** delete | get | options | patch | post | put | head */
-var TestScriptSetupActionAssertRequestMethod;
-(function (TestScriptSetupActionAssertRequestMethod) {
-    TestScriptSetupActionAssertRequestMethod["Delete"] = "delete";
-    TestScriptSetupActionAssertRequestMethod["Get"] = "get";
-    TestScriptSetupActionAssertRequestMethod["Head"] = "head";
-    TestScriptSetupActionAssertRequestMethod["Options"] = "options";
-    TestScriptSetupActionAssertRequestMethod["Patch"] = "patch";
-    TestScriptSetupActionAssertRequestMethod["Post"] = "post";
-    TestScriptSetupActionAssertRequestMethod["Put"] = "put";
-})(TestScriptSetupActionAssertRequestMethod = exports.TestScriptSetupActionAssertRequestMethod || (exports.TestScriptSetupActionAssertRequestMethod = {}));
+/** Mime type of the request payload contents, with charset etc. */
+var TestScriptSetupActionOperationContenttype;
+(function (TestScriptSetupActionOperationContenttype) {
+    TestScriptSetupActionOperationContenttype["Application/hl7Cda+xml"] = "application/hl7-cda+xml";
+    TestScriptSetupActionOperationContenttype["Application/sparqlResults+xml"] = "application/sparql-results+xml";
+    TestScriptSetupActionOperationContenttype["Application/sql"] = "application/sql";
+    TestScriptSetupActionOperationContenttype["Application/xquery"] = "application/xquery";
+})(TestScriptSetupActionOperationContenttype = exports.TestScriptSetupActionOperationContenttype || (exports.TestScriptSetupActionOperationContenttype = {}));
 /** response | request */
 var TestScriptSetupActionAssertDirection;
 (function (TestScriptSetupActionAssertDirection) {
@@ -280,6 +261,14 @@ var TestScriptSetupActionAssertOperator;
     TestScriptSetupActionAssertOperator["NotIn"] = "notIn";
     TestScriptSetupActionAssertOperator["NotContains"] = "notContains";
 })(TestScriptSetupActionAssertOperator = exports.TestScriptSetupActionAssertOperator || (exports.TestScriptSetupActionAssertOperator = {}));
+/** Mime type to compare against the 'Content-Type' header */
+var TestScriptSetupActionAssertContenttype;
+(function (TestScriptSetupActionAssertContenttype) {
+    TestScriptSetupActionAssertContenttype["Application/hl7Cda+xml"] = "application/hl7-cda+xml";
+    TestScriptSetupActionAssertContenttype["Application/sparqlResults+xml"] = "application/sparql-results+xml";
+    TestScriptSetupActionAssertContenttype["Application/sql"] = "application/sql";
+    TestScriptSetupActionAssertContenttype["Application/xquery"] = "application/xquery";
+})(TestScriptSetupActionAssertContenttype = exports.TestScriptSetupActionAssertContenttype || (exports.TestScriptSetupActionAssertContenttype = {}));
 /** delete | get | options | patch | post | put | head */
 var TestScriptSetupActionOperationMethod;
 (function (TestScriptSetupActionOperationMethod) {
@@ -291,6 +280,17 @@ var TestScriptSetupActionOperationMethod;
     TestScriptSetupActionOperationMethod["Post"] = "post";
     TestScriptSetupActionOperationMethod["Put"] = "put";
 })(TestScriptSetupActionOperationMethod = exports.TestScriptSetupActionOperationMethod || (exports.TestScriptSetupActionOperationMethod = {}));
+/** delete | get | options | patch | post | put | head */
+var TestScriptSetupActionAssertRequestmethod;
+(function (TestScriptSetupActionAssertRequestmethod) {
+    TestScriptSetupActionAssertRequestmethod["Delete"] = "delete";
+    TestScriptSetupActionAssertRequestmethod["Get"] = "get";
+    TestScriptSetupActionAssertRequestmethod["Head"] = "head";
+    TestScriptSetupActionAssertRequestmethod["Options"] = "options";
+    TestScriptSetupActionAssertRequestmethod["Patch"] = "patch";
+    TestScriptSetupActionAssertRequestmethod["Post"] = "post";
+    TestScriptSetupActionAssertRequestmethod["Put"] = "put";
+})(TestScriptSetupActionAssertRequestmethod = exports.TestScriptSetupActionAssertRequestmethod || (exports.TestScriptSetupActionAssertRequestmethod = {}));
 /** draft | active | retired | unknown */
 var TestScriptStatus;
 (function (TestScriptStatus) {

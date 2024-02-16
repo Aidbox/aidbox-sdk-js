@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SpecimenDefinitionPreference = void 0;
+exports.SpecimenDefinitionTypetestedPreference = void 0;
 /** preferred | alternate */
-var SpecimenDefinitionPreference;
-(function (SpecimenDefinitionPreference) {
-    SpecimenDefinitionPreference["Alternate"] = "alternate";
-    SpecimenDefinitionPreference["Preferred"] = "preferred";
-})(SpecimenDefinitionPreference = exports.SpecimenDefinitionPreference || (exports.SpecimenDefinitionPreference = {}));
+var SpecimenDefinitionTypetestedPreference;
+(function (SpecimenDefinitionTypetestedPreference) {
+    SpecimenDefinitionTypetestedPreference["Alternate"] = "alternate";
+    SpecimenDefinitionTypetestedPreference["Preferred"] = "preferred";
+})(SpecimenDefinitionTypetestedPreference = exports.SpecimenDefinitionTypetestedPreference || (exports.SpecimenDefinitionTypetestedPreference = {}));

@@ -38,7 +38,7 @@ export interface Person extends DomainResource {
     gender?: `${PersonGender}`;
 }
 /** level1 | level2 | level3 | level4 */
-export declare enum PersonAssurance {
+export declare enum PersonLinkAssurance {
     Level1 = "level1",
     Level2 = "level2",
     Level3 = "level3",
@@ -49,7 +49,7 @@ export interface PersonLink extends BackboneElement {
     /** The resource to which this actual person is associated */
     target: Reference<'Patient' | 'Person' | 'Practitioner' | 'RelatedPerson'>;
     /** level1 | level2 | level3 | level4 */
-    assurance?: `${PersonAssurance}`;
+    assurance?: `${PersonLinkAssurance}`;
     _assurance?: Element;
 }
 /** male | female | other | unknown */

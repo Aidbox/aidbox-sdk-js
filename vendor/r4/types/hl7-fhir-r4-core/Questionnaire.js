@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.QuestionnaireItemOperator = exports.QuestionnaireItemType = exports.QuestionnaireItemEnableBehavior = exports.QuestionnaireStatus = void 0;
+exports.QuestionnaireItemEnablewhenOperator = exports.QuestionnaireItemType = exports.QuestionnaireItemEnablebehavior = exports.QuestionnaireStatus = void 0;
 /** draft | active | retired | unknown */
 var QuestionnaireStatus;
 (function (QuestionnaireStatus) {
@@ -10,11 +10,11 @@ var QuestionnaireStatus;
     QuestionnaireStatus["Unknown"] = "unknown";
 })(QuestionnaireStatus = exports.QuestionnaireStatus || (exports.QuestionnaireStatus = {}));
 /** all | any */
-var QuestionnaireItemEnableBehavior;
-(function (QuestionnaireItemEnableBehavior) {
-    QuestionnaireItemEnableBehavior["All"] = "all";
-    QuestionnaireItemEnableBehavior["Any"] = "any";
-})(QuestionnaireItemEnableBehavior = exports.QuestionnaireItemEnableBehavior || (exports.QuestionnaireItemEnableBehavior = {}));
+var QuestionnaireItemEnablebehavior;
+(function (QuestionnaireItemEnablebehavior) {
+    QuestionnaireItemEnablebehavior["All"] = "all";
+    QuestionnaireItemEnablebehavior["Any"] = "any";
+})(QuestionnaireItemEnablebehavior = exports.QuestionnaireItemEnablebehavior || (exports.QuestionnaireItemEnablebehavior = {}));
 /** group | display | boolean | decimal | integer | date | dateTime + */
 var QuestionnaireItemType;
 (function (QuestionnaireItemType) {
@@ -37,13 +37,13 @@ var QuestionnaireItemType;
     QuestionnaireItemType["Boolean"] = "boolean";
 })(QuestionnaireItemType = exports.QuestionnaireItemType || (exports.QuestionnaireItemType = {}));
 /** exists | = | != | > | < | >= | <= */
-var QuestionnaireItemOperator;
-(function (QuestionnaireItemOperator) {
-    QuestionnaireItemOperator["!="] = "!=";
-    QuestionnaireItemOperator["<"] = "<";
-    QuestionnaireItemOperator["<="] = "<=";
-    QuestionnaireItemOperator["="] = "=";
-    QuestionnaireItemOperator[">"] = ">";
-    QuestionnaireItemOperator[">="] = ">=";
-    QuestionnaireItemOperator["Exists"] = "exists";
-})(QuestionnaireItemOperator = exports.QuestionnaireItemOperator || (exports.QuestionnaireItemOperator = {}));
+var QuestionnaireItemEnablewhenOperator;
+(function (QuestionnaireItemEnablewhenOperator) {
+    QuestionnaireItemEnablewhenOperator["!="] = "!=";
+    QuestionnaireItemEnablewhenOperator["<"] = "<";
+    QuestionnaireItemEnablewhenOperator["<="] = "<=";
+    QuestionnaireItemEnablewhenOperator["="] = "=";
+    QuestionnaireItemEnablewhenOperator[">"] = ">";
+    QuestionnaireItemEnablewhenOperator[">="] = ">=";
+    QuestionnaireItemEnablewhenOperator["Exists"] = "exists";
+})(QuestionnaireItemEnablewhenOperator = exports.QuestionnaireItemEnablewhenOperator || (exports.QuestionnaireItemEnablewhenOperator = {}));

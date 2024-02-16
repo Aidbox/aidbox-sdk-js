@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PaymentReconciliationStatus = exports.PaymentReconciliationOutcome = exports.PaymentReconciliationType = void 0;
+exports.PaymentReconciliationStatus = exports.PaymentReconciliationOutcome = exports.PaymentReconciliationProcessnoteType = void 0;
 /** display | print | printoper */
-var PaymentReconciliationType;
-(function (PaymentReconciliationType) {
-    PaymentReconciliationType["Display"] = "display";
-    PaymentReconciliationType["Print"] = "print";
-    PaymentReconciliationType["Printoper"] = "printoper";
-})(PaymentReconciliationType = exports.PaymentReconciliationType || (exports.PaymentReconciliationType = {}));
+var PaymentReconciliationProcessnoteType;
+(function (PaymentReconciliationProcessnoteType) {
+    PaymentReconciliationProcessnoteType["Display"] = "display";
+    PaymentReconciliationProcessnoteType["Print"] = "print";
+    PaymentReconciliationProcessnoteType["Printoper"] = "printoper";
+})(PaymentReconciliationProcessnoteType = exports.PaymentReconciliationProcessnoteType || (exports.PaymentReconciliationProcessnoteType = {}));
 /** queued | complete | error | partial */
 var PaymentReconciliationOutcome;
 (function (PaymentReconciliationOutcome) {

@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ActivityDefinitionIntent = exports.ActivityDefinitionKind = exports.ActivityDefinitionStatus = exports.ActivityDefinitionPriority = exports.ActivityDefinitionType = void 0;
+exports.ActivityDefinitionIntent = exports.ActivityDefinitionKind = exports.ActivityDefinitionStatus = exports.ActivityDefinitionPriority = exports.ActivityDefinitionParticipantType = void 0;
 /** patient | practitioner | related-person | device */
-var ActivityDefinitionType;
-(function (ActivityDefinitionType) {
-    ActivityDefinitionType["Device"] = "device";
-    ActivityDefinitionType["Patient"] = "patient";
-    ActivityDefinitionType["Practitioner"] = "practitioner";
-    ActivityDefinitionType["RelatedPerson"] = "related-person";
-})(ActivityDefinitionType = exports.ActivityDefinitionType || (exports.ActivityDefinitionType = {}));
+var ActivityDefinitionParticipantType;
+(function (ActivityDefinitionParticipantType) {
+    ActivityDefinitionParticipantType["Device"] = "device";
+    ActivityDefinitionParticipantType["Patient"] = "patient";
+    ActivityDefinitionParticipantType["Practitioner"] = "practitioner";
+    ActivityDefinitionParticipantType["RelatedPerson"] = "related-person";
+})(ActivityDefinitionParticipantType = exports.ActivityDefinitionParticipantType || (exports.ActivityDefinitionParticipantType = {}));
 /** routine | urgent | asap | stat */
 var ActivityDefinitionPriority;
 (function (ActivityDefinitionPriority) {

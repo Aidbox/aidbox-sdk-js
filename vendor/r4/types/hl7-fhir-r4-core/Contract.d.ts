@@ -106,6 +106,24 @@ export interface ContractRule extends BackboneElement {
     contentAttachment: Attachment;
     contentReference: Reference<'DocumentReference'>;
 }
+/** amended | appended | cancelled | disputed | entered-in-error | executable | executed | negotiable | offered | policy | rejected | renewed | revoked | resolved | terminated */
+export declare enum ContractContentdefinitionPublicationstatus {
+    Cancelled = "cancelled",
+    Amended = "amended",
+    Rejected = "rejected",
+    Negotiable = "negotiable",
+    Executed = "executed",
+    Executable = "executable",
+    Appended = "appended",
+    Offered = "offered",
+    Resolved = "resolved",
+    EnteredInError = "entered-in-error",
+    Policy = "policy",
+    Terminated = "terminated",
+    Revoked = "revoked",
+    Renewed = "renewed",
+    Disputed = "disputed"
+}
 /** Entity of the action */
 export interface ContractTermSubject extends BackboneElement {
     /** Entity of the action */
@@ -139,7 +157,7 @@ export interface ContractContentDefinition extends BackboneElement {
     _publicationStatus?: Element;
     _publicationDate?: Element;
     /** amended | appended | cancelled | disputed | entered-in-error | executable | executed | negotiable | offered | policy | rejected | renewed | revoked | resolved | terminated */
-    publicationStatus: `${ContractPublicationStatus}`;
+    publicationStatus: `${ContractContentdefinitionPublicationstatus}`;
     _copyright?: Element;
     /** Detailed Content Type Definition */
     subType?: CodeableConcept;
@@ -206,24 +224,6 @@ export interface ContractTermOfferAnswer extends BackboneElement {
     valueInteger: integer;
     valueAttachment: Attachment;
     _valueInteger: Element;
-}
-/** amended | appended | cancelled | disputed | entered-in-error | executable | executed | negotiable | offered | policy | rejected | renewed | revoked | resolved | terminated */
-export declare enum ContractPublicationStatus {
-    Cancelled = "cancelled",
-    Amended = "amended",
-    Rejected = "rejected",
-    Negotiable = "negotiable",
-    Executed = "executed",
-    Executable = "executable",
-    Appended = "appended",
-    Offered = "offered",
-    Resolved = "resolved",
-    EnteredInError = "entered-in-error",
-    Policy = "policy",
-    Terminated = "terminated",
-    Revoked = "revoked",
-    Renewed = "renewed",
-    Disputed = "disputed"
 }
 /** Protection for the Term */
 export interface ContractTermSecurityLabel extends BackboneElement {

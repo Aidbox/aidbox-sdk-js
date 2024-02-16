@@ -37,7 +37,7 @@ export interface MeasureReport extends DomainResource {
     /** What period the report covers */
     period: Period;
     /** increase | decrease */
-    improvementNotation?: `${MeasureReportImprovementNotation}`;
+    improvementNotation?: `${MeasureReportImprovementnotation}`;
     /** What individual(s) the report is for */
     subject?: Reference<'Patient' | 'PractitionerRole' | 'Device' | 'Location' | 'Practitioner' | 'RelatedPerson' | 'Group'>;
 }
@@ -101,7 +101,7 @@ export declare enum MeasureReportStatus {
     Pending = "pending"
 }
 /** increase | decrease */
-export declare enum MeasureReportImprovementNotation {
+export declare enum MeasureReportImprovementnotation {
     Decrease = "decrease",
     Increase = "increase"
 }

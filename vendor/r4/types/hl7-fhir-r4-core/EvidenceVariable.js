@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EvidenceVariableStatus = exports.EvidenceVariableGroupMeasure = exports.EvidenceVariableType = void 0;
+exports.EvidenceVariableStatus = exports.EvidenceVariableCharacteristicGroupmeasure = exports.EvidenceVariableType = void 0;
 /** dichotomous | continuous | descriptive */
 var EvidenceVariableType;
 (function (EvidenceVariableType) {
@@ -9,15 +9,15 @@ var EvidenceVariableType;
     EvidenceVariableType["Dichotomous"] = "dichotomous";
 })(EvidenceVariableType = exports.EvidenceVariableType || (exports.EvidenceVariableType = {}));
 /** mean | median | mean-of-mean | mean-of-median | median-of-mean | median-of-median */
-var EvidenceVariableGroupMeasure;
-(function (EvidenceVariableGroupMeasure) {
-    EvidenceVariableGroupMeasure["Mean"] = "mean";
-    EvidenceVariableGroupMeasure["MeanOfMean"] = "mean-of-mean";
-    EvidenceVariableGroupMeasure["MeanOfMedian"] = "mean-of-median";
-    EvidenceVariableGroupMeasure["Median"] = "median";
-    EvidenceVariableGroupMeasure["MedianOfMean"] = "median-of-mean";
-    EvidenceVariableGroupMeasure["MedianOfMedian"] = "median-of-median";
-})(EvidenceVariableGroupMeasure = exports.EvidenceVariableGroupMeasure || (exports.EvidenceVariableGroupMeasure = {}));
+var EvidenceVariableCharacteristicGroupmeasure;
+(function (EvidenceVariableCharacteristicGroupmeasure) {
+    EvidenceVariableCharacteristicGroupmeasure["Mean"] = "mean";
+    EvidenceVariableCharacteristicGroupmeasure["MeanOfMean"] = "mean-of-mean";
+    EvidenceVariableCharacteristicGroupmeasure["MeanOfMedian"] = "mean-of-median";
+    EvidenceVariableCharacteristicGroupmeasure["Median"] = "median";
+    EvidenceVariableCharacteristicGroupmeasure["MedianOfMean"] = "median-of-mean";
+    EvidenceVariableCharacteristicGroupmeasure["MedianOfMedian"] = "median-of-median";
+})(EvidenceVariableCharacteristicGroupmeasure = exports.EvidenceVariableCharacteristicGroupmeasure || (exports.EvidenceVariableCharacteristicGroupmeasure = {}));
 /** draft | active | retired | unknown */
 var EvidenceVariableStatus;
 (function (EvidenceVariableStatus) {

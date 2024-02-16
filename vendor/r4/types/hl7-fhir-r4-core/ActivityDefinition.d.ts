@@ -146,7 +146,7 @@ export interface ActivityDefinition extends DomainResource {
     effectivePeriod?: Period;
 }
 /** patient | practitioner | related-person | device */
-export declare enum ActivityDefinitionType {
+export declare enum ActivityDefinitionParticipantType {
     Device = "device",
     Patient = "patient",
     Practitioner = "practitioner",
@@ -155,7 +155,7 @@ export declare enum ActivityDefinitionType {
 /** Who should participate in the action */
 export interface ActivityDefinitionParticipant extends BackboneElement {
     /** patient | practitioner | related-person | device */
-    type: `${ActivityDefinitionType}`;
+    type: `${ActivityDefinitionParticipantType}`;
     _type?: Element;
     /** E.g. Nurse, Surgeon, Parent, etc. */
     role?: CodeableConcept;

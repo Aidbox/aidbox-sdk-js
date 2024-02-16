@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PersonGender = exports.PersonAssurance = void 0;
+exports.PersonGender = exports.PersonLinkAssurance = void 0;
 /** level1 | level2 | level3 | level4 */
-var PersonAssurance;
-(function (PersonAssurance) {
-    PersonAssurance["Level1"] = "level1";
-    PersonAssurance["Level2"] = "level2";
-    PersonAssurance["Level3"] = "level3";
-    PersonAssurance["Level4"] = "level4";
-})(PersonAssurance = exports.PersonAssurance || (exports.PersonAssurance = {}));
+var PersonLinkAssurance;
+(function (PersonLinkAssurance) {
+    PersonLinkAssurance["Level1"] = "level1";
+    PersonLinkAssurance["Level2"] = "level2";
+    PersonLinkAssurance["Level3"] = "level3";
+    PersonLinkAssurance["Level4"] = "level4";
+})(PersonLinkAssurance = exports.PersonLinkAssurance || (exports.PersonLinkAssurance = {}));
 /** male | female | other | unknown */
 var PersonGender;
 (function (PersonGender) {

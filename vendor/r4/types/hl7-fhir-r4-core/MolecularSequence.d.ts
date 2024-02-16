@@ -58,7 +58,7 @@ export interface MolecularSequenceRepository extends BackboneElement {
     name?: string;
     _type?: Element;
     /** directlink | openapi | login | oauth | other */
-    type: `${MolecularSequenceType}`;
+    type: `${MolecularSequenceRepositoryType}`;
     _datasetId?: Element;
     /** Id of the dataset that used to call for dataset in repository */
     datasetId?: string;
@@ -71,11 +71,11 @@ export interface MolecularSequenceRepository extends BackboneElement {
     _readsetId?: Element;
     _url?: Element;
 }
-/** indel | snp | unknown */
+/** aa | dna | rna */
 export declare enum MolecularSequenceType {
-    Indel = "indel",
-    Snp = "snp",
-    Unknown = "unknown"
+    Aa = "aa",
+    Dna = "dna",
+    Rna = "rna"
 }
 /** Structural variant */
 export interface MolecularSequenceStructureVariant extends BackboneElement {
@@ -100,16 +100,6 @@ export interface MolecularSequenceOuter extends BackboneElement {
     /** Structural variant outer end */
     end?: integer;
     _end?: Element;
-}
-/** watson | crick */
-export declare enum MolecularSequenceStrand {
-    Crick = "crick",
-    Watson = "watson"
-}
-/** sense | antisense */
-export declare enum MolecularSequenceOrientation {
-    Antisense = "antisense",
-    Sense = "sense"
 }
 /** Receiver Operator Characteristic (ROC) Curve */
 export interface MolecularSequenceRoc extends BackboneElement {
@@ -146,11 +136,11 @@ export interface MolecularSequenceReferenceSeq extends BackboneElement {
     windowEnd?: integer;
     _genomeBuild?: Element;
     /** watson | crick */
-    strand?: `${MolecularSequenceStrand}`;
+    strand?: `${MolecularSequenceReferenceseqStrand}`;
     /** The Genome Build used for reference, following GRCh build versions e.g. 'GRCh 37' */
     genomeBuild?: string;
     /** sense | antisense */
-    orientation?: `${MolecularSequenceOrientation}`;
+    orientation?: `${MolecularSequenceReferenceseqOrientation}`;
     _strand?: Element;
     /** A pointer to another MolecularSequence entity as reference sequence */
     referenceSeqPointer?: Reference<'MolecularSequence'>;
@@ -161,6 +151,17 @@ export interface MolecularSequenceReferenceSeq extends BackboneElement {
     _windowEnd?: Element;
     /** Start position of the window on the  reference sequence */
     windowStart?: integer;
+}
+/** watson | crick */
+export declare enum MolecularSequenceReferenceseqStrand {
+    Crick = "crick",
+    Watson = "watson"
+}
+/** indel | snp | unknown */
+export declare enum MolecularSequenceQualityType {
+    Indel = "indel",
+    Snp = "snp",
+    Unknown = "unknown"
 }
 /** An set of value as quality of sequence */
 export interface MolecularSequenceQuality extends BackboneElement {
@@ -184,7 +185,7 @@ export interface MolecularSequenceQuality extends BackboneElement {
     /** True positives from the perspective of the query data */
     queryTP?: decimal;
     /** indel | snp | unknown */
-    type: `${MolecularSequenceType}`;
+    type: `${MolecularSequenceQualityType}`;
     _truthFN?: Element;
     _gtFP?: Element;
     /** Recall of comparison */
@@ -215,6 +216,14 @@ export interface MolecularSequenceInner extends BackboneElement {
     end?: integer;
     _end?: Element;
 }
+/** directlink | openapi | login | oauth | other */
+export declare enum MolecularSequenceRepositoryType {
+    Directlink = "directlink",
+    Login = "login",
+    Oauth = "oauth",
+    Openapi = "openapi",
+    Other = "other"
+}
 /** Variant in sequence */
 export interface MolecularSequenceVariant extends BackboneElement {
     /** Pointer to observed variant information */
@@ -234,4 +243,9 @@ export interface MolecularSequenceVariant extends BackboneElement {
     _start?: Element;
     /** Extended CIGAR string for aligning the sequence with reference bases */
     cigar?: string;
+}
+/** sense | antisense */
+export declare enum MolecularSequenceReferenceseqOrientation {
+    Antisense = "antisense",
+    Sense = "sense"
 }

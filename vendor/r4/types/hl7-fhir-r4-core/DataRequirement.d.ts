@@ -276,7 +276,7 @@ export interface DataRequirementDateFilter extends Element {
     valuePeriod?: Period;
 }
 /** ascending | descending */
-export declare enum DataRequirementDirection {
+export declare enum DataRequirementSortDirection {
     Ascending = "ascending",
     Descending = "descending"
 }
@@ -286,6 +286,6 @@ export interface DataRequirementSort extends Element {
     path: string;
     _path?: Element;
     /** ascending | descending */
-    direction: `${DataRequirementDirection}`;
+    direction: `${DataRequirementSortDirection}`;
     _direction?: Element;
 }

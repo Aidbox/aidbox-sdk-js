@@ -17,24 +17,24 @@ export interface Signature extends Element {
     _sigFormat?: Element;
     _targetFormat?: Element;
     /** The technical format of the signature */
-    sigFormat?: `${SignatureSigFormat}`;
+    sigFormat?: `${SignatureSigformat}`;
     /** Indication of the reason the entity signed the object(s) */
     type: Array<Coding>;
     /** The technical format of the signed resources */
-    targetFormat?: `${SignatureTargetFormat}`;
+    targetFormat?: `${SignatureTargetformat}`;
     _when?: Element;
     /** The actual signature content (XML DigSig. JWS, picture, etc.) */
     data?: base64Binary;
 }
 /** The technical format of the signature */
-export declare enum SignatureSigFormat {
+export declare enum SignatureSigformat {
     "Application/hl7Cda+xml" = "application/hl7-cda+xml",
     "Application/sparqlResults+xml" = "application/sparql-results+xml",
     "Application/sql" = "application/sql",
     "Application/xquery" = "application/xquery"
 }
 /** The technical format of the signed resources */
-export declare enum SignatureTargetFormat {
+export declare enum SignatureTargetformat {
     "Application/hl7Cda+xml" = "application/hl7-cda+xml",
     "Application/sparqlResults+xml" = "application/sparql-results+xml",
     "Application/sql" = "application/sql",

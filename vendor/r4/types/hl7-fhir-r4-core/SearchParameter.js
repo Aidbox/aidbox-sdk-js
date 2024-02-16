@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SearchParameterStatus = exports.SearchParameterType = exports.SearchParameterXpathUsage = void 0;
+exports.SearchParameterStatus = exports.SearchParameterType = exports.SearchParameterXpathusage = void 0;
 /** normal | phonetic | nearby | distance | other */
-var SearchParameterXpathUsage;
-(function (SearchParameterXpathUsage) {
-    SearchParameterXpathUsage["Distance"] = "distance";
-    SearchParameterXpathUsage["Nearby"] = "nearby";
-    SearchParameterXpathUsage["Normal"] = "normal";
-    SearchParameterXpathUsage["Other"] = "other";
-    SearchParameterXpathUsage["Phonetic"] = "phonetic";
-})(SearchParameterXpathUsage = exports.SearchParameterXpathUsage || (exports.SearchParameterXpathUsage = {}));
+var SearchParameterXpathusage;
+(function (SearchParameterXpathusage) {
+    SearchParameterXpathusage["Distance"] = "distance";
+    SearchParameterXpathusage["Nearby"] = "nearby";
+    SearchParameterXpathusage["Normal"] = "normal";
+    SearchParameterXpathusage["Other"] = "other";
+    SearchParameterXpathusage["Phonetic"] = "phonetic";
+})(SearchParameterXpathusage = exports.SearchParameterXpathusage || (exports.SearchParameterXpathusage = {}));
 /** number | date | string | token | reference | composite | quantity | uri | special */
 var SearchParameterType;
 (function (SearchParameterType) {

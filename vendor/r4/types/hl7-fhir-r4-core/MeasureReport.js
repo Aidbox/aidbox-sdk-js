@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MeasureReportImprovementNotation = exports.MeasureReportStatus = exports.MeasureReportType = void 0;
+exports.MeasureReportImprovementnotation = exports.MeasureReportStatus = exports.MeasureReportType = void 0;
 /** individual | subject-list | summary | data-collection */
 var MeasureReportType;
 (function (MeasureReportType) {
@@ -17,8 +17,8 @@ var MeasureReportStatus;
     MeasureReportStatus["Pending"] = "pending";
 })(MeasureReportStatus = exports.MeasureReportStatus || (exports.MeasureReportStatus = {}));
 /** increase | decrease */
-var MeasureReportImprovementNotation;
-(function (MeasureReportImprovementNotation) {
-    MeasureReportImprovementNotation["Decrease"] = "decrease";
-    MeasureReportImprovementNotation["Increase"] = "increase";
-})(MeasureReportImprovementNotation = exports.MeasureReportImprovementNotation || (exports.MeasureReportImprovementNotation = {}));
+var MeasureReportImprovementnotation;
+(function (MeasureReportImprovementnotation) {
+    MeasureReportImprovementnotation["Decrease"] = "decrease";
+    MeasureReportImprovementnotation["Increase"] = "increase";
+})(MeasureReportImprovementnotation = exports.MeasureReportImprovementnotation || (exports.MeasureReportImprovementnotation = {}));

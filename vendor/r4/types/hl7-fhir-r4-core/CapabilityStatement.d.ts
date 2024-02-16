@@ -33,7 +33,7 @@ export interface CapabilityStatement extends DomainResource {
     /** Patch formats supported */
     patchFormat?: Array<code>;
     /** FHIR Version the system supports */
-    fhirVersion: `${CapabilityStatementFhirVersion}`;
+    fhirVersion: `${CapabilityStatementFhirversion}`;
     /** Intended jurisdiction for capability statement (if applicable) */
     jurisdiction?: Array<CodeableConcept>;
     _publisher?: Element;
@@ -104,44 +104,14 @@ export interface CapabilityStatementRestResourceSearchParam extends BackboneElem
     documentation?: markdown;
     _documentation?: Element;
 }
-/** not-supported | single | multiple - how conditional delete is supported */
-export declare enum CapabilityStatementConditionalDelete {
-    Multiple = "multiple",
-    NotSupported = "not-supported",
-    Single = "single"
-}
-/** Where messages should be sent */
-export interface CapabilityStatementEndpoint extends BackboneElement {
-    /** http | ftp | mllp + */
-    protocol: Coding;
-    /** Network address or identifier of the end-point */
-    address: url;
-    _address?: Element;
-}
 /** no-version | versioned | versioned-update */
-export declare enum CapabilityStatementVersioning {
+export declare enum CapabilityStatementRestResourceVersioning {
     NoVersion = "no-version",
     Versioned = "versioned",
     VersionedUpdate = "versioned-update"
 }
-/** What operations are supported? */
-export interface CapabilityStatementInteraction extends BackboneElement {
-    /** transaction | batch | search-system | history-system */
-    code: `${CapabilityStatementCode}`;
-    _code?: Element;
-    /** Anything special about operation behavior */
-    documentation?: markdown;
-    _documentation?: Element;
-}
-/** not-supported | modified-since | not-match | full-support */
-export declare enum CapabilityStatementConditionalRead {
-    FullSupport = "full-support",
-    ModifiedSince = "modified-since",
-    NotMatch = "not-match",
-    NotSupported = "not-supported"
-}
 /** read | vread | update | patch | delete | history-instance | history-type | create | search-type */
-export declare enum CapabilityStatementCode {
+export declare enum CapabilityStatementRestResourceInteractionCode {
     SearchType = "search-type",
     HistoryType = "history-type",
     Delete = "delete",
@@ -152,127 +122,8 @@ export declare enum CapabilityStatementCode {
     HistoryInstance = "history-instance",
     Patch = "patch"
 }
-/** If this describes a specific instance */
-export interface CapabilityStatementImplementation extends BackboneElement {
-    /** Describes this specific instance */
-    description: string;
-    _description?: Element;
-    /** Base URL for the installation */
-    url?: url;
-    _url?: Element;
-    /** Organization that manages the data */
-    custodian?: Reference<'Organization'>;
-}
-/** Messages supported by this system */
-export interface CapabilityStatementSupportedMessage extends BackboneElement {
-    /** sender | receiver */
-    mode: `${CapabilityStatementMode}`;
-    _mode?: Element;
-    /** Message supported by this system */
-    definition: canonical;
-    _definition?: Element;
-}
-/** Information about security of implementation */
-export interface CapabilityStatementSecurity extends BackboneElement {
-    /** Adds CORS Headers (http://enable-cors.org/) */
-    cors?: boolean;
-    _cors?: Element;
-    /** OAuth | SMART-on-FHIR | NTLM | Basic | Kerberos | Certificates */
-    service?: Array<CodeableConcept>;
-    /** General description of how security works */
-    description?: markdown;
-    _description?: Element;
-}
-/** number | date | string | token | reference | composite | quantity | uri | special */
-export declare enum CapabilityStatementRestResourceSearchParamType {
-    Uri = "uri",
-    Number = "number",
-    Date = "date",
-    Special = "special",
-    Quantity = "quantity",
-    String = "string",
-    Composite = "composite",
-    Token = "token",
-    Reference = "reference"
-}
-/** client | server */
-export declare enum CapabilityStatementMode {
-    Client = "client",
-    Server = "server"
-}
-/** Document definition */
-export interface CapabilityStatementDocument extends BackboneElement {
-    /** producer | consumer */
-    mode: `${CapabilityStatementMode}`;
-    _mode?: Element;
-    /** Description of document support */
-    documentation?: markdown;
-    _documentation?: Element;
-    /** Constraint on the resources used in the document */
-    profile: canonical;
-    _profile?: Element;
-}
-/** If the endpoint is a RESTful one */
-export interface CapabilityStatementRest extends BackboneElement {
-    _documentation?: Element;
-    /** Search parameters for searching all resources */
-    searchParam?: Array<CapabilityStatementRestResourceSearchParam>;
-    /** Information about security of implementation */
-    security?: CapabilityStatementSecurity;
-    /** Definition of a system level operation */
-    operation?: Array<CapabilityStatementRestResourceOperation>;
-    /** client | server */
-    mode: `${CapabilityStatementMode}`;
-    _compartment?: Array<Element>;
-    /** What operations are supported? */
-    interaction?: Array<CapabilityStatementInteraction>;
-    /** General description of implementation */
-    documentation?: markdown;
-    /** Resource served on the REST interface */
-    resource?: Array<CapabilityStatementResource>;
-    /** Compartments served/used by system */
-    compartment?: Array<canonical>;
-    _mode?: Element;
-}
-/** Definition of a resource operation */
-export interface CapabilityStatementRestResourceOperation extends BackboneElement {
-    /** Name by which the operation/query is invoked */
-    name: string;
-    _name?: Element;
-    /** The defined operation/query */
-    definition: canonical;
-    _definition?: Element;
-    /** Specific details about operation behavior */
-    documentation?: markdown;
-    _documentation?: Element;
-}
-/** FHIR Version the system supports */
-export declare enum CapabilityStatementFhirVersion {
-    "Num1.8.0" = "1.8.0",
-    "Num0.05" = "0.05",
-    "Num0.01" = "0.01",
-    "Num3.0.1" = "3.0.1",
-    "Num1.0.0" = "1.0.0",
-    "Num3.3.0" = "3.3.0",
-    "Num0.0.82" = "0.0.82",
-    "Num1.6.0" = "1.6.0",
-    "Num1.4.0" = "1.4.0",
-    "Num3.0.0" = "3.0.0",
-    "Num0.0.80" = "0.0.80",
-    "Num4.0.0" = "4.0.0",
-    "Num0.11" = "0.11",
-    "Num0.06" = "0.06",
-    "Num1.0.2" = "1.0.2",
-    "Num1.0.1" = "1.0.1",
-    "Num0.4.0" = "0.4.0",
-    "Num4.0.1" = "4.0.1",
-    "Num3.5.0" = "3.5.0",
-    "Num0.5.0" = "0.5.0",
-    "Num1.1.0" = "1.1.0",
-    "Num0.0.81" = "0.0.81"
-}
 /** A resource type that is supported */
-export declare enum CapabilityStatementType {
+export declare enum CapabilityStatementRestResourceType {
     ImmunizationEvaluation = "ImmunizationEvaluation",
     Appointment = "Appointment",
     StructureMap = "StructureMap",
@@ -422,6 +273,165 @@ export declare enum CapabilityStatementType {
     Observation = "Observation",
     DocumentManifest = "DocumentManifest"
 }
+/** client | server */
+export declare enum CapabilityStatementRestMode {
+    Client = "client",
+    Server = "server"
+}
+/** Where messages should be sent */
+export interface CapabilityStatementEndpoint extends BackboneElement {
+    /** http | ftp | mllp + */
+    protocol: Coding;
+    /** Network address or identifier of the end-point */
+    address: url;
+    _address?: Element;
+}
+/** not-supported | modified-since | not-match | full-support */
+export declare enum CapabilityStatementRestResourceConditionalread {
+    FullSupport = "full-support",
+    ModifiedSince = "modified-since",
+    NotMatch = "not-match",
+    NotSupported = "not-supported"
+}
+/** What operations are supported? */
+export interface CapabilityStatementInteraction extends BackboneElement {
+    /** transaction | batch | search-system | history-system */
+    code: `${CapabilityStatementRestInteractionCode}`;
+    _code?: Element;
+    /** Anything special about operation behavior */
+    documentation?: markdown;
+    _documentation?: Element;
+}
+/** FHIR Version the system supports */
+export declare enum CapabilityStatementFhirversion {
+    "Num1.8.0" = "1.8.0",
+    "Num0.05" = "0.05",
+    "Num0.01" = "0.01",
+    "Num3.0.1" = "3.0.1",
+    "Num1.0.0" = "1.0.0",
+    "Num3.3.0" = "3.3.0",
+    "Num0.0.82" = "0.0.82",
+    "Num1.6.0" = "1.6.0",
+    "Num1.4.0" = "1.4.0",
+    "Num3.0.0" = "3.0.0",
+    "Num0.0.80" = "0.0.80",
+    "Num4.0.0" = "4.0.0",
+    "Num0.11" = "0.11",
+    "Num0.06" = "0.06",
+    "Num1.0.2" = "1.0.2",
+    "Num1.0.1" = "1.0.1",
+    "Num0.4.0" = "0.4.0",
+    "Num4.0.1" = "4.0.1",
+    "Num3.5.0" = "3.5.0",
+    "Num0.5.0" = "0.5.0",
+    "Num1.1.0" = "1.1.0",
+    "Num0.0.81" = "0.0.81"
+}
+/** sender | receiver */
+export declare enum CapabilityStatementMessagingSupportedmessageMode {
+    Receiver = "receiver",
+    Sender = "sender"
+}
+/** If this describes a specific instance */
+export interface CapabilityStatementImplementation extends BackboneElement {
+    /** Describes this specific instance */
+    description: string;
+    _description?: Element;
+    /** Base URL for the installation */
+    url?: url;
+    _url?: Element;
+    /** Organization that manages the data */
+    custodian?: Reference<'Organization'>;
+}
+/** Messages supported by this system */
+export interface CapabilityStatementSupportedMessage extends BackboneElement {
+    /** sender | receiver */
+    mode: `${CapabilityStatementMessagingSupportedmessageMode}`;
+    _mode?: Element;
+    /** Message supported by this system */
+    definition: canonical;
+    _definition?: Element;
+}
+/** Information about security of implementation */
+export interface CapabilityStatementSecurity extends BackboneElement {
+    /** Adds CORS Headers (http://enable-cors.org/) */
+    cors?: boolean;
+    _cors?: Element;
+    /** OAuth | SMART-on-FHIR | NTLM | Basic | Kerberos | Certificates */
+    service?: Array<CodeableConcept>;
+    /** General description of how security works */
+    description?: markdown;
+    _description?: Element;
+}
+/** number | date | string | token | reference | composite | quantity | uri | special */
+export declare enum CapabilityStatementRestResourceSearchParamType {
+    Uri = "uri",
+    Number = "number",
+    Date = "date",
+    Special = "special",
+    Quantity = "quantity",
+    String = "string",
+    Composite = "composite",
+    Token = "token",
+    Reference = "reference"
+}
+/** producer | consumer */
+export declare enum CapabilityStatementDocumentMode {
+    Consumer = "consumer",
+    Producer = "producer"
+}
+/** not-supported | single | multiple - how conditional delete is supported */
+export declare enum CapabilityStatementRestResourceConditionaldelete {
+    Multiple = "multiple",
+    NotSupported = "not-supported",
+    Single = "single"
+}
+/** Document definition */
+export interface CapabilityStatementDocument extends BackboneElement {
+    /** producer | consumer */
+    mode: `${CapabilityStatementDocumentMode}`;
+    _mode?: Element;
+    /** Description of document support */
+    documentation?: markdown;
+    _documentation?: Element;
+    /** Constraint on the resources used in the document */
+    profile: canonical;
+    _profile?: Element;
+}
+/** If the endpoint is a RESTful one */
+export interface CapabilityStatementRest extends BackboneElement {
+    _documentation?: Element;
+    /** Search parameters for searching all resources */
+    searchParam?: Array<CapabilityStatementRestResourceSearchParam>;
+    /** Information about security of implementation */
+    security?: CapabilityStatementSecurity;
+    /** Definition of a system level operation */
+    operation?: Array<CapabilityStatementRestResourceOperation>;
+    /** client | server */
+    mode: `${CapabilityStatementRestMode}`;
+    _compartment?: Array<Element>;
+    /** What operations are supported? */
+    interaction?: Array<CapabilityStatementInteraction>;
+    /** General description of implementation */
+    documentation?: markdown;
+    /** Resource served on the REST interface */
+    resource?: Array<CapabilityStatementResource>;
+    /** Compartments served/used by system */
+    compartment?: Array<canonical>;
+    _mode?: Element;
+}
+/** Definition of a resource operation */
+export interface CapabilityStatementRestResourceOperation extends BackboneElement {
+    /** Name by which the operation/query is invoked */
+    name: string;
+    _name?: Element;
+    /** The defined operation/query */
+    definition: canonical;
+    _definition?: Element;
+    /** Specific details about operation behavior */
+    documentation?: markdown;
+    _documentation?: Element;
+}
 /** If messaging is supported */
 export interface CapabilityStatementMessaging extends BackboneElement {
     /** Where messages should be sent */
@@ -448,7 +458,7 @@ export interface CapabilityStatementResource extends BackboneElement {
     _updateCreate?: Element;
     _conditionalCreate?: Element;
     /** not-supported | modified-since | not-match | full-support */
-    conditionalRead?: `${CapabilityStatementConditionalRead}`;
+    conditionalRead?: `${CapabilityStatementRestResourceConditionalread}`;
     _type?: Element;
     operation?: Array<CapabilityStatementRestResourceOperation>;
     _conditionalUpdate?: Element;
@@ -457,7 +467,7 @@ export interface CapabilityStatementResource extends BackboneElement {
     /** Whether vRead can return past versions */
     readHistory?: boolean;
     /** A resource type that is supported */
-    type: `${CapabilityStatementType}`;
+    type: `${CapabilityStatementRestResourceType}`;
     /** What operations are supported? */
     interaction?: Array<CapabilityStatementInteraction>;
     _conditionalRead?: Element;
@@ -476,13 +486,13 @@ export interface CapabilityStatementResource extends BackboneElement {
     /** _include values supported by the server */
     searchInclude?: Array<string>;
     /** no-version | versioned | versioned-update */
-    versioning?: `${CapabilityStatementVersioning}`;
+    versioning?: `${CapabilityStatementRestResourceVersioning}`;
     /** Base System profile for all uses of resource */
     profile?: canonical;
     _versioning?: Element;
     _supportedProfile?: Array<Element>;
     /** not-supported | single | multiple - how conditional delete is supported */
-    conditionalDelete?: `${CapabilityStatementConditionalDelete}`;
+    conditionalDelete?: `${CapabilityStatementRestResourceConditionaldelete}`;
 }
 /** draft | active | retired | unknown */
 export declare enum CapabilityStatementStatus {
@@ -496,6 +506,13 @@ export declare enum CapabilityStatementKind {
     Capability = "capability",
     Instance = "instance",
     Requirements = "requirements"
+}
+/** transaction | batch | search-system | history-system */
+export declare enum CapabilityStatementRestInteractionCode {
+    SearchSystem = "search-system",
+    Transaction = "transaction",
+    Batch = "batch",
+    HistorySystem = "history-system"
 }
 /** Software that is covered by this capability statement */
 export interface CapabilityStatementSoftware extends BackboneElement {

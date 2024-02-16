@@ -120,7 +120,7 @@ export interface EffectEvidenceSynthesisEffectEstimate extends BackboneElement {
     value?: decimal;
     _value?: Element;
     /** What unit is the outcome described in? */
-    unitOfMeasure?: `${EffectEvidenceSynthesisUnitOfMeasure}`;
+    unitOfMeasure?: `${EffectEvidenceSynthesisEffectestimateUnitofmeasure}`;
     /** How precise the estimate is */
     precisionEstimate?: Array<EffectEvidenceSynthesisPrecisionEstimate>;
 }
@@ -145,6 +145,11 @@ export interface EffectEvidenceSynthesisCertaintySubcomponent extends BackboneEl
     /** Used for footnotes or explanatory notes */
     note?: Array<Annotation>;
 }
+/** exposure | exposure-alternative */
+export declare enum EffectEvidenceSynthesisResultsbyexposureExposurestate {
+    Exposure = "exposure",
+    ExposureAlternative = "exposure-alternative"
+}
 /** draft | active | retired | unknown */
 export declare enum EffectEvidenceSynthesisStatus {
     Active = "active",
@@ -166,13 +171,8 @@ export interface EffectEvidenceSynthesisPrecisionEstimate extends BackboneElemen
     to?: decimal;
     _to?: Element;
 }
-/** exposure | exposure-alternative */
-export declare enum EffectEvidenceSynthesisExposureState {
-    Exposure = "exposure",
-    ExposureAlternative = "exposure-alternative"
-}
 /** What unit is the outcome described in? */
-export declare enum EffectEvidenceSynthesisUnitOfMeasure {
+export declare enum EffectEvidenceSynthesisEffectestimateUnitofmeasure {
     "Mo_j" = "mo_j",
     CSt = "cSt",
     "%{breakdown}" = "%{breakdown}",
@@ -1590,7 +1590,7 @@ export interface EffectEvidenceSynthesisResultsByExposure extends BackboneElemen
     description?: string;
     _description?: Element;
     /** exposure | exposure-alternative */
-    exposureState?: `${EffectEvidenceSynthesisExposureState}`;
+    exposureState?: `${EffectEvidenceSynthesisResultsbyexposureExposurestate}`;
     _exposureState?: Element;
     /** Variant exposure states */
     variantState?: CodeableConcept;

@@ -1,25 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TimingDurationUnit = exports.TimingPeriodUnit = void 0;
+exports.TimingRepeatDurationunit = exports.TimingRepeatPeriodunit = void 0;
 /** s | min | h | d | wk | mo | a - unit of time (UCUM) */
-var TimingPeriodUnit;
-(function (TimingPeriodUnit) {
-    TimingPeriodUnit["D"] = "d";
-    TimingPeriodUnit["Min"] = "min";
-    TimingPeriodUnit["S"] = "s";
-    TimingPeriodUnit["Mo"] = "mo";
-    TimingPeriodUnit["Wk"] = "wk";
-    TimingPeriodUnit["A"] = "a";
-    TimingPeriodUnit["H"] = "h";
-})(TimingPeriodUnit = exports.TimingPeriodUnit || (exports.TimingPeriodUnit = {}));
+var TimingRepeatPeriodunit;
+(function (TimingRepeatPeriodunit) {
+    TimingRepeatPeriodunit["D"] = "d";
+    TimingRepeatPeriodunit["Min"] = "min";
+    TimingRepeatPeriodunit["S"] = "s";
+    TimingRepeatPeriodunit["Mo"] = "mo";
+    TimingRepeatPeriodunit["Wk"] = "wk";
+    TimingRepeatPeriodunit["A"] = "a";
+    TimingRepeatPeriodunit["H"] = "h";
+})(TimingRepeatPeriodunit = exports.TimingRepeatPeriodunit || (exports.TimingRepeatPeriodunit = {}));
 /** s | min | h | d | wk | mo | a - unit of time (UCUM) */
-var TimingDurationUnit;
-(function (TimingDurationUnit) {
-    TimingDurationUnit["D"] = "d";
-    TimingDurationUnit["Min"] = "min";
-    TimingDurationUnit["S"] = "s";
-    TimingDurationUnit["Mo"] = "mo";
-    TimingDurationUnit["Wk"] = "wk";
-    TimingDurationUnit["A"] = "a";
-    TimingDurationUnit["H"] = "h";
-})(TimingDurationUnit = exports.TimingDurationUnit || (exports.TimingDurationUnit = {}));
+var TimingRepeatDurationunit;
+(function (TimingRepeatDurationunit) {
+    TimingRepeatDurationunit["D"] = "d";
+    TimingRepeatDurationunit["Min"] = "min";
+    TimingRepeatDurationunit["S"] = "s";
+    TimingRepeatDurationunit["Mo"] = "mo";
+    TimingRepeatDurationunit["Wk"] = "wk";
+    TimingRepeatDurationunit["A"] = "a";
+    TimingRepeatDurationunit["H"] = "h";
+})(TimingRepeatDurationunit = exports.TimingRepeatDurationunit || (exports.TimingRepeatDurationunit = {}));

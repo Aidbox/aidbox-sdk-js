@@ -1,34 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StructureMapMode = exports.StructureMapGroupRuleContextType = exports.StructureMapGroupRuleListMode = exports.StructureMapStatus = exports.StructureMapGroupRuleTransform = exports.StructureMapTypeMode = void 0;
+exports.StructureMapStructureMode = exports.StructureMapGroupRuleTargetTransform = exports.StructureMapGroupInputMode = exports.StructureMapStatus = exports.StructureMapGroupRuleTargetContexttype = exports.StructureMapGroupRuleSourceListmode = exports.StructureMapGroupTypemode = void 0;
 /** none | types | type-and-types */
-var StructureMapTypeMode;
-(function (StructureMapTypeMode) {
-    StructureMapTypeMode["None"] = "none";
-    StructureMapTypeMode["TypeAndTypes"] = "type-and-types";
-    StructureMapTypeMode["Types"] = "types";
-})(StructureMapTypeMode = exports.StructureMapTypeMode || (exports.StructureMapTypeMode = {}));
-/** create | copy + */
-var StructureMapGroupRuleTransform;
-(function (StructureMapGroupRuleTransform) {
-    StructureMapGroupRuleTransform["Copy"] = "copy";
-    StructureMapGroupRuleTransform["Cast"] = "cast";
-    StructureMapGroupRuleTransform["Cp"] = "cp";
-    StructureMapGroupRuleTransform["Append"] = "append";
-    StructureMapGroupRuleTransform["Uuid"] = "uuid";
-    StructureMapGroupRuleTransform["Pointer"] = "pointer";
-    StructureMapGroupRuleTransform["Evaluate"] = "evaluate";
-    StructureMapGroupRuleTransform["Qty"] = "qty";
-    StructureMapGroupRuleTransform["Cc"] = "cc";
-    StructureMapGroupRuleTransform["C"] = "c";
-    StructureMapGroupRuleTransform["Escape"] = "escape";
-    StructureMapGroupRuleTransform["Truncate"] = "truncate";
-    StructureMapGroupRuleTransform["Translate"] = "translate";
-    StructureMapGroupRuleTransform["Create"] = "create";
-    StructureMapGroupRuleTransform["DateOp"] = "dateOp";
-    StructureMapGroupRuleTransform["Reference"] = "reference";
-    StructureMapGroupRuleTransform["Id"] = "id";
-})(StructureMapGroupRuleTransform = exports.StructureMapGroupRuleTransform || (exports.StructureMapGroupRuleTransform = {}));
+var StructureMapGroupTypemode;
+(function (StructureMapGroupTypemode) {
+    StructureMapGroupTypemode["None"] = "none";
+    StructureMapGroupTypemode["TypeAndTypes"] = "type-and-types";
+    StructureMapGroupTypemode["Types"] = "types";
+})(StructureMapGroupTypemode = exports.StructureMapGroupTypemode || (exports.StructureMapGroupTypemode = {}));
+/** first | not_first | last | not_last | only_one */
+var StructureMapGroupRuleSourceListmode;
+(function (StructureMapGroupRuleSourceListmode) {
+    StructureMapGroupRuleSourceListmode["First"] = "first";
+    StructureMapGroupRuleSourceListmode["Last"] = "last";
+    StructureMapGroupRuleSourceListmode["Not_first"] = "not_first";
+    StructureMapGroupRuleSourceListmode["Not_last"] = "not_last";
+    StructureMapGroupRuleSourceListmode["Only_one"] = "only_one";
+})(StructureMapGroupRuleSourceListmode = exports.StructureMapGroupRuleSourceListmode || (exports.StructureMapGroupRuleSourceListmode = {}));
+/** type | variable */
+var StructureMapGroupRuleTargetContexttype;
+(function (StructureMapGroupRuleTargetContexttype) {
+    StructureMapGroupRuleTargetContexttype["Type"] = "type";
+    StructureMapGroupRuleTargetContexttype["Variable"] = "variable";
+})(StructureMapGroupRuleTargetContexttype = exports.StructureMapGroupRuleTargetContexttype || (exports.StructureMapGroupRuleTargetContexttype = {}));
 /** draft | active | retired | unknown */
 var StructureMapStatus;
 (function (StructureMapStatus) {
@@ -37,26 +31,38 @@ var StructureMapStatus;
     StructureMapStatus["Retired"] = "retired";
     StructureMapStatus["Unknown"] = "unknown";
 })(StructureMapStatus = exports.StructureMapStatus || (exports.StructureMapStatus = {}));
-/** first | not_first | last | not_last | only_one */
-var StructureMapGroupRuleListMode;
-(function (StructureMapGroupRuleListMode) {
-    StructureMapGroupRuleListMode["First"] = "first";
-    StructureMapGroupRuleListMode["Last"] = "last";
-    StructureMapGroupRuleListMode["Not_first"] = "not_first";
-    StructureMapGroupRuleListMode["Not_last"] = "not_last";
-    StructureMapGroupRuleListMode["Only_one"] = "only_one";
-})(StructureMapGroupRuleListMode = exports.StructureMapGroupRuleListMode || (exports.StructureMapGroupRuleListMode = {}));
-/** type | variable */
-var StructureMapGroupRuleContextType;
-(function (StructureMapGroupRuleContextType) {
-    StructureMapGroupRuleContextType["Type"] = "type";
-    StructureMapGroupRuleContextType["Variable"] = "variable";
-})(StructureMapGroupRuleContextType = exports.StructureMapGroupRuleContextType || (exports.StructureMapGroupRuleContextType = {}));
+/** source | target */
+var StructureMapGroupInputMode;
+(function (StructureMapGroupInputMode) {
+    StructureMapGroupInputMode["Source"] = "source";
+    StructureMapGroupInputMode["Target"] = "target";
+})(StructureMapGroupInputMode = exports.StructureMapGroupInputMode || (exports.StructureMapGroupInputMode = {}));
+/** create | copy + */
+var StructureMapGroupRuleTargetTransform;
+(function (StructureMapGroupRuleTargetTransform) {
+    StructureMapGroupRuleTargetTransform["Copy"] = "copy";
+    StructureMapGroupRuleTargetTransform["Cast"] = "cast";
+    StructureMapGroupRuleTargetTransform["Cp"] = "cp";
+    StructureMapGroupRuleTargetTransform["Append"] = "append";
+    StructureMapGroupRuleTargetTransform["Uuid"] = "uuid";
+    StructureMapGroupRuleTargetTransform["Pointer"] = "pointer";
+    StructureMapGroupRuleTargetTransform["Evaluate"] = "evaluate";
+    StructureMapGroupRuleTargetTransform["Qty"] = "qty";
+    StructureMapGroupRuleTargetTransform["Cc"] = "cc";
+    StructureMapGroupRuleTargetTransform["C"] = "c";
+    StructureMapGroupRuleTargetTransform["Escape"] = "escape";
+    StructureMapGroupRuleTargetTransform["Truncate"] = "truncate";
+    StructureMapGroupRuleTargetTransform["Translate"] = "translate";
+    StructureMapGroupRuleTargetTransform["Create"] = "create";
+    StructureMapGroupRuleTargetTransform["DateOp"] = "dateOp";
+    StructureMapGroupRuleTargetTransform["Reference"] = "reference";
+    StructureMapGroupRuleTargetTransform["Id"] = "id";
+})(StructureMapGroupRuleTargetTransform = exports.StructureMapGroupRuleTargetTransform || (exports.StructureMapGroupRuleTargetTransform = {}));
 /** source | queried | target | produced */
-var StructureMapMode;
-(function (StructureMapMode) {
-    StructureMapMode["Produced"] = "produced";
-    StructureMapMode["Queried"] = "queried";
-    StructureMapMode["Source"] = "source";
-    StructureMapMode["Target"] = "target";
-})(StructureMapMode = exports.StructureMapMode || (exports.StructureMapMode = {}));
+var StructureMapStructureMode;
+(function (StructureMapStructureMode) {
+    StructureMapStructureMode["Produced"] = "produced";
+    StructureMapStructureMode["Queried"] = "queried";
+    StructureMapStructureMode["Source"] = "source";
+    StructureMapStructureMode["Target"] = "target";
+})(StructureMapStructureMode = exports.StructureMapStructureMode || (exports.StructureMapStructureMode = {}));

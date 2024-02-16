@@ -32,7 +32,7 @@ export interface DeviceMetric extends DomainResource {
     /** Describes the calibrations that have been performed or that are required to be performed */
     calibration?: Array<DeviceMetricCalibration>;
     /** on | off | standby | entered-in-error */
-    operationalStatus?: `${DeviceMetricOperationalStatus}`;
+    operationalStatus?: `${DeviceMetricOperationalstatus}`;
     _category?: Element;
 }
 /** measurement | setting | calculation | unspecified */
@@ -54,14 +54,14 @@ export declare enum DeviceMetricColor {
     Yellow = "yellow"
 }
 /** unspecified | offset | gain | two-point */
-export declare enum DeviceMetricType {
+export declare enum DeviceMetricCalibrationType {
     Gain = "gain",
     Offset = "offset",
     TwoPoint = "two-point",
     Unspecified = "unspecified"
 }
 /** not-calibrated | calibration-required | calibrated | unspecified */
-export declare enum DeviceMetricState {
+export declare enum DeviceMetricCalibrationState {
     Calibrated = "calibrated",
     CalibrationRequired = "calibration-required",
     NotCalibrated = "not-calibrated",
@@ -70,17 +70,17 @@ export declare enum DeviceMetricState {
 /** Describes the calibrations that have been performed or that are required to be performed */
 export interface DeviceMetricCalibration extends BackboneElement {
     /** unspecified | offset | gain | two-point */
-    type?: `${DeviceMetricType}`;
+    type?: `${DeviceMetricCalibrationType}`;
     _type?: Element;
     /** not-calibrated | calibration-required | calibrated | unspecified */
-    state?: `${DeviceMetricState}`;
+    state?: `${DeviceMetricCalibrationState}`;
     _state?: Element;
     /** Describes the time last calibration has been performed */
     time?: instant;
     _time?: Element;
 }
 /** on | off | standby | entered-in-error */
-export declare enum DeviceMetricOperationalStatus {
+export declare enum DeviceMetricOperationalstatus {
     EnteredInError = "entered-in-error",
     Off = "off",
     On = "on",

@@ -34,7 +34,7 @@ export interface BiologicallyDerivedProduct extends DomainResource {
     /** The amount of this biologically derived product */
     quantity?: integer;
     /** organ | tissue | fluid | cells | biologicalAgent */
-    productCategory?: `${BiologicallyDerivedProductProductCategory}`;
+    productCategory?: `${BiologicallyDerivedProductProductcategory}`;
     /** Any manipulation of product post-collection */
     manipulation?: BiologicallyDerivedProductManipulation;
     /** How this product was collected */
@@ -59,7 +59,7 @@ export declare enum BiologicallyDerivedProductStatus {
     Unavailable = "unavailable"
 }
 /** farenheit | celsius | kelvin */
-export declare enum BiologicallyDerivedProductScale {
+export declare enum BiologicallyDerivedProductStorageScale {
     Celsius = "celsius",
     Farenheit = "farenheit",
     Kelvin = "kelvin"
@@ -73,13 +73,13 @@ export interface BiologicallyDerivedProductStorage extends BackboneElement {
     temperature?: decimal;
     _temperature?: Element;
     /** farenheit | celsius | kelvin */
-    scale?: `${BiologicallyDerivedProductScale}`;
+    scale?: `${BiologicallyDerivedProductStorageScale}`;
     _scale?: Element;
     /** Storage timeperiod */
     duration?: Period;
 }
 /** organ | tissue | fluid | cells | biologicalAgent */
-export declare enum BiologicallyDerivedProductProductCategory {
+export declare enum BiologicallyDerivedProductProductcategory {
     BiologicalAgent = "biologicalAgent",
     Cells = "cells",
     Fluid = "fluid",

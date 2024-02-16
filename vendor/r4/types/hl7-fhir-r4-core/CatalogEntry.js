@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CatalogEntryRelationtype = exports.CatalogEntryStatus = void 0;
+exports.CatalogEntryRelatedentryRelationtype = exports.CatalogEntryStatus = void 0;
 /** draft | active | retired | unknown */
 var CatalogEntryStatus;
 (function (CatalogEntryStatus) {
@@ -10,8 +10,8 @@ var CatalogEntryStatus;
     CatalogEntryStatus["Unknown"] = "unknown";
 })(CatalogEntryStatus = exports.CatalogEntryStatus || (exports.CatalogEntryStatus = {}));
 /** triggers | is-replaced-by */
-var CatalogEntryRelationtype;
-(function (CatalogEntryRelationtype) {
-    CatalogEntryRelationtype["IsReplacedBy"] = "is-replaced-by";
-    CatalogEntryRelationtype["Triggers"] = "triggers";
-})(CatalogEntryRelationtype = exports.CatalogEntryRelationtype || (exports.CatalogEntryRelationtype = {}));
+var CatalogEntryRelatedentryRelationtype;
+(function (CatalogEntryRelatedentryRelationtype) {
+    CatalogEntryRelatedentryRelationtype["IsReplacedBy"] = "is-replaced-by";
+    CatalogEntryRelatedentryRelationtype["Triggers"] = "triggers";
+})(CatalogEntryRelatedentryRelationtype = exports.CatalogEntryRelatedentryRelationtype || (exports.CatalogEntryRelatedentryRelationtype = {}));

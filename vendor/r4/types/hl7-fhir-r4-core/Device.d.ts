@@ -79,7 +79,7 @@ export interface Device extends DomainResource {
     udiCarrier?: Array<DeviceUdiCarrier>;
 }
 /** udi-label-name | user-friendly-name | patient-reported-name | manufacturer-name | model-name | other */
-export declare enum DeviceType {
+export declare enum DeviceDevicenameType {
     ManufacturerName = "manufacturer-name",
     ModelName = "model-name",
     Other = "other",
@@ -93,7 +93,7 @@ export interface DeviceDeviceName extends BackboneElement {
     name: string;
     _name?: Element;
     /** udi-label-name | user-friendly-name | patient-reported-name | manufacturer-name | model-name | other */
-    type: `${DeviceType}`;
+    type: `${DeviceDevicenameType}`;
     _type?: Element;
 }
 /** The actual configuration settings of a device as it actually operates, e.g., regulation status, time properties */
@@ -131,7 +131,7 @@ export interface DeviceVersion extends BackboneElement {
     _value?: Element;
 }
 /** barcode | rfid | manual + */
-export declare enum DeviceEntryType {
+export declare enum DeviceUdicarrierEntrytype {
     Barcode = "barcode",
     Card = "card",
     Manual = "manual",
@@ -148,7 +148,7 @@ export interface DeviceUdiCarrier extends BackboneElement {
     /** Regional UDI authority */
     jurisdiction?: uri;
     /** barcode | rfid | manual + */
-    entryType?: `${DeviceEntryType}`;
+    entryType?: `${DeviceUdicarrierEntrytype}`;
     /** UDI Issuing Organization */
     issuer?: uri;
     _deviceIdentifier?: Element;

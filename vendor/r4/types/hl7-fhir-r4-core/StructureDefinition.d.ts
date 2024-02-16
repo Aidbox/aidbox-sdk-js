@@ -29,7 +29,7 @@ export interface StructureDefinition extends DomainResource {
     /** FHIRPath invariants - when the extension can be used */
     contextInvariant?: Array<string>;
     /** FHIR Version this StructureDefinition targets */
-    fhirVersion?: `${StructureDefinitionFhirVersion}`;
+    fhirVersion?: `${StructureDefinitionFhirversion}`;
     /** Intended jurisdiction for structure definition (if applicable) */
     jurisdiction?: Array<CodeableConcept>;
     _publisher?: Element;
@@ -103,7 +103,7 @@ export interface StructureDefinitionDifferential extends BackboneElement {
 /** If an extension, where it can be used in instances */
 export interface StructureDefinitionContext extends BackboneElement {
     /** fhirpath | element | extension */
-    type: `${StructureDefinitionType}`;
+    type: `${StructureDefinitionContextType}`;
     _type?: Element;
     /** Where the extension can be used in instances */
     expression: string;
@@ -116,8 +116,14 @@ export declare enum StructureDefinitionKind {
     PrimitiveType = "primitive-type",
     Resource = "resource"
 }
+/** fhirpath | element | extension */
+export declare enum StructureDefinitionContextType {
+    Element = "element",
+    Extension = "extension",
+    Fhirpath = "fhirpath"
+}
 /** FHIR Version this StructureDefinition targets */
-export declare enum StructureDefinitionFhirVersion {
+export declare enum StructureDefinitionFhirversion {
     "Num1.8.0" = "1.8.0",
     "Num0.05" = "0.05",
     "Num0.01" = "0.01",
@@ -140,12 +146,6 @@ export declare enum StructureDefinitionFhirVersion {
     "Num0.5.0" = "0.5.0",
     "Num1.1.0" = "1.1.0",
     "Num0.0.81" = "0.0.81"
-}
-/** fhirpath | element | extension */
-export declare enum StructureDefinitionType {
-    Element = "element",
-    Extension = "extension",
-    Fhirpath = "fhirpath"
 }
 /** Snapshot view of the structure */
 export interface StructureDefinitionSnapshot extends BackboneElement {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataRequirementDirection = exports.DataRequirementType = void 0;
+exports.DataRequirementSortDirection = exports.DataRequirementType = void 0;
 /** The type of the required data */
 var DataRequirementType;
 (function (DataRequirementType) {
@@ -219,8 +219,8 @@ var DataRequirementType;
     DataRequirementType["Contributor"] = "Contributor";
 })(DataRequirementType = exports.DataRequirementType || (exports.DataRequirementType = {}));
 /** ascending | descending */
-var DataRequirementDirection;
-(function (DataRequirementDirection) {
-    DataRequirementDirection["Ascending"] = "ascending";
-    DataRequirementDirection["Descending"] = "descending";
-})(DataRequirementDirection = exports.DataRequirementDirection || (exports.DataRequirementDirection = {}));
+var DataRequirementSortDirection;
+(function (DataRequirementSortDirection) {
+    DataRequirementSortDirection["Ascending"] = "ascending";
+    DataRequirementSortDirection["Descending"] = "descending";
+})(DataRequirementSortDirection = exports.DataRequirementSortDirection || (exports.DataRequirementSortDirection = {}));

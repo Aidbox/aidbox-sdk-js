@@ -64,7 +64,7 @@ export interface ExampleScenarioActor extends BackboneElement {
     actorId: string;
     _actorId?: Element;
     /** person | entity */
-    type: `${ExampleScenarioType}`;
+    type: `${ExampleScenarioActorType}`;
     _type?: Element;
     /** The name of the actor as shown in the page */
     name?: string;
@@ -102,7 +102,7 @@ export interface ExampleScenarioInstance extends BackboneElement {
     name?: string;
     _resourceId?: Element;
     /** The type of the resource */
-    resourceType: `${ExampleScenarioResourceType}`;
+    resourceType: `${ExampleScenarioInstanceResourcetype}`;
     _resourceType?: Element;
     _description?: Element;
     /** The id of the resource for referencing */
@@ -112,7 +112,7 @@ export interface ExampleScenarioInstance extends BackboneElement {
     version?: Array<ExampleScenarioVersion>;
 }
 /** person | entity */
-export declare enum ExampleScenarioType {
+export declare enum ExampleScenarioActorType {
     Entity = "entity",
     Person = "person"
 }
@@ -132,39 +132,8 @@ export interface ExampleScenarioProcess extends BackboneElement {
     _title?: Element;
     step?: Array<ExampleScenarioProcessStep>;
 }
-/** Each interaction or action */
-export interface ExampleScenarioProcessStepOperation extends BackboneElement {
-    /** Each resource instance used by the responder */
-    response?: ExampleScenarioInstanceContainedInstance;
-    /** A comment to be inserted in the diagram */
-    description?: markdown;
-    /** Each resource instance used by the initiator */
-    request?: ExampleScenarioInstanceContainedInstance;
-    /** The sequential number of the interaction */
-    number: string;
-    /** The human-friendly name of the interaction */
-    name?: string;
-    /** Who starts the transaction */
-    initiator?: string;
-    _type?: Element;
-    _initiatorActive?: Element;
-    _number?: Element;
-    /** The type of operation - CRUD */
-    type?: string;
-    /** Whether the receiver is deactivated right after the transaction */
-    receiverActive?: boolean;
-    _description?: Element;
-    /** Whether the initiator is deactivated right after the transaction */
-    initiatorActive?: boolean;
-    _initiator?: Element;
-    _name?: Element;
-    _receiver?: Element;
-    _receiverActive?: Element;
-    /** Who receives the transaction */
-    receiver?: string;
-}
 /** The type of the resource */
-export declare enum ExampleScenarioResourceType {
+export declare enum ExampleScenarioInstanceResourcetype {
     ImmunizationEvaluation = "ImmunizationEvaluation",
     Appointment = "Appointment",
     StructureMap = "StructureMap",
@@ -313,6 +282,37 @@ export declare enum ExampleScenarioResourceType {
     TestReport = "TestReport",
     Observation = "Observation",
     DocumentManifest = "DocumentManifest"
+}
+/** Each interaction or action */
+export interface ExampleScenarioProcessStepOperation extends BackboneElement {
+    /** Each resource instance used by the responder */
+    response?: ExampleScenarioInstanceContainedInstance;
+    /** A comment to be inserted in the diagram */
+    description?: markdown;
+    /** Each resource instance used by the initiator */
+    request?: ExampleScenarioInstanceContainedInstance;
+    /** The sequential number of the interaction */
+    number: string;
+    /** The human-friendly name of the interaction */
+    name?: string;
+    /** Who starts the transaction */
+    initiator?: string;
+    _type?: Element;
+    _initiatorActive?: Element;
+    _number?: Element;
+    /** The type of operation - CRUD */
+    type?: string;
+    /** Whether the receiver is deactivated right after the transaction */
+    receiverActive?: boolean;
+    _description?: Element;
+    /** Whether the initiator is deactivated right after the transaction */
+    initiatorActive?: boolean;
+    _initiator?: Element;
+    _name?: Element;
+    _receiver?: Element;
+    _receiverActive?: Element;
+    /** Who receives the transaction */
+    receiver?: string;
 }
 /** draft | active | retired | unknown */
 export declare enum ExampleScenarioStatus {

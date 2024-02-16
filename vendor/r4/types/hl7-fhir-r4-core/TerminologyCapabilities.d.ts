@@ -72,7 +72,7 @@ export interface TerminologyCapabilities extends DomainResource {
     implementation?: TerminologyCapabilitiesImplementation;
     _url?: Element;
     /** explicit | all */
-    codeSearch?: `${TerminologyCapabilitiesCodeSearch}`;
+    codeSearch?: `${TerminologyCapabilitiesCodesearch}`;
     /** Whether lockedDate is supported */
     lockedDate?: boolean;
     /** Information about the [ConceptMap/$closure](conceptmap-operation-closure.html) operation */
@@ -83,11 +83,6 @@ export interface TerminologyCapabilitiesTranslation extends BackboneElement {
     /** Whether the client must identify the map */
     needsMap: boolean;
     _needsMap?: Element;
-}
-/** explicit | all */
-export declare enum TerminologyCapabilitiesCodeSearch {
-    All = "all",
-    Explicit = "explicit"
 }
 /** Information about the [ValueSet/$expand](valueset-operation-expand.html) operation */
 export interface TerminologyCapabilitiesExpansion extends BackboneElement {
@@ -146,6 +141,11 @@ export interface TerminologyCapabilitiesFilter extends BackboneElement {
     /** Operations supported for the property */
     op: Array<code>;
     _op?: Array<Element>;
+}
+/** explicit | all */
+export declare enum TerminologyCapabilitiesCodesearch {
+    All = "all",
+    Explicit = "explicit"
 }
 /** draft | active | retired | unknown */
 export declare enum TerminologyCapabilitiesStatus {

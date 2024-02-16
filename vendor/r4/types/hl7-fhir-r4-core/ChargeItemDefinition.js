@@ -1,16 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ChargeItemDefinitionStatus = exports.ChargeItemDefinitionType = void 0;
+exports.ChargeItemDefinitionStatus = exports.ChargeItemDefinitionPropertygroupPricecomponentType = void 0;
 /** base | surcharge | deduction | discount | tax | informational */
-var ChargeItemDefinitionType;
-(function (ChargeItemDefinitionType) {
-    ChargeItemDefinitionType["Base"] = "base";
-    ChargeItemDefinitionType["Deduction"] = "deduction";
-    ChargeItemDefinitionType["Discount"] = "discount";
-    ChargeItemDefinitionType["Informational"] = "informational";
-    ChargeItemDefinitionType["Surcharge"] = "surcharge";
-    ChargeItemDefinitionType["Tax"] = "tax";
-})(ChargeItemDefinitionType = exports.ChargeItemDefinitionType || (exports.ChargeItemDefinitionType = {}));
+var ChargeItemDefinitionPropertygroupPricecomponentType;
+(function (ChargeItemDefinitionPropertygroupPricecomponentType) {
+    ChargeItemDefinitionPropertygroupPricecomponentType["Base"] = "base";
+    ChargeItemDefinitionPropertygroupPricecomponentType["Deduction"] = "deduction";
+    ChargeItemDefinitionPropertygroupPricecomponentType["Discount"] = "discount";
+    ChargeItemDefinitionPropertygroupPricecomponentType["Informational"] = "informational";
+    ChargeItemDefinitionPropertygroupPricecomponentType["Surcharge"] = "surcharge";
+    ChargeItemDefinitionPropertygroupPricecomponentType["Tax"] = "tax";
+})(ChargeItemDefinitionPropertygroupPricecomponentType = exports.ChargeItemDefinitionPropertygroupPricecomponentType || (exports.ChargeItemDefinitionPropertygroupPricecomponentType = {}));
 /** draft | active | retired | unknown */
 var ChargeItemDefinitionStatus;
 (function (ChargeItemDefinitionStatus) {

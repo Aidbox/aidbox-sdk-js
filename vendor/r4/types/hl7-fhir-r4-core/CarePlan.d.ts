@@ -70,18 +70,20 @@ export interface CarePlan extends DomainResource {
     careTeam?: Array<Reference>;
     _instantiatesUri?: Array<Element>;
 }
-/** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
-export declare enum CarePlanStatus {
-    Active = "active",
-    Completed = "completed",
-    Draft = "draft",
+/** not-started | scheduled | in-progress | on-hold | completed | cancelled | stopped | unknown | entered-in-error */
+export declare enum CarePlanActivityDetailStatus {
+    Cancelled = "cancelled",
+    NotStarted = "not-started",
+    Unknown = "unknown",
+    Scheduled = "scheduled",
+    InProgress = "in-progress",
     EnteredInError = "entered-in-error",
-    OnHold = "on-hold",
-    Revoked = "revoked",
-    Unknown = "unknown"
+    Stopped = "stopped",
+    Completed = "completed",
+    OnHold = "on-hold"
 }
 /** Appointment | CommunicationRequest | DeviceRequest | MedicationRequest | NutritionOrder | Task | ServiceRequest | VisionPrescription */
-export declare enum CarePlanKind {
+export declare enum CarePlanActivityDetailKind {
     Appointment = "Appointment",
     NutritionOrder = "NutritionOrder",
     VisionPrescription = "VisionPrescription",
@@ -118,9 +120,9 @@ export interface CarePlanDetail extends BackboneElement {
     _description?: Element;
     scheduledString?: string;
     /** not-started | scheduled | in-progress | on-hold | completed | cancelled | stopped | unknown | entered-in-error */
-    status: `${CarePlanStatus}`;
+    status: `${CarePlanActivityDetailStatus}`;
     /** Appointment | CommunicationRequest | DeviceRequest | MedicationRequest | NutritionOrder | Task | ServiceRequest | VisionPrescription */
-    kind?: `${CarePlanKind}`;
+    kind?: `${CarePlanActivityDetailKind}`;
     /** Detail type of activity */
     code?: CodeableConcept;
     /** If true, activity is prohibiting action */
@@ -148,6 +150,16 @@ export interface CarePlanActivity extends BackboneElement {
     reference?: Reference<'RequestGroup' | 'NutritionOrder' | 'ServiceRequest' | 'CommunicationRequest' | 'VisionPrescription' | 'DeviceRequest' | 'Task' | 'MedicationRequest' | 'Appointment'>;
     /** In-line definition of activity */
     detail?: CarePlanDetail;
+}
+/** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
+export declare enum CarePlanStatus {
+    Active = "active",
+    Completed = "completed",
+    Draft = "draft",
+    EnteredInError = "entered-in-error",
+    OnHold = "on-hold",
+    Revoked = "revoked",
+    Unknown = "unknown"
 }
 /** proposal | plan | order | option */
 export declare enum CarePlanIntent {

@@ -1,19 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SignatureTargetFormat = exports.SignatureSigFormat = void 0;
+exports.SignatureTargetformat = exports.SignatureSigformat = void 0;
 /** The technical format of the signature */
-var SignatureSigFormat;
-(function (SignatureSigFormat) {
-    SignatureSigFormat["Application/hl7Cda+xml"] = "application/hl7-cda+xml";
-    SignatureSigFormat["Application/sparqlResults+xml"] = "application/sparql-results+xml";
-    SignatureSigFormat["Application/sql"] = "application/sql";
-    SignatureSigFormat["Application/xquery"] = "application/xquery";
-})(SignatureSigFormat = exports.SignatureSigFormat || (exports.SignatureSigFormat = {}));
+var SignatureSigformat;
+(function (SignatureSigformat) {
+    SignatureSigformat["Application/hl7Cda+xml"] = "application/hl7-cda+xml";
+    SignatureSigformat["Application/sparqlResults+xml"] = "application/sparql-results+xml";
+    SignatureSigformat["Application/sql"] = "application/sql";
+    SignatureSigformat["Application/xquery"] = "application/xquery";
+})(SignatureSigformat = exports.SignatureSigformat || (exports.SignatureSigformat = {}));
 /** The technical format of the signed resources */
-var SignatureTargetFormat;
-(function (SignatureTargetFormat) {
-    SignatureTargetFormat["Application/hl7Cda+xml"] = "application/hl7-cda+xml";
-    SignatureTargetFormat["Application/sparqlResults+xml"] = "application/sparql-results+xml";
-    SignatureTargetFormat["Application/sql"] = "application/sql";
-    SignatureTargetFormat["Application/xquery"] = "application/xquery";
-})(SignatureTargetFormat = exports.SignatureTargetFormat || (exports.SignatureTargetFormat = {}));
+var SignatureTargetformat;
+(function (SignatureTargetformat) {
+    SignatureTargetformat["Application/hl7Cda+xml"] = "application/hl7-cda+xml";
+    SignatureTargetformat["Application/sparqlResults+xml"] = "application/sparql-results+xml";
+    SignatureTargetformat["Application/sql"] = "application/sql";
+    SignatureTargetformat["Application/xquery"] = "application/xquery";
+})(SignatureTargetformat = exports.SignatureTargetformat || (exports.SignatureTargetformat = {}));

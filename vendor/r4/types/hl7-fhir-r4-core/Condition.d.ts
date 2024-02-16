@@ -18,7 +18,7 @@ export interface Condition extends DomainResource {
     category?: Array<CodeableConcept>;
     _onsetString?: Element;
     /** active | recurrence | relapse | inactive | remission | resolved */
-    clinicalStatus?: `${ConditionClinicalStatus}`;
+    clinicalStatus?: `${ConditionClinicalstatus}`;
     abatementAge?: Age;
     onsetRange?: Range;
     onsetAge?: Age;
@@ -56,12 +56,12 @@ export interface Condition extends DomainResource {
     abatementDateTime?: dateTime;
     _onsetDateTime?: Element;
     /** unconfirmed | provisional | differential | confirmed | refuted | entered-in-error */
-    verificationStatus?: `${ConditionVerificationStatus}`;
+    verificationStatus?: `${ConditionVerificationstatus}`;
     /** Who has the condition? */
     subject: Reference<'Patient' | 'Group'>;
 }
 /** active | recurrence | relapse | inactive | remission | resolved */
-export declare enum ConditionClinicalStatus {
+export declare enum ConditionClinicalstatus {
     Active = "active",
     Inactive = "inactive",
     Recurrence = "recurrence",
@@ -87,7 +87,7 @@ export interface ConditionEvidence extends BackboneElement {
     detail?: Array<Reference>;
 }
 /** unconfirmed | provisional | differential | confirmed | refuted | entered-in-error */
-export declare enum ConditionVerificationStatus {
+export declare enum ConditionVerificationstatus {
     Confirmed = "confirmed",
     Differential = "differential",
     EnteredInError = "entered-in-error",

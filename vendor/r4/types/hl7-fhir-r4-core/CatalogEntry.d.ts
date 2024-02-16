@@ -50,14 +50,14 @@ export declare enum CatalogEntryStatus {
     Unknown = "unknown"
 }
 /** triggers | is-replaced-by */
-export declare enum CatalogEntryRelationtype {
+export declare enum CatalogEntryRelatedentryRelationtype {
     IsReplacedBy = "is-replaced-by",
     Triggers = "triggers"
 }
 /** An item that this catalog entry is related to */
 export interface CatalogEntryRelatedEntry extends BackboneElement {
     /** triggers | is-replaced-by */
-    relationtype: `${CatalogEntryRelationtype}`;
+    relationtype: `${CatalogEntryRelatedentryRelationtype}`;
     _relationtype?: Element;
     /** The reference to the related item */
     item: Reference<'CatalogEntry'>;

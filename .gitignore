@@ -22,6 +22,12 @@ test_dir
 fhir-schema
 output
 
+resources/dotnet/bin
+resources/dotnet/obj
+resources/dotnet/constraint
+*.csproj
+*.sln
+
 # Added by cargo
 
 /target

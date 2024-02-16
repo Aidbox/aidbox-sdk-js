@@ -106,7 +106,7 @@ export interface StructureMap extends DomainResource {
 /** Content to create because of this mapping rule */
 export interface StructureMapGroupRuleTarget extends BackboneElement {
     /** create | copy + */
-    transform?: `${StructureMapGroupRuleTransform}`;
+    transform?: `${StructureMapGroupRuleTargetTransform}`;
     /** Named context for field, if desired, and a field is specified */
     variable?: id;
     /** Field to create in the context */
@@ -123,7 +123,7 @@ export interface StructureMapGroupRuleTarget extends BackboneElement {
     _listMode?: Array<Element>;
     _contextType?: Element;
     /** type | variable */
-    contextType?: `${StructureMapGroupRuleContextType}`;
+    contextType?: `${StructureMapGroupRuleTargetContexttype}`;
     _variable?: Element;
     /** Parameters to the transform */
     parameter?: Array<StructureMapGroupRuleParameter>;
@@ -144,7 +144,7 @@ export interface StructureMapStructure extends BackboneElement {
     url: canonical;
     _url?: Element;
     /** source | queried | target | produced */
-    mode: `${StructureMapMode}`;
+    mode: `${StructureMapStructureMode}`;
     _mode?: Element;
     /** Name for type in this map */
     alias?: string;
@@ -175,11 +175,17 @@ export interface StructureMapInput extends BackboneElement {
     type?: string;
     _type?: Element;
     /** source | target */
-    mode: `${StructureMapMode}`;
+    mode: `${StructureMapGroupInputMode}`;
     _mode?: Element;
     /** Documentation for this instance of data */
     documentation?: string;
     _documentation?: Element;
+}
+/** none | types | type-and-types */
+export declare enum StructureMapGroupTypemode {
+    None = "none",
+    TypeAndTypes = "type-and-types",
+    Types = "types"
 }
 /** Source inputs to the mapping */
 export interface StructureMapGroupRuleSource extends BackboneElement {
@@ -267,7 +273,7 @@ export interface StructureMapGroupRuleSource extends BackboneElement {
     _defaultValueDateTime?: Element;
     defaultValueUsageContext?: UsageContext;
     /** first | not_first | last | not_last | only_one */
-    listMode?: `${StructureMapGroupRuleListMode}`;
+    listMode?: `${StructureMapGroupRuleSourceListmode}`;
     defaultValueParameterDefinition?: ParameterDefinition;
     _listMode?: Element;
     defaultValueDateTime?: dateTime;
@@ -290,7 +296,7 @@ export interface StructureMapGroup extends BackboneElement {
     extends?: id;
     _extends?: Element;
     /** none | types | type-and-types */
-    typeMode: `${StructureMapTypeMode}`;
+    typeMode: `${StructureMapGroupTypemode}`;
     /** Human-readable label */
     name: id;
     rule: Array<StructureMapGroupRule>;
@@ -300,12 +306,6 @@ export interface StructureMapGroup extends BackboneElement {
     _name?: Element;
     /** Named instance provided when invoking the map */
     input: Array<StructureMapInput>;
-}
-/** none | types | type-and-types */
-export declare enum StructureMapTypeMode {
-    None = "none",
-    TypeAndTypes = "type-and-types",
-    Types = "types"
 }
 /** Transform Rule from source to target */
 export interface StructureMapGroupRule extends BackboneElement {
@@ -324,8 +324,33 @@ export interface StructureMapGroupRule extends BackboneElement {
     documentation?: string;
     _documentation?: Element;
 }
+/** first | not_first | last | not_last | only_one */
+export declare enum StructureMapGroupRuleSourceListmode {
+    First = "first",
+    Last = "last",
+    "Not_first" = "not_first",
+    "Not_last" = "not_last",
+    "Only_one" = "only_one"
+}
+/** type | variable */
+export declare enum StructureMapGroupRuleTargetContexttype {
+    Type = "type",
+    Variable = "variable"
+}
+/** draft | active | retired | unknown */
+export declare enum StructureMapStatus {
+    Active = "active",
+    Draft = "draft",
+    Retired = "retired",
+    Unknown = "unknown"
+}
+/** source | target */
+export declare enum StructureMapGroupInputMode {
+    Source = "source",
+    Target = "target"
+}
 /** create | copy + */
-export declare enum StructureMapGroupRuleTransform {
+export declare enum StructureMapGroupRuleTargetTransform {
     Copy = "copy",
     Cast = "cast",
     Cp = "cp",
@@ -344,28 +369,8 @@ export declare enum StructureMapGroupRuleTransform {
     Reference = "reference",
     Id = "id"
 }
-/** draft | active | retired | unknown */
-export declare enum StructureMapStatus {
-    Active = "active",
-    Draft = "draft",
-    Retired = "retired",
-    Unknown = "unknown"
-}
-/** first | not_first | last | not_last | only_one */
-export declare enum StructureMapGroupRuleListMode {
-    First = "first",
-    Last = "last",
-    "Not_first" = "not_first",
-    "Not_last" = "not_last",
-    "Only_one" = "only_one"
-}
-/** type | variable */
-export declare enum StructureMapGroupRuleContextType {
-    Type = "type",
-    Variable = "variable"
-}
 /** source | queried | target | produced */
-export declare enum StructureMapMode {
+export declare enum StructureMapStructureMode {
     Produced = "produced",
     Queried = "queried",
     Source = "source",

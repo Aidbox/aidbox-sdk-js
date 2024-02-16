@@ -1,12 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TerminologyCapabilitiesStatus = exports.TerminologyCapabilitiesKind = exports.TerminologyCapabilitiesCodeSearch = void 0;
-/** explicit | all */
-var TerminologyCapabilitiesCodeSearch;
-(function (TerminologyCapabilitiesCodeSearch) {
-    TerminologyCapabilitiesCodeSearch["All"] = "all";
-    TerminologyCapabilitiesCodeSearch["Explicit"] = "explicit";
-})(TerminologyCapabilitiesCodeSearch = exports.TerminologyCapabilitiesCodeSearch || (exports.TerminologyCapabilitiesCodeSearch = {}));
+exports.TerminologyCapabilitiesStatus = exports.TerminologyCapabilitiesCodesearch = exports.TerminologyCapabilitiesKind = void 0;
 /** instance | capability | requirements */
 var TerminologyCapabilitiesKind;
 (function (TerminologyCapabilitiesKind) {
@@ -14,6 +8,12 @@ var TerminologyCapabilitiesKind;
     TerminologyCapabilitiesKind["Instance"] = "instance";
     TerminologyCapabilitiesKind["Requirements"] = "requirements";
 })(TerminologyCapabilitiesKind = exports.TerminologyCapabilitiesKind || (exports.TerminologyCapabilitiesKind = {}));
+/** explicit | all */
+var TerminologyCapabilitiesCodesearch;
+(function (TerminologyCapabilitiesCodesearch) {
+    TerminologyCapabilitiesCodesearch["All"] = "all";
+    TerminologyCapabilitiesCodesearch["Explicit"] = "explicit";
+})(TerminologyCapabilitiesCodesearch = exports.TerminologyCapabilitiesCodesearch || (exports.TerminologyCapabilitiesCodesearch = {}));
 /** draft | active | retired | unknown */
 var TerminologyCapabilitiesStatus;
 (function (TerminologyCapabilitiesStatus) {

@@ -259,12 +259,6 @@ export interface ExplanationOfBenefitFinancial extends BackboneElement {
     allowedString?: string;
     usedMoney?: Money;
 }
-/** display | print | printoper */
-export declare enum ExplanationOfBenefitType {
-    Display = "display",
-    Print = "print",
-    Printoper = "printoper"
-}
 /** Adjudication details */
 export interface ExplanationOfBenefitItemAdjudication extends BackboneElement {
     /** Type of adjudication information */
@@ -283,7 +277,7 @@ export interface ExplanationOfBenefitProcessNote extends BackboneElement {
     number?: positiveInt;
     _number?: Element;
     /** display | print | printoper */
-    type?: `${ExplanationOfBenefitType}`;
+    type?: `${ExplanationOfBenefitProcessnoteType}`;
     _type?: Element;
     /** Note explanatory text */
     text?: string;
@@ -480,6 +474,12 @@ export declare enum ExplanationOfBenefitUse {
     Claim = "claim",
     Preauthorization = "preauthorization",
     Predetermination = "predetermination"
+}
+/** display | print | printoper */
+export declare enum ExplanationOfBenefitProcessnoteType {
+    Display = "display",
+    Print = "print",
+    Printoper = "printoper"
 }
 /** Payment Details */
 export interface ExplanationOfBenefitPayment extends BackboneElement {

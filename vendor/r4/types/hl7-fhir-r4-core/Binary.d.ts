@@ -8,7 +8,7 @@ import { Reference } from "./Reference";
 export interface Binary extends Resource {
     resourceType: 'Binary';
     /** MimeType of the binary content */
-    contentType: `${BinaryContentType}`;
+    contentType: `${BinaryContenttype}`;
     _contentType?: Element;
     /** Identifies another resource to use as proxy when enforcing access control */
     securityContext?: Reference;
@@ -17,7 +17,7 @@ export interface Binary extends Resource {
     _data?: Element;
 }
 /** MimeType of the binary content */
-export declare enum BinaryContentType {
+export declare enum BinaryContenttype {
     "Application/hl7Cda+xml" = "application/hl7-cda+xml",
     "Application/sparqlResults+xml" = "application/sparql-results+xml",
     "Application/sql" = "application/sql",

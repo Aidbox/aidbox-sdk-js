@@ -23,7 +23,7 @@ export interface AllergyIntolerance extends DomainResource {
     /** low | high | unable-to-assess */
     criticality?: `${AllergyIntoleranceCriticality}`;
     /** active | inactive | resolved */
-    clinicalStatus?: `${AllergyIntoleranceClinicalStatus}`;
+    clinicalStatus?: `${AllergyIntoleranceClinicalstatus}`;
     onsetRange?: Range;
     onsetAge?: Age;
     /** Encounter when the allergy or intolerance was asserted */
@@ -53,7 +53,7 @@ export interface AllergyIntolerance extends DomainResource {
     lastOccurrence?: dateTime;
     _onsetDateTime?: Element;
     /** unconfirmed | confirmed | refuted | entered-in-error */
-    verificationStatus?: `${AllergyIntoleranceVerificationStatus}`;
+    verificationStatus?: `${AllergyIntoleranceVerificationstatus}`;
     /** Adverse Reaction Events linked to exposure to substance */
     reaction?: Array<AllergyIntoleranceReaction>;
     _lastOccurrence?: Element;
@@ -65,7 +65,7 @@ export declare enum AllergyIntoleranceCriticality {
     UnableToAssess = "unable-to-assess"
 }
 /** active | inactive | resolved */
-export declare enum AllergyIntoleranceClinicalStatus {
+export declare enum AllergyIntoleranceClinicalstatus {
     Active = "active",
     Inactive = "inactive",
     Resolved = "resolved"
@@ -76,7 +76,7 @@ export declare enum AllergyIntoleranceType {
     Intolerance = "intolerance"
 }
 /** unconfirmed | confirmed | refuted | entered-in-error */
-export declare enum AllergyIntoleranceVerificationStatus {
+export declare enum AllergyIntoleranceVerificationstatus {
     Confirmed = "confirmed",
     EnteredInError = "entered-in-error",
     Presumed = "presumed",
@@ -84,7 +84,7 @@ export declare enum AllergyIntoleranceVerificationStatus {
     Unconfirmed = "unconfirmed"
 }
 /** mild | moderate | severe (of event as a whole) */
-export declare enum AllergyIntoleranceSeverity {
+export declare enum AllergyIntoleranceReactionSeverity {
     Mild = "mild",
     Moderate = "moderate",
     Severe = "severe"
@@ -106,6 +106,6 @@ export interface AllergyIntoleranceReaction extends BackboneElement {
     /** Specific substance or pharmaceutical product considered to be responsible for event */
     substance?: CodeableConcept;
     /** mild | moderate | severe (of event as a whole) */
-    severity?: `${AllergyIntoleranceSeverity}`;
+    severity?: `${AllergyIntoleranceReactionSeverity}`;
     _severity?: Element;
 }

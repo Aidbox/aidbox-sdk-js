@@ -104,12 +104,6 @@ export interface ClaimResponseTotal extends BackboneElement {
     /** Financial total for the category */
     amount: Money;
 }
-/** display | print | printoper */
-export declare enum ClaimResponseType {
-    Display = "display",
-    Print = "print",
-    Printoper = "printoper"
-}
 /** Payment Details */
 export interface ClaimResponsePayment extends BackboneElement {
     /** Partial or complete payment */
@@ -167,13 +161,19 @@ export declare enum ClaimResponseOutcome {
     Partial = "partial",
     Queued = "queued"
 }
+/** display | print | printoper */
+export declare enum ClaimResponseProcessnoteType {
+    Display = "display",
+    Print = "print",
+    Printoper = "printoper"
+}
 /** Note concerning adjudication */
 export interface ClaimResponseProcessNote extends BackboneElement {
     /** Note instance identifier */
     number?: positiveInt;
     _number?: Element;
     /** display | print | printoper */
-    type?: `${ClaimResponseType}`;
+    type?: `${ClaimResponseProcessnoteType}`;
     _type?: Element;
     /** Note explanatory text */
     text: string;

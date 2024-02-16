@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NamingSystemType = exports.NamingSystemKind = exports.NamingSystemStatus = void 0;
+exports.NamingSystemUniqueidType = exports.NamingSystemKind = exports.NamingSystemStatus = void 0;
 /** draft | active | retired | unknown */
 var NamingSystemStatus;
 (function (NamingSystemStatus) {
@@ -17,10 +17,10 @@ var NamingSystemKind;
     NamingSystemKind["Root"] = "root";
 })(NamingSystemKind = exports.NamingSystemKind || (exports.NamingSystemKind = {}));
 /** oid | uuid | uri | other */
-var NamingSystemType;
-(function (NamingSystemType) {
-    NamingSystemType["Oid"] = "oid";
-    NamingSystemType["Other"] = "other";
-    NamingSystemType["Uri"] = "uri";
-    NamingSystemType["Uuid"] = "uuid";
-})(NamingSystemType = exports.NamingSystemType || (exports.NamingSystemType = {}));
+var NamingSystemUniqueidType;
+(function (NamingSystemUniqueidType) {
+    NamingSystemUniqueidType["Oid"] = "oid";
+    NamingSystemUniqueidType["Other"] = "other";
+    NamingSystemUniqueidType["Uri"] = "uri";
+    NamingSystemUniqueidType["Uuid"] = "uuid";
+})(NamingSystemUniqueidType = exports.NamingSystemUniqueidType || (exports.NamingSystemUniqueidType = {}));

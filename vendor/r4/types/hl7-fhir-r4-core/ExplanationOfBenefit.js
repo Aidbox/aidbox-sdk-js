@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExplanationOfBenefitUse = exports.ExplanationOfBenefitType = exports.ExplanationOfBenefitStatus = exports.ExplanationOfBenefitOutcome = void 0;
+exports.ExplanationOfBenefitProcessnoteType = exports.ExplanationOfBenefitUse = exports.ExplanationOfBenefitStatus = exports.ExplanationOfBenefitOutcome = void 0;
 /** queued | complete | error | partial */
 var ExplanationOfBenefitOutcome;
 (function (ExplanationOfBenefitOutcome) {
@@ -17,13 +17,6 @@ var ExplanationOfBenefitStatus;
     ExplanationOfBenefitStatus["Draft"] = "draft";
     ExplanationOfBenefitStatus["EnteredInError"] = "entered-in-error";
 })(ExplanationOfBenefitStatus = exports.ExplanationOfBenefitStatus || (exports.ExplanationOfBenefitStatus = {}));
-/** display | print | printoper */
-var ExplanationOfBenefitType;
-(function (ExplanationOfBenefitType) {
-    ExplanationOfBenefitType["Display"] = "display";
-    ExplanationOfBenefitType["Print"] = "print";
-    ExplanationOfBenefitType["Printoper"] = "printoper";
-})(ExplanationOfBenefitType = exports.ExplanationOfBenefitType || (exports.ExplanationOfBenefitType = {}));
 /** claim | preauthorization | predetermination */
 var ExplanationOfBenefitUse;
 (function (ExplanationOfBenefitUse) {
@@ -31,3 +24,10 @@ var ExplanationOfBenefitUse;
     ExplanationOfBenefitUse["Preauthorization"] = "preauthorization";
     ExplanationOfBenefitUse["Predetermination"] = "predetermination";
 })(ExplanationOfBenefitUse = exports.ExplanationOfBenefitUse || (exports.ExplanationOfBenefitUse = {}));
+/** display | print | printoper */
+var ExplanationOfBenefitProcessnoteType;
+(function (ExplanationOfBenefitProcessnoteType) {
+    ExplanationOfBenefitProcessnoteType["Display"] = "display";
+    ExplanationOfBenefitProcessnoteType["Print"] = "print";
+    ExplanationOfBenefitProcessnoteType["Printoper"] = "printoper";
+})(ExplanationOfBenefitProcessnoteType = exports.ExplanationOfBenefitProcessnoteType || (exports.ExplanationOfBenefitProcessnoteType = {}));

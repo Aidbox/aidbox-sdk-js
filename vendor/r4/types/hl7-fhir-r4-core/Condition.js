@@ -1,24 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConditionVerificationStatus = exports.ConditionClinicalStatus = void 0;
+exports.ConditionVerificationstatus = exports.ConditionClinicalstatus = void 0;
 /** active | recurrence | relapse | inactive | remission | resolved */
-var ConditionClinicalStatus;
-(function (ConditionClinicalStatus) {
-    ConditionClinicalStatus["Active"] = "active";
-    ConditionClinicalStatus["Inactive"] = "inactive";
-    ConditionClinicalStatus["Recurrence"] = "recurrence";
-    ConditionClinicalStatus["Relapse"] = "relapse";
-    ConditionClinicalStatus["Remission"] = "remission";
-    ConditionClinicalStatus["Resolved"] = "resolved";
-    ConditionClinicalStatus["Unknown"] = "unknown";
-})(ConditionClinicalStatus = exports.ConditionClinicalStatus || (exports.ConditionClinicalStatus = {}));
+var ConditionClinicalstatus;
+(function (ConditionClinicalstatus) {
+    ConditionClinicalstatus["Active"] = "active";
+    ConditionClinicalstatus["Inactive"] = "inactive";
+    ConditionClinicalstatus["Recurrence"] = "recurrence";
+    ConditionClinicalstatus["Relapse"] = "relapse";
+    ConditionClinicalstatus["Remission"] = "remission";
+    ConditionClinicalstatus["Resolved"] = "resolved";
+    ConditionClinicalstatus["Unknown"] = "unknown";
+})(ConditionClinicalstatus = exports.ConditionClinicalstatus || (exports.ConditionClinicalstatus = {}));
 /** unconfirmed | provisional | differential | confirmed | refuted | entered-in-error */
-var ConditionVerificationStatus;
-(function (ConditionVerificationStatus) {
-    ConditionVerificationStatus["Confirmed"] = "confirmed";
-    ConditionVerificationStatus["Differential"] = "differential";
-    ConditionVerificationStatus["EnteredInError"] = "entered-in-error";
-    ConditionVerificationStatus["Provisional"] = "provisional";
-    ConditionVerificationStatus["Refuted"] = "refuted";
-    ConditionVerificationStatus["Unconfirmed"] = "unconfirmed";
-})(ConditionVerificationStatus = exports.ConditionVerificationStatus || (exports.ConditionVerificationStatus = {}));
+var ConditionVerificationstatus;
+(function (ConditionVerificationstatus) {
+    ConditionVerificationstatus["Confirmed"] = "confirmed";
+    ConditionVerificationstatus["Differential"] = "differential";
+    ConditionVerificationstatus["EnteredInError"] = "entered-in-error";
+    ConditionVerificationstatus["Provisional"] = "provisional";
+    ConditionVerificationstatus["Refuted"] = "refuted";
+    ConditionVerificationstatus["Unconfirmed"] = "unconfirmed";
+})(ConditionVerificationstatus = exports.ConditionVerificationstatus || (exports.ConditionVerificationstatus = {}));

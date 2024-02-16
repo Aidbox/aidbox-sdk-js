@@ -84,7 +84,7 @@ export interface ConsentProvisionActor extends BackboneElement {
     reference: Reference<'CareTeam' | 'Patient' | 'PractitionerRole' | 'Organization' | 'Device' | 'Practitioner' | 'RelatedPerson' | 'Group'>;
 }
 /** instance | related | dependents | authoredby */
-export declare enum ConsentProvisionMeaning {
+export declare enum ConsentProvisionDataMeaning {
     Authoredby = "authoredby",
     Dependents = "dependents",
     Instance = "instance",
@@ -93,7 +93,7 @@ export declare enum ConsentProvisionMeaning {
 /** Data controlled by this rule */
 export interface ConsentProvisionData extends BackboneElement {
     /** instance | related | dependents | authoredby */
-    meaning: `${ConsentProvisionMeaning}`;
+    meaning: `${ConsentProvisionDataMeaning}`;
     _meaning?: Element;
     /** The actual data reference */
     reference: Reference;

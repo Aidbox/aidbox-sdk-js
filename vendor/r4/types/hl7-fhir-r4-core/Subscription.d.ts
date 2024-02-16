@@ -30,7 +30,7 @@ export interface Subscription extends DomainResource {
     contact?: Array<ContactPoint>;
 }
 /** rest-hook | websocket | email | sms | message */
-export declare enum SubscriptionType {
+export declare enum SubscriptionChannelType {
     Email = "email",
     Message = "message",
     RestHook = "rest-hook",
@@ -38,7 +38,7 @@ export declare enum SubscriptionType {
     Websocket = "websocket"
 }
 /** MIME type to send, or omit for no payload */
-export declare enum SubscriptionPayload {
+export declare enum SubscriptionChannelPayload {
     "Application/hl7Cda+xml" = "application/hl7-cda+xml",
     "Application/sparqlResults+xml" = "application/sparql-results+xml",
     "Application/sql" = "application/sql",
@@ -47,13 +47,13 @@ export declare enum SubscriptionPayload {
 /** The channel on which to report matches to the criteria */
 export interface SubscriptionChannel extends BackboneElement {
     /** rest-hook | websocket | email | sms | message */
-    type: `${SubscriptionType}`;
+    type: `${SubscriptionChannelType}`;
     _type?: Element;
     /** Where the channel points to */
     endpoint?: url;
     _endpoint?: Element;
     /** MIME type to send, or omit for no payload */
-    payload?: `${SubscriptionPayload}`;
+    payload?: `${SubscriptionChannelPayload}`;
     _payload?: Element;
     /** Usage depends on the channel type */
     header?: Array<string>;

@@ -100,7 +100,7 @@ export interface OperationDefinitionParameterReferencedFrom extends BackboneElem
 /** ValueSet details if this is coded */
 export interface OperationDefinitionParameterBinding extends BackboneElement {
     /** required | extensible | preferred | example */
-    strength: `${OperationDefinitionParameterStrength}`;
+    strength: `${OperationDefinitionParameterBindingStrength}`;
     _strength?: Element;
     /** Source of value set */
     valueSet: canonical;
@@ -334,7 +334,7 @@ export interface OperationDefinitionParameter extends BackboneElement {
     _documentation?: Element;
     _searchType?: Element;
     /** number | date | string | token | reference | composite | quantity | uri | special */
-    searchType?: `${OperationDefinitionParameterSearchType}`;
+    searchType?: `${OperationDefinitionParameterSearchtype}`;
     /** in | out */
     use: `${OperationDefinitionParameterUse}`;
     /** Name in Parameters.parameter.name or in URL */
@@ -361,7 +361,7 @@ export interface OperationDefinitionParameter extends BackboneElement {
     _use?: Element;
 }
 /** number | date | string | token | reference | composite | quantity | uri | special */
-export declare enum OperationDefinitionParameterSearchType {
+export declare enum OperationDefinitionParameterSearchtype {
     Uri = "uri",
     Number = "number",
     Date = "date",
@@ -382,7 +382,7 @@ export interface OperationDefinitionOverload extends BackboneElement {
     _comment?: Element;
 }
 /** required | extensible | preferred | example */
-export declare enum OperationDefinitionParameterStrength {
+export declare enum OperationDefinitionParameterBindingStrength {
     Example = "example",
     Extensible = "extensible",
     Preferred = "preferred",

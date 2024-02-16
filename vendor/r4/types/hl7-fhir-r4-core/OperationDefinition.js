@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OperationDefinitionParameterUse = exports.OperationDefinitionStatus = exports.OperationDefinitionParameterStrength = exports.OperationDefinitionParameterSearchType = exports.OperationDefinitionKind = exports.OperationDefinitionParameterType = void 0;
+exports.OperationDefinitionParameterUse = exports.OperationDefinitionStatus = exports.OperationDefinitionParameterBindingStrength = exports.OperationDefinitionParameterSearchtype = exports.OperationDefinitionKind = exports.OperationDefinitionParameterType = void 0;
 /** What type this parameter has */
 var OperationDefinitionParameterType;
 (function (OperationDefinitionParameterType) {
@@ -225,26 +225,26 @@ var OperationDefinitionKind;
     OperationDefinitionKind["Query"] = "query";
 })(OperationDefinitionKind = exports.OperationDefinitionKind || (exports.OperationDefinitionKind = {}));
 /** number | date | string | token | reference | composite | quantity | uri | special */
-var OperationDefinitionParameterSearchType;
-(function (OperationDefinitionParameterSearchType) {
-    OperationDefinitionParameterSearchType["Uri"] = "uri";
-    OperationDefinitionParameterSearchType["Number"] = "number";
-    OperationDefinitionParameterSearchType["Date"] = "date";
-    OperationDefinitionParameterSearchType["Special"] = "special";
-    OperationDefinitionParameterSearchType["Quantity"] = "quantity";
-    OperationDefinitionParameterSearchType["String"] = "string";
-    OperationDefinitionParameterSearchType["Composite"] = "composite";
-    OperationDefinitionParameterSearchType["Token"] = "token";
-    OperationDefinitionParameterSearchType["Reference"] = "reference";
-})(OperationDefinitionParameterSearchType = exports.OperationDefinitionParameterSearchType || (exports.OperationDefinitionParameterSearchType = {}));
+var OperationDefinitionParameterSearchtype;
+(function (OperationDefinitionParameterSearchtype) {
+    OperationDefinitionParameterSearchtype["Uri"] = "uri";
+    OperationDefinitionParameterSearchtype["Number"] = "number";
+    OperationDefinitionParameterSearchtype["Date"] = "date";
+    OperationDefinitionParameterSearchtype["Special"] = "special";
+    OperationDefinitionParameterSearchtype["Quantity"] = "quantity";
+    OperationDefinitionParameterSearchtype["String"] = "string";
+    OperationDefinitionParameterSearchtype["Composite"] = "composite";
+    OperationDefinitionParameterSearchtype["Token"] = "token";
+    OperationDefinitionParameterSearchtype["Reference"] = "reference";
+})(OperationDefinitionParameterSearchtype = exports.OperationDefinitionParameterSearchtype || (exports.OperationDefinitionParameterSearchtype = {}));
 /** required | extensible | preferred | example */
-var OperationDefinitionParameterStrength;
-(function (OperationDefinitionParameterStrength) {
-    OperationDefinitionParameterStrength["Example"] = "example";
-    OperationDefinitionParameterStrength["Extensible"] = "extensible";
-    OperationDefinitionParameterStrength["Preferred"] = "preferred";
-    OperationDefinitionParameterStrength["Required"] = "required";
-})(OperationDefinitionParameterStrength = exports.OperationDefinitionParameterStrength || (exports.OperationDefinitionParameterStrength = {}));
+var OperationDefinitionParameterBindingStrength;
+(function (OperationDefinitionParameterBindingStrength) {
+    OperationDefinitionParameterBindingStrength["Example"] = "example";
+    OperationDefinitionParameterBindingStrength["Extensible"] = "extensible";
+    OperationDefinitionParameterBindingStrength["Preferred"] = "preferred";
+    OperationDefinitionParameterBindingStrength["Required"] = "required";
+})(OperationDefinitionParameterBindingStrength = exports.OperationDefinitionParameterBindingStrength || (exports.OperationDefinitionParameterBindingStrength = {}));
 /** draft | active | retired | unknown */
 var OperationDefinitionStatus;
 (function (OperationDefinitionStatus) {

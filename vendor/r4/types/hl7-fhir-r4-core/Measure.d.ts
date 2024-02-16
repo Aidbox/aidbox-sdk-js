@@ -114,7 +114,7 @@ export interface Measure extends DomainResource {
     contact?: Array<ContactDetail>;
     subjectReference?: Reference<'Group'>;
     /** increase | decrease */
-    improvementNotation?: `${MeasureImprovementNotation}`;
+    improvementNotation?: `${MeasureImprovementnotation}`;
     _url?: Element;
     _disclaimer?: Element;
     /** How is rate aggregation performed for this measure */
@@ -189,7 +189,7 @@ export declare enum MeasureStatus {
     Unknown = "unknown"
 }
 /** increase | decrease */
-export declare enum MeasureImprovementNotation {
+export declare enum MeasureImprovementnotation {
     Decrease = "decrease",
     Increase = "increase"
 }

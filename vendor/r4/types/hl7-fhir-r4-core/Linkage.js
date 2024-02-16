@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LinkageType = void 0;
+exports.LinkageItemType = void 0;
 /** source | alternate | historical */
-var LinkageType;
-(function (LinkageType) {
-    LinkageType["Alternate"] = "alternate";
-    LinkageType["Historical"] = "historical";
-    LinkageType["Source"] = "source";
-})(LinkageType = exports.LinkageType || (exports.LinkageType = {}));
+var LinkageItemType;
+(function (LinkageItemType) {
+    LinkageItemType["Alternate"] = "alternate";
+    LinkageItemType["Historical"] = "historical";
+    LinkageItemType["Source"] = "source";
+})(LinkageItemType = exports.LinkageItemType || (exports.LinkageItemType = {}));

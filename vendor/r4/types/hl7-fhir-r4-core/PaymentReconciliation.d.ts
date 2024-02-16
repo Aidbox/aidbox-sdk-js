@@ -50,7 +50,7 @@ export interface PaymentReconciliation extends DomainResource {
     detail?: Array<PaymentReconciliationDetail>;
 }
 /** display | print | printoper */
-export declare enum PaymentReconciliationType {
+export declare enum PaymentReconciliationProcessnoteType {
     Display = "display",
     Print = "print",
     Printoper = "printoper"
@@ -58,7 +58,7 @@ export declare enum PaymentReconciliationType {
 /** Note concerning processing */
 export interface PaymentReconciliationProcessNote extends BackboneElement {
     /** display | print | printoper */
-    type?: `${PaymentReconciliationType}`;
+    type?: `${PaymentReconciliationProcessnoteType}`;
     _type?: Element;
     /** Note explanatory text */
     text?: string;

@@ -28,13 +28,13 @@ export interface Attachment extends Element {
     url?: url;
     _title?: Element;
     /** Mime type of the content, with charset etc. */
-    contentType?: `${AttachmentContentType}`;
+    contentType?: `${AttachmentContenttype}`;
     _url?: Element;
     /** Data inline, base64ed */
     data?: base64Binary;
 }
 /** Mime type of the content, with charset etc. */
-export declare enum AttachmentContentType {
+export declare enum AttachmentContenttype {
     "Application/hl7Cda+xml" = "application/hl7-cda+xml",
     "Application/sparqlResults+xml" = "application/sparql-results+xml",
     "Application/sql" = "application/sql",

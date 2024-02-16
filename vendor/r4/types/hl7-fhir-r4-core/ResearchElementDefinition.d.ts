@@ -34,7 +34,7 @@ export interface ResearchElementDefinition extends DomainResource {
     /** When the research element definition was approved by publisher */
     approvalDate?: date;
     /** dichotomous | continuous | descriptive */
-    variableType?: `${ResearchElementDefinitionVariableType}`;
+    variableType?: `${ResearchElementDefinitionVariabletype}`;
     /** Intended jurisdiction for research element definition (if applicable) */
     jurisdiction?: Array<CodeableConcept>;
     _publisher?: Element;
@@ -110,7 +110,7 @@ export interface ResearchElementDefinition extends DomainResource {
     effectivePeriod?: Period;
 }
 /** dichotomous | continuous | descriptive */
-export declare enum ResearchElementDefinitionVariableType {
+export declare enum ResearchElementDefinitionVariabletype {
     Continuous = "continuous",
     Descriptive = "descriptive",
     Dichotomous = "dichotomous"
@@ -122,7 +122,7 @@ export declare enum ResearchElementDefinitionType {
     Population = "population"
 }
 /** mean | median | mean-of-mean | mean-of-median | median-of-mean | median-of-median */
-export declare enum ResearchElementDefinitionStudyEffectiveGroupMeasure {
+export declare enum ResearchElementDefinitionCharacteristicStudyeffectivegroupmeasure {
     Mean = "mean",
     MeanOfMean = "mean-of-mean",
     MeanOfMedian = "mean-of-median",
@@ -131,7 +131,7 @@ export declare enum ResearchElementDefinitionStudyEffectiveGroupMeasure {
     MedianOfMedian = "median-of-median"
 }
 /** mean | median | mean-of-mean | mean-of-median | median-of-mean | median-of-median */
-export declare enum ResearchElementDefinitionParticipantEffectiveGroupMeasure {
+export declare enum ResearchElementDefinitionCharacteristicParticipanteffectivegroupmeasure {
     Mean = "mean",
     MeanOfMean = "mean-of-mean",
     MeanOfMedian = "mean-of-median",
@@ -140,7 +140,7 @@ export declare enum ResearchElementDefinitionParticipantEffectiveGroupMeasure {
     MedianOfMedian = "median-of-median"
 }
 /** What unit is the outcome described in? */
-export declare enum ResearchElementDefinitionUnitOfMeasure {
+export declare enum ResearchElementDefinitionCharacteristicUnitofmeasure {
     "Mo_j" = "mo_j",
     CSt = "cSt",
     "%{breakdown}" = "%{breakdown}",
@@ -1565,10 +1565,10 @@ export interface ResearchElementDefinitionCharacteristic extends BackboneElement
     _studyEffectiveDescription?: Element;
     definitionCanonical: canonical;
     /** mean | median | mean-of-mean | mean-of-median | median-of-mean | median-of-median */
-    studyEffectiveGroupMeasure?: `${ResearchElementDefinitionStudyEffectiveGroupMeasure}`;
+    studyEffectiveGroupMeasure?: `${ResearchElementDefinitionCharacteristicStudyeffectivegroupmeasure}`;
     participantEffectiveTiming?: Timing;
     /** mean | median | mean-of-mean | mean-of-median | median-of-mean | median-of-median */
-    participantEffectiveGroupMeasure?: `${ResearchElementDefinitionParticipantEffectiveGroupMeasure}`;
+    participantEffectiveGroupMeasure?: `${ResearchElementDefinitionCharacteristicParticipanteffectivegroupmeasure}`;
     /** What time period does the study cover */
     studyEffectiveDescription?: string;
     participantEffectiveDateTime?: dateTime;
@@ -1576,7 +1576,7 @@ export interface ResearchElementDefinitionCharacteristic extends BackboneElement
     /** Observation time from study start */
     studyEffectiveTimeFromStart?: Duration;
     /** What unit is the outcome described in? */
-    unitOfMeasure?: `${ResearchElementDefinitionUnitOfMeasure}`;
+    unitOfMeasure?: `${ResearchElementDefinitionCharacteristicUnitofmeasure}`;
     participantEffectivePeriod?: Period;
     _participantEffectiveDateTime?: Element;
     /** What time period do participants cover */

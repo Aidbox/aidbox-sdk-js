@@ -57,13 +57,13 @@ export interface ObservationDefinitionQuantitativeDetails extends BackboneElemen
     _decimalPrecision?: Element;
 }
 /** reference | critical | absolute */
-export declare enum ObservationDefinitionCategory {
+export declare enum ObservationDefinitionQualifiedintervalCategory {
     Absolute = "absolute",
     Critical = "critical",
     Reference = "reference"
 }
 /** male | female | other | unknown */
-export declare enum ObservationDefinitionGender {
+export declare enum ObservationDefinitionQualifiedintervalGender {
     Female = "female",
     Male = "male",
     Other = "other",
@@ -72,7 +72,7 @@ export declare enum ObservationDefinitionGender {
 /** Qualified range for continuous and ordinal observation results */
 export interface ObservationDefinitionQualifiedInterval extends BackboneElement {
     /** reference | critical | absolute */
-    category?: `${ObservationDefinitionCategory}`;
+    category?: `${ObservationDefinitionQualifiedintervalCategory}`;
     /** Applicable age range, if relevant */
     age?: Range;
     /** Targetted population of the range */
@@ -86,7 +86,7 @@ export interface ObservationDefinitionQualifiedInterval extends BackboneElement 
     /** Applicable gestational age range, if relevant */
     gestationalAge?: Range;
     /** male | female | other | unknown */
-    gender?: `${ObservationDefinitionGender}`;
+    gender?: `${ObservationDefinitionQualifiedintervalGender}`;
     _category?: Element;
     /** The interval itself, for continuous or ordinal observations */
     range?: Range;

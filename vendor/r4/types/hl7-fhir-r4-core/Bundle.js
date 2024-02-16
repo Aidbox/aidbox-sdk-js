@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BundleMethod = exports.BundleMode = exports.BundleType = void 0;
+exports.BundleEntryRequestMethod = exports.BundleEntrySearchMode = exports.BundleType = void 0;
 /** document | message | transaction | transaction-response | batch | batch-response | history | searchset | collection */
 var BundleType;
 (function (BundleType) {
@@ -15,19 +15,19 @@ var BundleType;
     BundleType["Collection"] = "collection";
 })(BundleType = exports.BundleType || (exports.BundleType = {}));
 /** match | include | outcome - why this is in the result set */
-var BundleMode;
-(function (BundleMode) {
-    BundleMode["Include"] = "include";
-    BundleMode["Match"] = "match";
-    BundleMode["Outcome"] = "outcome";
-})(BundleMode = exports.BundleMode || (exports.BundleMode = {}));
+var BundleEntrySearchMode;
+(function (BundleEntrySearchMode) {
+    BundleEntrySearchMode["Include"] = "include";
+    BundleEntrySearchMode["Match"] = "match";
+    BundleEntrySearchMode["Outcome"] = "outcome";
+})(BundleEntrySearchMode = exports.BundleEntrySearchMode || (exports.BundleEntrySearchMode = {}));
 /** GET | HEAD | POST | PUT | DELETE | PATCH */
-var BundleMethod;
-(function (BundleMethod) {
-    BundleMethod["DELETE"] = "DELETE";
-    BundleMethod["GET"] = "GET";
-    BundleMethod["HEAD"] = "HEAD";
-    BundleMethod["PATCH"] = "PATCH";
-    BundleMethod["POST"] = "POST";
-    BundleMethod["PUT"] = "PUT";
-})(BundleMethod = exports.BundleMethod || (exports.BundleMethod = {}));
+var BundleEntryRequestMethod;
+(function (BundleEntryRequestMethod) {
+    BundleEntryRequestMethod["DELETE"] = "DELETE";
+    BundleEntryRequestMethod["GET"] = "GET";
+    BundleEntryRequestMethod["HEAD"] = "HEAD";
+    BundleEntryRequestMethod["PATCH"] = "PATCH";
+    BundleEntryRequestMethod["POST"] = "POST";
+    BundleEntryRequestMethod["PUT"] = "PUT";
+})(BundleEntryRequestMethod = exports.BundleEntryRequestMethod || (exports.BundleEntryRequestMethod = {}));

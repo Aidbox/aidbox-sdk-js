@@ -80,7 +80,7 @@ export interface ChargeItemDefinition extends DomainResource {
     effectivePeriod?: Period;
 }
 /** base | surcharge | deduction | discount | tax | informational */
-export declare enum ChargeItemDefinitionType {
+export declare enum ChargeItemDefinitionPropertygroupPricecomponentType {
     Base = "base",
     Deduction = "deduction",
     Discount = "discount",
@@ -91,7 +91,7 @@ export declare enum ChargeItemDefinitionType {
 /** Components of total line item price */
 export interface ChargeItemDefinitionPriceComponent extends BackboneElement {
     /** base | surcharge | deduction | discount | tax | informational */
-    type: `${ChargeItemDefinitionType}`;
+    type: `${ChargeItemDefinitionPropertygroupPricecomponentType}`;
     _type?: Element;
     /** Code identifying the specific component */
     code?: CodeableConcept;

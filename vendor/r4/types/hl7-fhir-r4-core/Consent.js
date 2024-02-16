@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConsentProvisionMeaning = exports.ConsentProvisionType = exports.ConsentStatus = void 0;
+exports.ConsentProvisionDataMeaning = exports.ConsentProvisionType = exports.ConsentStatus = void 0;
 /** draft | proposed | active | rejected | inactive | entered-in-error */
 var ConsentStatus;
 (function (ConsentStatus) {
@@ -18,10 +18,10 @@ var ConsentProvisionType;
     ConsentProvisionType["Permit"] = "permit";
 })(ConsentProvisionType = exports.ConsentProvisionType || (exports.ConsentProvisionType = {}));
 /** instance | related | dependents | authoredby */
-var ConsentProvisionMeaning;
-(function (ConsentProvisionMeaning) {
-    ConsentProvisionMeaning["Authoredby"] = "authoredby";
-    ConsentProvisionMeaning["Dependents"] = "dependents";
-    ConsentProvisionMeaning["Instance"] = "instance";
-    ConsentProvisionMeaning["Related"] = "related";
-})(ConsentProvisionMeaning = exports.ConsentProvisionMeaning || (exports.ConsentProvisionMeaning = {}));
+var ConsentProvisionDataMeaning;
+(function (ConsentProvisionDataMeaning) {
+    ConsentProvisionDataMeaning["Authoredby"] = "authoredby";
+    ConsentProvisionDataMeaning["Dependents"] = "dependents";
+    ConsentProvisionDataMeaning["Instance"] = "instance";
+    ConsentProvisionDataMeaning["Related"] = "related";
+})(ConsentProvisionDataMeaning = exports.ConsentProvisionDataMeaning || (exports.ConsentProvisionDataMeaning = {}));

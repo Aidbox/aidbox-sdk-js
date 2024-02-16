@@ -15,7 +15,7 @@ export interface AppointmentResponse extends DomainResource {
     /** Time from appointment, or requested new start time */
     start?: instant;
     /** accepted | declined | tentative | needs-action */
-    participantStatus: `${AppointmentResponseParticipantStatus}`;
+    participantStatus: `${AppointmentResponseParticipantstatus}`;
     /** Role of participant in the appointment */
     participantType?: Array<CodeableConcept>;
     /** Additional comments */
@@ -31,7 +31,7 @@ export interface AppointmentResponse extends DomainResource {
     actor?: Reference<'Patient' | 'PractitionerRole' | 'HealthcareService' | 'Device' | 'Location' | 'Practitioner' | 'RelatedPerson'>;
 }
 /** accepted | declined | tentative | needs-action */
-export declare enum AppointmentResponseParticipantStatus {
+export declare enum AppointmentResponseParticipantstatus {
     Accepted = "accepted",
     Declined = "declined",
     NeedsAction = "needs-action",

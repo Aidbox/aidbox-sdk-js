@@ -1,6 +1,6 @@
 {
   "name": "@aidbox/sdk-r4",
-  "version": "1.0.9",
+  "version": "1.0.11",
   "description": "Default Aidbox SDK with HL7-R4 package",
   "main": "index.js",
   "scripts": {

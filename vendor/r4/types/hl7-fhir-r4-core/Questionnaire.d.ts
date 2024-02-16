@@ -91,7 +91,7 @@ export declare enum QuestionnaireStatus {
     Unknown = "unknown"
 }
 /** all | any */
-export declare enum QuestionnaireItemEnableBehavior {
+export declare enum QuestionnaireItemEnablebehavior {
     All = "all",
     Any = "any"
 }
@@ -116,7 +116,7 @@ export declare enum QuestionnaireItemType {
     Boolean = "boolean"
 }
 /** exists | = | != | > | < | >= | <= */
-export declare enum QuestionnaireItemOperator {
+export declare enum QuestionnaireItemEnablewhenOperator {
     "!=" = "!=",
     "<" = "<",
     "<=" = "<=",
@@ -143,7 +143,7 @@ export interface QuestionnaireItemEnableWhen extends BackboneElement {
     _answerDecimal: Element;
     answerString: string;
     /** exists | = | != | > | < | >= | <= */
-    operator: `${QuestionnaireItemOperator}`;
+    operator: `${QuestionnaireItemEnablewhenOperator}`;
     _answerDateTime: Element;
     answerBoolean: boolean;
     answerCoding: Coding;
@@ -193,7 +193,7 @@ export interface QuestionnaireItemInitial extends BackboneElement {
 /** Questions and sections within the Questionnaire */
 export interface QuestionnaireItem extends BackboneElement {
     /** all | any */
-    enableBehavior?: `${QuestionnaireItemEnableBehavior}`;
+    enableBehavior?: `${QuestionnaireItemEnablebehavior}`;
     /** ElementDefinition - details for the item */
     definition?: uri;
     _maxLength?: Element;

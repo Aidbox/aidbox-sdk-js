@@ -58,7 +58,7 @@ export interface AuditEventSource extends BackboneElement {
     type?: Array<Coding>;
 }
 /** The type of network access point */
-export declare enum AuditEventType {
+export declare enum AuditEventAgentNetworkType {
     Num1 = "1",
     Num2 = "2",
     Num3 = "3",
@@ -71,7 +71,7 @@ export interface AuditEventNetwork extends BackboneElement {
     address?: string;
     _address?: Element;
     /** The type of network access point */
-    type?: `${AuditEventType}`;
+    type?: `${AuditEventAgentNetworkType}`;
     _type?: Element;
 }
 /** Actor involved in the event */

@@ -1,25 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CodeSystemStatus = exports.CodeSystemContent = exports.CodeSystemType = exports.CodeSystemHierarchyMeaning = void 0;
+exports.CodeSystemStatus = exports.CodeSystemContent = exports.CodeSystemPropertyType = exports.CodeSystemHierarchymeaning = void 0;
 /** grouped-by | is-a | part-of | classified-with */
-var CodeSystemHierarchyMeaning;
-(function (CodeSystemHierarchyMeaning) {
-    CodeSystemHierarchyMeaning["ClassifiedWith"] = "classified-with";
-    CodeSystemHierarchyMeaning["GroupedBy"] = "grouped-by";
-    CodeSystemHierarchyMeaning["IsA"] = "is-a";
-    CodeSystemHierarchyMeaning["PartOf"] = "part-of";
-})(CodeSystemHierarchyMeaning = exports.CodeSystemHierarchyMeaning || (exports.CodeSystemHierarchyMeaning = {}));
+var CodeSystemHierarchymeaning;
+(function (CodeSystemHierarchymeaning) {
+    CodeSystemHierarchymeaning["ClassifiedWith"] = "classified-with";
+    CodeSystemHierarchymeaning["GroupedBy"] = "grouped-by";
+    CodeSystemHierarchymeaning["IsA"] = "is-a";
+    CodeSystemHierarchymeaning["PartOf"] = "part-of";
+})(CodeSystemHierarchymeaning = exports.CodeSystemHierarchymeaning || (exports.CodeSystemHierarchymeaning = {}));
 /** code | Coding | string | integer | boolean | dateTime | decimal */
-var CodeSystemType;
-(function (CodeSystemType) {
-    CodeSystemType["Coding"] = "Coding";
-    CodeSystemType["Boolean"] = "boolean";
-    CodeSystemType["Code"] = "code";
-    CodeSystemType["DateTime"] = "dateTime";
-    CodeSystemType["Decimal"] = "decimal";
-    CodeSystemType["Integer"] = "integer";
-    CodeSystemType["String"] = "string";
-})(CodeSystemType = exports.CodeSystemType || (exports.CodeSystemType = {}));
+var CodeSystemPropertyType;
+(function (CodeSystemPropertyType) {
+    CodeSystemPropertyType["Coding"] = "Coding";
+    CodeSystemPropertyType["Boolean"] = "boolean";
+    CodeSystemPropertyType["Code"] = "code";
+    CodeSystemPropertyType["DateTime"] = "dateTime";
+    CodeSystemPropertyType["Decimal"] = "decimal";
+    CodeSystemPropertyType["Integer"] = "integer";
+    CodeSystemPropertyType["String"] = "string";
+})(CodeSystemPropertyType = exports.CodeSystemPropertyType || (exports.CodeSystemPropertyType = {}));
 /** not-present | example | fragment | complete | supplement */
 var CodeSystemContent;
 (function (CodeSystemContent) {

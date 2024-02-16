@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.VisionPrescriptionBase = exports.VisionPrescriptionEye = exports.VisionPrescriptionStatus = void 0;
+exports.VisionPrescriptionLensspecificationPrismBase = exports.VisionPrescriptionLensspecificationEye = exports.VisionPrescriptionStatus = void 0;
 /** active | cancelled | draft | entered-in-error */
 var VisionPrescriptionStatus;
 (function (VisionPrescriptionStatus) {
@@ -10,16 +10,16 @@ var VisionPrescriptionStatus;
     VisionPrescriptionStatus["EnteredInError"] = "entered-in-error";
 })(VisionPrescriptionStatus = exports.VisionPrescriptionStatus || (exports.VisionPrescriptionStatus = {}));
 /** right | left */
-var VisionPrescriptionEye;
-(function (VisionPrescriptionEye) {
-    VisionPrescriptionEye["Left"] = "left";
-    VisionPrescriptionEye["Right"] = "right";
-})(VisionPrescriptionEye = exports.VisionPrescriptionEye || (exports.VisionPrescriptionEye = {}));
+var VisionPrescriptionLensspecificationEye;
+(function (VisionPrescriptionLensspecificationEye) {
+    VisionPrescriptionLensspecificationEye["Left"] = "left";
+    VisionPrescriptionLensspecificationEye["Right"] = "right";
+})(VisionPrescriptionLensspecificationEye = exports.VisionPrescriptionLensspecificationEye || (exports.VisionPrescriptionLensspecificationEye = {}));
 /** up | down | in | out */
-var VisionPrescriptionBase;
-(function (VisionPrescriptionBase) {
-    VisionPrescriptionBase["Down"] = "down";
-    VisionPrescriptionBase["In"] = "in";
-    VisionPrescriptionBase["Out"] = "out";
-    VisionPrescriptionBase["Up"] = "up";
-})(VisionPrescriptionBase = exports.VisionPrescriptionBase || (exports.VisionPrescriptionBase = {}));
+var VisionPrescriptionLensspecificationPrismBase;
+(function (VisionPrescriptionLensspecificationPrismBase) {
+    VisionPrescriptionLensspecificationPrismBase["Down"] = "down";
+    VisionPrescriptionLensspecificationPrismBase["In"] = "in";
+    VisionPrescriptionLensspecificationPrismBase["Out"] = "out";
+    VisionPrescriptionLensspecificationPrismBase["Up"] = "up";
+})(VisionPrescriptionLensspecificationPrismBase = exports.VisionPrescriptionLensspecificationPrismBase || (exports.VisionPrescriptionLensspecificationPrismBase = {}));

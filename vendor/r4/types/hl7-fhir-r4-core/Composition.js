@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CompositionStatus = exports.CompositionCode = exports.CompositionMode = exports.CompositionConfidentiality = exports.CompositionSectionMode = void 0;
+exports.CompositionRelatestoCode = exports.CompositionStatus = exports.CompositionAttesterMode = exports.CompositionConfidentiality = exports.CompositionSectionMode = void 0;
 /** working | snapshot | changes */
 var CompositionSectionMode;
 (function (CompositionSectionMode) {
@@ -19,21 +19,13 @@ var CompositionConfidentiality;
     CompositionConfidentiality["N"] = "N";
 })(CompositionConfidentiality = exports.CompositionConfidentiality || (exports.CompositionConfidentiality = {}));
 /** personal | professional | legal | official */
-var CompositionMode;
-(function (CompositionMode) {
-    CompositionMode["Legal"] = "legal";
-    CompositionMode["Official"] = "official";
-    CompositionMode["Personal"] = "personal";
-    CompositionMode["Professional"] = "professional";
-})(CompositionMode = exports.CompositionMode || (exports.CompositionMode = {}));
-/** replaces | transforms | signs | appends */
-var CompositionCode;
-(function (CompositionCode) {
-    CompositionCode["Appends"] = "appends";
-    CompositionCode["Replaces"] = "replaces";
-    CompositionCode["Signs"] = "signs";
-    CompositionCode["Transforms"] = "transforms";
-})(CompositionCode = exports.CompositionCode || (exports.CompositionCode = {}));
+var CompositionAttesterMode;
+(function (CompositionAttesterMode) {
+    CompositionAttesterMode["Legal"] = "legal";
+    CompositionAttesterMode["Official"] = "official";
+    CompositionAttesterMode["Personal"] = "personal";
+    CompositionAttesterMode["Professional"] = "professional";
+})(CompositionAttesterMode = exports.CompositionAttesterMode || (exports.CompositionAttesterMode = {}));
 /** preliminary | final | amended | entered-in-error */
 var CompositionStatus;
 (function (CompositionStatus) {
@@ -42,3 +34,11 @@ var CompositionStatus;
     CompositionStatus["Final"] = "final";
     CompositionStatus["Preliminary"] = "preliminary";
 })(CompositionStatus = exports.CompositionStatus || (exports.CompositionStatus = {}));
+/** replaces | transforms | signs | appends */
+var CompositionRelatestoCode;
+(function (CompositionRelatestoCode) {
+    CompositionRelatestoCode["Appends"] = "appends";
+    CompositionRelatestoCode["Replaces"] = "replaces";
+    CompositionRelatestoCode["Signs"] = "signs";
+    CompositionRelatestoCode["Transforms"] = "transforms";
+})(CompositionRelatestoCode = exports.CompositionRelatestoCode || (exports.CompositionRelatestoCode = {}));

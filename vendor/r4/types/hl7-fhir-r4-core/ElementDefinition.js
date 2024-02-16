@@ -1,48 +1,48 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ElementDefinitionRules = exports.ElementDefinitionStrength = exports.ElementDefinitionLanguage = exports.ElementDefinitionSeverity = exports.ElementDefinitionVersioning = exports.ElementDefinitionType = void 0;
-/** value | exists | pattern | type | profile */
-var ElementDefinitionType;
-(function (ElementDefinitionType) {
-    ElementDefinitionType["Exists"] = "exists";
-    ElementDefinitionType["Pattern"] = "pattern";
-    ElementDefinitionType["Profile"] = "profile";
-    ElementDefinitionType["Type"] = "type";
-    ElementDefinitionType["Value"] = "value";
-})(ElementDefinitionType = exports.ElementDefinitionType || (exports.ElementDefinitionType = {}));
-/** either | independent | specific */
-var ElementDefinitionVersioning;
-(function (ElementDefinitionVersioning) {
-    ElementDefinitionVersioning["Either"] = "either";
-    ElementDefinitionVersioning["Independent"] = "independent";
-    ElementDefinitionVersioning["Specific"] = "specific";
-})(ElementDefinitionVersioning = exports.ElementDefinitionVersioning || (exports.ElementDefinitionVersioning = {}));
+exports.ElementDefinitionMappingLanguage = exports.ElementDefinitionBindingStrength = exports.ElementDefinitionTypeVersioning = exports.ElementDefinitionSlicingRules = exports.ElementDefinitionSlicingDiscriminatorType = exports.ElementDefinitionConstraintSeverity = void 0;
 /** error | warning */
-var ElementDefinitionSeverity;
-(function (ElementDefinitionSeverity) {
-    ElementDefinitionSeverity["Error"] = "error";
-    ElementDefinitionSeverity["Warning"] = "warning";
-})(ElementDefinitionSeverity = exports.ElementDefinitionSeverity || (exports.ElementDefinitionSeverity = {}));
-/** Computable language of mapping */
-var ElementDefinitionLanguage;
-(function (ElementDefinitionLanguage) {
-    ElementDefinitionLanguage["Application/hl7Cda+xml"] = "application/hl7-cda+xml";
-    ElementDefinitionLanguage["Application/sparqlResults+xml"] = "application/sparql-results+xml";
-    ElementDefinitionLanguage["Application/sql"] = "application/sql";
-    ElementDefinitionLanguage["Application/xquery"] = "application/xquery";
-})(ElementDefinitionLanguage = exports.ElementDefinitionLanguage || (exports.ElementDefinitionLanguage = {}));
-/** required | extensible | preferred | example */
-var ElementDefinitionStrength;
-(function (ElementDefinitionStrength) {
-    ElementDefinitionStrength["Example"] = "example";
-    ElementDefinitionStrength["Extensible"] = "extensible";
-    ElementDefinitionStrength["Preferred"] = "preferred";
-    ElementDefinitionStrength["Required"] = "required";
-})(ElementDefinitionStrength = exports.ElementDefinitionStrength || (exports.ElementDefinitionStrength = {}));
+var ElementDefinitionConstraintSeverity;
+(function (ElementDefinitionConstraintSeverity) {
+    ElementDefinitionConstraintSeverity["Error"] = "error";
+    ElementDefinitionConstraintSeverity["Warning"] = "warning";
+})(ElementDefinitionConstraintSeverity = exports.ElementDefinitionConstraintSeverity || (exports.ElementDefinitionConstraintSeverity = {}));
+/** value | exists | pattern | type | profile */
+var ElementDefinitionSlicingDiscriminatorType;
+(function (ElementDefinitionSlicingDiscriminatorType) {
+    ElementDefinitionSlicingDiscriminatorType["Exists"] = "exists";
+    ElementDefinitionSlicingDiscriminatorType["Pattern"] = "pattern";
+    ElementDefinitionSlicingDiscriminatorType["Profile"] = "profile";
+    ElementDefinitionSlicingDiscriminatorType["Type"] = "type";
+    ElementDefinitionSlicingDiscriminatorType["Value"] = "value";
+})(ElementDefinitionSlicingDiscriminatorType = exports.ElementDefinitionSlicingDiscriminatorType || (exports.ElementDefinitionSlicingDiscriminatorType = {}));
 /** closed | open | openAtEnd */
-var ElementDefinitionRules;
-(function (ElementDefinitionRules) {
-    ElementDefinitionRules["Closed"] = "closed";
-    ElementDefinitionRules["Open"] = "open";
-    ElementDefinitionRules["OpenAtEnd"] = "openAtEnd";
-})(ElementDefinitionRules = exports.ElementDefinitionRules || (exports.ElementDefinitionRules = {}));
+var ElementDefinitionSlicingRules;
+(function (ElementDefinitionSlicingRules) {
+    ElementDefinitionSlicingRules["Closed"] = "closed";
+    ElementDefinitionSlicingRules["Open"] = "open";
+    ElementDefinitionSlicingRules["OpenAtEnd"] = "openAtEnd";
+})(ElementDefinitionSlicingRules = exports.ElementDefinitionSlicingRules || (exports.ElementDefinitionSlicingRules = {}));
+/** either | independent | specific */
+var ElementDefinitionTypeVersioning;
+(function (ElementDefinitionTypeVersioning) {
+    ElementDefinitionTypeVersioning["Either"] = "either";
+    ElementDefinitionTypeVersioning["Independent"] = "independent";
+    ElementDefinitionTypeVersioning["Specific"] = "specific";
+})(ElementDefinitionTypeVersioning = exports.ElementDefinitionTypeVersioning || (exports.ElementDefinitionTypeVersioning = {}));
+/** required | extensible | preferred | example */
+var ElementDefinitionBindingStrength;
+(function (ElementDefinitionBindingStrength) {
+    ElementDefinitionBindingStrength["Example"] = "example";
+    ElementDefinitionBindingStrength["Extensible"] = "extensible";
+    ElementDefinitionBindingStrength["Preferred"] = "preferred";
+    ElementDefinitionBindingStrength["Required"] = "required";
+})(ElementDefinitionBindingStrength = exports.ElementDefinitionBindingStrength || (exports.ElementDefinitionBindingStrength = {}));
+/** Computable language of mapping */
+var ElementDefinitionMappingLanguage;
+(function (ElementDefinitionMappingLanguage) {
+    ElementDefinitionMappingLanguage["Application/hl7Cda+xml"] = "application/hl7-cda+xml";
+    ElementDefinitionMappingLanguage["Application/sparqlResults+xml"] = "application/sparql-results+xml";
+    ElementDefinitionMappingLanguage["Application/sql"] = "application/sql";
+    ElementDefinitionMappingLanguage["Application/xquery"] = "application/xquery";
+})(ElementDefinitionMappingLanguage = exports.ElementDefinitionMappingLanguage || (exports.ElementDefinitionMappingLanguage = {}));

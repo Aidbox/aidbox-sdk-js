@@ -50,7 +50,7 @@ export interface Goal extends DomainResource {
     subject: Reference<'Patient' | 'Organization' | 'Group'>;
     _statusReason?: Element;
     /** proposed | planned | accepted | active | on-hold | completed | cancelled | entered-in-error | rejected */
-    lifecycleStatus: `${GoalLifecycleStatus}`;
+    lifecycleStatus: `${GoalLifecyclestatus}`;
     _statusDate?: Element;
 }
 /** Target outcome for the goal */
@@ -72,7 +72,7 @@ export interface GoalTarget extends BackboneElement {
     dueDuration?: Duration;
 }
 /** proposed | planned | accepted | active | on-hold | completed | cancelled | entered-in-error | rejected */
-export declare enum GoalLifecycleStatus {
+export declare enum GoalLifecyclestatus {
     Active = "active",
     Proposed = "proposed",
     Cancelled = "cancelled",

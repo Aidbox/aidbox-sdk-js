@@ -112,13 +112,6 @@ export interface TestScriptVariable extends BackboneElement {
     /** Default, hard-coded, or user-defined value for this variable */
     defaultValue?: string;
 }
-/** Mime type of the request payload contents, with charset etc. */
-export declare enum TestScriptSetupActionOperationContentType {
-    "Application/hl7Cda+xml" = "application/hl7-cda+xml",
-    "Application/sparqlResults+xml" = "application/sparql-results+xml",
-    "Application/sql" = "application/sql",
-    "Application/xquery" = "application/xquery"
-}
 /** An abstract server representing a client or sender in a message exchange */
 export interface TestScriptOrigin extends BackboneElement {
     /** The index of the abstract origin server starting at 1 */
@@ -165,7 +158,7 @@ export interface TestScriptSetupActionOperation extends BackboneElement {
     /** Server initiating the request */
     origin?: integer;
     /** Mime type of the request payload contents, with charset etc. */
-    contentType?: `${TestScriptSetupActionOperationContentType}`;
+    contentType?: `${TestScriptSetupActionOperationContenttype}`;
     _responseId?: Element;
     /** Fixture Id of body for PUT and POST requests */
     sourceId?: id;
@@ -408,8 +401,8 @@ export declare enum TestScriptSetupActionAssertResponse {
     Forbidden = "forbidden",
     NotModified = "notModified"
 }
-/** Mime type to compare against the 'Content-Type' header */
-export declare enum TestScriptSetupActionAssertContentType {
+/** Mime type of the request payload contents, with charset etc. */
+export declare enum TestScriptSetupActionOperationContenttype {
     "Application/hl7Cda+xml" = "application/hl7-cda+xml",
     "Application/sparqlResults+xml" = "application/sparql-results+xml",
     "Application/sql" = "application/sql",
@@ -463,7 +456,7 @@ export interface TestScriptSetupActionAssert extends BackboneElement {
     /** equals | notEquals | in | notIn | greaterThan | lessThan | empty | notEmpty | contains | notContains | eval */
     operator?: `${TestScriptSetupActionAssertOperator}`;
     /** Mime type to compare against the 'Content-Type' header */
-    contentType?: `${TestScriptSetupActionAssertContentType}`;
+    contentType?: `${TestScriptSetupActionAssertContenttype}`;
     /** XPath or JSONPath expression to evaluate against the source fixture */
     compareToSourcePath?: string;
     /** Profile Id of validation profile reference */
@@ -474,7 +467,7 @@ export interface TestScriptSetupActionAssert extends BackboneElement {
     _warningOnly?: Element;
     _sourceId?: Element;
     /** delete | get | options | patch | post | put | head */
-    requestMethod?: `${TestScriptSetupActionAssertRequestMethod}`;
+    requestMethod?: `${TestScriptSetupActionAssertRequestmethod}`;
     _compareToSourcePath?: Element;
     _minimumId?: Element;
     /** Request URL comparison value */
@@ -494,16 +487,6 @@ export interface TestScriptTest extends BackboneElement {
     _description?: Element;
     /** A test operation or assert to perform */
     action: Array<TestScriptAction>;
-}
-/** delete | get | options | patch | post | put | head */
-export declare enum TestScriptSetupActionAssertRequestMethod {
-    Delete = "delete",
-    Get = "get",
-    Head = "head",
-    Options = "options",
-    Patch = "patch",
-    Post = "post",
-    Put = "put"
 }
 /** Capabilities  that are assumed to function correctly on the FHIR server being tested */
 export interface TestScriptCapability extends BackboneElement {
@@ -548,6 +531,13 @@ export declare enum TestScriptSetupActionAssertOperator {
     NotIn = "notIn",
     NotContains = "notContains"
 }
+/** Mime type to compare against the 'Content-Type' header */
+export declare enum TestScriptSetupActionAssertContenttype {
+    "Application/hl7Cda+xml" = "application/hl7-cda+xml",
+    "Application/sparqlResults+xml" = "application/sparql-results+xml",
+    "Application/sql" = "application/sql",
+    "Application/xquery" = "application/xquery"
+}
 /** A series of required setup operations before tests are executed */
 export interface TestScriptSetup extends BackboneElement {
     /** A setup operation or assert to perform */
@@ -567,6 +557,16 @@ export declare enum TestScriptSetupActionOperationMethod {
 export interface TestScriptAction extends BackboneElement {
     operation?: TestScriptSetupActionOperation;
     assert?: TestScriptSetupActionAssert;
+}
+/** delete | get | options | patch | post | put | head */
+export declare enum TestScriptSetupActionAssertRequestmethod {
+    Delete = "delete",
+    Get = "get",
+    Head = "head",
+    Options = "options",
+    Patch = "patch",
+    Post = "post",
+    Put = "put"
 }
 /** Each operation can have one or more header elements */
 export interface TestScriptSetupActionOperationRequestHeader extends BackboneElement {

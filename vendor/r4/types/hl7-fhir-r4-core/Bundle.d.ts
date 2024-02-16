@@ -42,7 +42,7 @@ export declare enum BundleType {
     Collection = "collection"
 }
 /** match | include | outcome - why this is in the result set */
-export declare enum BundleMode {
+export declare enum BundleEntrySearchMode {
     Include = "include",
     Match = "match",
     Outcome = "outcome"
@@ -50,14 +50,14 @@ export declare enum BundleMode {
 /** Search related information */
 export interface BundleSearch extends BackboneElement {
     /** match | include | outcome - why this is in the result set */
-    mode?: `${BundleMode}`;
+    mode?: `${BundleEntrySearchMode}`;
     _mode?: Element;
     /** Search ranking (between 0 and 1) */
     score?: decimal;
     _score?: Element;
 }
 /** GET | HEAD | POST | PUT | DELETE | PATCH */
-export declare enum BundleMethod {
+export declare enum BundleEntryRequestMethod {
     DELETE = "DELETE",
     GET = "GET",
     HEAD = "HEAD",
@@ -72,7 +72,7 @@ export interface BundleRequest extends BackboneElement {
     _ifNoneMatch?: Element;
     _ifNoneExist?: Element;
     /** GET | HEAD | POST | PUT | DELETE | PATCH */
-    method: `${BundleMethod}`;
+    method: `${BundleEntryRequestMethod}`;
     /** For managing cache currency */
     ifModifiedSince?: instant;
     _ifMatch?: Element;

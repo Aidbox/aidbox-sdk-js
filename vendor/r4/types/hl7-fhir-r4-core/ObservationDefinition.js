@@ -1,18 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ObservationDefinitionGender = exports.ObservationDefinitionCategory = void 0;
+exports.ObservationDefinitionQualifiedintervalGender = exports.ObservationDefinitionQualifiedintervalCategory = void 0;
 /** reference | critical | absolute */
-var ObservationDefinitionCategory;
-(function (ObservationDefinitionCategory) {
-    ObservationDefinitionCategory["Absolute"] = "absolute";
-    ObservationDefinitionCategory["Critical"] = "critical";
-    ObservationDefinitionCategory["Reference"] = "reference";
-})(ObservationDefinitionCategory = exports.ObservationDefinitionCategory || (exports.ObservationDefinitionCategory = {}));
+var ObservationDefinitionQualifiedintervalCategory;
+(function (ObservationDefinitionQualifiedintervalCategory) {
+    ObservationDefinitionQualifiedintervalCategory["Absolute"] = "absolute";
+    ObservationDefinitionQualifiedintervalCategory["Critical"] = "critical";
+    ObservationDefinitionQualifiedintervalCategory["Reference"] = "reference";
+})(ObservationDefinitionQualifiedintervalCategory = exports.ObservationDefinitionQualifiedintervalCategory || (exports.ObservationDefinitionQualifiedintervalCategory = {}));
 /** male | female | other | unknown */
-var ObservationDefinitionGender;
-(function (ObservationDefinitionGender) {
-    ObservationDefinitionGender["Female"] = "female";
-    ObservationDefinitionGender["Male"] = "male";
-    ObservationDefinitionGender["Other"] = "other";
-    ObservationDefinitionGender["Unknown"] = "unknown";
-})(ObservationDefinitionGender = exports.ObservationDefinitionGender || (exports.ObservationDefinitionGender = {}));
+var ObservationDefinitionQualifiedintervalGender;
+(function (ObservationDefinitionQualifiedintervalGender) {
+    ObservationDefinitionQualifiedintervalGender["Female"] = "female";
+    ObservationDefinitionQualifiedintervalGender["Male"] = "male";
+    ObservationDefinitionQualifiedintervalGender["Other"] = "other";
+    ObservationDefinitionQualifiedintervalGender["Unknown"] = "unknown";
+})(ObservationDefinitionQualifiedintervalGender = exports.ObservationDefinitionQualifiedintervalGender || (exports.ObservationDefinitionQualifiedintervalGender = {}));

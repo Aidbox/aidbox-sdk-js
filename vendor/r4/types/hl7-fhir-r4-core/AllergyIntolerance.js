@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AllergyIntoleranceSeverity = exports.AllergyIntoleranceVerificationStatus = exports.AllergyIntoleranceType = exports.AllergyIntoleranceClinicalStatus = exports.AllergyIntoleranceCriticality = void 0;
+exports.AllergyIntoleranceReactionSeverity = exports.AllergyIntoleranceVerificationstatus = exports.AllergyIntoleranceType = exports.AllergyIntoleranceClinicalstatus = exports.AllergyIntoleranceCriticality = void 0;
 /** low | high | unable-to-assess */
 var AllergyIntoleranceCriticality;
 (function (AllergyIntoleranceCriticality) {
@@ -9,12 +9,12 @@ var AllergyIntoleranceCriticality;
     AllergyIntoleranceCriticality["UnableToAssess"] = "unable-to-assess";
 })(AllergyIntoleranceCriticality = exports.AllergyIntoleranceCriticality || (exports.AllergyIntoleranceCriticality = {}));
 /** active | inactive | resolved */
-var AllergyIntoleranceClinicalStatus;
-(function (AllergyIntoleranceClinicalStatus) {
-    AllergyIntoleranceClinicalStatus["Active"] = "active";
-    AllergyIntoleranceClinicalStatus["Inactive"] = "inactive";
-    AllergyIntoleranceClinicalStatus["Resolved"] = "resolved";
-})(AllergyIntoleranceClinicalStatus = exports.AllergyIntoleranceClinicalStatus || (exports.AllergyIntoleranceClinicalStatus = {}));
+var AllergyIntoleranceClinicalstatus;
+(function (AllergyIntoleranceClinicalstatus) {
+    AllergyIntoleranceClinicalstatus["Active"] = "active";
+    AllergyIntoleranceClinicalstatus["Inactive"] = "inactive";
+    AllergyIntoleranceClinicalstatus["Resolved"] = "resolved";
+})(AllergyIntoleranceClinicalstatus = exports.AllergyIntoleranceClinicalstatus || (exports.AllergyIntoleranceClinicalstatus = {}));
 /** allergy | intolerance - Underlying mechanism (if known) */
 var AllergyIntoleranceType;
 (function (AllergyIntoleranceType) {
@@ -22,18 +22,18 @@ var AllergyIntoleranceType;
     AllergyIntoleranceType["Intolerance"] = "intolerance";
 })(AllergyIntoleranceType = exports.AllergyIntoleranceType || (exports.AllergyIntoleranceType = {}));
 /** unconfirmed | confirmed | refuted | entered-in-error */
-var AllergyIntoleranceVerificationStatus;
-(function (AllergyIntoleranceVerificationStatus) {
-    AllergyIntoleranceVerificationStatus["Confirmed"] = "confirmed";
-    AllergyIntoleranceVerificationStatus["EnteredInError"] = "entered-in-error";
-    AllergyIntoleranceVerificationStatus["Presumed"] = "presumed";
-    AllergyIntoleranceVerificationStatus["Refuted"] = "refuted";
-    AllergyIntoleranceVerificationStatus["Unconfirmed"] = "unconfirmed";
-})(AllergyIntoleranceVerificationStatus = exports.AllergyIntoleranceVerificationStatus || (exports.AllergyIntoleranceVerificationStatus = {}));
+var AllergyIntoleranceVerificationstatus;
+(function (AllergyIntoleranceVerificationstatus) {
+    AllergyIntoleranceVerificationstatus["Confirmed"] = "confirmed";
+    AllergyIntoleranceVerificationstatus["EnteredInError"] = "entered-in-error";
+    AllergyIntoleranceVerificationstatus["Presumed"] = "presumed";
+    AllergyIntoleranceVerificationstatus["Refuted"] = "refuted";
+    AllergyIntoleranceVerificationstatus["Unconfirmed"] = "unconfirmed";
+})(AllergyIntoleranceVerificationstatus = exports.AllergyIntoleranceVerificationstatus || (exports.AllergyIntoleranceVerificationstatus = {}));
 /** mild | moderate | severe (of event as a whole) */
-var AllergyIntoleranceSeverity;
-(function (AllergyIntoleranceSeverity) {
-    AllergyIntoleranceSeverity["Mild"] = "mild";
-    AllergyIntoleranceSeverity["Moderate"] = "moderate";
-    AllergyIntoleranceSeverity["Severe"] = "severe";
-})(AllergyIntoleranceSeverity = exports.AllergyIntoleranceSeverity || (exports.AllergyIntoleranceSeverity = {}));
+var AllergyIntoleranceReactionSeverity;
+(function (AllergyIntoleranceReactionSeverity) {
+    AllergyIntoleranceReactionSeverity["Mild"] = "mild";
+    AllergyIntoleranceReactionSeverity["Moderate"] = "moderate";
+    AllergyIntoleranceReactionSeverity["Severe"] = "severe";
+})(AllergyIntoleranceReactionSeverity = exports.AllergyIntoleranceReactionSeverity || (exports.AllergyIntoleranceReactionSeverity = {}));

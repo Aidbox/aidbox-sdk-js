@@ -28,7 +28,7 @@ export interface SpecimenDefinition extends DomainResource {
     typeTested?: Array<SpecimenDefinitionTypeTested>;
 }
 /** preferred | alternate */
-export declare enum SpecimenDefinitionPreference {
+export declare enum SpecimenDefinitionTypetestedPreference {
     Alternate = "alternate",
     Preferred = "preferred"
 }
@@ -86,7 +86,7 @@ export interface SpecimenDefinitionTypeTested extends BackboneElement {
     /** Rejection criterion */
     rejectionCriterion?: Array<CodeableConcept>;
     /** preferred | alternate */
-    preference: `${SpecimenDefinitionPreference}`;
+    preference: `${SpecimenDefinitionTypetestedPreference}`;
     /** Specimen handling before testing */
     handling?: Array<SpecimenDefinitionHandling>;
     /** The specimen's container */

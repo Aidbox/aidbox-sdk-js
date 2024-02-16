@@ -52,7 +52,7 @@ export interface SearchParameter extends DomainResource {
     xpath?: string;
     _xpathUsage?: Element;
     /** normal | phonetic | nearby | distance | other */
-    xpathUsage?: `${SearchParameterXpathUsage}`;
+    xpathUsage?: `${SearchParameterXpathusage}`;
     /** number | date | string | token | reference | composite | quantity | uri | special */
     type: `${SearchParameterType}`;
     /** For testing purposes, not real usage */
@@ -90,7 +90,7 @@ export interface SearchParameter extends DomainResource {
     _multipleAnd?: Element;
 }
 /** normal | phonetic | nearby | distance | other */
-export declare enum SearchParameterXpathUsage {
+export declare enum SearchParameterXpathusage {
     Distance = "distance",
     Nearby = "nearby",
     Normal = "normal",

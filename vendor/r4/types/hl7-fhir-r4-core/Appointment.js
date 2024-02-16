@@ -1,13 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppointmentStatus = exports.AppointmentRequired = void 0;
+exports.AppointmentStatus = exports.AppointmentParticipantStatus = exports.AppointmentParticipantRequired = void 0;
 /** required | optional | information-only */
-var AppointmentRequired;
-(function (AppointmentRequired) {
-    AppointmentRequired["InformationOnly"] = "information-only";
-    AppointmentRequired["Optional"] = "optional";
-    AppointmentRequired["Required"] = "required";
-})(AppointmentRequired = exports.AppointmentRequired || (exports.AppointmentRequired = {}));
+var AppointmentParticipantRequired;
+(function (AppointmentParticipantRequired) {
+    AppointmentParticipantRequired["InformationOnly"] = "information-only";
+    AppointmentParticipantRequired["Optional"] = "optional";
+    AppointmentParticipantRequired["Required"] = "required";
+})(AppointmentParticipantRequired = exports.AppointmentParticipantRequired || (exports.AppointmentParticipantRequired = {}));
+/** accepted | declined | tentative | needs-action */
+var AppointmentParticipantStatus;
+(function (AppointmentParticipantStatus) {
+    AppointmentParticipantStatus["Accepted"] = "accepted";
+    AppointmentParticipantStatus["Declined"] = "declined";
+    AppointmentParticipantStatus["NeedsAction"] = "needs-action";
+    AppointmentParticipantStatus["Tentative"] = "tentative";
+})(AppointmentParticipantStatus = exports.AppointmentParticipantStatus || (exports.AppointmentParticipantStatus = {}));
 /** proposed | pending | booked | arrived | fulfilled | cancelled | noshow | entered-in-error | checked-in | waitlist */
 var AppointmentStatus;
 (function (AppointmentStatus) {

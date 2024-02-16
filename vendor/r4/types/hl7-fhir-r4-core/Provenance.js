@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProvenanceRole = void 0;
+exports.ProvenanceEntityRole = void 0;
 /** derivation | revision | quotation | source | removal */
-var ProvenanceRole;
-(function (ProvenanceRole) {
-    ProvenanceRole["Derivation"] = "derivation";
-    ProvenanceRole["Quotation"] = "quotation";
-    ProvenanceRole["Removal"] = "removal";
-    ProvenanceRole["Revision"] = "revision";
-    ProvenanceRole["Source"] = "source";
-})(ProvenanceRole = exports.ProvenanceRole || (exports.ProvenanceRole = {}));
+var ProvenanceEntityRole;
+(function (ProvenanceEntityRole) {
+    ProvenanceEntityRole["Derivation"] = "derivation";
+    ProvenanceEntityRole["Quotation"] = "quotation";
+    ProvenanceEntityRole["Removal"] = "removal";
+    ProvenanceEntityRole["Revision"] = "revision";
+    ProvenanceEntityRole["Source"] = "source";
+})(ProvenanceEntityRole = exports.ProvenanceEntityRole || (exports.ProvenanceEntityRole = {}));

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RequestGroupActionRequiredBehavior = exports.RequestGroupPriority = exports.RequestGroupActionGroupingBehavior = exports.RequestGroupActionKind = exports.RequestGroupStatus = exports.RequestGroupActionRelationship = exports.RequestGroupActionSelectionBehavior = exports.RequestGroupActionCardinalityBehavior = exports.RequestGroupIntent = exports.RequestGroupActionPrecheckBehavior = exports.RequestGroupActionPriority = void 0;
+exports.RequestGroupActionCardinalitybehavior = exports.RequestGroupPriority = exports.RequestGroupActionRelatedactionRelationship = exports.RequestGroupActionRequiredbehavior = exports.RequestGroupActionConditionKind = exports.RequestGroupActionGroupingbehavior = exports.RequestGroupActionSelectionbehavior = exports.RequestGroupActionPrecheckbehavior = exports.RequestGroupStatus = exports.RequestGroupIntent = exports.RequestGroupActionPriority = void 0;
 /** routine | urgent | asap | stat */
 var RequestGroupActionPriority;
 (function (RequestGroupActionPriority) {
@@ -9,12 +9,6 @@ var RequestGroupActionPriority;
     RequestGroupActionPriority["Stat"] = "stat";
     RequestGroupActionPriority["Urgent"] = "urgent";
 })(RequestGroupActionPriority = exports.RequestGroupActionPriority || (exports.RequestGroupActionPriority = {}));
-/** yes | no */
-var RequestGroupActionPrecheckBehavior;
-(function (RequestGroupActionPrecheckBehavior) {
-    RequestGroupActionPrecheckBehavior["No"] = "no";
-    RequestGroupActionPrecheckBehavior["Yes"] = "yes";
-})(RequestGroupActionPrecheckBehavior = exports.RequestGroupActionPrecheckBehavior || (exports.RequestGroupActionPrecheckBehavior = {}));
 /** proposal | plan | directive | order | original-order | reflex-order | filler-order | instance-order | option */
 var RequestGroupIntent;
 (function (RequestGroupIntent) {
@@ -28,35 +22,6 @@ var RequestGroupIntent;
     RequestGroupIntent["InstanceOrder"] = "instance-order";
     RequestGroupIntent["OriginalOrder"] = "original-order";
 })(RequestGroupIntent = exports.RequestGroupIntent || (exports.RequestGroupIntent = {}));
-/** single | multiple */
-var RequestGroupActionCardinalityBehavior;
-(function (RequestGroupActionCardinalityBehavior) {
-    RequestGroupActionCardinalityBehavior["Multiple"] = "multiple";
-    RequestGroupActionCardinalityBehavior["Single"] = "single";
-})(RequestGroupActionCardinalityBehavior = exports.RequestGroupActionCardinalityBehavior || (exports.RequestGroupActionCardinalityBehavior = {}));
-/** any | all | all-or-none | exactly-one | at-most-one | one-or-more */
-var RequestGroupActionSelectionBehavior;
-(function (RequestGroupActionSelectionBehavior) {
-    RequestGroupActionSelectionBehavior["All"] = "all";
-    RequestGroupActionSelectionBehavior["AllOrNone"] = "all-or-none";
-    RequestGroupActionSelectionBehavior["Any"] = "any";
-    RequestGroupActionSelectionBehavior["AtMostOne"] = "at-most-one";
-    RequestGroupActionSelectionBehavior["ExactlyOne"] = "exactly-one";
-    RequestGroupActionSelectionBehavior["OneOrMore"] = "one-or-more";
-})(RequestGroupActionSelectionBehavior = exports.RequestGroupActionSelectionBehavior || (exports.RequestGroupActionSelectionBehavior = {}));
-/** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
-var RequestGroupActionRelationship;
-(function (RequestGroupActionRelationship) {
-    RequestGroupActionRelationship["BeforeStart"] = "before-start";
-    RequestGroupActionRelationship["Concurrent"] = "concurrent";
-    RequestGroupActionRelationship["After"] = "after";
-    RequestGroupActionRelationship["ConcurrentWithStart"] = "concurrent-with-start";
-    RequestGroupActionRelationship["BeforeEnd"] = "before-end";
-    RequestGroupActionRelationship["AfterEnd"] = "after-end";
-    RequestGroupActionRelationship["AfterStart"] = "after-start";
-    RequestGroupActionRelationship["Before"] = "before";
-    RequestGroupActionRelationship["ConcurrentWithEnd"] = "concurrent-with-end";
-})(RequestGroupActionRelationship = exports.RequestGroupActionRelationship || (exports.RequestGroupActionRelationship = {}));
 /** draft | active | on-hold | revoked | completed | entered-in-error | unknown */
 var RequestGroupStatus;
 (function (RequestGroupStatus) {
@@ -68,20 +33,56 @@ var RequestGroupStatus;
     RequestGroupStatus["Revoked"] = "revoked";
     RequestGroupStatus["Unknown"] = "unknown";
 })(RequestGroupStatus = exports.RequestGroupStatus || (exports.RequestGroupStatus = {}));
-/** applicability | start | stop */
-var RequestGroupActionKind;
-(function (RequestGroupActionKind) {
-    RequestGroupActionKind["Applicability"] = "applicability";
-    RequestGroupActionKind["Start"] = "start";
-    RequestGroupActionKind["Stop"] = "stop";
-})(RequestGroupActionKind = exports.RequestGroupActionKind || (exports.RequestGroupActionKind = {}));
+/** yes | no */
+var RequestGroupActionPrecheckbehavior;
+(function (RequestGroupActionPrecheckbehavior) {
+    RequestGroupActionPrecheckbehavior["No"] = "no";
+    RequestGroupActionPrecheckbehavior["Yes"] = "yes";
+})(RequestGroupActionPrecheckbehavior = exports.RequestGroupActionPrecheckbehavior || (exports.RequestGroupActionPrecheckbehavior = {}));
+/** any | all | all-or-none | exactly-one | at-most-one | one-or-more */
+var RequestGroupActionSelectionbehavior;
+(function (RequestGroupActionSelectionbehavior) {
+    RequestGroupActionSelectionbehavior["All"] = "all";
+    RequestGroupActionSelectionbehavior["AllOrNone"] = "all-or-none";
+    RequestGroupActionSelectionbehavior["Any"] = "any";
+    RequestGroupActionSelectionbehavior["AtMostOne"] = "at-most-one";
+    RequestGroupActionSelectionbehavior["ExactlyOne"] = "exactly-one";
+    RequestGroupActionSelectionbehavior["OneOrMore"] = "one-or-more";
+})(RequestGroupActionSelectionbehavior = exports.RequestGroupActionSelectionbehavior || (exports.RequestGroupActionSelectionbehavior = {}));
 /** visual-group | logical-group | sentence-group */
-var RequestGroupActionGroupingBehavior;
-(function (RequestGroupActionGroupingBehavior) {
-    RequestGroupActionGroupingBehavior["LogicalGroup"] = "logical-group";
-    RequestGroupActionGroupingBehavior["SentenceGroup"] = "sentence-group";
-    RequestGroupActionGroupingBehavior["VisualGroup"] = "visual-group";
-})(RequestGroupActionGroupingBehavior = exports.RequestGroupActionGroupingBehavior || (exports.RequestGroupActionGroupingBehavior = {}));
+var RequestGroupActionGroupingbehavior;
+(function (RequestGroupActionGroupingbehavior) {
+    RequestGroupActionGroupingbehavior["LogicalGroup"] = "logical-group";
+    RequestGroupActionGroupingbehavior["SentenceGroup"] = "sentence-group";
+    RequestGroupActionGroupingbehavior["VisualGroup"] = "visual-group";
+})(RequestGroupActionGroupingbehavior = exports.RequestGroupActionGroupingbehavior || (exports.RequestGroupActionGroupingbehavior = {}));
+/** applicability | start | stop */
+var RequestGroupActionConditionKind;
+(function (RequestGroupActionConditionKind) {
+    RequestGroupActionConditionKind["Applicability"] = "applicability";
+    RequestGroupActionConditionKind["Start"] = "start";
+    RequestGroupActionConditionKind["Stop"] = "stop";
+})(RequestGroupActionConditionKind = exports.RequestGroupActionConditionKind || (exports.RequestGroupActionConditionKind = {}));
+/** must | could | must-unless-documented */
+var RequestGroupActionRequiredbehavior;
+(function (RequestGroupActionRequiredbehavior) {
+    RequestGroupActionRequiredbehavior["Could"] = "could";
+    RequestGroupActionRequiredbehavior["Must"] = "must";
+    RequestGroupActionRequiredbehavior["MustUnlessDocumented"] = "must-unless-documented";
+})(RequestGroupActionRequiredbehavior = exports.RequestGroupActionRequiredbehavior || (exports.RequestGroupActionRequiredbehavior = {}));
+/** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
+var RequestGroupActionRelatedactionRelationship;
+(function (RequestGroupActionRelatedactionRelationship) {
+    RequestGroupActionRelatedactionRelationship["BeforeStart"] = "before-start";
+    RequestGroupActionRelatedactionRelationship["Concurrent"] = "concurrent";
+    RequestGroupActionRelatedactionRelationship["After"] = "after";
+    RequestGroupActionRelatedactionRelationship["ConcurrentWithStart"] = "concurrent-with-start";
+    RequestGroupActionRelatedactionRelationship["BeforeEnd"] = "before-end";
+    RequestGroupActionRelatedactionRelationship["AfterEnd"] = "after-end";
+    RequestGroupActionRelatedactionRelationship["AfterStart"] = "after-start";
+    RequestGroupActionRelatedactionRelationship["Before"] = "before";
+    RequestGroupActionRelatedactionRelationship["ConcurrentWithEnd"] = "concurrent-with-end";
+})(RequestGroupActionRelatedactionRelationship = exports.RequestGroupActionRelatedactionRelationship || (exports.RequestGroupActionRelatedactionRelationship = {}));
 /** routine | urgent | asap | stat */
 var RequestGroupPriority;
 (function (RequestGroupPriority) {
@@ -90,10 +91,9 @@ var RequestGroupPriority;
     RequestGroupPriority["Stat"] = "stat";
     RequestGroupPriority["Urgent"] = "urgent";
 })(RequestGroupPriority = exports.RequestGroupPriority || (exports.RequestGroupPriority = {}));
-/** must | could | must-unless-documented */
-var RequestGroupActionRequiredBehavior;
-(function (RequestGroupActionRequiredBehavior) {
-    RequestGroupActionRequiredBehavior["Could"] = "could";
-    RequestGroupActionRequiredBehavior["Must"] = "must";
-    RequestGroupActionRequiredBehavior["MustUnlessDocumented"] = "must-unless-documented";
-})(RequestGroupActionRequiredBehavior = exports.RequestGroupActionRequiredBehavior || (exports.RequestGroupActionRequiredBehavior = {}));
+/** single | multiple */
+var RequestGroupActionCardinalitybehavior;
+(function (RequestGroupActionCardinalitybehavior) {
+    RequestGroupActionCardinalitybehavior["Multiple"] = "multiple";
+    RequestGroupActionCardinalitybehavior["Single"] = "single";
+})(RequestGroupActionCardinalitybehavior = exports.RequestGroupActionCardinalitybehavior || (exports.RequestGroupActionCardinalitybehavior = {}));

@@ -66,7 +66,7 @@ export interface CodeSystem extends DomainResource {
     /** draft | active | retired | unknown */
     status: `${CodeSystemStatus}`;
     /** grouped-by | is-a | part-of | classified-with */
-    hierarchyMeaning?: `${CodeSystemHierarchyMeaning}`;
+    hierarchyMeaning?: `${CodeSystemHierarchymeaning}`;
     /** Canonical reference to the value set with entire code system */
     valueSet?: canonical;
     _name?: Element;
@@ -105,13 +105,6 @@ export interface CodeSystemFilter extends BackboneElement {
     value: string;
     _value?: Element;
 }
-/** grouped-by | is-a | part-of | classified-with */
-export declare enum CodeSystemHierarchyMeaning {
-    ClassifiedWith = "classified-with",
-    GroupedBy = "grouped-by",
-    IsA = "is-a",
-    PartOf = "part-of"
-}
 /** Additional representations for the concept */
 export interface CodeSystemConceptDesignation extends BackboneElement {
     /** Human language of the designation */
@@ -123,8 +116,15 @@ export interface CodeSystemConceptDesignation extends BackboneElement {
     value: string;
     _value?: Element;
 }
+/** grouped-by | is-a | part-of | classified-with */
+export declare enum CodeSystemHierarchymeaning {
+    ClassifiedWith = "classified-with",
+    GroupedBy = "grouped-by",
+    IsA = "is-a",
+    PartOf = "part-of"
+}
 /** code | Coding | string | integer | boolean | dateTime | decimal */
-export declare enum CodeSystemType {
+export declare enum CodeSystemPropertyType {
     Coding = "Coding",
     Boolean = "boolean",
     Code = "code",
@@ -145,7 +145,7 @@ export interface CodeSystemProperty extends BackboneElement {
     description?: string;
     _description?: Element;
     /** code | Coding | string | integer | boolean | dateTime | decimal */
-    type: `${CodeSystemType}`;
+    type: `${CodeSystemPropertyType}`;
     _type?: Element;
 }
 /** Concepts in the code system */

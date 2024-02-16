@@ -19,13 +19,18 @@ const buildResourceUrl = (resource, id) => ['fhir', resource, id && id].filter(B
 exports.buildResourceUrl = buildResourceUrl;
 class E extends Error {
     constructor(data, response, request, options) {
-        const code = (response.status || response.status === 0) ? response.status : '';
+        const code = response.status || response.status === 0 ? response.status : '';
         const title = response.statusText || '';
         const status = `${code} ${title}`.trim();
         const reason = status ? `status code ${status}` : 'an unknown error';
         super(`Request failed with ${reason}`);
         this.name = 'HTTPError';
-        this.response = { status: response.status, headers: response.headers, url: response.url, data };
+        this.response = {
+            status: response.status,
+            headers: response.headers,
+            url: response.url,
+            data,
+        };
         this.request = request;
         this.options = options;
     }
@@ -34,7 +39,14 @@ exports.E = E;
 const request = (fn) => async (url, options) => {
     try {
         const response = await fn(url, options);
-        return { response: { url: response.url, headers: response.headers, status: response.status, data: await response.json() } };
+        return {
+            response: {
+                url: response.url,
+                headers: response.headers,
+                status: response.status,
+                data: await response.json(),
+            },
+        };
     }
     catch (error) {
         if (error instanceof http_client_1.HTTPError) {
@@ -50,22 +62,26 @@ class Task {
         this.workers = [];
     }
     async cancel(id) {
-        const response = await this.client.post('rpc', {
+        const response = await this.client
+            .post('rpc', {
             json: {
                 method: 'awf.task/cancel',
-                params: { id }
-            }
-        }).json();
+                params: { id },
+            },
+        })
+            .json();
         return response.result.resource;
     }
     async start(id, executionId) {
         try {
-            return this.client.post('rpc', {
+            return this.client
+                .post('rpc', {
                 json: {
                     method: 'awf.task/start',
-                    params: { id, execId: executionId }
-                }
-            }).json();
+                    params: { id, execId: executionId },
+                },
+            })
+                .json();
         }
         catch (error) {
             if (error.name === 'HTTPError') {
@@ -75,21 +91,25 @@ class Task {
         }
     }
     async complete(id, executionId, payload) {
-        return this.client.post('rpc', {
+        return this.client
+            .post('rpc', {
             json: {
                 method: 'awf.task/success',
-                params: { id, execId: executionId, result: payload }
-            }
-        }).json();
+                params: { id, execId: executionId, result: payload },
+            },
+        })
+            .json();
     }
     async fail(id, executionId, payload) {
         try {
-            return this.client.post('rpc', {
+            return this.client
+                .post('rpc', {
                 json: {
                     method: 'awf.task/fail',
-                    params: { id, execId: executionId, result: payload }
-                }
-            }).json();
+                    params: { id, execId: executionId, result: payload },
+                },
+            })
+                .json();
         }
         catch (error) {
             if (error.name === 'HTTPError') {
@@ -99,12 +119,14 @@ class Task {
         }
     }
     execute(definition, params) {
-        return this.client.post('rpc', {
+        return this.client
+            .post('rpc', {
             json: {
                 method: 'awf.task/create-and-execute',
-                params: { definition, params }
-            }
-        }).json();
+                params: { definition, params },
+            },
+        })
+            .json();
     }
     /**
      * Return number ready for execution tasks except Decisions task
@@ -114,32 +136,55 @@ class Task {
      *
      */
     async pendingTasks(definition) {
-        const params = new URLSearchParams({ '_count': '0', '.status': 'ready', 'definition-not': 'awf.workflow/decision-task' });
+        const params = new URLSearchParams({
+            _count: '0',
+            '.status': 'ready',
+            'definition-not': 'awf.workflow/decision-task',
+        });
         if (definition) {
             params.append('definition', definition);
             params.delete('definition-not');
         }
-        return this.client.get('AidboxTask', {
-            searchParams: params
-        }).json().then(r => r.total);
+        return this.client
+            .get('AidboxTask', {
+            searchParams: params,
+        })
+            .json()
+            .then((r) => r.total);
     }
     async pendingDecisions() {
-        return this.client.get('AidboxTask', {
-            searchParams: new URLSearchParams({ '_count': '0', '.status': 'ready', 'definition': 'awf.workflow/decision-task' })
-        }).json().then(r => r.total);
+        return this.client
+            .get('AidboxTask', {
+            searchParams: new URLSearchParams({
+                _count: '0',
+                '.status': 'ready',
+                definition: 'awf.workflow/decision-task',
+            }),
+        })
+            .json()
+            .then((r) => r.total);
     }
     async history(id) {
-        return this.client.post('rpc', {
+        return this.client
+            .post('rpc', {
             json: {
                 method: 'awf.task/status',
-                params: { id, 'include-log?': true }
-            }
-        }).json().then(r => r.result);
+                params: { id, 'include-log?': true },
+            },
+        })
+            .json()
+            .then((r) => r.result);
     }
     async inProgress() {
-        return this.client.get('AidboxTask', {
-            searchParams: new URLSearchParams({ '_count': '0', '.status': 'in-progress' })
-        }).json().then(r => r.total);
+        return this.client
+            .get('AidboxTask', {
+            searchParams: new URLSearchParams({
+                _count: '0',
+                '.status': 'in-progress',
+            }),
+        })
+            .json()
+            .then((r) => r.total);
     }
     createHandler(handler) {
         return async (task) => {
@@ -163,12 +208,14 @@ class Task {
         };
     }
     async poll(params, options) {
-        const tasksBatch = await this.client.post('rpc', {
+        const tasksBatch = await this.client
+            .post('rpc', {
             json: {
                 method: 'awf.task/poll',
-                params: { ...params, maxBatchSize: options.batchSize }
-            }
-        }).json();
+                params: { ...params, maxBatchSize: options.batchSize },
+            },
+        })
+            .json();
         return tasksBatch.result.resources;
     }
     async runDaemon(poll, handler, options) {
@@ -204,58 +251,77 @@ class Workflow {
         return (params) => handler(params, {
             complete: (result) => ({
                 action: 'awf.workflow.action/complete-workflow',
-                result
+                result,
             }),
             execute: (params) => ({
-                'action': 'awf.workflow.action/schedule-task',
-                'task-request': { definition: params.definition, params: params.params }
+                action: 'awf.workflow.action/schedule-task',
+                'task-request': {
+                    definition: params.definition,
+                    params: params.params,
+                },
             }),
-            fail: (error) => ({ action: 'awf.workflow.action/fail', error })
+            fail: (error) => ({ action: 'awf.workflow.action/fail', error }),
         });
     }
     execute(definition, params) {
-        return this.client.post('rpc', {
+        return this.client
+            .post('rpc', {
             json: {
                 method: 'awf.workflow/create-and-execute',
-                params: { definition, params }
-            }
-        }).json();
+                params: { definition, params },
+            },
+        })
+            .json();
     }
     async terminate(id) {
-        return this.client.post('rpc', {
+        return this.client
+            .post('rpc', {
             json: {
                 method: 'awf.workflow/cancel',
-                params: { id }
-            }
-        }).json().then(r => r.result.resource);
+                params: { id },
+            },
+        })
+            .json()
+            .then((r) => r.result.resource);
     }
     async inProgress() {
-        return this.client.get('AidboxWorkflow', {
-            searchParams: new URLSearchParams({ '_count': '0', '.status': 'in-progress' })
-        }).json().then(r => r.total);
+        return this.client
+            .get('AidboxWorkflow', {
+            searchParams: new URLSearchParams({
+                _count: '0',
+                '.status': 'in-progress',
+            }),
+        })
+            .json()
+            .then((r) => r.total);
     }
     async history(id) {
-        return this.client.post('rpc', {
+        return this.client
+            .post('rpc', {
             json: {
                 method: 'awf.workflow/status',
-                params: { id, 'include-activities?': true }
-            }
-        }).json().then(r => r.result);
+                params: { id, 'include-activities?': true },
+            },
+        })
+            .json()
+            .then((r) => r.result);
     }
 }
 const resourceOwnerAuthorization = (httpclient, auth) => async ({ username, password }) => {
     if (typeof auth.storage.set === 'function') {
         await auth.storage.set('');
     }
-    const response = await httpclient.post('auth/token', {
+    const response = await httpclient
+        .post('auth/token', {
         json: {
             username,
             password,
             client_id: auth.client.id,
             client_secret: auth.client.secret,
-            grant_type: 'password'
-        }
-    }).json();
+            grant_type: 'password',
+        },
+    })
+        .json();
     if (typeof auth.storage.set === 'function') {
         await auth.storage.set(response.access_token);
     }
@@ -279,27 +345,37 @@ class Client {
             patch: request(this.client.patch),
             put: request(this.client.put),
             delete: request(this.client.delete),
-            head: request(this.client.head)
+            head: request(this.client.head),
         });
         this.resource = {
             list: (resourceName) => {
                 return new GetResources(this.client, resourceName);
             },
             get: async (resourceName, id) => {
-                return this.client.get((0, exports.buildResourceUrl)(resourceName, id)).json();
+                return this.client
+                    .get((0, exports.buildResourceUrl)(resourceName, id))
+                    .json();
             },
             delete: async (resourceName, id) => {
-                return this.client.delete((0, exports.buildResourceUrl)(resourceName, id)).json();
+                return this.client
+                    .delete((0, exports.buildResourceUrl)(resourceName, id))
+                    .json();
             },
             update: async (resourceName, id, input) => {
-                return this.client.patch((0, exports.buildResourceUrl)(resourceName, id), { json: input }).json();
+                return this.client
+                    .patch((0, exports.buildResourceUrl)(resourceName, id), { json: input })
+                    .json();
             },
             create: async (resourceName, input) => {
-                return this.client.post((0, exports.buildResourceUrl)(resourceName), { json: input }).json();
+                return this.client
+                    .post((0, exports.buildResourceUrl)(resourceName), { json: input })
+                    .json();
             },
             override: async (resourceName, id, input) => {
-                return this.client.put((0, exports.buildResourceUrl)(resourceName, id), { json: input }).json();
-            }
+                return this.client
+                    .put((0, exports.buildResourceUrl)(resourceName, id), { json: input })
+                    .json();
+            },
         };
         this.aidboxQuery = {
             create: async (name, json) => {
@@ -316,22 +392,24 @@ class Client {
                         }
                     }
                 }
-                return this.client.get(`/$query/${name}`, {
-                    searchParams: queryParams
-                }).json();
-            }
+                return this.client
+                    .get(`/$query/${name}`, {
+                    searchParams: queryParams,
+                })
+                    .json();
+            },
         };
         this.subsSubscription = {
-            create: async ({ id, status, trigger, channel }) => {
+            create: async ({ id, status, trigger, channel, }) => {
                 const response = await this.client.put(`SubsSubscription/${id}`, {
                     json: {
                         status,
                         trigger,
-                        channel: { ...channel, type: 'rest-hook' }
-                    }
+                        channel: { ...channel, type: 'rest-hook' },
+                    },
                 });
                 return response.json();
-            }
+            },
         };
         this.config = config;
         const client = http_client_1.httpClient.create({
@@ -349,9 +427,9 @@ class Client {
                             if (token)
                                 request.headers.set('Authorization', `Bearer ${token}`);
                         }
-                    }
-                ]
-            }
+                    },
+                ],
+            },
         });
         const taskClient = new Task(client);
         this.task = taskClient;
@@ -365,8 +443,12 @@ class Client {
             return {
                 ...this.config.auth,
                 signIn: resourceOwnerAuthorization(this.client, this.config.auth),
-                signUp: () => { console.log('TBD'); },
-                signOut: () => { console.log('TBD'); }
+                signUp: () => {
+                    console.log('TBD');
+                },
+                signOut: () => {
+                    console.log('TBD');
+                },
             };
         }
         throw new Error('');
@@ -374,12 +456,15 @@ class Client {
     async rpc(method, params) {
         const response = await this.client.post('rpc', {
             method: 'POST',
-            json: { method, params }
+            json: { method, params },
         });
         return response.json();
     }
     async rawSQL(sql, params) {
-        const body = [sql, ...(params?.map((value) => value?.toString()) ?? [])];
+        const body = [
+            sql,
+            ...(params?.map((value) => value?.toString()) ?? []),
+        ];
         const response = await this.client.post('$sql', { json: body });
         return response.json();
     }
@@ -446,9 +531,14 @@ class GetResources {
         return this;
     }
     then(onfulfilled, _onrejected) {
-        return this.client.get((0, exports.buildResourceUrl)(this.resourceName), { searchParams: this.searchParamsObject })
+        return this.client
+            .get((0, exports.buildResourceUrl)(this.resourceName), {
+            searchParams: this.searchParamsObject,
+        })
             .then((response) => {
-            return onfulfilled ? onfulfilled(response.json()) : response.json();
+            return onfulfilled
+                ? onfulfilled(response.json())
+                : response.json();
         });
     }
 }
@@ -458,27 +548,27 @@ class Bundle {
         this.type = type;
         this.entry = [];
     }
-    addEntry(resource, { method, resourceName, id }) {
+    addEntry(resource, { method, resourceName, id, }) {
         this.entry.push({
             request: {
                 method,
-                url: (0, exports.buildResourceUrl)(resourceName, id)
+                url: (0, exports.buildResourceUrl)(resourceName, id),
             },
-            resource: { ...resource, resourceType: resourceName }
+            resource: { ...resource, resourceType: resourceName },
         });
     }
     toJSON() {
         return {
             resourceType: 'Bundle',
             type: this.type,
-            entry: this.entry
+            entry: this.entry,
         };
     }
     toString() {
         return JSON.stringify({
             resourceType: 'Bundle',
             type: this.type,
-            entry: this.entry
+            entry: this.entry,
         });
     }
 }

@@ -105,6 +105,13 @@ export interface PlanDefinition extends DomainResource {
     /** When the plan definition is expected to be used */
     effectivePeriod?: Period;
 }
+/** patient | practitioner | related-person | device */
+export declare enum PlanDefinitionActionParticipantType {
+    Device = "device",
+    Patient = "patient",
+    Practitioner = "practitioner",
+    RelatedPerson = "related-person"
+}
 /** Dynamic aspects of the definition */
 export interface PlanDefinitionActionDynamicValue extends BackboneElement {
     /** The path to the element to be set dynamically */
@@ -116,17 +123,10 @@ export interface PlanDefinitionActionDynamicValue extends BackboneElement {
 /** Who should participate in the action */
 export interface PlanDefinitionActionParticipant extends BackboneElement {
     /** patient | practitioner | related-person | device */
-    type: `${PlanDefinitionActionType}`;
+    type: `${PlanDefinitionActionParticipantType}`;
     _type?: Element;
     /** E.g. Nurse, Surgeon, Parent */
     role?: CodeableConcept;
-}
-/** patient | practitioner | related-person | device */
-export declare enum PlanDefinitionActionType {
-    Device = "device",
-    Patient = "patient",
-    Practitioner = "practitioner",
-    RelatedPerson = "related-person"
 }
 /** Relationship to another action */
 export interface PlanDefinitionActionRelatedAction extends BackboneElement {
@@ -134,22 +134,10 @@ export interface PlanDefinitionActionRelatedAction extends BackboneElement {
     actionId: id;
     _actionId?: Element;
     /** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
-    relationship: `${PlanDefinitionActionRelationship}`;
+    relationship: `${PlanDefinitionActionRelatedactionRelationship}`;
     _relationship?: Element;
     offsetDuration?: Duration;
     offsetRange?: Range;
-}
-/** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
-export declare enum PlanDefinitionActionRelationship {
-    BeforeStart = "before-start",
-    Concurrent = "concurrent",
-    After = "after",
-    ConcurrentWithStart = "concurrent-with-start",
-    BeforeEnd = "before-end",
-    AfterEnd = "after-end",
-    AfterStart = "after-start",
-    Before = "before",
-    ConcurrentWithEnd = "concurrent-with-end"
 }
 /** What the plan is trying to accomplish */
 export interface PlanDefinitionGoal extends BackboneElement {
@@ -168,17 +156,37 @@ export interface PlanDefinitionGoal extends BackboneElement {
     /** Target outcome for the goal */
     target?: Array<PlanDefinitionTarget>;
 }
+/** must | could | must-unless-documented */
+export declare enum PlanDefinitionActionRequiredbehavior {
+    Could = "could",
+    Must = "must",
+    MustUnlessDocumented = "must-unless-documented"
+}
+/** single | multiple */
+export declare enum PlanDefinitionActionCardinalitybehavior {
+    Multiple = "multiple",
+    Single = "single"
+}
+/** applicability | start | stop */
+export declare enum PlanDefinitionActionConditionKind {
+    Applicability = "applicability",
+    Start = "start",
+    Stop = "stop"
+}
 /** visual-group | logical-group | sentence-group */
-export declare enum PlanDefinitionActionGroupingBehavior {
+export declare enum PlanDefinitionActionGroupingbehavior {
     LogicalGroup = "logical-group",
     SentenceGroup = "sentence-group",
     VisualGroup = "visual-group"
 }
-/** applicability | start | stop */
-export declare enum PlanDefinitionActionKind {
-    Applicability = "applicability",
-    Start = "start",
-    Stop = "stop"
+/** any | all | all-or-none | exactly-one | at-most-one | one-or-more */
+export declare enum PlanDefinitionActionSelectionbehavior {
+    All = "all",
+    AllOrNone = "all-or-none",
+    Any = "any",
+    AtMostOne = "at-most-one",
+    ExactlyOne = "exactly-one",
+    OneOrMore = "one-or-more"
 }
 /** draft | active | retired | unknown */
 export declare enum PlanDefinitionStatus {
@@ -186,15 +194,6 @@ export declare enum PlanDefinitionStatus {
     Draft = "draft",
     Retired = "retired",
     Unknown = "unknown"
-}
-/** any | all | all-or-none | exactly-one | at-most-one | one-or-more */
-export declare enum PlanDefinitionActionSelectionBehavior {
-    All = "all",
-    AllOrNone = "all-or-none",
-    Any = "any",
-    AtMostOne = "at-most-one",
-    ExactlyOne = "exactly-one",
-    OneOrMore = "one-or-more"
 }
 /** Action defined by the plan */
 export interface PlanDefinitionAction extends BackboneElement {
@@ -233,7 +232,7 @@ export interface PlanDefinitionAction extends BackboneElement {
     /** User-visible prefix for the action (e.g. 1. or A.) */
     prefix?: string;
     /** any | all | all-or-none | exactly-one | at-most-one | one-or-more */
-    selectionBehavior?: `${PlanDefinitionActionSelectionBehavior}`;
+    selectionBehavior?: `${PlanDefinitionActionSelectionbehavior}`;
     _definitionCanonical?: Element;
     /** Why the action should be performed */
     reason?: Array<CodeableConcept>;
@@ -244,12 +243,12 @@ export interface PlanDefinitionAction extends BackboneElement {
     priority?: `${PlanDefinitionActionPriority}`;
     _transform?: Element;
     /** must | could | must-unless-documented */
-    requiredBehavior?: `${PlanDefinitionActionRequiredBehavior}`;
+    requiredBehavior?: `${PlanDefinitionActionRequiredbehavior}`;
     _goalId?: Array<Element>;
     /** Whether or not the action is applicable */
     condition?: Array<PlanDefinitionActionCondition>;
     /** visual-group | logical-group | sentence-group */
-    groupingBehavior?: `${PlanDefinitionActionGroupingBehavior}`;
+    groupingBehavior?: `${PlanDefinitionActionGroupingbehavior}`;
     /** Dynamic aspects of the definition */
     dynamicValue?: Array<PlanDefinitionActionDynamicValue>;
     /** Code representing the meaning of the action or sub-actions */
@@ -260,7 +259,7 @@ export interface PlanDefinitionAction extends BackboneElement {
     action?: Array<PlanDefinitionAction>;
     _selectionBehavior?: Element;
     /** yes | no */
-    precheckBehavior?: `${PlanDefinitionActionPrecheckBehavior}`;
+    precheckBehavior?: `${PlanDefinitionActionPrecheckbehavior}`;
     _title?: Element;
     /** Input data requirements */
     input?: Array<DataRequirement>;
@@ -270,25 +269,27 @@ export interface PlanDefinitionAction extends BackboneElement {
     subjectReference?: Reference<'Group'>;
     _textEquivalent?: Element;
     /** single | multiple */
-    cardinalityBehavior?: `${PlanDefinitionActionCardinalityBehavior}`;
+    cardinalityBehavior?: `${PlanDefinitionActionCardinalitybehavior}`;
 }
 /** Whether or not the action is applicable */
 export interface PlanDefinitionActionCondition extends BackboneElement {
     /** applicability | start | stop */
-    kind: `${PlanDefinitionActionKind}`;
+    kind: `${PlanDefinitionActionConditionKind}`;
     _kind?: Element;
     /** Boolean-valued expression */
     expression?: Expression;
 }
-/** yes | no */
-export declare enum PlanDefinitionActionPrecheckBehavior {
-    No = "no",
-    Yes = "yes"
-}
-/** single | multiple */
-export declare enum PlanDefinitionActionCardinalityBehavior {
-    Multiple = "multiple",
-    Single = "single"
+/** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
+export declare enum PlanDefinitionActionRelatedactionRelationship {
+    BeforeStart = "before-start",
+    Concurrent = "concurrent",
+    After = "after",
+    ConcurrentWithStart = "concurrent-with-start",
+    BeforeEnd = "before-end",
+    AfterEnd = "after-end",
+    AfterStart = "after-start",
+    Before = "before",
+    ConcurrentWithEnd = "concurrent-with-end"
 }
 /** Target outcome for the goal */
 export interface PlanDefinitionTarget extends BackboneElement {
@@ -307,9 +308,8 @@ export declare enum PlanDefinitionActionPriority {
     Stat = "stat",
     Urgent = "urgent"
 }
-/** must | could | must-unless-documented */
-export declare enum PlanDefinitionActionRequiredBehavior {
-    Could = "could",
-    Must = "must",
-    MustUnlessDocumented = "must-unless-documented"
+/** yes | no */
+export declare enum PlanDefinitionActionPrecheckbehavior {
+    No = "no",
+    Yes = "yes"
 }

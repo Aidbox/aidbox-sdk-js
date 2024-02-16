@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InsurancePlanStatus = exports.InsurancePlanApplicability = void 0;
+exports.InsurancePlanStatus = exports.InsurancePlanPlanSpecificcostBenefitCostApplicability = void 0;
 /** in-network | out-of-network | other */
-var InsurancePlanApplicability;
-(function (InsurancePlanApplicability) {
-    InsurancePlanApplicability["InNetwork"] = "in-network";
-    InsurancePlanApplicability["Other"] = "other";
-    InsurancePlanApplicability["OutOfNetwork"] = "out-of-network";
-})(InsurancePlanApplicability = exports.InsurancePlanApplicability || (exports.InsurancePlanApplicability = {}));
+var InsurancePlanPlanSpecificcostBenefitCostApplicability;
+(function (InsurancePlanPlanSpecificcostBenefitCostApplicability) {
+    InsurancePlanPlanSpecificcostBenefitCostApplicability["InNetwork"] = "in-network";
+    InsurancePlanPlanSpecificcostBenefitCostApplicability["Other"] = "other";
+    InsurancePlanPlanSpecificcostBenefitCostApplicability["OutOfNetwork"] = "out-of-network";
+})(InsurancePlanPlanSpecificcostBenefitCostApplicability = exports.InsurancePlanPlanSpecificcostBenefitCostApplicability || (exports.InsurancePlanPlanSpecificcostBenefitCostApplicability = {}));
 /** draft | active | retired | unknown */
 var InsurancePlanStatus;
 (function (InsurancePlanStatus) {

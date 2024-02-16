@@ -1,23 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SubscriptionStatus = exports.SubscriptionPayload = exports.SubscriptionType = void 0;
+exports.SubscriptionStatus = exports.SubscriptionChannelPayload = exports.SubscriptionChannelType = void 0;
 /** rest-hook | websocket | email | sms | message */
-var SubscriptionType;
-(function (SubscriptionType) {
-    SubscriptionType["Email"] = "email";
-    SubscriptionType["Message"] = "message";
-    SubscriptionType["RestHook"] = "rest-hook";
-    SubscriptionType["Sms"] = "sms";
-    SubscriptionType["Websocket"] = "websocket";
-})(SubscriptionType = exports.SubscriptionType || (exports.SubscriptionType = {}));
+var SubscriptionChannelType;
+(function (SubscriptionChannelType) {
+    SubscriptionChannelType["Email"] = "email";
+    SubscriptionChannelType["Message"] = "message";
+    SubscriptionChannelType["RestHook"] = "rest-hook";
+    SubscriptionChannelType["Sms"] = "sms";
+    SubscriptionChannelType["Websocket"] = "websocket";
+})(SubscriptionChannelType = exports.SubscriptionChannelType || (exports.SubscriptionChannelType = {}));
 /** MIME type to send, or omit for no payload */
-var SubscriptionPayload;
-(function (SubscriptionPayload) {
-    SubscriptionPayload["Application/hl7Cda+xml"] = "application/hl7-cda+xml";
-    SubscriptionPayload["Application/sparqlResults+xml"] = "application/sparql-results+xml";
-    SubscriptionPayload["Application/sql"] = "application/sql";
-    SubscriptionPayload["Application/xquery"] = "application/xquery";
-})(SubscriptionPayload = exports.SubscriptionPayload || (exports.SubscriptionPayload = {}));
+var SubscriptionChannelPayload;
+(function (SubscriptionChannelPayload) {
+    SubscriptionChannelPayload["Application/hl7Cda+xml"] = "application/hl7-cda+xml";
+    SubscriptionChannelPayload["Application/sparqlResults+xml"] = "application/sparql-results+xml";
+    SubscriptionChannelPayload["Application/sql"] = "application/sql";
+    SubscriptionChannelPayload["Application/xquery"] = "application/xquery";
+})(SubscriptionChannelPayload = exports.SubscriptionChannelPayload || (exports.SubscriptionChannelPayload = {}));
 /** requested | active | error | off */
 var SubscriptionStatus;
 (function (SubscriptionStatus) {

@@ -68,7 +68,7 @@ export interface ConceptMap extends DomainResource {
     _url?: Element;
 }
 /** provided | fixed | other-map */
-export declare enum ConceptMapMode {
+export declare enum ConceptMapGroupUnmappedMode {
     Fixed = "fixed",
     OtherMap = "other-map",
     Provided = "provided"
@@ -76,7 +76,7 @@ export declare enum ConceptMapMode {
 /** What to do when there is no mapping for the source concept */
 export interface ConceptMapUnmapped extends BackboneElement {
     /** provided | fixed | other-map */
-    mode: `${ConceptMapMode}`;
+    mode: `${ConceptMapGroupUnmappedMode}`;
     _mode?: Element;
     /** Fixed code when mode = fixed */
     code?: code;
@@ -89,7 +89,7 @@ export interface ConceptMapUnmapped extends BackboneElement {
     _url?: Element;
 }
 /** relatedto | equivalent | equal | wider | subsumes | narrower | specializes | inexact | unmatched | disjoint */
-export declare enum ConceptMapEquivalence {
+export declare enum ConceptMapGroupElementTargetEquivalence {
     Disjoint = "disjoint",
     Equal = "equal",
     Specializes = "specializes",
@@ -115,7 +115,7 @@ export interface ConceptMapTarget extends BackboneElement {
     /** Display for the code */
     display?: string;
     /** relatedto | equivalent | equal | wider | subsumes | narrower | specializes | inexact | unmatched | disjoint */
-    equivalence: `${ConceptMapEquivalence}`;
+    equivalence: `${ConceptMapGroupElementTargetEquivalence}`;
     _comment?: Element;
     _display?: Element;
 }

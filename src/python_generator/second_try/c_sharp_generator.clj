@@ -151,7 +151,7 @@
                      #_#_(str "\t" (:name item) ": ")
                        (str "\n")))) elements)
        (str/join "")
-       ((fn [s] (str "\n\nclass " (get-class-name name) (if (= parent "") "" (str " : " parent)) "\n{" s "\n}"))))) ;; "(" (case t "backbone" "BackboneElement" "BaseModel") "):"
+       ((fn [s] (str "\n\npublic class " (get-class-name name) (if (= parent "") "" (str " : " parent)) "\n{" s "\n}"))))) ;; "(" (case t "backbone" "BackboneElement" "BaseModel") "):"
 
 (defn save-to-file [[name, definition]]
   (->> (str (combine-single-class name (:elements definition) ""))
@@ -245,8 +245,8 @@
             #_(->> (apply-constraints (concat constraint-schemas (flatten extra-constraint-schemas)) {} schemas)
                    (doallmap))
 
-            #_(save-to-single-file schemas)
-            (save-domain-resources schemas))))))
+            (save-to-single-file schemas)
+            #_(save-domain-resources schemas))))))
 
 (main)
 

@@ -122,6 +122,19 @@ export interface ImplementationGuideResource extends BackboneElement {
     exampleBoolean?: boolean;
     _name?: Element;
 }
+/** apply | path-resource | path-pages | path-tx-cache | expansion-parameter | rule-broken-links | generate-xml | generate-json | generate-turtle | html-template */
+export declare enum ImplementationGuideDefinitionParameterCode {
+    RuleBrokenLinks = "rule-broken-links",
+    GenerateJson = "generate-json",
+    GenerateTurtle = "generate-turtle",
+    PathResource = "path-resource",
+    PathPages = "path-pages",
+    GenerateXml = "generate-xml",
+    PathTxCache = "path-tx-cache",
+    ExpansionParameter = "expansion-parameter",
+    Apply = "apply",
+    HtmlTemplate = "html-template"
+}
 /** Information about an assembled IG */
 export interface ImplementationGuideManifest extends BackboneElement {
     /** Location of rendered implementation guide */
@@ -148,7 +161,7 @@ export declare enum ImplementationGuideDefinitionPageGeneration {
 /** Profiles that apply globally */
 export interface ImplementationGuideGlobal extends BackboneElement {
     /** Type this profile applies to */
-    type: `${ImplementationGuideType}`;
+    type: `${ImplementationGuideGlobalType}`;
     _type?: Element;
     /** Profile that all resources must conform to */
     profile: canonical;
@@ -167,7 +180,7 @@ export interface ImplementationGuideTemplate extends BackboneElement {
     _scope?: Element;
 }
 /** Type this profile applies to */
-export declare enum ImplementationGuideType {
+export declare enum ImplementationGuideGlobalType {
     ImmunizationEvaluation = "ImmunizationEvaluation",
     Appointment = "Appointment",
     StructureMap = "StructureMap",
@@ -329,23 +342,10 @@ export interface ImplementationGuideDefinition extends BackboneElement {
     /** A template for building resources */
     template?: Array<ImplementationGuideTemplate>;
 }
-/** apply | path-resource | path-pages | path-tx-cache | expansion-parameter | rule-broken-links | generate-xml | generate-json | generate-turtle | html-template */
-export declare enum ImplementationGuideCode {
-    RuleBrokenLinks = "rule-broken-links",
-    GenerateJson = "generate-json",
-    GenerateTurtle = "generate-turtle",
-    PathResource = "path-resource",
-    PathPages = "path-pages",
-    GenerateXml = "generate-xml",
-    PathTxCache = "path-tx-cache",
-    ExpansionParameter = "expansion-parameter",
-    Apply = "apply",
-    HtmlTemplate = "html-template"
-}
 /** Defines how IG is built by tools */
 export interface ImplementationGuideParameter extends BackboneElement {
     /** apply | path-resource | path-pages | path-tx-cache | expansion-parameter | rule-broken-links | generate-xml | generate-json | generate-turtle | html-template */
-    code: `${ImplementationGuideCode}`;
+    code: `${ImplementationGuideDefinitionParameterCode}`;
     _code?: Element;
     /** Value for named type */
     value: string;

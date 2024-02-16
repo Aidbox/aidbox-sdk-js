@@ -42,12 +42,12 @@ export declare enum VisionPrescriptionStatus {
     EnteredInError = "entered-in-error"
 }
 /** right | left */
-export declare enum VisionPrescriptionEye {
+export declare enum VisionPrescriptionLensspecificationEye {
     Left = "left",
     Right = "right"
 }
 /** up | down | in | out */
-export declare enum VisionPrescriptionBase {
+export declare enum VisionPrescriptionLensspecificationPrismBase {
     Down = "down",
     In = "in",
     Out = "out",
@@ -59,7 +59,7 @@ export interface VisionPrescriptionPrism extends BackboneElement {
     amount: decimal;
     _amount?: Element;
     /** up | down | in | out */
-    base: `${VisionPrescriptionBase}`;
+    base: `${VisionPrescriptionLensspecificationPrismBase}`;
     _base?: Element;
 }
 /** Vision lens authorization */
@@ -71,7 +71,7 @@ export interface VisionPrescriptionLensSpecification extends BackboneElement {
     /** Color required */
     color?: string;
     /** right | left */
-    eye: `${VisionPrescriptionEye}`;
+    eye: `${VisionPrescriptionLensspecificationEye}`;
     _add?: Element;
     /** Contact lens diameter */
     diameter?: decimal;

@@ -225,7 +225,7 @@ export declare class Client<T extends BasicAuthorization | ResourceOwnerAuthoriz
         execute: <T_1>(name: string, params?: Record<string, unknown>) => Promise<ExecuteQueryResponseWrapper<T_1>>;
     };
     subsSubscription: {
-        create: ({ id, status, trigger, channel }: SubscriptionParams) => Promise<SubsSubscription>;
+        create: ({ id, status, trigger, channel, }: SubscriptionParams) => Promise<SubsSubscription>;
     };
     rawSQL<T>(sql: string, params?: string[]): Promise<T>;
     sendLog(data: LogData): Promise<void>;
@@ -329,7 +329,7 @@ export declare class Bundle {
     entry: BundleRequestEntry[];
     type: 'batch' | 'transaction';
     constructor(type?: 'batch' | 'transaction');
-    addEntry<T extends keyof ResourceTypeMap>(resource: ResourceTypeMap[T], { method, resourceName, id }: {
+    addEntry<T extends keyof ResourceTypeMap>(resource: ResourceTypeMap[T], { method, resourceName, id, }: {
         method: HTTPMethod;
         resourceName: T;
         id?: string;

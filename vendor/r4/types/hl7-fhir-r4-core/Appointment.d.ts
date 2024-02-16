@@ -69,10 +69,32 @@ export interface Appointment extends DomainResource {
     reasonReference?: Array<Reference>;
 }
 /** required | optional | information-only */
-export declare enum AppointmentRequired {
+export declare enum AppointmentParticipantRequired {
     InformationOnly = "information-only",
     Optional = "optional",
     Required = "required"
+}
+/** accepted | declined | tentative | needs-action */
+export declare enum AppointmentParticipantStatus {
+    Accepted = "accepted",
+    Declined = "declined",
+    NeedsAction = "needs-action",
+    Tentative = "tentative"
+}
+/** Participants involved in appointment */
+export interface AppointmentParticipant extends BackboneElement {
+    /** Role of participant in the appointment */
+    type?: Array<CodeableConcept>;
+    /** Person, Location/HealthcareService or Device */
+    actor?: Reference<'Patient' | 'PractitionerRole' | 'HealthcareService' | 'Device' | 'Location' | 'Practitioner' | 'RelatedPerson'>;
+    /** required | optional | information-only */
+    required?: `${AppointmentParticipantRequired}`;
+    _required?: Element;
+    /** accepted | declined | tentative | needs-action */
+    status: `${AppointmentParticipantStatus}`;
+    _status?: Element;
+    /** Participation period of the actor */
+    period?: Period;
 }
 /** proposed | pending | booked | arrived | fulfilled | cancelled | noshow | entered-in-error | checked-in | waitlist */
 export declare enum AppointmentStatus {
@@ -86,19 +108,4 @@ export declare enum AppointmentStatus {
     Booked = "booked",
     Pending = "pending",
     Waitlist = "waitlist"
-}
-/** Participants involved in appointment */
-export interface AppointmentParticipant extends BackboneElement {
-    /** Role of participant in the appointment */
-    type?: Array<CodeableConcept>;
-    /** Person, Location/HealthcareService or Device */
-    actor?: Reference<'Patient' | 'PractitionerRole' | 'HealthcareService' | 'Device' | 'Location' | 'Practitioner' | 'RelatedPerson'>;
-    /** required | optional | information-only */
-    required?: `${AppointmentRequired}`;
-    _required?: Element;
-    /** accepted | declined | tentative | needs-action */
-    status: `${AppointmentStatus}`;
-    _status?: Element;
-    /** Participation period of the actor */
-    period?: Period;
 }

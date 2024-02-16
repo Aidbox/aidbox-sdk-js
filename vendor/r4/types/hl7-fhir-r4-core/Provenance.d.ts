@@ -37,7 +37,7 @@ export interface Provenance extends DomainResource {
     occurredPeriod?: Period;
 }
 /** derivation | revision | quotation | source | removal */
-export declare enum ProvenanceRole {
+export declare enum ProvenanceEntityRole {
     Derivation = "derivation",
     Quotation = "quotation",
     Removal = "removal",
@@ -47,7 +47,7 @@ export declare enum ProvenanceRole {
 /** An entity used in this activity */
 export interface ProvenanceEntity extends BackboneElement {
     /** derivation | revision | quotation | source | removal */
-    role: `${ProvenanceRole}`;
+    role: `${ProvenanceEntityRole}`;
     _role?: Element;
     /** Identity of entity */
     what: Reference;

@@ -70,11 +70,6 @@ export declare enum RequestGroupActionPriority {
     Stat = "stat",
     Urgent = "urgent"
 }
-/** yes | no */
-export declare enum RequestGroupActionPrecheckBehavior {
-    No = "no",
-    Yes = "yes"
-}
 /** proposal | plan | directive | order | original-order | reflex-order | filler-order | instance-order | option */
 export declare enum RequestGroupIntent {
     Order = "order",
@@ -87,36 +82,10 @@ export declare enum RequestGroupIntent {
     InstanceOrder = "instance-order",
     OriginalOrder = "original-order"
 }
-/** single | multiple */
-export declare enum RequestGroupActionCardinalityBehavior {
-    Multiple = "multiple",
-    Single = "single"
-}
-/** any | all | all-or-none | exactly-one | at-most-one | one-or-more */
-export declare enum RequestGroupActionSelectionBehavior {
-    All = "all",
-    AllOrNone = "all-or-none",
-    Any = "any",
-    AtMostOne = "at-most-one",
-    ExactlyOne = "exactly-one",
-    OneOrMore = "one-or-more"
-}
-/** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
-export declare enum RequestGroupActionRelationship {
-    BeforeStart = "before-start",
-    Concurrent = "concurrent",
-    After = "after",
-    ConcurrentWithStart = "concurrent-with-start",
-    BeforeEnd = "before-end",
-    AfterEnd = "after-end",
-    AfterStart = "after-start",
-    Before = "before",
-    ConcurrentWithEnd = "concurrent-with-end"
-}
 /** Whether or not the action is applicable */
 export interface RequestGroupActionCondition extends BackboneElement {
     /** applicability | start | stop */
-    kind: `${RequestGroupActionKind}`;
+    kind: `${RequestGroupActionConditionKind}`;
     _kind?: Element;
     /** Boolean-valued expression */
     expression?: Expression;
@@ -137,10 +106,42 @@ export interface RequestGroupActionRelatedAction extends BackboneElement {
     actionId: id;
     _actionId?: Element;
     /** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
-    relationship: `${RequestGroupActionRelationship}`;
+    relationship: `${RequestGroupActionRelatedactionRelationship}`;
     _relationship?: Element;
     offsetDuration?: Duration;
     offsetRange?: Range;
+}
+/** yes | no */
+export declare enum RequestGroupActionPrecheckbehavior {
+    No = "no",
+    Yes = "yes"
+}
+/** any | all | all-or-none | exactly-one | at-most-one | one-or-more */
+export declare enum RequestGroupActionSelectionbehavior {
+    All = "all",
+    AllOrNone = "all-or-none",
+    Any = "any",
+    AtMostOne = "at-most-one",
+    ExactlyOne = "exactly-one",
+    OneOrMore = "one-or-more"
+}
+/** visual-group | logical-group | sentence-group */
+export declare enum RequestGroupActionGroupingbehavior {
+    LogicalGroup = "logical-group",
+    SentenceGroup = "sentence-group",
+    VisualGroup = "visual-group"
+}
+/** applicability | start | stop */
+export declare enum RequestGroupActionConditionKind {
+    Applicability = "applicability",
+    Start = "start",
+    Stop = "stop"
+}
+/** must | could | must-unless-documented */
+export declare enum RequestGroupActionRequiredbehavior {
+    Could = "could",
+    Must = "must",
+    MustUnlessDocumented = "must-unless-documented"
 }
 /** Proposed actions, if any */
 export interface RequestGroupAction extends BackboneElement {
@@ -169,20 +170,20 @@ export interface RequestGroupAction extends BackboneElement {
     /** User-visible prefix for the action (e.g. 1. or A.) */
     prefix?: string;
     /** any | all | all-or-none | exactly-one | at-most-one | one-or-more */
-    selectionBehavior?: `${RequestGroupActionSelectionBehavior}`;
+    selectionBehavior?: `${RequestGroupActionSelectionbehavior}`;
     timingDateTime?: dateTime;
     timingTiming?: Timing;
     timingDuration?: Duration;
     /** routine | urgent | asap | stat */
     priority?: `${RequestGroupActionPriority}`;
     /** must | could | must-unless-documented */
-    requiredBehavior?: `${RequestGroupActionRequiredBehavior}`;
+    requiredBehavior?: `${RequestGroupActionRequiredbehavior}`;
     /** Whether or not the action is applicable */
     condition?: Array<RequestGroupActionCondition>;
     /** The target of the action */
     resource?: Reference;
     /** visual-group | logical-group | sentence-group */
-    groupingBehavior?: `${RequestGroupActionGroupingBehavior}`;
+    groupingBehavior?: `${RequestGroupActionGroupingbehavior}`;
     /** Code representing the meaning of the action or sub-actions */
     code?: Array<CodeableConcept>;
     timingAge?: Age;
@@ -191,24 +192,24 @@ export interface RequestGroupAction extends BackboneElement {
     action?: Array<RequestGroupAction>;
     _selectionBehavior?: Element;
     /** yes | no */
-    precheckBehavior?: `${RequestGroupActionPrecheckBehavior}`;
+    precheckBehavior?: `${RequestGroupActionPrecheckbehavior}`;
     _title?: Element;
     _cardinalityBehavior?: Element;
     _textEquivalent?: Element;
     /** single | multiple */
-    cardinalityBehavior?: `${RequestGroupActionCardinalityBehavior}`;
+    cardinalityBehavior?: `${RequestGroupActionCardinalitybehavior}`;
 }
-/** applicability | start | stop */
-export declare enum RequestGroupActionKind {
-    Applicability = "applicability",
-    Start = "start",
-    Stop = "stop"
-}
-/** visual-group | logical-group | sentence-group */
-export declare enum RequestGroupActionGroupingBehavior {
-    LogicalGroup = "logical-group",
-    SentenceGroup = "sentence-group",
-    VisualGroup = "visual-group"
+/** before-start | before | before-end | concurrent-with-start | concurrent | concurrent-with-end | after-start | after | after-end */
+export declare enum RequestGroupActionRelatedactionRelationship {
+    BeforeStart = "before-start",
+    Concurrent = "concurrent",
+    After = "after",
+    ConcurrentWithStart = "concurrent-with-start",
+    BeforeEnd = "before-end",
+    AfterEnd = "after-end",
+    AfterStart = "after-start",
+    Before = "before",
+    ConcurrentWithEnd = "concurrent-with-end"
 }
 /** routine | urgent | asap | stat */
 export declare enum RequestGroupPriority {
@@ -217,9 +218,8 @@ export declare enum RequestGroupPriority {
     Stat = "stat",
     Urgent = "urgent"
 }
-/** must | could | must-unless-documented */
-export declare enum RequestGroupActionRequiredBehavior {
-    Could = "could",
-    Must = "must",
-    MustUnlessDocumented = "must-unless-documented"
+/** single | multiple */
+export declare enum RequestGroupActionCardinalitybehavior {
+    Multiple = "multiple",
+    Single = "single"
 }

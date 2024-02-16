@@ -20,7 +20,7 @@ export interface DocumentReference extends DomainResource {
     /** When this document reference was created */
     date?: instant;
     /** preliminary | final | amended | entered-in-error */
-    docStatus?: `${DocumentReferenceDocStatus}`;
+    docStatus?: `${DocumentReferenceDocstatus}`;
     /** Document referenced */
     content: Array<DocumentReferenceContent>;
     _date?: Element;
@@ -51,7 +51,7 @@ export interface DocumentReference extends DomainResource {
     authenticator?: Reference<'PractitionerRole' | 'Organization' | 'Practitioner'>;
 }
 /** preliminary | final | amended | entered-in-error */
-export declare enum DocumentReferenceDocStatus {
+export declare enum DocumentReferenceDocstatus {
     Amended = "amended",
     EnteredInError = "entered-in-error",
     Final = "final",
@@ -71,7 +71,7 @@ export declare enum DocumentReferenceStatus {
     Superseded = "superseded"
 }
 /** replaces | transforms | signs | appends */
-export declare enum DocumentReferenceCode {
+export declare enum DocumentReferenceRelatestoCode {
     Appends = "appends",
     Replaces = "replaces",
     Signs = "signs",
@@ -80,7 +80,7 @@ export declare enum DocumentReferenceCode {
 /** Relationships to other documents */
 export interface DocumentReferenceRelatesTo extends BackboneElement {
     /** replaces | transforms | signs | appends */
-    code: `${DocumentReferenceCode}`;
+    code: `${DocumentReferenceRelatestoCode}`;
     _code?: Element;
     /** Target of the relationship */
     target: Reference<'DocumentReference'>;

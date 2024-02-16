@@ -76,7 +76,7 @@ export declare enum TestReportSetupActionOperationResult {
     Warning = "warning"
 }
 /** test-engine | client | server */
-export declare enum TestReportType {
+export declare enum TestReportParticipantType {
     Client = "client",
     Server = "server",
     TestEngine = "test-engine"
@@ -96,7 +96,7 @@ export interface TestReportSetupActionAssert extends BackboneElement {
 /** A participant in the test execution, either the execution engine, a client, or a server */
 export interface TestReportParticipant extends BackboneElement {
     /** test-engine | client | server */
-    type: `${TestReportType}`;
+    type: `${TestReportParticipantType}`;
     _type?: Element;
     /** The uri of the participant. An absolute URL is preferred */
     uri: uri;
