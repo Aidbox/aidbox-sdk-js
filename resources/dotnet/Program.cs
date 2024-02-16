@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Text;
 using System.IO.Pipes;
 using System.Text.Json;
@@ -8,6 +7,7 @@ using System.Net.Http.Headers;
 using HL7.MCODE;
 using API;
 using HL7.FHIR.R4.RESOURCE;
+using HL7.FHIR.R4.BASE;
 
 
 // var typeMap = new Dictionary<string, Type>
@@ -98,15 +98,67 @@ internal class Program
 
     private static async Task MainAsync(string[] args)
     {
-        Client client = new() { Url = "https://genacodex.aidbox.app", AuthorizationType = "Basic", AuthorizationValue = "YmFzaWM6c2VjcmV0" };
-
-        var (patient, error) = await client.Read<Patient>("d027d195-f463-4ba6-a962-fa222f3acef5");
-
-        if (patient != null)
+      Client client = new Client
+      (
+        "https://aidbox.zabelin.hz.aidbox.dev", 
+        new Auth()
         {
-            Console.WriteLine(JsonSerializer.Serialize(patient, Settings.options));
-            return;
+          Method = AuthMethods.BASIC,
+          Credentials = new()
+          {
+            Username = "basic",
+            Password = "secret"
+          }
         }
+      );
+
+      // READ
+      // var (patient, error) = await client.Read<Patient>("pt-1");
+
+      // if (patient != null)
+      // {
+      //     Console.WriteLine(JsonSerializer.Serialize(patient, Settings.options));
+      //     return;
+      // }
+      // else
+      // {
+      //     Console.WriteLine(error);
+      // }
+
+      // CREATE
+      // Patient patientData = new Patient
+      // {
+      //     Id = "pt-1",
+      //     Name = new HumanName[] { new HumanName() { Family = "Smith" } }
+      // };
+
+      // var (patient, error) = await client.Create<Patient>(patientData);
+
+      // if (patient != null)
+      // {
+      //     Console.WriteLine(JsonSerializer.Serialize(patient, Settings.options));
+      //     return;
+      // }
+      // else
+      // {
+      //     Console.WriteLine(error);
+      // }
+
+      // DELETE
+      // var (patient, error) = await client.Delete<Patient>("pt-1");
+
+      // if (patient != null)
+      // {
+      //     Console.WriteLine(JsonSerializer.Serialize(patient, Settings.options));
+      //     return;
+      // }
+      // else
+      // {
+      //     Console.WriteLine(error);
+      // }
+
+      // UPDATE
+
     }
 }
 

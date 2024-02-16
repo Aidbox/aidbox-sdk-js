@@ -1,27 +1,149 @@
+using System.Net;
+using System.Text;
+using System.ComponentModel;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using UTILS;
 using HL7.FHIR.R4.RESOURCE;
-using HL7.FHIR.R4.BASE;
 using HL7.MCODE;
-
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace API;
 
-public class ClientResponse<T>
+public enum AuthMethods
 {
-  public bool Success { get; set; }
-  public Entry<T>[]? Data { get; set; }
-  public HttpRequestException? Error { get; set; }
+  [Description("Basic")]
+  BASIC,
+}
+
+public class AuthCredentials
+{
+  public required string Username { get; set; }
+  public required string Password { get; set; }
+}
+
+public class Auth
+{
+  public required AuthMethods Method { get; set; }
+  public required AuthCredentials Credentials { get; set; }
 }
 
 public class Client
 {
-  public required string Url { get; set; }
-  public required string AuthorizationType { get; set; }
-  public required string AuthorizationValue { get; set; }
+  private HttpClient HttpClient;
+  private string Url;
+
+  public Client(string url, Auth auth)
+  {
+    var httpClient = new HttpClient();
+
+    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(GetMethodValue(auth.Method), EncodeCredentials(auth.Credentials));
+
+    this.HttpClient = httpClient;
+    this.Url = url;
+  }
+
+  public async Task<(T? result, string? error)> Read<T>(string id) where T : IResource
+  {
+    UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
+
+    using var httpClient = this.HttpClient;
+
+    try
+    {
+      var response = await httpClient.GetAsync($"{resourcePath.Uri}/{id}");
+
+      if (!response.IsSuccessStatusCode)
+      {
+        throw new HttpRequestException($"Server returned error: {response.StatusCode}");
+      }
+
+      var content = await response.Content.ReadAsStringAsync();
+
+      T? parsedContent = JsonSerializer.Deserialize<T>(content, Client.JsonSerializerOptions);
+
+      return (parsedContent, default);
+    }
+
+    catch (HttpRequestException error)
+    {
+      return (default, error.Message);
+    }
+  }
+
+  public async Task<(T? result, string? error)> Create<T>(T data) where T : IResource
+  {
+    UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
+
+    string jsonBody = JsonSerializer.Serialize<T>(data, Settings.options);
+
+    HttpContent requestData = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+    using var httpClient = this.HttpClient;
+
+    try
+    {
+      var response = await this.HttpClient.PostAsync(resourcePath.Uri, requestData);
+
+      if (!response.IsSuccessStatusCode)
+      {
+        throw new HttpRequestException($"Server returned error: {response.StatusCode}");
+      }
+
+      var content = await response.Content.ReadAsStringAsync();
+
+      T? parsedContent = JsonSerializer.Deserialize<T>(content, Client.JsonSerializerOptions);
+
+      return (parsedContent, default);
+    }
+
+    catch (HttpRequestException error)
+    {
+      return (default, error.Message);
+    }
+  }
+
+  public async Task<(T? result, string? error)> Delete<T>(string id) where T : IResource
+  {
+    UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
+
+    using var httpClient = this.HttpClient;
+
+    try
+    {
+      var response = await httpClient.DeleteAsync($"{resourcePath.Uri}/{id}");
+
+      if (!response.IsSuccessStatusCode)
+      {
+        throw new HttpRequestException($"Server returned error: {response.StatusCode}");
+      }
+
+      if (response.StatusCode == HttpStatusCode.NoContent)
+      {
+        throw new HttpRequestException($"The resource with id \"{id}\" does not exist");
+      }
+
+      var content = await response.Content.ReadAsStringAsync();
+
+      T? parsedContent = JsonSerializer.Deserialize<T>(content, Client.JsonSerializerOptions);
+
+      return (parsedContent, default);
+    }
+
+    catch (HttpRequestException error)
+    {
+      return (default, error.Message);
+    }
+  }
+
+  private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+  {
+    PropertyNameCaseInsensitive = true,
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    Converters = { new JsonStringEnumConverter(new LowercaseNamingPolicy()) },
+    WriteIndented = true
+  };
 
   private readonly Dictionary<Type, string> ResourceMap = new() {
     { typeof(Patient), "Patient" },
@@ -30,107 +152,23 @@ public class Client
     { typeof(McodeCancerPatient), "Patient" }
   };
 
-  public static readonly JsonSerializerOptions options = new()
+  private string EncodeCredentials(AuthCredentials credentials)
   {
-    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    Converters = { new JsonStringEnumConverter(new LowercaseNamingPolicy()) },
-    WriteIndented = true
-  };
+    byte[] credentialsBytes = System.Text.Encoding.UTF8.GetBytes($"{credentials.Username}:{credentials.Password}");
 
-  public async Task<(T? result, string? error)> Read<T>(string id) where T : IResource
-  {
-    UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
-
-    using var httpClient = new HttpClient();
-
-    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(this.AuthorizationType, this.AuthorizationValue);
-
-    try
-    {
-      var response = await httpClient.GetAsync(resourcePath.Uri + "/" + id);
-
-      if (!response.IsSuccessStatusCode)
-      {
-        throw new HttpRequestException($"Server returned error: {response.StatusCode}");
-      }
-
-      var content = await response.Content.ReadAsStringAsync();
-
-      T parsedContent = JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? throw new InvalidOperationException("asdf");
-
-      return (parsedContent, default);
-    }
-
-    catch (HttpRequestException error)
-    {
-      return (default, error.Message);
-    }
+    return Convert.ToBase64String(credentialsBytes);
   }
 
-  public async Task<(T? result, string? error)> Create<T>(string id, T data) where T : IResource
+  private string GetMethodValue(AuthMethods method)
   {
-    UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
+    var fieldInfo = method.GetType().GetField(method.ToString());
 
-    using var httpClient = new HttpClient();
-
-    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(this.AuthorizationType, this.AuthorizationValue);
-
-    try
-    {
-      // var json = JsonSerializer.Serialize(data, Settings.options) ?? throw new Exception("");
-      var response = await httpClient.GetAsync(resourcePath.Uri + "/" + id);
-
-      if (!response.IsSuccessStatusCode)
-      {
-        throw new HttpRequestException($"Server returned error: {response.StatusCode}");
-      }
-
-      var content = await response.Content.ReadAsStringAsync();
-
-      T parsedContent = JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? throw new InvalidOperationException("asdf");
-
-      return (parsedContent, default);
+    if (fieldInfo == null) {
+      return method.ToString();
     }
 
-    catch (HttpRequestException error)
-    {
-      return (default, error.Message);
-    }
-  }
+    var attributes = (DescriptionAttribute[])fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
 
-  public async Task<ClientResponse<T>> GetResources<T>() where T : IResource
-  {
-    UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
-
-    using var httpClient = new HttpClient();
-
-    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(this.AuthorizationType, this.AuthorizationValue);
-
-    try
-    {
-      var response = await httpClient.GetAsync(resourcePath.Uri);
-
-      if (!response.IsSuccessStatusCode)
-      {
-        throw new HttpRequestException($"Server returned error: {response.StatusCode}");
-      }
-
-      var content = await response.Content.ReadAsStringAsync();
-
-      ApiResourcesResponse<T> parsedContent = JsonSerializer.Deserialize<ApiResourcesResponse<T>>(content, new JsonSerializerOptions
-      {
-        PropertyNameCaseInsensitive = true
-      }) ?? throw new InvalidOperationException("asdf");
-
-      //Console.WriteLine(JsonSerializer.Serialize(parsedContent));
-
-      return new ClientResponse<T>() { Success = true, Data = parsedContent.Entry };
-    }
-
-    catch (HttpRequestException error)
-    {
-      return new ClientResponse<T>() { Success = false, Error = error };
-    }
+    return attributes.Length > 0 ? attributes[0].Description : method.ToString();
   }
 }
