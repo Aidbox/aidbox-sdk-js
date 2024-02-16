@@ -137,7 +137,9 @@
   (when (= name "http://hl7.org/fhir/StructureDefinition/Element") (print parent))
   (->> (map (fn [item]
               (when (not (contains? item :choices))
-                (->> (str "\n\tpublic " (:value item))
+                (->> (str "\n\tpublic ")
+                     ((if (:required item) (fn [s] (str s "required ")) str))
+                     ((fn [s] (str s (:value item))))
                      ((if (:array item) (fn [s] (str s "[]")) str))
                      ((if (:literal item) (fn [s] (str "Literal[\"" s "\"] = " "\"" s "\"")) str))
                      ((if (and (not (:required item)) (not (:literal item))) (fn [s] (str s "?")) str))
