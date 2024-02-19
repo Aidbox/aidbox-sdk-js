@@ -1,3 +1,6 @@
 namespace UTILS;
 
-public interface IResource { }
+public interface IResource
+{
+  string Id { get; set; }
+}

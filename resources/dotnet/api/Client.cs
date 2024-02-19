@@ -47,7 +47,7 @@ public class Client
   {
     UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
 
-    using var httpClient = this.HttpClient;
+    var httpClient = this.HttpClient;
 
     try
     {
@@ -79,7 +79,7 @@ public class Client
 
     HttpContent requestData = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-    using var httpClient = this.HttpClient;
+    var httpClient = this.HttpClient;
 
     try
     {
@@ -107,7 +107,7 @@ public class Client
   {
     UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
 
-    using var httpClient = this.HttpClient;
+    var httpClient = this.HttpClient;
 
     try
     {
@@ -121,6 +121,41 @@ public class Client
       if (response.StatusCode == HttpStatusCode.NoContent)
       {
         throw new HttpRequestException($"The resource with id \"{id}\" does not exist");
+      }
+
+      var content = await response.Content.ReadAsStringAsync();
+
+      T? parsedContent = JsonSerializer.Deserialize<T>(content, Client.JsonSerializerOptions);
+
+      return (parsedContent, default);
+    }
+
+    catch (HttpRequestException error)
+    {
+      return (default, error.Message);
+    }
+  }
+
+  public async Task<(T? result, string? error)> Update<T>(T resource) where T : IResource
+  {
+    UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
+
+    string jsonBody = JsonSerializer.Serialize<T>(resource, Settings.options);
+
+    HttpContent requestData = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+    var httpClient = this.HttpClient;
+
+    // TODO: Versioned Update
+    // httpClient.DefaultRequestHeaders.Add("If-Match", resource.Meta?.VersionId);
+
+    try
+    {
+      var response = await httpClient.PutAsync($"{resourcePath.Uri}/{resource.Id}", requestData);
+
+      if (!response.IsSuccessStatusCode)
+      {
+        throw new HttpRequestException($"Server returned error: {response.StatusCode}");
       }
 
       var content = await response.Content.ReadAsStringAsync();

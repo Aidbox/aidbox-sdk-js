@@ -111,54 +111,6 @@ internal class Program
           }
         }
       );
-
-      // READ
-      // var (patient, error) = await client.Read<Patient>("pt-1");
-
-      // if (patient != null)
-      // {
-      //     Console.WriteLine(JsonSerializer.Serialize(patient, Settings.options));
-      //     return;
-      // }
-      // else
-      // {
-      //     Console.WriteLine(error);
-      // }
-
-      // CREATE
-      // Patient patientData = new Patient
-      // {
-      //     Id = "pt-1",
-      //     Name = new HumanName[] { new HumanName() { Family = "Smith" } }
-      // };
-
-      // var (patient, error) = await client.Create<Patient>(patientData);
-
-      // if (patient != null)
-      // {
-      //     Console.WriteLine(JsonSerializer.Serialize(patient, Settings.options));
-      //     return;
-      // }
-      // else
-      // {
-      //     Console.WriteLine(error);
-      // }
-
-      // DELETE
-      // var (patient, error) = await client.Delete<Patient>("pt-1");
-
-      // if (patient != null)
-      // {
-      //     Console.WriteLine(JsonSerializer.Serialize(patient, Settings.options));
-      //     return;
-      // }
-      // else
-      // {
-      //     Console.WriteLine(error);
-      // }
-
-      // UPDATE
-
     }
 }
 
