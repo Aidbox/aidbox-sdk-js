@@ -131,10 +131,12 @@
                    (conj acc (hash-map (:url constraint-schema) (apply-single-constraint constraint-schema (get base-schemas (:base constraint-schema))))) acc))) result constraint-schemas) base-schemas) result))
 
 (defn get-class-name [profile-name]
-  (str/join "" (map help/uppercase-first-letter (clojure.string/split (help/get-resource-name profile-name) #"-"))))
+  (let [n (str/join "" (map help/uppercase-first-letter (clojure.string/split (help/get-resource-name profile-name) #"-")))]
+    (cond
+      (= n "Expression") "ResourceExpression"
+      (= n "Reference") "ResourceReference" :else n)))
 
 (defn combine-single-class [name elements parent]
-  (when (= name "http://hl7.org/fhir/StructureDefinition/Element") (print parent))
   (->> (map (fn [item]
               (when (not (contains? item :choices))
                 (->> (str "\n\tpublic ")
@@ -151,12 +153,13 @@
                      #_#_(str "\t" (:name item) ": ")
                        (str "\n")))) elements)
        (str/join "")
-       ((fn [s] (str "\n\npublic class " (get-class-name name) (if (= parent "") "" (str " : " parent)) "\n{" s "\n}"))))) ;; "(" (case t "backbone" "BackboneElement" "BaseModel") "):"
+       ((fn [s] (str "\n\npublic class " (get-class-name name) (if (= parent "") "" (str " : " (help/uppercase-first-letter parent))) "\n{" s "\n}"))))) ;; "(" (case t "backbone" "BackboneElement" "BaseModel") "):"
 
 (defn save-to-file [[name, definition]]
   (->> (str (combine-single-class name (:elements definition) ""))
-       (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) (:base definition))) (:backbone-elements definition))))
+       (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "BackboneElement")) (:backbone-elements definition))))
        (str (str/join (:patterns definition)))
+       (str "namespace us.core." (help/get-resource-name name) ";")
       ;;  (str "from base import *\n")
       ;;  (str "from typing import Optional, List, Literal\n")
       ;;  (str "from pydantic import BaseModel\n")
@@ -187,7 +190,7 @@
   (->> (filter #(= "http://hl7.org/fhir/StructureDefinition/DomainResource" (get (last %) :base "")) elements)
        (map (fn [[name, definition]]
               (->> (str (combine-single-class name (filter #(= (help/get-resource-name name) (:base %)) (:elements definition)) (help/get-resource-name (:base definition))))
-                   (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "")) (:backbone-elements definition))))
+                   (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "BackboneElement")) (:backbone-elements definition))))
                    (str (str/join (:patterns definition)))
                    (help/write-to-file (str (dotenv/env :python-output-path) "/resource") (str (help/get-resource-name name) ".cs")))))
        (doall)
@@ -242,10 +245,10 @@
          (map (fn [schema] (conj schema (hash-map :backbone-elements (flat-backbones (:backbone-elements schema) [])))))
          (vector-to-map)
          ((fn [schemas]
-            #_(->> (apply-constraints (concat constraint-schemas (flatten extra-constraint-schemas)) {} schemas)
-                   (doallmap))
+            (->> (apply-constraints (concat constraint-schemas (flatten extra-constraint-schemas)) {} schemas)
+                 (doallmap))
 
-            (save-to-single-file schemas)
+            #_(save-to-single-file schemas)
             #_(save-domain-resources schemas))))))
 
 (main)

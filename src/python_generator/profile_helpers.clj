@@ -35,6 +35,8 @@
 
 (defn get-type [name type]
   (cond
+    (= type "Expression") "ResourceExpression"
+    (= type "Reference") "ResourceReference"
     (= type "BackboneElement") (str "" (uppercase-first-letter name))
     (= type "boolean") "bool"
     (= type "integer") "int"
