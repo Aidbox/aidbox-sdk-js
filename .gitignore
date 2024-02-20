@@ -24,7 +24,6 @@ output
 
 resources/dotnet/bin
 resources/dotnet/obj
-resources/dotnet/constraint
 *.csproj
 *.sln
 

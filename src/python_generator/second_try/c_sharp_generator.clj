@@ -163,12 +163,10 @@
        (str (str/join (:patterns definition)))
        (str "namespace Aidbox.FHIR.Constraint;")
        (str "using Aidbox.FHIR.Base;\n\n")
-       (help/write-to-file (str (dotenv/env :python-output-path) "/resources") (str (str/join "_" (str/split (help/get-resource-name name) #"-")) ".cs")))
+       (help/write-to-file (str (dotenv/env :python-output-path) "/constraint") (str (str/join "_" (str/split (help/get-resource-name name) #"-")) ".cs")))
   (str "Aidbox.FHIR.Constraint." (get-class-name name)))
 
 (defn doallmap [elements] (doall (map save-to-file elements)))
-
-
 
 (defn vector-to-map [v] (->> (map (fn [item] (hash-map (:url item) item)) v)
                              (into {})))
@@ -211,9 +209,11 @@
   (->> (map (fn [item] (str "\t\t{ typeof(" item "), \"" item "\" },\n")) names)
        (str/join "")
        ((fn [s] (str "\tpublic static readonly Dictionary<Type, string> ResourceMap = new() {\n" s "\t};")))
+       (str "\tpublic static readonly JsonSerializerOptions JsonSerializerOptions = new()\n\t{\n\t\tDefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,\n\t\tPropertyNamingPolicy = JsonNamingPolicy.CamelCase,\n\t\tConverters = { new JsonStringEnumConverter(new LowercaseNamingPolicy()) },\n\t\tWriteIndented = true\n\t};\n\n")
        ((fn [s] (str "public class Config \n{\n" s "\n}")))
+       (str "public class LowercaseNamingPolicy : JsonNamingPolicy\n{\n\tpublic override string ConvertName(string name) => name.ToLower();\n}\n\n")
        (str "public interface IResource { string Id { get; set; } }\n\n")
-       (str "using Aidbox.FHIR.Resource;\nusing Aidbox.FHIR.Constraint;\n\nnamespace Utils;\n\n")
+       (str "using System.Text.Json;\nusing System.Text.Json.Serialization;\nnamespace Utils;\n\n")
        (help/write-to-file (str (dotenv/env :python-output-path) "/") (str "ResourceMap.cs"))))
 
 (defn main []

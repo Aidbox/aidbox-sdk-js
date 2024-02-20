@@ -74,7 +74,7 @@ public class Client
   {
     UriBuilder resourcePath = new(this.Url) { Path = Config.ResourceMap[typeof(T)] };
 
-    string jsonBody = JsonSerializer.Serialize<T>(data, Settings.options);
+    string jsonBody = JsonSerializer.Serialize<T>(data, Client.JsonSerializerOptions);
 
     HttpContent requestData = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
@@ -139,7 +139,7 @@ public class Client
   {
     UriBuilder resourcePath = new(this.Url) { Path = Config.ResourceMap[typeof(T)] };
 
-    string jsonBody = JsonSerializer.Serialize<T>(resource, Settings.options);
+    string jsonBody = JsonSerializer.Serialize<T>(resource, Client.JsonSerializerOptions);
 
     HttpContent requestData = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 

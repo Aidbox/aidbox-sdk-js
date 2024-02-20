@@ -1,12 +1,24 @@
-using Aidbox.FHIR.Resource;
-using Aidbox.FHIR.Constraint;
-
+using System.Text.Json;
+using System.Text.Json.Serialization;
 namespace Utils;
 
 public interface IResource { string Id { get; set; } }
 
-public class Config
+public class LowercaseNamingPolicy : JsonNamingPolicy
 {
+	public override string ConvertName(string name) => name.ToLower();
+}
+
+public class Config 
+{
+	public static readonly JsonSerializerOptions JsonSerializerOptions = new()
+	{
+		DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+		PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+		Converters = { new JsonStringEnumConverter(new LowercaseNamingPolicy()) },
+		WriteIndented = true
+	};
+
 	public static readonly Dictionary<Type, string> ResourceMap = new() {
 		{ typeof(Aidbox.FHIR.Resource.Group), "Aidbox.FHIR.Resource.Group" },
 		{ typeof(Aidbox.FHIR.Resource.Questionnaire), "Aidbox.FHIR.Resource.Questionnaire" },
