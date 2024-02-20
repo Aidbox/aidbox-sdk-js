@@ -164,7 +164,8 @@
        (str "namespace Aidbox.FHIR.Constraint;")
        (str "using Aidbox.FHIR.Base;\n\n")
        (help/write-to-file (str (dotenv/env :python-output-path) "/constraint") (str (str/join "_" (str/split (help/get-resource-name name) #"-")) ".cs")))
-  (str "Aidbox.FHIR.Constraint." (get-class-name name)))
+  (hash-map :type (str "Aidbox.FHIR.Constraint." (get-class-name name))
+            :name (:name definition)))
 
 (defn doallmap [elements] (doall (map save-to-file elements)))
 
@@ -195,7 +196,8 @@
                    (str "namespace Aidbox.FHIR.Resource;")
                    (str "using Aidbox.FHIR.Base;\n\n")
                    (help/write-to-file (str (dotenv/env :python-output-path) "/resource") (str (help/get-resource-name name) ".cs")))
-              (str "Aidbox.FHIR.Resource." (help/get-resource-name name))))
+              (hash-map :type (str "Aidbox.FHIR.Resource." (help/get-resource-name name))
+                        :name (:name definition))))
        (doall)
        #_(str/join "")))
 
@@ -206,7 +208,7 @@
           backbone-elements))
 
 (defn save-resources-map [names]
-  (->> (map (fn [item] (str "\t\t{ typeof(" item "), \"" item "\" },\n")) names)
+  (->> (map (fn [item] (str "\t\t{ typeof(" (:type item) "), \"" (:name item) "\" },\n")) names)
        (str/join "")
        ((fn [s] (str "\tpublic static readonly Dictionary<Type, string> ResourceMap = new() {\n" s "\t};")))
        (str "\tpublic static readonly JsonSerializerOptions JsonSerializerOptions = new()\n\t{\n\t\tDefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,\n\t\tPropertyNamingPolicy = JsonNamingPolicy.CamelCase,\n\t\tConverters = { new JsonStringEnumConverter(new LowercaseNamingPolicy()) },\n\t\tWriteIndented = true\n\t};\n\n")
