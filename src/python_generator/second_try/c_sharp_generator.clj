@@ -82,13 +82,15 @@
           (filter #(not (contains? choises-to-exclude (:name %))) schema)))))
 
 (defn pattern-codeable-concept [name schema]
-  (->> (str "\tcoding: List[" (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-"))) (get-in schema [:pattern :coding] []))) "] = [" (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-")) "()") (get-in schema [:pattern :coding] []))) "]\n")
-       (str "class " (str/join (map help/uppercase-first-letter (str/split name #"-"))) "(CodeableConcept):\n")
+  (->> (str "}")
+       (str "\tpublic new " (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-"))) (get-in schema [:pattern :coding] []))) "[] Coding { get; } = [new()];\n") #_(str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-")) "()") (get-in schema [:pattern :coding] [])))
+       (str "\nclass " (str/join (map help/uppercase-first-letter (str/split name #"-"))) " : CodeableConcept\n{\n")
        (str (when-let [coding (:coding (:pattern schema))]
-              (str/join (map (fn [code] (->> (str (when (contains? code :code)  (str "\tcode: Literal[\"" (:code code) "\"] = \"" (:code code) "\"\n")))
-                                             (str (when (contains? code :system) (str "\tsystem: Literal[\"" (:system code) "\"] = \"" (:system code) "\"\n")))
-                                             (str (when (contains? code :display) (str "\tdisplay: Literal[\"" (:display code) "\"] = \"" (:display code) "\"\n")))
-                                             (str "\nclass Coding" (str/join (str/split (:code code) #"-")) "(Coding):\n"))) coding))) "\n")))
+              (str/join (map (fn [code] (->> (str "}")
+                                             (str (when (contains? code :code)  (str "\tpublic new string Code { get; } = \"" (:code code) "\";\n")))
+                                             (str (when (contains? code :system) (str "\tpublic new string System { get; } = \"" (:system code) "\";\n")))
+                                             (str (when (contains? code :display) (str "\tpublic new string Display { get; } = \"" (:display code) "\";\n")))
+                                             (str "\n\nclass Coding" (str/join (str/split (:code code) #"-")) " : Coding\n{\n"))) coding))) "\n")))
 
 (defn create-single-pattern [constraint-name, [key, schema], elements]
   (case (help/get-resource-name (some #(when (= (name key) (:name %)) (:value %)) elements))
@@ -106,7 +108,7 @@
 
 (defn add-meta [constraint-name elements]
   (->> (filter #(not (= (:name %) "meta")) elements)
-       (concat [{:name "meta" :required true :value (str "Meta")}])))
+       (concat [{:name "meta" :required true :value (str "Meta") :meta (str " = new() { Profile = [\"" constraint-name "\"] };")}])))
 
 (defn apply-single-constraint [constraint parent-schema]
   (println (:url constraint) (reset! constraint-count (+ 1 (deref constraint-count))))
@@ -136,34 +138,33 @@
       (= n "Expression") "ResourceExpression"
       (= n "Reference") "ResourceReference" :else n)))
 
-(defn combine-single-class [name elements parent]
+(defn combine-single-class [name elements parent inner-classes]
   (->> (map (fn [item]
               (when (not (contains? item :choices))
                 (->> (str "\n\tpublic ")
-                     ((if (:required item) (fn [s] (str s "required ")) str))
+                     ((if (and (not (:meta item)) (:required item)) (fn [s] (str s "required ")) str))
                      ((fn [s] (str s (:value item))))
                      ((if (:array item) (fn [s] (str s "[]")) str))
-                     ((if (:literal item) (fn [s] (str "Literal[\"" s "\"] = " "\"" s "\"")) str))
+                     #_((if (:literal item) (fn [s] (str "Literal[\"" s "\"] = " "\"" s "\"")) str))
                      ((if (and (not (:required item)) (not (:literal item))) (fn [s] (str s "?")) str))
                      #_((if (and (not (:required item)) (not (:literal item))) (fn [s] (str s " = None")) str))
                      ((fn [s] (str s " " (help/uppercase-first-letter (:name item)))))
+                     ((fn [s] (str s " { get; " (if (or (:meta item) (:codeable-concept-pattern item)) "}" "set; }"))))
                      ((if (and (:required item) (:codeable-concept-pattern item)) (fn [s] (str s " = new()")) str))
-                     ((fn [s] (str s " { get; " (if (:codeable-concept-pattern item) "}" "set; }"))))
+                     ((if (:meta item) (fn [s] (str s (:meta item))) str))
                     ;;  ((if (and (not (:required item)) (:array item)) help/append-default-vector str)) 
                      #_#_(str "\t" (:name item) ": ")
                        (str "\n")))) elements)
        (str/join "")
-       ((fn [s] (str "\n\npublic class " (get-class-name name) (if (= parent "") "" (str " : " (help/uppercase-first-letter parent))) "\n{" s "\n}"))))) ;; "(" (case t "backbone" "BackboneElement" "BaseModel") "):"
+       ((fn [s] (str "\n\npublic class " (get-class-name name) (if (= parent "") "" (str " : " (help/uppercase-first-letter parent))) "\n{" s inner-classes "\n}"))))) ;; "(" (case t "backbone" "BackboneElement" "BaseModel") "):"
 
 (defn save-to-file [[name, definition]]
-  (->> (str (combine-single-class name (:elements definition) ""))
-       (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "BackboneElement")) (:backbone-elements definition))))
+  (->> (str (combine-single-class name (:elements definition) "" (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "BackboneElement" "")) (:backbone-elements definition))))))
        (str (str/join (:patterns definition)))
-       (str "namespace us.core." (help/get-resource-name name) ";")
-      ;;  (str "from base import *\n")
-      ;;  (str "from typing import Optional, List, Literal\n")
-      ;;  (str "from pydantic import BaseModel\n")
-       (help/write-to-file (str (dotenv/env :python-output-path) "/resources") (str (str/join "_" (str/split (help/get-resource-name name) #"-")) ".cs"))))
+       (str "namespace Aidbox.FHIR.Constraint;")
+       (str "using Aidbox.FHIR.Base;\n\n")
+       (help/write-to-file (str (dotenv/env :python-output-path) "/resources") (str (str/join "_" (str/split (help/get-resource-name name) #"-")) ".cs")))
+  (str "Aidbox.FHIR.Constraint." (get-class-name name)))
 
 (defn doallmap [elements] (doall (map save-to-file elements)))
 
@@ -177,22 +178,26 @@
   #_(map (fn [[name, definition]] (merge definition (hash-map :elements (filter #(= name (:base %)) (:elements definition))))) elements)
   (->> (filter #(not (= "http://hl7.org/fhir/StructureDefinition/DomainResource" (get (last %) :base ""))) elements)
        (map (fn [[name, definition]]
-              (->> (str (combine-single-class name (filter #(= (help/get-resource-name name) (:base %)) (:elements definition)) (help/get-resource-name (:base definition))))
-                   (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "")) (:backbone-elements definition))))
+              (->> (str (combine-single-class name (filter #(= (help/get-resource-name name) (:base %)) (:elements definition)) (help/get-resource-name (:base definition)) ""))
+                   (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "" "")) (:backbone-elements definition))))
                    (str (str/join (:patterns definition))))))
        #_(doall)
        (str/join "")
-       (help/write-to-file (str (dotenv/env :python-output-path) "/base") "base.cs")))
+       (str "namespace Aidbox.FHIR.Base;")
+       (help/write-to-file (str (dotenv/env :python-output-path) "/") "base.cs")))
 
 (defn save-domain-resources [elements]
   #_(println (map println elements))
   #_(map (fn [[name, definition]] (merge definition (hash-map :elements (filter #(= name (:base %)) (:elements definition))))) elements)
   (->> (filter #(= "http://hl7.org/fhir/StructureDefinition/DomainResource" (get (last %) :base "")) elements)
        (map (fn [[name, definition]]
-              (->> (str (combine-single-class name (filter #(= (help/get-resource-name name) (:base %)) (:elements definition)) (help/get-resource-name (:base definition))))
-                   (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "BackboneElement")) (:backbone-elements definition))))
+              (->> (str (combine-single-class name (filter #(= (help/get-resource-name name) (:base %)) (:elements definition)) (help/get-resource-name (:base definition)) ""))
+                   (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "BackboneElement" "")) (:backbone-elements definition))))
                    (str (str/join (:patterns definition)))
-                   (help/write-to-file (str (dotenv/env :python-output-path) "/resource") (str (help/get-resource-name name) ".cs")))))
+                   (str "namespace Aidbox.FHIR.Resource;")
+                   (str "using Aidbox.FHIR.Base;\n\n")
+                   (help/write-to-file (str (dotenv/env :python-output-path) "/resource") (str (help/get-resource-name name) ".cs")))
+              (str "Aidbox.FHIR.Resource." (help/get-resource-name name))))
        (doall)
        #_(str/join "")))
 
@@ -201,6 +206,15 @@
                                   [(dissoc item :backbone-elements)]))
           accumulator
           backbone-elements))
+
+(defn save-resources-map [names]
+  (->> (map (fn [item] (str "\t\t{ typeof(" item "), \"" item "\" },\n")) names)
+       (str/join "")
+       ((fn [s] (str "\tpublic static readonly Dictionary<Type, string> ResourceMap = new() {\n" s "\t};")))
+       ((fn [s] (str "public class Config \n{\n" s "\n}")))
+       (str "public interface IResource { string Id { get; set; } }\n\n")
+       (str "using Aidbox.FHIR.Resource;\nusing Aidbox.FHIR.Constraint;\n\nnamespace Utils;\n\n")
+       (help/write-to-file (str (dotenv/env :python-output-path) "/") (str "ResourceMap.cs"))))
 
 (defn main []
   (let [packages
@@ -245,11 +259,12 @@
          (map (fn [schema] (conj schema (hash-map :backbone-elements (flat-backbones (:backbone-elements schema) [])))))
          (vector-to-map)
          ((fn [schemas]
-            (->> (apply-constraints (concat constraint-schemas (flatten extra-constraint-schemas)) {} schemas)
-                 (doallmap))
+            (save-to-single-file schemas)
 
-            #_(save-to-single-file schemas)
-            #_(save-domain-resources schemas))))))
+            (->> (->> (apply-constraints (concat constraint-schemas (flatten extra-constraint-schemas)) {} schemas)
+                      (doallmap))
+                 (concat (save-domain-resources schemas))
+                 (save-resources-map)))))))
 
 (main)
 

@@ -4,9 +4,8 @@ using System.ComponentModel;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using UTILS;
-using HL7.FHIR.R4.RESOURCE;
-using HL7.MCODE;
+using Utils;
+
 
 namespace API;
 
@@ -45,7 +44,7 @@ public class Client
 
   public async Task<(T? result, string? error)> Read<T>(string id) where T : IResource
   {
-    UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
+    UriBuilder resourcePath = new(this.Url) { Path = Config.ResourceMap[typeof(T)] };
 
     var httpClient = this.HttpClient;
 
@@ -73,7 +72,7 @@ public class Client
 
   public async Task<(T? result, string? error)> Create<T>(T data) where T : IResource
   {
-    UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
+    UriBuilder resourcePath = new(this.Url) { Path = Config.ResourceMap[typeof(T)] };
 
     string jsonBody = JsonSerializer.Serialize<T>(data, Settings.options);
 
@@ -105,7 +104,7 @@ public class Client
 
   public async Task<(T? result, string? error)> Delete<T>(string id) where T : IResource
   {
-    UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
+    UriBuilder resourcePath = new(this.Url) { Path = Config.ResourceMap[typeof(T)] };
 
     var httpClient = this.HttpClient;
 
@@ -138,7 +137,7 @@ public class Client
 
   public async Task<(T? result, string? error)> Update<T>(T resource) where T : IResource
   {
-    UriBuilder resourcePath = new(this.Url) { Path = ResourceMap[typeof(T)] };
+    UriBuilder resourcePath = new(this.Url) { Path = Config.ResourceMap[typeof(T)] };
 
     string jsonBody = JsonSerializer.Serialize<T>(resource, Settings.options);
 
@@ -171,20 +170,13 @@ public class Client
     }
   }
 
-  private static readonly JsonSerializerOptions JsonSerializerOptions = new()
+  public static readonly JsonSerializerOptions JsonSerializerOptions = new() // private
   {
     PropertyNameCaseInsensitive = true,
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     Converters = { new JsonStringEnumConverter(new LowercaseNamingPolicy()) },
     WriteIndented = true
-  };
-
-  private readonly Dictionary<Type, string> ResourceMap = new() {
-    { typeof(Patient), "Patient" },
-    { typeof(Appointment), "Appointment" },
-    { typeof(Observation), "Observation" },
-    { typeof(McodeCancerPatient), "Patient" }
   };
 
   private string EncodeCredentials(AuthCredentials credentials)
@@ -198,7 +190,8 @@ public class Client
   {
     var fieldInfo = method.GetType().GetField(method.ToString());
 
-    if (fieldInfo == null) {
+    if (fieldInfo == null)
+    {
       return method.ToString();
     }
 

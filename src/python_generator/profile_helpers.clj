@@ -35,14 +35,14 @@
 
 (defn get-type [name type]
   (cond
-    (= type "Expression") "ResourceExpression"
-    (= type "Reference") "ResourceReference"
+    (= type "Expression") "Base.ResourceExpression"
+    (= type "Reference") "Base.ResourceReference"
     (= type "BackboneElement") (str "" (uppercase-first-letter name))
     (= type "boolean") "bool"
     (= type "integer") "int"
     (= type "")        "string"
     (.contains primitives-string type) "string"
-    :else (or type "string")))
+    :else (if type (str "Base." type) "string")))
 
 (defn derive-basic-type [name element]
   (get-type name (get-resource-name (:type element))))
