@@ -67,7 +67,7 @@ resource.list('Patient').where('name', ['John', 'Steve']);
 Also, method where support prefixes for numbers and date, just pass it as third parameter
 
 ```typescript
-resource.list('Patient').where('birthDate', '2014-06-30', 'gt');
+resource.list('Patient').where('birthdate', '2014-06-30', 'gt');
 ```
 
 #### Sort
@@ -77,13 +77,13 @@ Method sort add additional parameters for sorting
 For example, you want to display the oldest patients
 
 ```typescript
-resource.list('Patient').sort('birthDate', 'acs');
+resource.list('Patient').sort('birthdate', 'asc');
 ```
 
 And also, you want to sort this data by patients name
 
 ```typescript
-resource.list('Patient').sort('birthDate', 'acs').sort('name', 'acs');
+resource.list('Patient').sort('birthdate', 'asc').sort('name', 'asc');
 ```
 
 #### Count
