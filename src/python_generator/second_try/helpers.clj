@@ -1,10 +1,10 @@
 (ns python-generator.second-try.helpers
   (:require
-   [python-generator.extractor]
-   [cheshire.core]
-   [taoensso.nippy :as nippy]
+   [cheshire.core :as json]
    [clojure.java.io :as io]
-   [clojure.string :as str]))
+   [clojure.string :as str]
+   [python-generator.extractor]
+   [taoensso.nippy :as nippy]))
 
 
 ;; TODO: do not hardcode
@@ -80,7 +80,7 @@
     (->> rdr
          line-seq
          (mapv (fn [json-row]
-                 (cheshire.core/parse-string json-row keyword))))))
+                 (json/parse-string json-row keyword))))))
 
 (defn parse-nippy [path]
   (->> (io/file path)

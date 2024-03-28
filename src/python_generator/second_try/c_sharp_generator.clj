@@ -1,10 +1,14 @@
 (ns python-generator.second-try.c-sharp-generator
   (:require
-   [python-generator.profile-helpers :as help]
    [cheshire.core]
-   [clojure.string :as str]
+   [clojure.java.io :as io]
    [clojure.set :as set]
-   [dotenv :as dotenv]))
+   [clojure.string :as str]
+   [dotenv :as dotenv]
+   [python-generator.profile-helpers :as help]))
+
+(defn dotnet-sdk-generated-files-dir []
+  (io/file (dotenv/env :output-path) "dotnet"))
 
 (def constraint-count (atom 0))
 
@@ -19,9 +23,6 @@
        (map (fn [[k, v]] (compile-backbone name k v)))
        (hash-map :backbone-elements)
        (conj data)))
-
-(defn attach-parent-data [parent a context child]
-  (if (nil? parent) child (conj child (hash-map :elements (concat (get-in context [:classes parent a :elements]) (:elements child))))))
 
 (defn concat-elements-circulary [schemas parent-name elements]
   (if (not (nil? parent-name))
@@ -163,7 +164,7 @@
        (str (str/join (:patterns definition)))
        (str "namespace Aidbox.FHIR.Constraint;")
        (str "using Aidbox.FHIR.Base;\n\n")
-       (help/write-to-file (str (dotenv/env :python-output-path) "/constraint") (str (str/join "_" (str/split (help/get-resource-name name) #"-")) ".cs")))
+       (help/write-to-file (str (dotnet-sdk-generated-files-dir) "/constraint") (str (str/join "_" (str/split (help/get-resource-name name) #"-")) ".cs")))
   (hash-map :type (str "Aidbox.FHIR.Constraint." (get-class-name name))
             :name (:name definition)))
 
@@ -183,7 +184,7 @@
        #_(doall)
        (str/join "")
        (str "namespace Aidbox.FHIR.Base;")
-       (help/write-to-file (str (dotenv/env :python-output-path) "/") "base.cs")))
+       (help/write-to-file (str (dotnet-sdk-generated-files-dir) "/") "base.cs")))
 
 (defn save-domain-resources [elements]
   #_(println (map println elements))
@@ -195,7 +196,7 @@
                    (str (str/join (:patterns definition)))
                    (str "namespace Aidbox.FHIR.Resource;")
                    (str "using Aidbox.FHIR.Base;\n\n")
-                   (help/write-to-file (str (dotenv/env :python-output-path) "/resource") (str (help/get-resource-name name) ".cs")))
+                   (help/write-to-file (str (dotnet-sdk-generated-files-dir) "/resource") (str (help/get-resource-name name) ".cs")))
               (hash-map :type (str "Aidbox.FHIR.Resource." (help/get-resource-name name))
                         :name (:name definition))))
        (doall)
@@ -216,7 +217,7 @@
        (str "public class LowercaseNamingPolicy : JsonNamingPolicy\n{\n\tpublic override string ConvertName(string name) => name.ToLower();\n}\n\n")
        (str "public interface IResource { string Id { get; set; } }\n\n")
        (str "using System.Text.Json;\nusing System.Text.Json.Serialization;\nnamespace Utils;\n\n")
-       (help/write-to-file (str (dotenv/env :python-output-path) "/") (str "ResourceMap.cs"))))
+       (help/write-to-file (str (dotnet-sdk-generated-files-dir) "/") (str "ResourceMap.cs"))))
 
 (defn main []
   (let [packages

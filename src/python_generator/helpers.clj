@@ -6,7 +6,6 @@
    [clojure.java.io :as io]
    [clojure.string :as str]))
 
-
 ;; TODO: do not hardcode
 (def elements #{"HumanName" "Signature" "Range" "Coding" "Attachment" "BackboneElement" "Address" "Money" "Period" "Expression" "TriggerDefinition" "Contributor" "Identifier" "Extension" "Quantity" "RelatedArtifact" "Ratio" "UsageContext" "ContactPoint" "Narrative" "Meta" "SampledData" "Annotation" "Reference" "CodeableConcept" "ContactDetail" "ParameterDefinition" "DataRequirement"})
 (def backbone-elements #{"Population" "Timing" "MarketingStatus" "SubstanceAmount" "ProductShelfLife" "ProdCharacteristic" "Dosage" "ElementDefinition"})
@@ -96,3 +95,11 @@
   (with-open [writer (io/writer (io/file directory (str filename ".py")))] (.write writer text)))
 
 ;; (get-resource-name filename)
+
+(defn delete-directory!
+  "Recursively delete a directory."
+  [^java.io.File file]
+  (when (.exists file)
+    (when (.isDirectory file)
+      (run! delete-directory! (.listFiles file)))
+    (io/delete-file file)))

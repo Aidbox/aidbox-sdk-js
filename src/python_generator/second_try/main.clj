@@ -1,10 +1,15 @@
 (ns python-generator.second-try.main
   (:require
-   [python-generator.profile-helpers :as help]
    [cheshire.core]
-   [clojure.string :as str]
+   [clojure.java.io :as io]
    [clojure.set :as set]
-   [dotenv :as dotenv]))
+   [clojure.string :as str]
+   [dotenv :as dotenv]
+   [python-generator.helpers :as helpers]
+   [python-generator.profile-helpers :as help]))
+
+(defn python-sdk-generated-files-dir []
+  (io/file (dotenv/env :output-path) "python"))
 
 (def constraint-count (atom 0))
 
@@ -155,7 +160,9 @@
        (str "from base import *\n")
        (str "from typing import Optional, List, Literal\n")
        (str "from pydantic import BaseModel\n")
-       (help/write-to-file (dotenv/env :python-output-path) (str/join "_" (str/split (help/get-resource-name name) #"-")))))
+       (help/write-to-file
+        (python-sdk-generated-files-dir)
+        (str (str/join "_" (str/split (help/get-resource-name name) #"-")) ".py"))))
 
 (defn doallmap [elements] (doall (map save-to-file elements)))
 
@@ -195,9 +202,13 @@
              (filter #(not (str/includes? (.getName %) "fhir.r4.core")))
              (map help/parse-ndjson-gz)
              (map (fn [constraint]
-                     (filter #(and (not (= (:type %) "Extension"))
-                                   (= (:derivation %) "constraint"))
-                             constraint))))]
+                    (filter #(and (not (= (:type %) "Extension"))
+                                  (= (:derivation %) "constraint"))
+                            constraint))))]
+
+    (helpers/delete-directory!
+          (python-sdk-generated-files-dir))
+
     (->> base-schemas
          (compile-elements)
          (filter #(not (nil? (:url %))))
@@ -209,7 +220,9 @@
          (map (fn [item] (hash-map (:url item) item)))
          (into {})
          (apply-constraints (concat constraint-schemas (flatten extra-constraint-schemas)) {})
+
          (doallmap))))
 
 (main)
+
 
