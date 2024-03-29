@@ -1,20 +1,20 @@
-(ns python-generator.second-try.c-sharp-generator
+(ns sdk-generator.c-sharp-generator
   (:require
    [cheshire.core]
    [clojure.java.io :as io]
    [clojure.set :as set]
    [clojure.string :as str]
    [dotenv :as dotenv]
-   [python-generator.profile-helpers :as help]))
+   [sdk-generator.profile-helpers :as profile-helpers]))
 
 (defn dotnet-sdk-generated-files-dir []
-  (io/file (dotenv/env :output-path) "dotnet"))
+  (io/file (dotenv/env :output-path) "dotnet-sdk"))
 
 (def constraint-count (atom 0))
 
 (defn compile-backbone [parent_name property_name definition]
-  (let [name (str parent_name "_" (help/uppercase-first-letter (name property_name)))
-        data (help/get-typings-and-imports name (or (:required definition) []) (help/elements-to-vector definition))
+  (let [name (str parent_name "_" (profile-helpers/uppercase-first-letter (name property_name)))
+        data (profile-helpers/get-typings-and-imports name (or (:required definition) []) (profile-helpers/elements-to-vector definition))
         backbone-elements (filter (fn [item] (> (count item) 0)) (:backbone-elements data))]
     (conj data (hash-map :backbone-elements (if (= (count backbone-elements) 0) [] (map (fn [[k, v]] (compile-backbone name k v)) backbone-elements))))))
 
@@ -56,9 +56,9 @@
 
 (defn compile-elements [schemas]
   (map (fn [schema]
-         (->> (help/elements-to-vector schema)
-              (help/get-typings-and-imports (:type schema) (or (:required schema) []))
-              (clear-backbone-elements (help/get-resource-name (:url schema)))
+         (->> (profile-helpers/elements-to-vector schema)
+              (profile-helpers/get-typings-and-imports (:type schema) (or (:required schema) []))
+              (clear-backbone-elements (profile-helpers/get-resource-name (:url schema)))
               (safe-conj (hash-map :base (get schema :base) :url (get schema :url))))) schemas))
 
 (defn combine-elements [schemas]
@@ -85,7 +85,7 @@
 (defn pattern-codeable-concept [name schema]
   (->> (str "}")
        (str "\tpublic new " (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-"))) (get-in schema [:pattern :coding] []))) "[] Coding { get; } = [new()];\n") #_(str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-")) "()") (get-in schema [:pattern :coding] [])))
-       (str "\nclass " (str/join (map help/uppercase-first-letter (str/split name #"-"))) " : CodeableConcept\n{\n")
+       (str "\nclass " (str/join (map profile-helpers/uppercase-first-letter (str/split name #"-"))) " : CodeableConcept\n{\n")
        (str (when-let [coding (:coding (:pattern schema))]
               (str/join (map (fn [code] (->> (str "}")
                                              (str (when (contains? code :code)  (str "\tpublic new string Code { get; } = \"" (:code code) "\";\n")))
@@ -94,15 +94,15 @@
                                              (str "\n\nclass Coding" (str/join (str/split (:code code) #"-")) " : Coding\n{\n"))) coding))) "\n")))
 
 (defn create-single-pattern [constraint-name, [key, schema], elements]
-  (case (help/get-resource-name (some #(when (= (name key) (:name %)) (:value %)) elements))
-    "CodeableConcept" (pattern-codeable-concept (str (help/uppercase-first-letter (help/get-resource-name constraint-name)) (help/uppercase-first-letter (subs (str key) 1))) schema) ""))
+  (case (profile-helpers/get-resource-name (some #(when (= (name key) (:name %)) (:value %)) elements))
+    "CodeableConcept" (pattern-codeable-concept (str (profile-helpers/uppercase-first-letter (profile-helpers/get-resource-name constraint-name)) (profile-helpers/uppercase-first-letter (subs (str key) 1))) schema) ""))
 
 (defn apply-patterns [constraint-name patterns schema]
   (->> (map (fn [item]
               (if-let [pattern (some #(when (= (name (first %)) (:name item)) (last %)) patterns)]
                 (case (:value item)
                   "str" (assoc item :value (:pattern pattern) :literal true)
-                  "CodeableConcept" (conj item (hash-map :value (str (str/join (map help/uppercase-first-letter (str/split (help/get-resource-name constraint-name) #"-"))) (str/join (map help/uppercase-first-letter (str/split (:name item) #"-")))) :codeable-concept-pattern true))
+                  "CodeableConcept" (conj item (hash-map :value (str (str/join (map profile-helpers/uppercase-first-letter (str/split (profile-helpers/get-resource-name constraint-name) #"-"))) (str/join (map profile-helpers/uppercase-first-letter (str/split (:name item) #"-")))) :codeable-concept-pattern true))
                   "Quantity" item item) item)) (:elements schema))
        (hash-map :elements)
        (conj schema (hash-map :patterns (concat (get schema :patterns []) (map (fn [item] (create-single-pattern constraint-name item (:elements schema))) patterns))))))
@@ -134,7 +134,7 @@
                    (conj acc (hash-map (:url constraint-schema) (apply-single-constraint constraint-schema (get base-schemas (:base constraint-schema))))) acc))) result constraint-schemas) base-schemas) result))
 
 (defn get-class-name [profile-name]
-  (let [n (str/join "" (map help/uppercase-first-letter (clojure.string/split (help/get-resource-name profile-name) #"-")))]
+  (let [n (str/join "" (map profile-helpers/uppercase-first-letter (clojure.string/split (profile-helpers/get-resource-name profile-name) #"-")))]
     (cond
       (= n "Expression") "ResourceExpression"
       (= n "Reference") "ResourceReference" :else n)))
@@ -149,7 +149,7 @@
                      #_((if (:literal item) (fn [s] (str "Literal[\"" s "\"] = " "\"" s "\"")) str))
                      ((if (and (not (:required item)) (not (:literal item))) (fn [s] (str s "?")) str))
                      #_((if (and (not (:required item)) (not (:literal item))) (fn [s] (str s " = None")) str))
-                     ((fn [s] (str s " " (help/uppercase-first-letter (:name item)))))
+                     ((fn [s] (str s " " (profile-helpers/uppercase-first-letter (:name item)))))
                      ((fn [s] (str s " { get; " (if (or (:meta item) (:codeable-concept-pattern item)) "}" "set; }"))))
                      ((if (and (:required item) (:codeable-concept-pattern item)) (fn [s] (str s " = new()")) str))
                      ((if (:meta item) (fn [s] (str s (:meta item))) str))
@@ -157,14 +157,14 @@
                      #_#_(str "\t" (:name item) ": ")
                        (str "\n")))) elements)
        (str/join "")
-       ((fn [s] (str "\n\npublic class " (get-class-name name) (if (= parent "") "" (str " : " (help/uppercase-first-letter parent))) "\n{" s inner-classes "\n}"))))) ;; "(" (case t "backbone" "BackboneElement" "BaseModel") "):"
+       ((fn [s] (str "\n\npublic class " (get-class-name name) (if (= parent "") "" (str " : " (profile-helpers/uppercase-first-letter parent))) "\n{" s inner-classes "\n}"))))) ;; "(" (case t "backbone" "BackboneElement" "BaseModel") "):"
 
 (defn save-to-file [[name, definition]]
   (->> (str (combine-single-class name (:elements definition) "" (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "BackboneElement" "")) (:backbone-elements definition))))))
        (str (str/join (:patterns definition)))
        (str "namespace Aidbox.FHIR.Constraint;")
        (str "using Aidbox.FHIR.Base;\n\n")
-       (help/write-to-file (str (dotnet-sdk-generated-files-dir) "/constraint") (str (str/join "_" (str/split (help/get-resource-name name) #"-")) ".cs")))
+       (profile-helpers/write-to-file (str (dotnet-sdk-generated-files-dir) "/constraint") (str (str/join "_" (str/split (profile-helpers/get-resource-name name) #"-")) ".cs")))
   (hash-map :type (str "Aidbox.FHIR.Constraint." (get-class-name name))
             :name (:name definition)))
 
@@ -178,26 +178,26 @@
   #_(map (fn [[name, definition]] (merge definition (hash-map :elements (filter #(= name (:base %)) (:elements definition))))) elements)
   (->> (filter #(not (= "http://hl7.org/fhir/StructureDefinition/DomainResource" (get (last %) :base ""))) elements)
        (map (fn [[name, definition]]
-              (->> (str (combine-single-class name (filter #(= (help/get-resource-name name) (:base %)) (:elements definition)) (help/get-resource-name (:base definition)) ""))
+              (->> (str (combine-single-class name (filter #(= (profile-helpers/get-resource-name name) (:base %)) (:elements definition)) (profile-helpers/get-resource-name (:base definition)) ""))
                    (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "" "")) (:backbone-elements definition))))
                    (str (str/join (:patterns definition))))))
        #_(doall)
        (str/join "")
        (str "namespace Aidbox.FHIR.Base;")
-       (help/write-to-file (str (dotnet-sdk-generated-files-dir) "/") "base.cs")))
+       (profile-helpers/write-to-file (str (dotnet-sdk-generated-files-dir) "/") "base.cs")))
 
 (defn save-domain-resources [elements]
   #_(println (map println elements))
   #_(map (fn [[name, definition]] (merge definition (hash-map :elements (filter #(= name (:base %)) (:elements definition))))) elements)
   (->> (filter #(= "http://hl7.org/fhir/StructureDefinition/DomainResource" (get (last %) :base "")) elements)
        (map (fn [[name, definition]]
-              (->> (str (combine-single-class name (filter #(= (help/get-resource-name name) (:base %)) (:elements definition)) (help/get-resource-name (:base definition)) ""))
+              (->> (str (combine-single-class name (filter #(= (profile-helpers/get-resource-name name) (:base %)) (:elements definition)) (profile-helpers/get-resource-name (:base definition)) ""))
                    (str (str/join (map (fn [definition] (combine-single-class (:name definition) (:elements definition) "BackboneElement" "")) (:backbone-elements definition))))
                    (str (str/join (:patterns definition)))
                    (str "namespace Aidbox.FHIR.Resource;")
                    (str "using Aidbox.FHIR.Base;\n\n")
-                   (help/write-to-file (str (dotnet-sdk-generated-files-dir) "/resource") (str (help/get-resource-name name) ".cs")))
-              (hash-map :type (str "Aidbox.FHIR.Resource." (help/get-resource-name name))
+                   (profile-helpers/write-to-file (str (dotnet-sdk-generated-files-dir) "/resource") (str (profile-helpers/get-resource-name name) ".cs")))
+              (hash-map :type (str "Aidbox.FHIR.Resource." (profile-helpers/get-resource-name name))
                         :name (:name definition))))
        (doall)
        #_(str/join "")))
@@ -217,12 +217,12 @@
        (str "public class LowercaseNamingPolicy : JsonNamingPolicy\n{\n\tpublic override string ConvertName(string name) => name.ToLower();\n}\n\n")
        (str "public interface IResource { string Id { get; set; } }\n\n")
        (str "using System.Text.Json;\nusing System.Text.Json.Serialization;\nnamespace Utils;\n\n")
-       (help/write-to-file (str (dotnet-sdk-generated-files-dir) "/") (str "ResourceMap.cs"))))
+       (profile-helpers/write-to-file (str (dotnet-sdk-generated-files-dir) "/") (str "ResourceMap.cs"))))
 
 (defn run [& _]
   (let [packages
         (->> (dotenv/env :source-path)
-             (help/get-directory-files)
+             (profile-helpers/get-directory-files)
              (filter #(and (str/includes? (.getName %) "hl7.fhir")
                            (not (.isDirectory %)))))
 
@@ -230,7 +230,7 @@
         (->> packages
              (filter #(str/includes? (.getName %) "fhir.r4.core"))
              (first)
-             (help/parse-ndjson-gz))
+             (profile-helpers/parse-ndjson-gz))
 
         base-schemas
         (->> schemas
@@ -248,7 +248,7 @@
         extra-constraint-schemas
         (->> packages
              (filter #(not (str/includes? (.getName %) "fhir.r4.core")))
-             (map help/parse-ndjson-gz)
+             (map profile-helpers/parse-ndjson-gz)
              (map (fn [constraint]
                     (filter #(and (not (= (:type %) "Extension"))
                                   (= (:derivation %) "constraint"))
@@ -268,3 +268,10 @@
                       (doallmap))
                  (concat (save-domain-resources schemas))
                  (save-resources-map)))))))
+
+
+(comment
+  (run)
+
+  ; repl
+  )

@@ -1,11 +1,12 @@
 .EXPORT_ALL_VARIABLES:
 .PHONY: test build
 
-sdk-build:
-	clj -T:build-pm uber
 
-sdk-publish:
-	cd vendor/publish && npm install && cp ../../target/zen.jar zen.jar && npm publish --access=public
+build-csharp-sdk:
+	clj -X sdk-generator.c-sharp-generator/run
+
+build-python-sdk:
+	clj -X sdk-generator.main/run
 
 repl:
 	clj -A:test -M:nrepl

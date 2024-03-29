@@ -1,21 +1,21 @@
-(ns python-generator.second-try.main
+(ns sdk-generator.main
   (:require
    [cheshire.core]
    [clojure.java.io :as io]
    [clojure.set :as set]
    [clojure.string :as str]
    [dotenv :as dotenv]
-   [python-generator.helpers :as helpers]
-   [python-generator.profile-helpers :as help]))
+   [sdk-generator.helpers :as helpers]
+   [sdk-generator.profile-helpers :as profile-helpers]))
 
 (defn python-sdk-generated-files-dir []
-  (io/file (dotenv/env :output-path) "python"))
+  (io/file (dotenv/env :output-path) "python-sdk"))
 
 (def constraint-count (atom 0))
 
 (defn compile-backbone [parent_name property_name definition]
-  (let [name (str parent_name "_" (help/uppercase-first-letter (name property_name)))
-        data (help/get-typings-and-imports name (or (:required definition) []) (help/elements-to-vector definition))
+  (let [name (str parent_name "_" (str/capitalize (name property_name)))
+        data (profile-helpers/get-typings-and-imports name (or (:required definition) []) (profile-helpers/elements-to-vector definition))
         backbone-elements (filter (fn [item] (> (count item) 0)) (:backbone-elements data))]
     (conj data (hash-map :backbone-elements (if (= (count backbone-elements) 0) [] (map (fn [[k, v]] (compile-backbone name k v)) backbone-elements))))))
 
@@ -60,9 +60,9 @@
 
 (defn compile-elements [schemas]
   (map (fn [schema]
-         (->> (help/elements-to-vector schema)
-              (help/get-typings-and-imports (:type schema) (or (:required schema) []))
-              (clear-backbone-elements (help/get-resource-name (:url schema)))
+         (->> (profile-helpers/elements-to-vector schema)
+              (profile-helpers/get-typings-and-imports (:type schema) (or (:required schema) []))
+              (clear-backbone-elements (profile-helpers/get-resource-name (:url schema)))
               (safe-conj (hash-map :base (get schema :base) :url (get schema :url))))) schemas))
 
 (defn combine-elements [schemas]
@@ -88,7 +88,7 @@
 
 (defn pattern-codeable-concept [name schema]
   (->> (str "\tcoding: List[" (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-"))) (get-in schema [:pattern :coding] []))) "] = [" (str/join ", " (map #(str "Coding" (str/join (str/split (:code %) #"-")) "()") (get-in schema [:pattern :coding] []))) "]\n")
-       (str "class " (str/join (map help/uppercase-first-letter (str/split name #"-"))) "(CodeableConcept):\n")
+       (str "class " (str/join (map profile-helpers/uppercase-first-letter (str/split name #"-"))) "(CodeableConcept):\n")
        (str (when-let [coding (:coding (:pattern schema))]
               (str/join (map (fn [code] (->> (str (when (contains? code :code)  (str "\tcode: Literal[\"" (:code code) "\"] = \"" (:code code) "\"\n")))
                                              (str (when (contains? code :system) (str "\tsystem: Literal[\"" (:system code) "\"] = \"" (:system code) "\"\n")))
@@ -96,15 +96,15 @@
                                              (str "\nclass Coding" (str/join (str/split (:code code) #"-")) "(Coding):\n"))) coding))) "\n")))
 
 (defn create-single-pattern [constraint-name, [key, schema], elements]
-  (case (help/get-resource-name (some #(when (= (name key) (:name %)) (:value %)) elements))
-    "CodeableConcept" (pattern-codeable-concept (str (help/uppercase-first-letter (help/get-resource-name constraint-name)) (help/uppercase-first-letter (subs (str key) 1))) schema) ""))
+  (case (profile-helpers/get-resource-name (some #(when (= (name key) (:name %)) (:value %)) elements))
+    "CodeableConcept" (pattern-codeable-concept (str (profile-helpers/uppercase-first-letter (profile-helpers/get-resource-name constraint-name)) (profile-helpers/uppercase-first-letter (subs (str key) 1))) schema) ""))
 
 (defn apply-patterns [constraint-name patterns schema]
   (->> (map (fn [item]
               (if-let [pattern (some #(when (= (name (first %)) (:name item)) (last %)) patterns)]
                 (case (:value item)
                   "str" (assoc item :value (:pattern pattern) :literal true)
-                  "CodeableConcept" (conj item (hash-map :value (str (str/join (map help/uppercase-first-letter (str/split (help/get-resource-name constraint-name) #"-"))) (str/join (map help/uppercase-first-letter (str/split (:name item) #"-")))) :codeable-concept-pattern true))
+                  "CodeableConcept" (conj item (hash-map :value (str (str/join (map profile-helpers/uppercase-first-letter (str/split (profile-helpers/get-resource-name constraint-name) #"-"))) (str/join (map profile-helpers/uppercase-first-letter (str/split (:name item) #"-")))) :codeable-concept-pattern true))
                   "Quantity" item item) item)) (:elements schema))
        (hash-map :elements)
        (conj schema (hash-map :patterns (concat (get schema :patterns []) (map (fn [item] (create-single-pattern constraint-name item (:elements schema))) patterns))))))
@@ -136,7 +136,7 @@
                    (conj acc (hash-map (:url constraint-schema) (apply-single-constraint constraint-schema (get base-schemas (:base constraint-schema))))) acc))) result constraint-schemas) base-schemas) result))
 
 (defn get-class-name [profile-name]
-  (str/join "" (map help/uppercase-first-letter (clojure.string/split (help/get-resource-name profile-name) #"-"))))
+  (str/join "" (map profile-helpers/uppercase-first-letter (clojure.string/split (profile-helpers/get-resource-name profile-name) #"-"))))
 
 (defn combine-single-class [name elements t]
   (->> (map (fn [item]
@@ -160,9 +160,9 @@
        (str "from base import *\n")
        (str "from typing import Optional, List, Literal\n")
        (str "from pydantic import BaseModel\n")
-       (help/write-to-file
+       (profile-helpers/write-to-file
         (python-sdk-generated-files-dir)
-        (str (str/join "_" (str/split (help/get-resource-name name) #"-")) ".py"))))
+        (str (str/join "_" (str/split (profile-helpers/get-resource-name name) #"-")) ".py"))))
 
 (defn doallmap [elements] (doall (map save-to-file elements)))
 
@@ -175,7 +175,7 @@
 (defn run [& _]
   (let [packages
         (->> (dotenv/env :source-path)
-             (help/get-directory-files)
+             (profile-helpers/get-directory-files)
              (filter #(and (str/includes? (.getName %) "hl7.fhir")
                            (not (.isDirectory %)))))
 
@@ -183,7 +183,7 @@
         (->> packages
              (filter #(str/includes? (.getName %) "fhir.r4.core"))
              (first)
-             (help/parse-ndjson-gz))
+             (profile-helpers/parse-ndjson-gz))
 
         base-schemas
         (->> schemas
@@ -200,7 +200,7 @@
         extra-constraint-schemas
         (->> packages
              (filter #(not (str/includes? (.getName %) "fhir.r4.core")))
-             (map help/parse-ndjson-gz)
+             (map profile-helpers/parse-ndjson-gz)
              (map (fn [constraint]
                     (filter #(and (not (= (:type %) "Extension"))
                                   (= (:derivation %) "constraint"))
@@ -221,3 +221,9 @@
          (into {})
          (apply-constraints (concat constraint-schemas (flatten extra-constraint-schemas)) {})
          (doallmap))))
+
+(comment
+  (run)
+
+  ; repl
+  )
