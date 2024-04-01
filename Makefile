@@ -3,10 +3,10 @@
 
 
 build-csharp-sdk:
-	clj -X sdk-generator.c-sharp-generator/run
+	clj -X sdk-generator.python/run
 
 build-python-sdk:
-	clj -X sdk-generator.main/run
+	clj -X sdk-generator.csharp/run
 
 repl:
 	clj -A:test -M:nrepl

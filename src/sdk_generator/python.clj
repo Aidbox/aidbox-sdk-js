@@ -1,4 +1,4 @@
-(ns sdk-generator.main
+(ns sdk-generator.python
   (:require
    [cheshire.core]
    [clojure.java.io :as io]
@@ -6,27 +6,13 @@
    [clojure.string :as str]
    [dotenv :as dotenv]
    [sdk-generator.helpers :as helpers]
+   [sdk-generator.common :as common]
    [sdk-generator.profile-helpers :as profile-helpers]))
 
 (defn python-sdk-generated-files-dir []
   (io/file (dotenv/env :output-path) "python-sdk"))
 
 (def constraint-count (atom 0))
-
-(defn compile-backbone [parent_name property_name definition]
-  (let [name (str parent_name "_" (str/capitalize (name property_name)))
-        data (profile-helpers/get-typings-and-imports name (or (:required definition) []) (profile-helpers/elements-to-vector definition))
-        backbone-elements (filter (fn [item] (> (count item) 0)) (:backbone-elements data))]
-    (conj data (hash-map :backbone-elements (if (= (count backbone-elements) 0) [] (map (fn [[k, v]] (compile-backbone name k v)) backbone-elements))))))
-
-(defn clear-backbone-elements [name data]
-  (->> (filter (fn [item] (> (count item) 0)) (:backbone-elements data))
-       (map (fn [[k, v]] (compile-backbone name k v)))
-       (hash-map :backbone-elements)
-       (conj data)))
-
-(defn attach-parent-data [parent a context child]
-  (if (nil? parent) child (conj child (hash-map :elements (concat (get-in context [:classes parent a :elements]) (:elements child))))))
 
 (defn concat-elements-circulary [schemas parent-name elements]
   (if (not (nil? parent-name))
@@ -55,15 +41,6 @@
          (hash-map :backbone-elements)
          (conj definition))
     definition))
-
-(defn safe-conj [a b] (conj a (or b {})))
-
-(defn compile-elements [schemas]
-  (map (fn [schema]
-         (->> (profile-helpers/elements-to-vector schema)
-              (profile-helpers/get-typings-and-imports (:type schema) (or (:required schema) []))
-              (clear-backbone-elements (profile-helpers/get-resource-name (:url schema)))
-              (safe-conj (hash-map :base (get schema :base) :url (get schema :url))))) schemas))
 
 (defn combine-elements [schemas]
   (map (fn [[_, schema]]
@@ -210,15 +187,14 @@
           (python-sdk-generated-files-dir))
 
     (->> base-schemas
-         (compile-elements)
-         (filter #(not (nil? (:url %))))
-         (map (fn [item] (hash-map (:url item) item)))
-         (into {})
+         (common/compile-elements)
+         (common/omit-empty-urls)
+         (common/vector-to-map)
          (combine-elements)
-         (filter #(not (nil? (:url %))))
-         (map (fn [schema] (conj schema (hash-map :backbone-elements (flat-backbones (:backbone-elements schema) [])))))
-         (map (fn [item] (hash-map (:url item) item)))
-         (into {})
+         (common/omit-empty-urls)
+         (map (fn [schema]
+                (conj schema (hash-map :backbone-elements (flat-backbones (:backbone-elements schema) [])))))
+         (common/vector-to-map)
          (apply-constraints (concat constraint-schemas (flatten extra-constraint-schemas)) {})
          (doallmap))))
 

@@ -1,28 +1,18 @@
-(ns sdk-generator.c-sharp-generator
+(ns sdk-generator.csharp
   (:require
    [cheshire.core]
    [clojure.java.io :as io]
    [clojure.set :as set]
    [clojure.string :as str]
    [dotenv :as dotenv]
+   [sdk-generator.common :as common]
+   [sdk-generator.helpers :as helpers]
    [sdk-generator.profile-helpers :as profile-helpers]))
 
-(defn dotnet-sdk-generated-files-dir []
+(defn csharp-sdk-generated-files-dir []
   (io/file (dotenv/env :output-path) "dotnet-sdk"))
 
 (def constraint-count (atom 0))
-
-(defn compile-backbone [parent_name property_name definition]
-  (let [name (str parent_name "_" (profile-helpers/uppercase-first-letter (name property_name)))
-        data (profile-helpers/get-typings-and-imports name (or (:required definition) []) (profile-helpers/elements-to-vector definition))
-        backbone-elements (filter (fn [item] (> (count item) 0)) (:backbone-elements data))]
-    (conj data (hash-map :backbone-elements (if (= (count backbone-elements) 0) [] (map (fn [[k, v]] (compile-backbone name k v)) backbone-elements))))))
-
-(defn clear-backbone-elements [name data]
-  (->> (filter (fn [item] (> (count item) 0)) (:backbone-elements data))
-       (map (fn [[k, v]] (compile-backbone name k v)))
-       (hash-map :backbone-elements)
-       (conj data)))
 
 (defn concat-elements-circulary [schemas parent-name elements]
   (if (not (nil? parent-name))
@@ -51,15 +41,6 @@
          (hash-map :backbone-elements)
          (conj definition))
     definition))
-
-(defn safe-conj [a b] (conj a (or b {})))
-
-(defn compile-elements [schemas]
-  (map (fn [schema]
-         (->> (profile-helpers/elements-to-vector schema)
-              (profile-helpers/get-typings-and-imports (:type schema) (or (:required schema) []))
-              (clear-backbone-elements (profile-helpers/get-resource-name (:url schema)))
-              (safe-conj (hash-map :base (get schema :base) :url (get schema :url))))) schemas))
 
 (defn combine-elements [schemas]
   (map (fn [[_, schema]]
@@ -153,7 +134,7 @@
                      ((fn [s] (str s " { get; " (if (or (:meta item) (:codeable-concept-pattern item)) "}" "set; }"))))
                      ((if (and (:required item) (:codeable-concept-pattern item)) (fn [s] (str s " = new()")) str))
                      ((if (:meta item) (fn [s] (str s (:meta item))) str))
-                    ;;  ((if (and (not (:required item)) (:array item)) help/append-default-vector str)) 
+                    ;;  ((if (and (not (:required item)) (:array item)) help/append-default-vector str))
                      #_#_(str "\t" (:name item) ": ")
                        (str "\n")))) elements)
        (str/join "")
@@ -164,17 +145,13 @@
        (str (str/join (:patterns definition)))
        (str "namespace Aidbox.FHIR.Constraint;")
        (str "using Aidbox.FHIR.Base;\n\n")
-       (profile-helpers/write-to-file (str (dotnet-sdk-generated-files-dir) "/constraint") (str (str/join "_" (str/split (profile-helpers/get-resource-name name) #"-")) ".cs")))
+       (profile-helpers/write-to-file (str (csharp-sdk-generated-files-dir) "/constraint") (str (str/join "_" (str/split (profile-helpers/get-resource-name name) #"-")) ".cs")))
   (hash-map :type (str "Aidbox.FHIR.Constraint." (get-class-name name))
             :name (:name definition)))
 
 (defn doallmap [elements] (doall (map save-to-file elements)))
 
-(defn vector-to-map [v] (->> (map (fn [item] (hash-map (:url item) item)) v)
-                             (into {})))
-
 (defn save-to-single-file [elements]
-  #_(println (map println elements))
   #_(map (fn [[name, definition]] (merge definition (hash-map :elements (filter #(= name (:base %)) (:elements definition))))) elements)
   (->> (filter #(not (= "http://hl7.org/fhir/StructureDefinition/DomainResource" (get (last %) :base ""))) elements)
        (map (fn [[name, definition]]
@@ -184,10 +161,9 @@
        #_(doall)
        (str/join "")
        (str "namespace Aidbox.FHIR.Base;")
-       (profile-helpers/write-to-file (str (dotnet-sdk-generated-files-dir) "/") "base.cs")))
+       (profile-helpers/write-to-file (str (csharp-sdk-generated-files-dir) "/") "base.cs")))
 
 (defn save-domain-resources [elements]
-  #_(println (map println elements))
   #_(map (fn [[name, definition]] (merge definition (hash-map :elements (filter #(= name (:base %)) (:elements definition))))) elements)
   (->> (filter #(= "http://hl7.org/fhir/StructureDefinition/DomainResource" (get (last %) :base "")) elements)
        (map (fn [[name, definition]]
@@ -196,11 +172,10 @@
                    (str (str/join (:patterns definition)))
                    (str "namespace Aidbox.FHIR.Resource;")
                    (str "using Aidbox.FHIR.Base;\n\n")
-                   (profile-helpers/write-to-file (str (dotnet-sdk-generated-files-dir) "/resource") (str (profile-helpers/get-resource-name name) ".cs")))
+                   (profile-helpers/write-to-file (str (csharp-sdk-generated-files-dir) "/resource") (str (profile-helpers/get-resource-name name) ".cs")))
               (hash-map :type (str "Aidbox.FHIR.Resource." (profile-helpers/get-resource-name name))
                         :name (:name definition))))
-       (doall)
-       #_(str/join "")))
+       (doall)))
 
 (defn flat-backbones [backbone-elements accumulator]
   (reduce (fn [acc, item] (concat (flat-backbones (:backbone-elements item) acc)
@@ -217,7 +192,7 @@
        (str "public class LowercaseNamingPolicy : JsonNamingPolicy\n{\n\tpublic override string ConvertName(string name) => name.ToLower();\n}\n\n")
        (str "public interface IResource { string Id { get; set; } }\n\n")
        (str "using System.Text.Json;\nusing System.Text.Json.Serialization;\nnamespace Utils;\n\n")
-       (profile-helpers/write-to-file (str (dotnet-sdk-generated-files-dir) "/") (str "ResourceMap.cs"))))
+       (profile-helpers/write-to-file (str (csharp-sdk-generated-files-dir) "/") (str "ResourceMap.cs"))))
 
 (defn run [& _]
   (let [packages
@@ -253,14 +228,19 @@
                     (filter #(and (not (= (:type %) "Extension"))
                                   (= (:derivation %) "constraint"))
                             constraint))))]
+
+    (helpers/delete-directory!
+     (csharp-sdk-generated-files-dir))
+
     (->> base-schemas
-         (compile-elements)
-         (filter #(not (nil? (:url %))))
-         (vector-to-map)
+         (common/compile-elements)
+         (common/omit-empty-urls)
+         (common/vector-to-map)
          (combine-elements)
-         (filter #(not (nil? (:url %))))
-         (map (fn [schema] (conj schema (hash-map :backbone-elements (flat-backbones (:backbone-elements schema) [])))))
-         (vector-to-map)
+         (common/omit-empty-urls)
+         (map (fn [schema]
+                (conj schema (hash-map :backbone-elements (flat-backbones (:backbone-elements schema) [])))))
+         (common/vector-to-map)
          ((fn [schemas]
             (save-to-single-file schemas)
 
@@ -268,7 +248,6 @@
                       (doallmap))
                  (concat (save-domain-resources schemas))
                  (save-resources-map)))))))
-
 
 (comment
   (run)
