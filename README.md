@@ -46,12 +46,6 @@ In terminal move to your `zen-project` folder and generate SDK by run the follow
 zen-cli sdk
 ```
 
-**Example:**
-
-```bash
-zen-cli sdk
-```
-
 After running the zen-cli get-sdk command, you should be able to find the aidbox-javascript-sdk.tgz npm package in the
 root directory of your project. This archive is generated based on your zen-project and includes all types of resources.
 
