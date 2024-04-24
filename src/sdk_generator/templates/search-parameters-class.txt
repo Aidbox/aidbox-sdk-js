@@ -1,0 +1,8 @@
+namespace Aidbox.FHIR.SearchParameters;
+
+public class {{class-name}}SearchParameters : ResourceSearchParameters
+{
+    {% for property in properties %}
+    public string? {{property}};
+    {% endfor %}
+}

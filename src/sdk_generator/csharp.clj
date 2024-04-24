@@ -7,7 +7,8 @@
    [dotenv :as dotenv]
    [sdk-generator.common :as common]
    [sdk-generator.helpers :as helpers]
-   [sdk-generator.profile-helpers :as profile-helpers]))
+   [sdk-generator.profile-helpers :as profile-helpers]
+   [sdk-generator.search-parameters :as search-parameters]))
 
 (defn csharp-sdk-generated-files-dir []
   (io/file (dotenv/env :output-path) "dotnet-sdk"))
@@ -194,6 +195,14 @@
        (str "using System.Text.Json;\nusing System.Text.Json.Serialization;\nnamespace Utils;\n\n")
        (profile-helpers/write-to-file (str (csharp-sdk-generated-files-dir) "/") (str "ResourceMap.cs"))))
 
+
+(defn generate-search-params-files! [data]
+  (doseq [{:keys [resource-type class-file-content]} data]
+    (let [directory (str (csharp-sdk-generated-files-dir) "/search-parameters/")
+          file-name (format "%sSearchParameters.cs" resource-type)]
+      (profile-helpers/write-to-file directory file-name class-file-content))))
+
+
 (defn run [& _]
   (let [packages
         (->> (dotenv/env :source-path)
@@ -209,6 +218,7 @@
 
         base-schemas
         (->> schemas
+             ((fn [x] (def _schemas x) x))
              (filter #(or (= (:url %) "http://hl7.org/fhir/StructureDefinition/BackboneElement")
                           (= (:url %) "http://hl7.org/fhir/StructureDefinition/Resource")
                           (= (:url %) "http://hl7.org/fhir/StructureDefinition/Element")
@@ -231,6 +241,9 @@
 
     (helpers/delete-directory!
      (csharp-sdk-generated-files-dir))
+
+    (generate-search-params-files!
+     (search-parameters/search-parameters-classes schemas))
 
     (->> base-schemas
          (common/compile-elements)
