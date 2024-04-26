@@ -198,7 +198,7 @@
 
 (defn generate-search-params-files! [data]
   (doseq [{:keys [resource-type class-file-content]} data]
-    (let [directory (str (csharp-sdk-generated-files-dir) "/search-parameters/")
+    (let [directory (str (csharp-sdk-generated-files-dir) "/search/")
           file-name (format "%sSearchParameters.cs" resource-type)]
       (profile-helpers/write-to-file directory file-name class-file-content))))
 

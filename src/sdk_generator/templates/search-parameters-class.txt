@@ -1,6 +1,6 @@
-namespace Aidbox.FHIR.SearchParameters;
+namespace Aidbox.FHIR.Search;
 
-public class {{class-name}}SearchParameters : ResourceSearchParameters
+public class {{resource-type}}SearchParameters{% if base-resource-type %} : {{base-resource-type}}SearchParameters{% endif %}
 {
     {% for property in properties %}
     public string? {{property}};

@@ -31,21 +31,38 @@
   (->> (search-parameters-for schemas resource)
        (map :code)
        (map ->pascal-case)
+       (distinct)
        (sort)))
 
 (defn search-parameters-structures
   [schemas]
   (->> schemas
        (filter resource?)
+       ((fn [x] (def resources x) x))
        (map #(hash-map
-              :resource-type (:type %)
-              :fields (fields-for schemas (:type %))))))
+              :resource-type (:id %)
+              :base-resource-type
+              (when-let [base (:base %)]
+                (->pascal-case (str/replace base #"http://hl7.org/fhir/StructureDefinition/" "")))
+
+              :fields (fields-for schemas (:id %))))
+       (remove #(empty? (:fields %)))))
 
 (defn search-parameters-classes [schemas]
-  (for [{:keys [resource-type fields]} (search-parameters-structures schemas)]
+  (for [{:keys [resource-type
+                base-resource-type
+                fields]} (search-parameters-structures schemas)]
     {:resource-type resource-type
      :class-file-content
      (tpl/render-file
       "sdk_generator/templates/search-parameters-class.txt"
-      {:class-name resource-type
+      {:resource-type resource-type
+       :base-resource-type base-resource-type
        :properties fields})}))
+
+
+(comment
+
+  (->pascal-case "camelCase")
+
+  )
