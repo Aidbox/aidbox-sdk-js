@@ -1,4 +1,4 @@
-(ns sdk-generator.csharp
+(ns sdk-generator.dotnet
   (:require
    [cheshire.core]
    [clojure.java.io :as io]
@@ -10,7 +10,7 @@
    [sdk-generator.profile-helpers :as profile-helpers]
    [sdk-generator.search-parameters :as search-parameters]))
 
-(defn csharp-sdk-generated-files-dir []
+(defn dotnet-sdk-generated-files-dir []
   (io/file (dotenv/env :output-path) "dotnet-sdk"))
 
 (def constraint-count (atom 0))
@@ -146,7 +146,7 @@
        (str (str/join (:patterns definition)))
        (str "namespace Aidbox.FHIR.Constraint;")
        (str "using Aidbox.FHIR.Base;\n\n")
-       (profile-helpers/write-to-file (str (csharp-sdk-generated-files-dir) "/constraint") (str (str/join "_" (str/split (profile-helpers/get-resource-name name) #"-")) ".cs")))
+       (profile-helpers/write-to-file (str (dotnet-sdk-generated-files-dir) "/constraint") (str (str/join "_" (str/split (profile-helpers/get-resource-name name) #"-")) ".cs")))
   (hash-map :type (str "Aidbox.FHIR.Constraint." (get-class-name name))
             :name (:name definition)))
 
@@ -162,7 +162,7 @@
        #_(doall)
        (str/join "")
        (str "namespace Aidbox.FHIR.Base;")
-       (profile-helpers/write-to-file (str (csharp-sdk-generated-files-dir) "/") "base.cs")))
+       (profile-helpers/write-to-file (str (dotnet-sdk-generated-files-dir) "/") "base.cs")))
 
 (defn save-domain-resources [elements]
   #_(map (fn [[name, definition]] (merge definition (hash-map :elements (filter #(= name (:base %)) (:elements definition))))) elements)
@@ -173,7 +173,7 @@
                    (str (str/join (:patterns definition)))
                    (str "namespace Aidbox.FHIR.Resource;")
                    (str "using Aidbox.FHIR.Base;\n\n")
-                   (profile-helpers/write-to-file (str (csharp-sdk-generated-files-dir) "/resource") (str (profile-helpers/get-resource-name name) ".cs")))
+                   (profile-helpers/write-to-file (str (dotnet-sdk-generated-files-dir) "/resource") (str (profile-helpers/get-resource-name name) ".cs")))
               (hash-map :type (str "Aidbox.FHIR.Resource." (profile-helpers/get-resource-name name))
                         :name (:name definition))))
        (doall)))
@@ -193,59 +193,58 @@
        (str "public class LowercaseNamingPolicy : JsonNamingPolicy\n{\n\tpublic override string ConvertName(string name) => name.ToLower();\n}\n\n")
        (str "public interface IResource { string Id { get; set; } }\n\n")
        (str "using System.Text.Json;\nusing System.Text.Json.Serialization;\nnamespace Utils;\n\n")
-       (profile-helpers/write-to-file (str (csharp-sdk-generated-files-dir) "/") (str "ResourceMap.cs"))))
+       (profile-helpers/write-to-file (str (dotnet-sdk-generated-files-dir) "/") (str "ResourceMap.cs"))))
 
+(defn fetch-packages [source-path]
+  (->> source-path
+       (profile-helpers/get-directory-files)
+       (filter #(and (str/includes? (.getName %) "hl7.fhir")
+                     (not (.isDirectory %))))))
+
+(defn r4-core-package? [packages]
+  (str/includes? (.getName packages) "fhir.r4.core"))
+
+(defn base-schema? [schema]
+  (or (= (:url schema) "http://hl7.org/fhir/StructureDefinition/BackboneElement")
+      (= (:url schema) "http://hl7.org/fhir/StructureDefinition/Resource")
+      (= (:url schema) "http://hl7.org/fhir/StructureDefinition/Element")
+      (= (:derivation schema) "specialization")))
 
 (defn generate-search-params-files! [data]
   (doseq [{:keys [resource-type class-file-content]} data]
-    (let [directory (str (csharp-sdk-generated-files-dir) "/search/")
+    (let [directory (io/file (dotnet-sdk-generated-files-dir) "search")
           file-name (format "%sSearchParameters.cs" resource-type)]
       (profile-helpers/write-to-file directory file-name class-file-content))))
 
-
 (defn run [& _]
-  (let [packages
-        (->> (dotenv/env :source-path)
-             (profile-helpers/get-directory-files)
-             (filter #(and (str/includes? (.getName %) "hl7.fhir")
-                           (not (.isDirectory %)))))
+  (let [packages        (fetch-packages (dotenv/env :source-path))
+        r4-package      (first (filter r4-core-package? packages))
+        other-packages  (remove r4-core-package? packages)
 
-        schemas
-        (->> packages
-             (filter #(str/includes? (.getName %) "fhir.r4.core"))
-             (first)
-             (profile-helpers/parse-ndjson-gz))
-
-        base-schemas
-        (->> schemas
-             ((fn [x] (def _schemas x) x))
-             (filter #(or (= (:url %) "http://hl7.org/fhir/StructureDefinition/BackboneElement")
-                          (= (:url %) "http://hl7.org/fhir/StructureDefinition/Resource")
-                          (= (:url %) "http://hl7.org/fhir/StructureDefinition/Element")
-                          (= (:derivation %) "specialization"))))
+        r4-schemas      (profile-helpers/parse-ndjson-gz r4-package)
+        other-schemas   (flatten (map profile-helpers/parse-ndjson-gz other-packages))
+        all-schemas     (into r4-schemas other-schemas)
 
         constraint-schemas
-        (->> schemas
-             (filter #(= (:derivation %) "constraint"))
-             (filter #(and (not (= (:type %) "Extension"))
-                           (not (= (:url %) "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris")))))
+        (->> r4-schemas
+             (filter #(and
+                       (= (:derivation %) "constraint")
+                       (not (= (:type %) "Extension"))
+                       (not (= (:url %) "http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris")))))
 
         extra-constraint-schemas
-        (->> packages
-             (filter #(not (str/includes? (.getName %) "fhir.r4.core")))
-             (map profile-helpers/parse-ndjson-gz)
-             (map (fn [constraint]
-                    (filter #(and (not (= (:type %) "Extension"))
-                                  (= (:derivation %) "constraint"))
-                            constraint))))]
+        (->> other-schemas
+             (filter #(and (not (= (:type %) "Extension"))
+                           (= (:derivation %) "constraint"))))]
 
     (helpers/delete-directory!
-     (csharp-sdk-generated-files-dir))
+     (dotnet-sdk-generated-files-dir))
 
     (generate-search-params-files!
-     (search-parameters/search-parameters-classes schemas))
+     (search-parameters/search-parameters-classes all-schemas))
 
-    (->> base-schemas
+    (->> r4-schemas
+         (filter base-schema?)
          (common/compile-elements)
          (common/omit-empty-urls)
          (common/vector-to-map)

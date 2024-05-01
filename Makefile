@@ -2,11 +2,11 @@
 .PHONY: test build
 
 
-build-csharp-sdk:
-	clj -X sdk-generator.python/run
+build-dotnet-sdk:
+	clj -X sdk-generator.dotnet/run
 
 build-python-sdk:
-	clj -X sdk-generator.csharp/run
+	clj -X sdk-generator.python/run
 
 repl:
 	clj -A:test -M:nrepl

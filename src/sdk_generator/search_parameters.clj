@@ -38,7 +38,6 @@
   [schemas]
   (->> schemas
        (filter resource?)
-       ((fn [x] (def resources x) x))
        (map #(hash-map
               :resource-type (:id %)
               :base-resource-type
@@ -55,14 +54,7 @@
     {:resource-type resource-type
      :class-file-content
      (tpl/render-file
-      "sdk_generator/templates/search-parameters-class.txt"
+      "sdk_generator/templates/dotnet/search-parameters-class.txt"
       {:resource-type resource-type
        :base-resource-type base-resource-type
        :properties fields})}))
-
-
-(comment
-
-  (->pascal-case "camelCase")
-
-  )
