@@ -37,6 +37,14 @@
                           "-XX:+DebugNonSafepoints"]
             :extra-deps  {criterium/criterium                      {:mvn/version "0.4.6"}
                           com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.0.4"}}}
+  :test
+  {:extra-paths ["test"]
+   :extra-deps
+   {com.cognitect/test-runner
+    {:git/url "https://github.com/cognitect-labs/test-runner"
+     :sha     "5fb4fc46ad0bf2e0ce45eba5b9117a2e89166479"}}
+   :main-opts   ["-m" "cognitect.test-runner"]}
+
   :kaocha
   {:extra-deps  {lambdaisland/kaocha {:mvn/version "1.85.1342"}}
    :extra-paths ["runner" "test"]

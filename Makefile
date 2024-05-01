@@ -12,7 +12,7 @@ repl:
 	clj -A:test -M:nrepl
 
 test:
-	clj -A:test:kaocha
+	clj -A:test
 
 test-ci:
 	clojure -A:test:kaocha

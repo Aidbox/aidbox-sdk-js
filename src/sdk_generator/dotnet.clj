@@ -216,6 +216,10 @@
           file-name (format "%sSearchParameters.cs" resource-type)]
       (profile-helpers/write-to-file directory file-name class-file-content))))
 
+(defn fetch-all-schemas []
+  (flatten (map profile-helpers/parse-ndjson-gz (fetch-packages (dotenv/env :source-path)))))
+
+
 (defn run [& _]
   (let [packages        (fetch-packages (dotenv/env :source-path))
         r4-package      (first (filter r4-core-package? packages))
@@ -242,6 +246,7 @@
 
     (generate-search-params-files!
      (search-parameters/search-parameters-classes all-schemas))
+
 
     (->> r4-schemas
          (filter base-schema?)
