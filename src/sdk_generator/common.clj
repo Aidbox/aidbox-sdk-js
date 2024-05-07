@@ -10,27 +10,36 @@
   (->> (map (fn [item] (hash-map (:url item) item)) v)
        (into {})))
 
-(defn omit-empty-urls [coll]
+(defn remove-empty-urls [coll]
   (remove #(nil? (:url %)) coll))
 
-(defn compile-backbone [parent-name property-name definition]
+(defn compile-backbone [parent-name property-name schema]
   (let [name (str parent-name "_" (str/capitalize (name property-name)))
         data (profile-helpers/get-typings-and-imports
               name
-              (or (:required definition) [])
-              (profile-helpers/elements-to-vector definition))
-        backbone-elements (filter (fn [item] (> (count item) 0)) (:backbone-elements data))]
-    (conj data (hash-map :backbone-elements (if (= (count backbone-elements) 0) [] (map (fn [[k, v]] (compile-backbone name k v)) backbone-elements))))))
+              (or (:required schema) [])
+              (seq (:elements schema)))
+        backbone-elements (remove empty? (:backbone-elements data))]
+    (conj data
+          {:backbone-elements
+           (if (empty? backbone-elements)
+             []
+             (map (fn [[k, v]] (compile-backbone name k v)) backbone-elements))})))
 
-(defn clear-backbone-elements [name data]
-  (->> (filter (fn [item] (> (count item) 0)) (:backbone-elements data))
-       (map (fn [[k, v]] (compile-backbone name k v)))
+(defn clear-backbone-elements [resource-type schema]
+  (->> (:backbone-elements schema)
+       (remove empty?)
+       (map (fn [[k v]] (compile-backbone resource-type k v)))
        (hash-map :backbone-elements)
-       (conj data)))
+       (conj schema)))
 
 (defn compile-elements [schemas]
-  (map (fn [schema]
-         (->> (profile-helpers/elements-to-vector schema)
-              (profile-helpers/get-typings-and-imports (:type schema) (or (:required schema) []))
-              (clear-backbone-elements (profile-helpers/get-resource-name (:url schema)))
-              (safe-conj (hash-map :base (get schema :base) :url (get schema :url))))) schemas))
+  (for [schema schemas]
+    (->> (profile-helpers/get-typings-and-imports
+          (:type schema)
+          (or (:required schema) [])
+          (seq (:elements schema)))
+         (clear-backbone-elements
+          (profile-helpers/url->resource-type (:url schema)))
+         (safe-conj
+          (hash-map :base (get schema :base) :url (get schema :url))))))

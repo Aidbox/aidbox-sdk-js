@@ -73,15 +73,15 @@
                                              (str "\nclass Coding" (str/join (str/split (:code code) #"-")) "(Coding):\n"))) coding))) "\n")))
 
 (defn create-single-pattern [constraint-name, [key, schema], elements]
-  (case (profile-helpers/get-resource-name (some #(when (= (name key) (:name %)) (:value %)) elements))
-    "CodeableConcept" (pattern-codeable-concept (str (profile-helpers/uppercase-first-letter (profile-helpers/get-resource-name constraint-name)) (profile-helpers/uppercase-first-letter (subs (str key) 1))) schema) ""))
+  (case (profile-helpers/url->resource-type (some #(when (= (name key) (:name %)) (:value %)) elements))
+    "CodeableConcept" (pattern-codeable-concept (str (profile-helpers/uppercase-first-letter (profile-helpers/url->resource-type constraint-name)) (profile-helpers/uppercase-first-letter (subs (str key) 1))) schema) ""))
 
 (defn apply-patterns [constraint-name patterns schema]
   (->> (map (fn [item]
               (if-let [pattern (some #(when (= (name (first %)) (:name item)) (last %)) patterns)]
                 (case (:value item)
                   "str" (assoc item :value (:pattern pattern) :literal true)
-                  "CodeableConcept" (conj item (hash-map :value (str (str/join (map profile-helpers/uppercase-first-letter (str/split (profile-helpers/get-resource-name constraint-name) #"-"))) (str/join (map profile-helpers/uppercase-first-letter (str/split (:name item) #"-")))) :codeable-concept-pattern true))
+                  "CodeableConcept" (conj item (hash-map :value (str (str/join (map profile-helpers/uppercase-first-letter (str/split (profile-helpers/url->resource-type constraint-name) #"-"))) (str/join (map profile-helpers/uppercase-first-letter (str/split (:name item) #"-")))) :codeable-concept-pattern true))
                   "Quantity" item item) item)) (:elements schema))
        (hash-map :elements)
        (conj schema (hash-map :patterns (concat (get schema :patterns []) (map (fn [item] (create-single-pattern constraint-name item (:elements schema))) patterns))))))
@@ -113,7 +113,7 @@
                    (conj acc (hash-map (:url constraint-schema) (apply-single-constraint constraint-schema (get base-schemas (:base constraint-schema))))) acc))) result constraint-schemas) base-schemas) result))
 
 (defn get-class-name [profile-name]
-  (str/join "" (map profile-helpers/uppercase-first-letter (clojure.string/split (profile-helpers/get-resource-name profile-name) #"-"))))
+  (str/join "" (map profile-helpers/uppercase-first-letter (clojure.string/split (profile-helpers/url->resource-type profile-name) #"-"))))
 
 (defn combine-single-class [name elements t]
   (->> (map (fn [item]
@@ -139,7 +139,7 @@
        (str "from pydantic import BaseModel\n")
        (profile-helpers/write-to-file
         (python-sdk-generated-files-dir)
-        (str (str/join "_" (str/split (profile-helpers/get-resource-name name) #"-")) ".py"))))
+        (str (str/join "_" (str/split (profile-helpers/url->resource-type name) #"-")) ".py"))))
 
 (defn doallmap [elements] (doall (map save-to-file elements)))
 
@@ -188,10 +188,10 @@
 
     (->> base-schemas
          (common/compile-elements)
-         (common/omit-empty-urls)
+         (common/remove-empty-urls)
          (common/vector-to-map)
          (combine-elements)
-         (common/omit-empty-urls)
+         (common/remove-empty-urls)
          (map (fn [schema]
                 (conj schema (hash-map :backbone-elements (flat-backbones (:backbone-elements schema) [])))))
          (common/vector-to-map)

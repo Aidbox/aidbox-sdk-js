@@ -9,7 +9,7 @@ build-python-sdk:
 	clj -X sdk-generator.python/run
 
 repl:
-	clj -A:test -M:nrepl
+	clj -M:nrepl
 
 test:
 	clj -A:test
