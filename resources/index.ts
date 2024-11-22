@@ -1,5 +1,3 @@
-import base64 from '@juanelas/base64';
-
 import {
   HttpClientInstance,
   httpClient as http,
@@ -20,11 +18,19 @@ import {
 export { HTTPError };
 
 export function decode(str: string): string {
-  return base64.decode(str, true).toString();
+  if (typeof window == 'undefined') {
+    return Buffer.from(str, "base64").toString();
+  } else {
+    return atob(str);
+  }
 }
 
 export function encode(str: string): string {
-  return base64.encode(str);
+  if (typeof window == 'undefined') {
+    return Buffer.from(str).toString('base64');
+  } else {
+    return btoa(str);
+  }
 }
 
 export const sleep = (ms: number) =>
